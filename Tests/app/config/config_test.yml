@@ -1,0 +1,30 @@
+# Framework Configuration
+framework:
+    secret: "TOP-SECRET"
+    test: ~
+
+ongr_elasticsearch:
+    connections:
+        default:
+            hosts:
+                - { host: 127.0.0.1:9200 }
+            index_name: ongr-elasticsearch-bundle-test
+            settings:
+                refresh_interval: -1
+                number_of_replicas: 0
+        bar:
+            hosts:
+                - { host: 127.0.0.1:9200 }
+            index_name: ongr-elasticsearch-bundle-bar-test
+            settings:
+                refresh_interval: -1
+                number_of_replicas: 1
+    managers:
+        default:
+            connection: default
+            mappings:
+                - AcmeTestBundle
+        bar:
+            connection: bar
+            mappings:
+                - ONGRElasticsearchBundle

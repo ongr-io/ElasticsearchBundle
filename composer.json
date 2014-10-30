@@ -1,0 +1,27 @@
+{
+    "name": "ongr/elasticsearch-bundle",
+    "description": "elasticsearch php client bundle for Symfony 2.",
+    "type": "symfony-bundle",
+    "homepage": "http://ongr.io",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ONGR team",
+            "homepage": "http://www.nfq.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "symfony/symfony": "~2.3",
+        "elasticsearch/elasticsearch": "~1.0",
+        "doctrine/annotations": "~1.2"
+    },
+    "require-dev": {
+        "mikey179/vfsStream": "~1.4",
+        "phpunit/phpunit": "~4.1",
+        "squizlabs/php_codesniffer": "~1.5"
+    },
+    "autoload": {
+        "psr-4": { "ONGR\\ElasticsearchBundle\\": "" }
+    }
+}

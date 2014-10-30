@@ -1,0 +1,33 @@
+parameters:
+    es.connection_factory.params:
+        logPath: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
+        tracePath: %kernel.logs_dir%/elasticsearch_trace_%kernel.environment%.log
+
+    es.metadata_collector.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
+    es.metadata_collector_factory.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollectorFactory
+    es.export.class: ONGR\ElasticsearchBundle\Service\ExportService
+    es.import.class: ONGR\ElasticsearchBundle\Service\ImportService
+    es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Client\IndexSuffixFinder
+
+services:
+    es.metadata_collector_factory:
+        class: %es.metadata_collector_factory.class%
+        arguments:
+            - %kernel.bundles%
+            - %kernel.cache_dir%
+        calls:
+            - [setDebug, [%kernel.debug%]]
+
+    es.metadata_collector:
+        class: %es.metadata_collector.class%
+        factory_service: es.metadata_collector_factory
+        factory_method: get
+
+    es.export:
+        class: %es.export.class%
+
+    es.import:
+        class: %es.import.class%
+
+    es.client.index_suffix_finder:
+        class: %es.client.index_suffix_finder.class%
