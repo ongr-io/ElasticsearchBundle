@@ -1,28 +1,23 @@
-Elasticsearch Bundle
-=================
+# Elasticsearch Bundle
 
-This bundle provides integration with [ElasticSearch](http://www.elasticsearch.org) and [official elasticsearch php client](https://github.com/elasticsearch/elasticsearch-php) with
-Symfony2. 
+Elasticsearch Bundle was created in order to serve the need for professional [elasticsearch](http://www.elasticsearch.org) integration with enterprise level Symfony 2 systems. This bundle is:
 
-Features:
- - Integrates the [official elasticsearch php client](https://github.com/elasticsearch/elasticsearch-php) into a Symfony2 environment
- - Object to document mapping
- - Types definition via annotations
- - Result iterators
- - Query DSL builder
- - CRUD operations with document objects
- - Documents insert as batches via bulk query
- - Index cli commands
- - Index data import and export commands
- - ... more are comming
+- Supported by [ONGR](http://ongr.io) development team.
+- Uses the official [elasticsearch-php](https://github.com/elasticsearch/elasticsearch-php) client.
+- Ensures full integration with Symfony 2 framework.
 
+Technical goodies: 
 
-Installation
-------------
+- Provides nestable and DSL query builder to be executed by type repotitory services.
+- Uses Doctrine-like document / entities document-object mapping using annotations.
+- Query results iterators are provided for your convenience.
+- Registers console commands for index and types management and data import / export.
+- Designed in an extensible way for all your custom needs.
+
+## Installation
 
 Installation instructions can be found in the [documentation](https://github.com/ongr-io/ElasticsearchBundle/blob/master/Resources/doc/setup.md)
 
-License
--------
+## License
 
 This bundle is under the MIT license. Please, see the complete license in the bundle `LICENSE` file.
