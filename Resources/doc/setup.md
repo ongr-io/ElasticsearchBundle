@@ -26,7 +26,7 @@ public function registerBundles()
 {
     $bundles = array(
         // ...
-        new ONGR\ElasticsearchBundle\ONGR\ElasticsearchBundle(),
+        new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
     );
 }
 ```
