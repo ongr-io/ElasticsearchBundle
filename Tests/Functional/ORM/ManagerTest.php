@@ -50,8 +50,6 @@ class ManagerTest extends ElasticsearchTestCase
 
         $manager->persist($product);
         $manager->commit();
-        $manager->flush();
-        $manager->refresh();
 
         $repository = $manager->getRepository('AcmeTestBundle:Product');
         /** @var Product[] $actualProduct */

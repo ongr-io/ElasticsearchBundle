@@ -247,4 +247,43 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         return $this->getDataArray()['default']['product'];
     }
+
+    /**
+     * Tests if document is being updated when persisted.
+     */
+    public function testDocumentUpdate()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+
+        /** @var Product $document */
+        $document = $repository->createDocument();
+
+        $document->setId(5);
+        $document->title = 'awesome';
+
+        $manager->persist($document);
+        $manager->commit();
+
+        // Creates document.
+        $document = $repository->find(5);
+        $this->assertEquals(
+            ['id' => '5', 'title' => 'awesome'],
+            array_filter(get_object_vars($document)),
+            'Document should be created.'
+        );
+
+        $document->title = 'more awesome';
+
+        // Updates document.
+        $manager->persist($document);
+        $manager->commit();
+
+        $document = $repository->find(5);
+        $this->assertEquals(
+            ['id' => '5', 'title' => 'more awesome'],
+            array_filter(get_object_vars($document)),
+            'Document should be updated.'
+        );
+    }
 }
