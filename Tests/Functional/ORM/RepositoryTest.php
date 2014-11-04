@@ -233,6 +233,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $search->addFilter(new PrefixFilter('title', 'dummy'));
         $searchResult = $repo->execute($search, Repository::RESULTS_OBJECT);
 
+        $searchResult=$repo->execute($search, Repository::RESULTS_OBJECT);
         $this->assertInstanceOf(
             '\ONGR\ElasticsearchBundle\Result\DocumentIterator',
             $searchResult
