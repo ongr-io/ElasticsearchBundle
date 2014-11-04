@@ -101,7 +101,7 @@ class Manager
         $document = $this->convertToArray($object, $repository['getters']);
 
         $this->getConnection()->bulk(
-            'create',
+            'index',
             $repository['type'],
             $document
         );
