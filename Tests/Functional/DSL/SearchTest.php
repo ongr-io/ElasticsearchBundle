@@ -25,6 +25,11 @@ class SearchTest extends ElasticsearchTestCase
     /**
      * {@inheritdoc}
      */
+
+    /** @var Repository */
+
+    protected $repository;
+
     protected function getDataArray()
     {
         return [
@@ -74,22 +79,41 @@ class SearchTest extends ElasticsearchTestCase
     }
 
     /**
+     * Gets results array for specified Search.
+     *
+     * @param \ONGR\ElasticsearchBundle\DSL\Search $search
+     *
+     * @return array|\ONGR\ElasticsearchBundle\Result\DocumentIterator
+     */
+    protected function getSearchResultsArray($search)
+    {
+        return $this->repository->execute($search, Repository::RESULTS_ARRAY);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
+    }
+
+    /**
      * Test Search API 'from' and 'size' properties.
      */
     public function testSearchFromSizeExplain()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
         $testQuery = new MatchAllQuery();
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->addQuery($testQuery)
             ->addSort(new Sort('price', Sort::ORDER_DESC))
             ->setFrom(2)
             ->setSize(2)
             ->setExplain(false);
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
+        $results = $this->getSearchResultsArray($search);
 
         $expected = array_slice(array_reverse($this->getProductsArray()), 2, 2);
 
@@ -104,20 +128,15 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchSource()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
         $testQuery = new TermQuery('_id', '1');
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->addQuery($testQuery)
             ->setSource(['_id', 'title', 'price']);
-
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
 
         $expected = [$this->getProductsArray()[0]];
         unset($expected[0]['description']);
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 
     /**
@@ -125,21 +144,16 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchFields()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
         $testQuery = new TermQuery('_id', '1');
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->addQuery($testQuery)
             ->setFields(['title']);
-
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
 
         $expected = [$this->getProductsArray()[0]];
         unset($expected[0]['price']);
         unset($expected[0]['description']);
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 
     /**
@@ -147,18 +161,13 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchScriptFields()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->addQuery(new TermQuery('_id', '1'))
             ->setScriptFields(new \StdClass());
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
-
         $expected = [$this->getProductsArray()[0]];
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 
     /**
@@ -166,20 +175,15 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchPostFilter()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
         $postFilter = new IdsFilter(['1']);
 
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->addQuery(new MatchAllQuery())
             ->addPostFilter($postFilter);
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
-
         $expected = [$this->getProductsArray()[0]];
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 
     /**
@@ -187,21 +191,21 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchPostFilterMultiple()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
         $postFilter1 = new IdsFilter(['1']);
         $postFilter2 = new IdsFilter(['3']);
 
 
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->addQuery(new MatchAllQuery())
             ->addPostFilter($postFilter1, 'should')
             ->addPostFilter($postFilter2, 'should');
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
+        $results=$this->getSearchResultsArray($search);
 
-        $expected = [$this->getProductsArray()[0], $this->getProductsArray()[2]];
+        $expected = [
+            $this->getProductsArray()[0],
+            $this->getProductsArray()[2],
+        ];
 
         sort($results);
         sort($expected);
@@ -214,18 +218,13 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchType()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->addQuery(new TermQuery('_id', '1'))
             ->setSearchType('query_and_fetch');
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
-
         $expected = [$this->getProductsArray()[0]];
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 
     /**
@@ -233,15 +232,12 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchScroll()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
-        $search = $repo->createSearch();
+        $search = $this->repository->createSearch();
         $search->setSize(2);
         $search->setScroll('1m');
         $search->addQuery(new MatchAllQuery());
 
-        $results = $repo->execute($search, Repository::RESULTS_RAW);
+        $results = $this->repository->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('_scroll_id', $results);
     }
@@ -278,9 +274,7 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testSearchPreference($params, $expected)
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
-        $search = $repo->createSearch()
+        $search = $this->repository->createSearch()
             ->setPreference($params);
 
         $results = $search->getQueryParams();
@@ -293,18 +287,15 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testQueryManipulation()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-
-        $search = $repo->createSearch();
+        $search = $this->repository->createSearch();
         $search->addQuery(new RangeQuery('price', ['gte' => 200, 'lte' => 2000]));
         $search->addFilter(new PrefixFilter('title', 'ba'));
 
         $search->setBoolQueryParameters(['boost' => 1]);
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
         $expected = [$this->getProductsArray()[2]];
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 
     /**
@@ -312,18 +303,16 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testPrefixFilterAndIdsFilterWithCache()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $search = $repo->createSearch();
+        $search = $this->repository->createSearch();
 
         $search->addFilter(new PrefixFilter('title', 'foo'));
         $search->addFilter(new IdsFilter(['1', '2']), 'should');
 
         $search->setBoolFilterParameters(['_cache' => false]);
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
         $expected = [$this->getProductsArray()[0]];
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 
     /**
@@ -331,17 +320,14 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function testPrefixFilterAndIdsFilterWithoutCache()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $search = $repo->createSearch();
+        $search = $this->repository->createSearch();
 
         $search->addFilter(new PrefixFilter('title', 'foo'));
         $search->addFilter(new IdsFilter(['1', '2']), 'must');
         $search->setBoolFilterParameters(['_cache' => true]);
 
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
-
         $expected = [$this->getProductsArray()[0]];
 
-        $this->assertEquals($expected, $results);
+        $this->assertEquals($expected, $this->getSearchResultsArray($search));
     }
 }
