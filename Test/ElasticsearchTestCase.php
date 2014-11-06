@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class ElasticsearchTestCase extends WebTestCase
 {
     /**
-     * Holds used connection names.
+     * Holds used managers.
      *
      * @var Manager[]
      */
@@ -139,12 +139,10 @@ abstract class ElasticsearchTestCase extends WebTestCase
     {
         $serviceName = sprintf('es.manager.%s', $name);
 
-        // Looks for cached connection, we dont want to recreate index, mapping and populate data again.
-        if (in_array($name, $this->managers)) {
-            return $this->managers[$name];
-        }
-
-        if ($this->getContainer()->has($serviceName)) {
+        // Looks for cached manager.
+        if (array_key_exists($name, $this->managers)) {
+            $manager = $this->managers[$name];
+        } elseif ($this->getContainer()->has($serviceName)) {
             /** @var Manager $manager */
             $manager = $this
                 ->getContainer()
