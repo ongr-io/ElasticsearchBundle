@@ -100,4 +100,29 @@ class ManagerTest extends ElasticsearchTestCase
         $this->assertEquals($comment->getParent(), $actualProduct->getParent());
         $this->assertLessThan($comment->getTtl(), $actualProduct->getTtl());
     }
+
+    /**
+     * Tests if DateTime object is being parsed.
+     */
+    public function testPersistDateField()
+    {
+        /** @var Manager $manager */
+        $manager = $this->getManager();
+
+        $comment = new Comment();
+        $comment->setId('testId');
+        $comment->setParent('parentId');
+        $comment->setCreatedAt(new \DateTime('2100-01-02 03:04:05.889342'));
+
+        $manager->persist($comment);
+        $manager->commit();
+
+        $repository = $manager->getRepository('AcmeTestBundle:Comment');
+        $search = $repository->createSearch();
+        $results = $repository->execute($search);
+        /** @var DocumentInterface $actualProduct */
+        $actualProduct = $results[0];
+
+        $this->assertGreaterThan(time(), $actualProduct->getCreatedAt()->getTimestamp());
+    }
 }
