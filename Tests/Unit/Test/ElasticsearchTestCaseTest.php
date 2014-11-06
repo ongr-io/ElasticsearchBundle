@@ -22,22 +22,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Connection
+     * @var Connection|\PHPUnit_Framework_MockObject_MockObject
      */
     private $connectionMock;
 
     /**
-     * @var MetadataCollector
+     * @var MetadataCollector|\PHPUnit_Framework_MockObject_MockObject
      */
     private $collectorMock;
 
     /**
-     * @var Manager
+     * @var Manager|\PHPUnit_Framework_MockObject_MockObject
      */
     private $managerMock;
 
     /**
-     * @var ContainerInterface
+     * @var ContainerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $containerMock;
 
@@ -146,6 +146,76 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
         $this->connectionMock->expects($this->once())->method('dropAndCreateIndex')->willReturn(true);
 
         $reflection = new \ReflectionMethod($this->dummyBase, 'setUp');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($this->dummyBase, []);
+    }
+
+    /**
+     * Check if remove manager works as expected.
+     *
+     * Should drop index and remove the manager.
+     */
+    public function testRemoveManager()
+    {
+        $this->containerMock
+            ->expects($this->exactly(2))
+            ->method('has')
+            ->with('es.manager.default')
+            ->will($this->returnValue(true));
+
+        $this->containerMock
+            ->expects($this->exactly(2))
+            ->method('get')
+            ->with('es.manager.default')
+            ->will($this->returnValue($this->managerMock));
+
+        // GetConnection is called thrice: creating, removing and creating manager again.
+        $this->managerMock->expects($this->exactly(3))->method('getConnection')->willReturn($this->connectionMock);
+        $this->connectionMock->expects($this->once())->method('dropIndex')->willReturn(true);
+
+        // Calls getConnection once.
+        $reflection = new \ReflectionMethod($this->dummyBase, 'setUp');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($this->dummyBase, []);
+
+        // Calls getConnection and dropIndex once.
+        $reflection = new \ReflectionMethod($this->dummyBase, 'removeManager');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($this->dummyBase, ['default']);
+
+        // Calls getConnection once, since the default manager should have been removed from cache.
+        $reflection = new \ReflectionMethod($this->dummyBase, 'getManager');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($this->dummyBase, []);
+    }
+
+    /**
+     * Check if managers are cached.
+     */
+    public function testCache()
+    {
+        $this->containerMock
+            ->expects($this->once())
+            ->method('has')
+            ->with('es.manager.default')
+            ->will($this->returnValue(true));
+
+        $this->containerMock
+            ->expects($this->once())
+            ->method('get')
+            ->with('es.manager.default')
+            ->will($this->returnValue($this->managerMock));
+
+        $this->managerMock->expects($this->exactly(2))->method('getConnection')->willReturn($this->connectionMock);
+        $this->connectionMock->expects($this->exactly(2))->method('dropAndCreateIndex')->willReturn(true);
+
+        // This will call getManager once, should get default manager from container, thus calling get and has.
+        $reflection = new \ReflectionMethod($this->dummyBase, 'setUp');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($this->dummyBase, []);
+
+        // Even though getManager is called again, it should be loaded from cache, not from container.
+        $reflection = new \ReflectionMethod($this->dummyBase, 'getManager');
         $reflection->setAccessible(true);
         $reflection->invokeArgs($this->dummyBase, []);
     }
