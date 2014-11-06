@@ -80,14 +80,14 @@ class ManagerTest extends ElasticsearchTestCase
         /** @var Manager $manager */
         $manager = $this->getManager();
 
-        $product = new Comment();
-        $product->setId('testId');
-        $product->setTtl(500000);
-        $product->setScore('1.0');
-        $product->setParent('parentId');
-        $product->userName = 'testUser';
+        $comment = new Comment();
+        $comment->setId('testId');
+        $comment->setTtl(500000);
+        $comment->setScore('1.0');
+        $comment->setParent('parentId');
+        $comment->userName = 'testUser';
 
-        $manager->persist($product);
+        $manager->persist($comment);
         $manager->commit();
 
         $repository = $manager->getRepository('AcmeTestBundle:Comment');
@@ -96,8 +96,8 @@ class ManagerTest extends ElasticsearchTestCase
         /** @var DocumentInterface $actualProduct */
         $actualProduct = $results[0];
 
-        $this->assertEquals($product->getId(), $actualProduct->getId());
-        $this->assertEquals($product->getParent(), $actualProduct->getParent());
-        $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
+        $this->assertEquals($comment->getId(), $actualProduct->getId());
+        $this->assertEquals($comment->getParent(), $actualProduct->getParent());
+        $this->assertLessThan($comment->getTtl(), $actualProduct->getTtl());
     }
 }

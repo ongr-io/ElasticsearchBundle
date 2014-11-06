@@ -30,4 +30,35 @@ class Comment implements DocumentInterface
      * @ES\Property(type="string", name="userName")
      */
     public $userName;
+
+    /**
+     * @var \DateTime
+     *
+     * @ES\Property(name="createdAt", type="date")
+     */
+    private $createdAt;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
 }

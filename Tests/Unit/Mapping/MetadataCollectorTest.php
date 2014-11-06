@@ -168,6 +168,9 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
                         'userName' => [
                             'type' => 'string',
                         ],
+                        'createdAt' => [
+                            'type' => 'date'
+                        ]
                     ],
                 ],
             ],

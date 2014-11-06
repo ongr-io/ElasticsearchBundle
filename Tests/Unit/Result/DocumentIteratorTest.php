@@ -87,6 +87,11 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                         'name' => 'header',
                     ]
                 ],
+                'properties' => [
+                    'header' => [
+                        'type' => 'string'
+                    ]
+                ],
                 'namespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
             ],
         ];
