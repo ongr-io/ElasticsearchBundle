@@ -88,6 +88,7 @@ class Converter
 
             if (isset($setter['properties'])) {
                 $value = new ObjectIterator($this, $value, $setter);
+                $value = $value->current();
             }
 
             if ($setter['exec']) {
