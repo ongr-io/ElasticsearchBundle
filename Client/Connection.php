@@ -1,6 +1,5 @@
 <?php
-
-/*
+ /*
  * This file is part of the ONGR package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
@@ -264,7 +263,9 @@ class Connection
      */
     public function getMapping($type)
     {
-        if (array_key_exists($type, $this->settings['body']['mappings'])) {
+        if (isset($this->settings['body']['mappings'])
+            && array_key_exists($type, $this->settings['body']['mappings'])
+        ) {
             return $this->settings['body']['mappings'][$type];
         }
 
