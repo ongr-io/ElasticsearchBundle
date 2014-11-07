@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Command;
 use ONGR\ElasticsearchBundle\Command\TypeUpdateCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\Container;
 
 /**
  * Unit tests for UpdateTypeCommand.
@@ -26,7 +27,7 @@ class UpdateTypeCommandTest extends \PHPUnit_Framework_TestCase
      * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage Expected boolean value from Connection::updateMapping()
      */
-    public function testExecute()
+    public function testExecuteUnexpectedValue()
     {
         /** @var TypeUpdateCommand|\PHPUnit_Framework_MockObject_MockObject $command */
         $command = $this->getMockBuilder('ONGR\ElasticsearchBundle\Command\TypeUpdateCommand')
@@ -47,5 +48,57 @@ class UpdateTypeCommandTest extends \PHPUnit_Framework_TestCase
                 '--force' => true,
             ]
         );
+    }
+
+    /**
+     * Check if correct value is returned when force flag isn't set.
+     */
+    public function testForceDisabled()
+    {
+        $command = new TypeUpdateCommand();
+        $app = new Application();
+        $app->add($command);
+
+        $commandToTest = $app->find('es:type:update');
+        $commandTester = new CommandTester($commandToTest);
+        $result = $commandTester->execute(
+            [
+                'command' => $command->getName(),
+            ]
+        );
+
+        $this->assertEquals(1, $result);
+    }
+
+    /**
+     * Check if correct value is returned when undefined type is specified.
+     */
+    public function testUndefinedType()
+    {
+        /** @var Container|\PHPUnit_Framework_MockObject_MockObject $containerMock */
+        $containerMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\Container')
+            ->setMethods(['getParameter', 'get'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $containerMock->expects($this->any())->method('getParameter')->willReturn([]);
+        $containerMock->expects($this->any())->method('get')->willReturnSelf();
+        $command = new TypeUpdateCommand();
+        $command->setContainer($containerMock);
+
+
+        $app = new Application();
+        $app->add($command);
+
+        $commandToTest = $app->find('es:type:update');
+        $commandTester = new CommandTester($commandToTest);
+        $result = $commandTester->execute(
+            [
+                'command' => $command->getName(),
+                '--force' => true,
+                '--type' => 'unkown',
+            ]
+        );
+
+        $this->assertEquals(2, $result);
     }
 }
