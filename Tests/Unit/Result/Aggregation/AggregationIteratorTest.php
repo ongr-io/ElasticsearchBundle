@@ -24,12 +24,8 @@ class AggregationIteratorTest extends \PHPUnit_Framework_TestCase
     protected function getTestData()
     {
         return [
-            'foo' => [
-                'doc_count' => 1,
-            ],
-            'bar' => [
-                'doc_count' => 2,
-            ],
+            'foo' => ['doc_count' => 1],
+            'bar' => ['doc_count' => 2],
         ];
     }
 

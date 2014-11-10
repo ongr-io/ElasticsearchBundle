@@ -35,9 +35,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                             '_type' => 'content',
                             '_id' => 'foo',
                             '_score' => 0,
-                            '_source' => [
-                                'header' => 'Test header',
-                            ],
+                            '_source' => ['header' => 'Test header'],
                         ],
                     ],
                 ],
@@ -75,12 +73,10 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteration($rawData)
     {
-        $typesMapping = [
-            'content' => 'AcmeTestBundle:Content',
-        ];
+        $typesMapping = ['content' => 'ONGRTestingBundle:Content'];
 
         $bundleMapping = [
-            'AcmeTestBundle:Content' => [
+            'ONGRTestingBundle:Content' => [
                 'setters' => [
                     'header' => [
                         'exec' => false,
@@ -88,11 +84,9 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                     ]
                 ],
                 'properties' => [
-                    'header' => [
-                        'type' => 'string'
-                    ]
+                    'header' => ['type' => 'string']
                 ],
-                'namespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
+                'namespace' => 'ONGR\TestingBundle\Document\Content',
             ],
         ];
 
@@ -102,7 +96,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
         $document = $iterator->current();
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
+            'ONGR\TestingBundle\Document\Content',
             $document
         );
         $this->assertEquals('Test header', $document->header);
@@ -119,9 +113,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                 'hits' => [],
             ],
             'aggregations' => [
-                'agg_foo' => [
-                    'doc_count' => 1,
-                ],
+                'agg_foo' => ['doc_count' => 1],
             ],
         ];
 

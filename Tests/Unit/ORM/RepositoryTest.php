@@ -27,15 +27,32 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $out = [];
 
         $bundlesMapping = [
-            'AcmeTestBundle:Product' => ['type' => 'product', 'fields' => []],
-            'AcmeTestBundle:Content' => ['type' => 'content', 'fields' => []],
+            'ONGRTestingBundle:Product' => [
+                'type' => 'product',
+                'fields' => [],
+            ],
+            'ONGRTestingBundle:Content' => [
+                'type' => 'content',
+                'fields' => [],
+            ],
         ];
 
         // Case #0 Single type.
-        $out[] = [['AcmeTestBundle:Product'], ['product'], $bundlesMapping];
+        $out[] = [
+            ['ONGRTestingBundle:Product'],
+            ['product'],
+            $bundlesMapping,
+        ];
 
         // Case #1 Multi types.
-        $out[] = [[], ['product', 'content'], $bundlesMapping];
+        $out[] = [
+            [],
+            [
+                'product',
+                'content',
+            ],
+            $bundlesMapping,
+        ];
 
         return $out;
     }

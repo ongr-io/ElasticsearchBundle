@@ -25,8 +25,16 @@ class IndexSuffixFinderTest extends \PHPUnit_Framework_TestCase
     {
         $cases = [];
 
-        $cases[] = ['foo-index', false, 'foo-index-2001.01.30'];
-        $cases[] = ['foo-index', true, 'foo-index-2001.01.30-2'];
+        $cases[] = [
+            'foo-index',
+            false,
+            'foo-index-2001.01.30',
+        ];
+        $cases[] = [
+            'foo-index',
+            true,
+            'foo-index-2001.01.30-2',
+        ];
 
         return $cases;
     }

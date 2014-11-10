@@ -32,10 +32,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'elasticsearch' => [
                     'document_dir' => 'customDir',
                     'connections' => [
-                        'test' =>
-                            [
-                                'index_name' => 'test',
-                            ],
+                        'test' => ['index_name' => 'test'],
                     ],
                     'managers' => [
                         'test' => [
@@ -51,9 +48,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
         $expectedConnections = [
             'test' => [
                 'index_name' => 'test',
-                'hosts' => [
-                    '127.0.0.1:9200',
-                ],
+                'hosts' => ['127.0.0.1:9200'],
                 'settings' => [],
             ],
         ];
@@ -68,7 +63,12 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedManagers, $container->getParameter('es.managers'));
         $this->assertTrue($container->hasDefinition('es.metadata_collector'));
         $this->assertEquals(
-            [['setDocumentDir', ['customDir']]],
+            [
+                [
+                    'setDocumentDir',
+                    ['customDir'],
+                ],
+            ],
             $container->getDefinition('es.metadata_collector')->getMethodCalls()
         );
     }
