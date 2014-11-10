@@ -59,7 +59,12 @@ class Converter
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
 
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject($data, new $metadata['namespace'](), $metadata['setters']);
+        $object = $this->assignArrayToObject(
+            $data,
+            new $metadata['namespace'](),
+            array_merge_recursive($metadata['properties'], $metadata['setters'])
+        );
+
         isset($rawData['_id']) && $object->setId($rawData['_id']);
         isset($rawData['_score']) && $object->setScore($rawData['_score']);
         isset($rawData['highlight']) && $object->setHighlight(new DocumentHighlight($rawData['highlight']));
@@ -88,6 +93,10 @@ class Converter
 
             if (isset($setter['properties'])) {
                 $value = new ObjectIterator($this, $value, $setter);
+            }
+
+            if ($setter['type'] === 'date') {
+                $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
             }
 
             if ($setter['exec']) {

@@ -156,6 +156,9 @@ class Manager
 
                 $value = $newValue;
             }
+            if ($value instanceof \DateTime) {
+                $value = $value->format(\DateTime::ISO8601);
+            }
 
             if ($value) {
                 $document[$field] = $value;
