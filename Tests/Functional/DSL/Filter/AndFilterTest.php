@@ -108,7 +108,7 @@ class AndFilterTest extends ElasticsearchTestCase
     public function testAndFilter($prefixField, $prefixValue, $missingField, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $missing = new MissingFilter($missingField);
         $prefix = new PrefixFilter($prefixField, $prefixValue);

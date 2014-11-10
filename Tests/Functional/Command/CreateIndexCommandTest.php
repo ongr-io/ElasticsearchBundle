@@ -25,9 +25,18 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     public function getTestExecuteData()
     {
         return [
-            ['bar', false],
-            ['default', false],
-            ['default', true],
+            [
+                'bar',
+                false,
+            ],
+            [
+                'default',
+                false,
+            ],
+            [
+                'default',
+                true,
+            ],
         ];
     }
 
@@ -56,7 +65,7 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $commandTester = new CommandTester($command);
         $arguments = [
             'command' => $command->getName(),
-            '--manager' => $argument
+            '--manager' => $argument,
         ];
         if ($hasTimestamp) {
             $arguments['--time'] = null;

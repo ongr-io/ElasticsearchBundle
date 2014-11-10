@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\DSL\Highlight\Highlight;
 use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
+use ONGR\TestingBundle\Document\Product;
 
 /**
  * Highlighting functional test
@@ -176,11 +176,14 @@ class HighlightTest extends ElasticsearchTestCase
      */
     private function buildRepositoryAndTerm()
     {
-        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repository = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $termQuery = new TermQuery('title', 'foo');
 
-        return [$repository, $termQuery];
+        return [
+            $repository,
+            $termQuery,
+        ];
     }
 
     /**

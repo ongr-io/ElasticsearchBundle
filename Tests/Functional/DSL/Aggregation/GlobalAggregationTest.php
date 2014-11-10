@@ -82,12 +82,22 @@ class GlobalAggregationTest extends ElasticsearchTestCase
         $aggregation->aggregations->addAggregation($aggregation2);
 
         // Case #0 global aggregation without query.
-        $out[] = [$aggregation, null, $results, 3];
+        $out[] = [
+            $aggregation,
+            null,
+            $results,
+            3,
+        ];
 
         // Case #1 global aggregation with query.
         $query = new MatchQuery('bar', 'title');
 
-        $out[] = [$aggregation, $query, $results, 1];
+        $out[] = [
+            $aggregation,
+            $query,
+            $results,
+            1,
+        ];
 
         return $out;
     }
@@ -105,7 +115,7 @@ class GlobalAggregationTest extends ElasticsearchTestCase
     public function testGlobalAggregation($aggregation, $query, $expectedResults, $hitsCount)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         if ($query) {

@@ -50,7 +50,7 @@ class ConstantScoreTest extends ElasticsearchTestCase
     public function testConstantScoreQuery()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $constantScoreQuery = new ConstantScoreQuery(new MatchAllQuery());
 

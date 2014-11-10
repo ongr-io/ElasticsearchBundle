@@ -41,7 +41,7 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
     {
         /** @var Repository $repo */
 
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Content');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Content');
 
         $search = $repo->createSearch();
         $search->setSize(2);
@@ -59,7 +59,12 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
         }
         sort($headers);
 
-        $expectedHeaders = ['content_0', 'content_1', 'content_2', 'content_3'];
+        $expectedHeaders = [
+            'content_0',
+            'content_1',
+            'content_2',
+            'content_3',
+        ];
 
         $this->assertEquals($expectedHeaders, $headers);
     }

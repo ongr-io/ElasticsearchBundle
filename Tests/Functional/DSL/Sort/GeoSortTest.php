@@ -111,7 +111,7 @@ class GeoSortTest extends ElasticsearchTestCase
     public function testGeoSort($sorts, $expectedIds, $expectedDistances)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $search = $repo->createSearch();
         foreach ($sorts as $sort) {
             $search->addSort(new GeoSort($sort['field'], $sort['loc'], $sort['order'], $sort['unit'], $sort['mode']));

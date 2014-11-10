@@ -21,7 +21,7 @@ class ConnectionTest extends ElasticsearchTestCase
     /**
      * @return array
      */
-    protected function getAcmeMapping()
+    protected function getTestMapping()
     {
         return [
             'product' => [
@@ -30,9 +30,7 @@ class ConnectionTest extends ElasticsearchTestCase
                         'type' => 'string',
                         'index' => 'not_analyzed',
                     ],
-                    'title' => [
-                        'type' => 'string',
-                    ],
+                    'title' => ['type' => 'string'],
                 ],
             ],
         ];
@@ -59,7 +57,7 @@ class ConnectionTest extends ElasticsearchTestCase
         $connection = $this->getManager(
             'bar',
             false,
-            $this->getAcmeMapping()
+            $this->getTestMapping()
         )->getConnection();
 
         $status = $connection->updateMapping();

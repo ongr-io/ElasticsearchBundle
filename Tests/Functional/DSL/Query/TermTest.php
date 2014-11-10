@@ -84,7 +84,7 @@ class TermTest extends ElasticsearchTestCase
     public function testTermQuery($field, $value, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $termQuery = new TermQuery($field, $value, $parameters);
         $search = $repo->createSearch()->addQuery($termQuery);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
@@ -96,7 +96,7 @@ class TermTest extends ElasticsearchTestCase
      */
     public function testMultipleTerm()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $termQuery = new TermQuery('title', 'foo');
         $termQuery2 = new TermQuery('price', 11);
         $search = $repo->createSearch();

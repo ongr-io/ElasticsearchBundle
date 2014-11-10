@@ -92,7 +92,7 @@ class IndicesQueryTest extends ElasticsearchTestCase
     public function testAndFilter($queryParams, $noMatchQueryParams, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $query = new TermQuery($queryParams[0], $queryParams[1]);
 
         if (is_string($noMatchQueryParams)) {

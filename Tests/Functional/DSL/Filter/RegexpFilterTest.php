@@ -117,7 +117,7 @@ class RegexpFilterTest extends ElasticsearchTestCase
     public function testRegexpFilter($field, $regexp, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $regexp = new RegexpFilter($field, $regexp, $parameters);
         $search = $repo->createSearch()->addFilter($regexp);
 

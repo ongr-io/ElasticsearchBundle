@@ -74,7 +74,7 @@ class TermsTest extends ElasticsearchTestCase
     public function testTermsQuery($tags, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $termsQuery = new TermsQuery('title', $tags, $parameters);
 

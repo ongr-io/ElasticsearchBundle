@@ -81,7 +81,7 @@ class SimpleQueryStringTest extends ElasticsearchTestCase
     public function testSimpleQueryStringQuery($query, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $matchQuery = new SimpleQueryStringQuery($query, $parameters);
 

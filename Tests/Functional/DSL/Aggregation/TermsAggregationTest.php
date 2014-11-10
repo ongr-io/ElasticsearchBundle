@@ -64,13 +64,22 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $result = [
             'agg_test_agg' => [
                 'buckets' => [
-                    ['key' => 'weak', 'doc_count' => 2],
-                    ['key' => 'solid', 'doc_count' => 1],
+                    [
+                        'key' => 'weak',
+                        'doc_count' => 2,
+                    ],
+                    [
+                        'key' => 'solid',
+                        'doc_count' => 1,
+                    ],
                 ],
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         // Case #1 terms aggregation with limited size.
         $aggregation = new TermsAggregation('test_agg');
@@ -80,12 +89,18 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $result = [
             'agg_test_agg' => [
                 'buckets' => [
-                    ['key' => 'weak', 'doc_count' => 2],
+                    [
+                        'key' => 'weak',
+                        'doc_count' => 2,
+                    ],
                 ],
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         // Case #2 terms aggregation with custom ordering.
         $aggregation = new TermsAggregation('test_agg');
@@ -95,13 +110,22 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $result = [
             'agg_test_agg' => [
                 'buckets' => [
-                    ['key' => 'solid', 'doc_count' => 1],
-                    ['key' => 'weak', 'doc_count' => 2],
+                    [
+                        'key' => 'solid',
+                        'doc_count' => 1,
+                    ],
+                    [
+                        'key' => 'weak',
+                        'doc_count' => 2,
+                    ],
                 ],
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         // Case #3 terms aggregation with minimum document count.
         $aggregation = new TermsAggregation('test_agg');
@@ -111,12 +135,18 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $result = [
             'agg_test_agg' => [
                 'buckets' => [
-                    ['key' => 'weak', 'doc_count' => 2],
+                    [
+                        'key' => 'weak',
+                        'doc_count' => 2,
+                    ],
                 ],
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         // Case #4 terms aggregation with include.
         $aggregation = new TermsAggregation('test_agg');
@@ -126,12 +156,18 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $result = [
             'agg_test_agg' => [
                 'buckets' => [
-                    ['key' => 'solid', 'doc_count' => 1],
+                    [
+                        'key' => 'solid',
+                        'doc_count' => 1,
+                    ],
                 ],
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         // Case #5 terms aggregation with exclude.
         $aggregation = new TermsAggregation('test_agg');
@@ -141,12 +177,18 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $result = [
             'agg_test_agg' => [
                 'buckets' => [
-                    ['key' => 'weak', 'doc_count' => 2],
+                    [
+                        'key' => 'weak',
+                        'doc_count' => 2,
+                    ],
                 ],
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         return $out;
     }
@@ -162,7 +204,7 @@ class TermsAggregationTest extends ElasticsearchTestCase
     public function testTermsAggregation($aggregation, $expectedResult)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);

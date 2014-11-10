@@ -100,7 +100,7 @@ class BoolFilterTest extends ElasticsearchTestCase
     public function testBoolFilter($mustFilter, $mustNotFilter, $shouldFilter, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         /** @var Search $search */
         $search = $repo->createSearch()->addFilter($mustFilter, 'must');
         $search->addFilter($mustNotFilter, 'must_not');
