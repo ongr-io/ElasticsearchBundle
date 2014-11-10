@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\FileCacheReader;
+use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
@@ -140,38 +141,30 @@ class MetadataCollector
      * @param string $bundle
      *
      * @return array
-     *
-     * @throws \LogicException
      */
     public function getBundleMapping($bundle)
     {
         $mappings = [];
 
-        // Checks if bundle is register in kernel.
-        if (array_key_exists($bundle, $this->bundles)) {
-            $bundleReflection = new \ReflectionClass($this->bundles[$bundle]);
-            $documents = glob(
-                dirname($bundleReflection->getFileName()) .
-                DIRECTORY_SEPARATOR . $this->getDocumentDir() .
-                DIRECTORY_SEPARATOR . '*.php'
+        $bundleReflection = new \ReflectionClass($this->getBundle($bundle));
+        $documents = glob(
+            dirname($bundleReflection->getFileName()) .
+            DIRECTORY_SEPARATOR . $this->getDocumentDir() .
+            DIRECTORY_SEPARATOR . '*.php'
+        );
+
+        // Loop through documents found in bundle.
+        foreach ($documents as $document) {
+            $documentReflection = new \ReflectionClass(
+                $bundleReflection->getNamespaceName() .
+                '\\' . $this->getDocumentDir() .
+                '\\' . pathinfo($document, PATHINFO_FILENAME)
             );
 
-            // Loop through documents found in bundle.
-            foreach ($documents as $document) {
-                $filename = pathinfo($document, PATHINFO_FILENAME);
-                $documentReflection = new \ReflectionClass(
-                    $bundleReflection->getNamespaceName() . '\\' .
-                    $this->getDocumentDir() . '\\' .
-                    $filename
-                );
-
-                $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-                if ($documentMapping !== null && !empty(reset($documentMapping)['properties'])) {
-                    $mappings = array_replace_recursive($mappings, $documentMapping);
-                }
+            $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
+            if ($documentMapping !== null && !empty(reset($documentMapping)['properties'])) {
+                $mappings = array_replace_recursive($mappings, $documentMapping);
             }
-        } else {
-            throw new \LogicException("{$bundle} not found.");
         }
 
         return $mappings;
@@ -208,7 +201,7 @@ class MetadataCollector
     {
         /** @var Document $class */
         $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
-        if ($class) {
+        if ($class !== null) {
             $type = $this->getDocumentType($reflectionClass, $class);
             $parent = $class->parent === null ? $class->parent : $this->getDocumentParentType($class->parent);
             $properties = $this->getProperties($reflectionClass);
@@ -218,12 +211,11 @@ class MetadataCollector
 
             foreach ($properties as $property => $params) {
                 $alias = $this->aliases[$reflectionClass->getName()][$property];
-                $data = $this->getInfoAboutProperty($params, $alias, $reflectionClass);
-                $setters[$property] = $data['setter'];
-                $getters[$property] = $data['getter'];
+                list($setters[$property], $getters[$property]) = $this
+                    ->getInfoAboutProperty($params, $alias, $reflectionClass);
             }
 
-            return [
+            $class = [
                 $type => [
                     'properties' => $properties,
                     'setters' => $setters,
@@ -239,7 +231,7 @@ class MetadataCollector
             ];
         }
 
-        return null;
+        return $class;
     }
 
     /**
@@ -276,8 +268,8 @@ class MetadataCollector
         }
 
         return [
-            'setter' => $setter,
-            'getter' => $getter,
+            $setter,
+            $getter,
         ];
     }
 
@@ -293,24 +285,32 @@ class MetadataCollector
      */
     private function checkPropertyAccess($property, $methodPrefix, $reflectionClass)
     {
-        $method = $methodPrefix . ucfirst($property);
+        $method = $methodPrefix . ucfirst(Inflector::classify($property));
 
         if ($reflectionClass->hasMethod($method)
             && $reflectionClass->getMethod($method)->isPublic()
         ) {
-            $attributes = ['exec' => true, 'name' => $reflectionClass->getMethod($method)->getName()];
+            return [
+                'exec' => true,
+                'name' => $reflectionClass->getMethod($method)->getName(),
+            ];
         } elseif ($reflectionClass->hasProperty($property)
             && $reflectionClass->getProperty($property)->isPublic()
         ) {
-            $attributes = ['exec' => false, 'name' => $reflectionClass->getProperty($property)->getName()];
+            return [
+                'exec' => false,
+                'name' => $reflectionClass->getProperty($property)->getName(),
+            ];
         } else {
-            throw new \LogicException(sprintf('Setter for property "%s" can not be found.', $property));
+            throw new \LogicException(
+                sprintf('%ster for property "%s" can not be found.', ucfirst($methodPrefix), $property)
+            );
         }
-
-        return $attributes;
     }
 
     /**
+     * Returns information about property object.
+     *
      * @param array            $params          Parameters.
      * @param string           $propertyName    Property to be investigated name.
      * @param \ReflectionClass $reflectionClass Reflection class.
@@ -331,9 +331,8 @@ class MetadataCollector
         $getters = [];
 
         foreach ($this->aliases[$childReflection->getName()] as $childField => $alias) {
-            $data = $this->getInfoAboutProperty($params[$childField], $alias, $childReflection);
-            $setters[$childField] = $data['setter'];
-            $getters[$childField] = $data['getter'];
+            list($setters[$childField], $getters[$childField]) = $this
+                ->getInfoAboutProperty($params[$childField], $alias, $childReflection);
         }
 
         return [
@@ -376,11 +375,8 @@ class MetadataCollector
 
         /** @var Document $class */
         $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
-        if ($class) {
-            return $this->getDocumentType($reflectionClass, $class);
-        }
 
-        return null;
+        return $class ? $this->getDocumentType($reflectionClass, $class) : null;
     }
 
     /**
@@ -446,11 +442,28 @@ class MetadataCollector
     {
         if (strpos($namespace, ':') !== false) {
             list($bundle, $document) = explode(':', $namespace);
-            $namespace = substr($this->bundles[$bundle], 0, strrpos($this->bundles[$bundle], '\\')) . '\\' .
-                $this->getDocumentDir() . '\\' .
-                $document;
+            $bundle = $this->getBundle($bundle);
+            $namespace = substr($bundle, 0, strrpos($bundle, '\\')) . '\\' .
+                $this->getDocumentDir() . '\\' . $document;
         }
 
         return $namespace;
+    }
+
+    /**
+     * Returns bundle namesapce else throws an exception.
+     *
+     * @param string $name
+     *
+     * @return string
+     * @throws \LogicException
+     */
+    private function getBundle($name)
+    {
+        if (array_key_exists($name, $this->bundles)) {
+            return $this->bundles[$name];
+        }
+
+        throw new \LogicException(sprintf('Bundle \'%s\' does not exist.', $name));
     }
 }
