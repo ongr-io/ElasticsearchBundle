@@ -27,6 +27,7 @@ class MappingTool
     protected $ignoredFields = [
         'type' => 'object',
         '_routing' => ['required' => true],
+        'format' => 'dateOptionalTime',
     ];
 
     /**

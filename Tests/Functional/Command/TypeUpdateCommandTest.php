@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Functional tests for type update command.
@@ -46,7 +46,7 @@ class TypeUpdateCommandTest extends WebTestCase
     private $file;
 
     /**
-     * @var Container
+     * @var ContainerInterface
      */
     private $container;
 
@@ -60,7 +60,7 @@ class TypeUpdateCommandTest extends WebTestCase
         $this->manager = $this->container->get('es.manager');
 
         // Set up custom document to test mapping with.
-        $this->documentDir = $this->container->get('kernel')->getRootDir() . '/fixture/Acme/TestBundle/Document/';
+        $this->documentDir = $this->container->get('kernel')->locateResource('@ONGRTestingBundle/Document/');
         $this->file = $this->documentDir . 'Article.php';
 
         // Create index for testing.
@@ -75,7 +75,7 @@ class TypeUpdateCommandTest extends WebTestCase
     {
         $this->assertMappingNotSet("Article mapping shouldn't be defined yet.");
 
-        copy($this->documentDir . 'testSample.txt', $this->file);
+        copy($this->documentDir . 'documentSample.txt', $this->file);
 
         $this->runUpdateCommand();
         $this->assertMappingSet('Article mapping should be defined after update.');
@@ -88,7 +88,7 @@ class TypeUpdateCommandTest extends WebTestCase
     {
         $this->assertMappingNotSet("Article mapping shouldn't be defined yet.");
 
-        copy($this->documentDir . 'testSample.txt', $this->file);
+        copy($this->documentDir . 'documentSample.txt', $this->file);
 
         $this->runUpdateCommand('product');
         $this->assertMappingNotSet("Article mapping shouldn't be defined, type selected was `product`.");
