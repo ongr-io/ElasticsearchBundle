@@ -36,7 +36,7 @@ $repository = $manager->getRepository('AcmeTestBundle:Product');
 $search = $repository->createSearch();
 
 $queryStringQuery = new QueryStringQuery("description", "cherries");
-$search->addQuery($matchAllQuery);
+$search->addQuery($queryStringQuery);
 
 $termsQuery = new TermsQuery("wineColour", "Red");
 $search->addQuery($termsQuery);
