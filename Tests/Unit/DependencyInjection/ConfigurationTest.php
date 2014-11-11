@@ -30,16 +30,14 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'connections' => [
                 'acme' => [
                     'index_name' => 'acme',
-                    'hosts' => [
-                        '127.0.0.1:9200',
-                    ],
+                    'hosts' => ['127.0.0.1:9200'],
                     'settings' => [],
                 ],
             ],
             'managers' => [
                 'acme' => [
                     'connection' => 'acme',
-                    'mappings' => ['AcmeTestBundle'],
+                    'mappings' => ['ONGRTestingBundle'],
                 ],
             ],
             'document_dir' => 'Document',
@@ -52,18 +50,16 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             [
                 'document_dir' => 'Docs',
                 'connections' => [
-                    'acme' => [
-                        'index_name' => 'acme',
-                    ],
+                    'acme' => ['index_name' => 'acme'],
                 ],
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['AcmeTestBundle'],
+                        'mappings' => ['ONGRTestingBundle'],
                     ],
                 ],
             ],
-            array_merge($expectedConfiguration, ['document_dir' => 'Docs'])
+            array_merge($expectedConfiguration, ['document_dir' => 'Docs']),
         ];
 
         // Case #1 hosts as arrays.
@@ -80,11 +76,11 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['AcmeTestBundle'],
+                        'mappings' => ['ONGRTestingBundle'],
                     ],
                 ],
             ],
-            $expectedConfiguration
+            $expectedConfiguration,
         ];
 
         // Case #2 hosts as strings.
@@ -92,20 +88,18 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             [
                 'connections' => [
                     'acme' => [
-                        'hosts' => [
-                            '127.0.0.1:9200',
-                        ],
+                        'hosts' => ['127.0.0.1:9200'],
                         'index_name' => 'acme',
                     ],
                 ],
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['AcmeTestBundle'],
+                        'mappings' => ['ONGRTestingBundle'],
                     ],
                 ],
             ],
-            $expectedConfiguration
+            $expectedConfiguration,
         ];
 
         // Case #3: incomplete hosts array.
@@ -122,13 +116,13 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['AcmeTestBundle'],
+                        'mappings' => ['ONGRTestingBundle'],
                     ],
                 ],
             ],
             $expectedConfiguration,
             true,
-            'Host must be configured under hosts configuration tree.'
+            'Host must be configured under hosts configuration tree.',
         ];
 
         // Case #4: invalid bundle name.
@@ -151,7 +145,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             ],
             $expectedConfiguration,
             true,
-            '"foo" is not a bundle.'
+            '"foo" is not a bundle.',
         ];
 
         // Case #4: using auth.
@@ -172,7 +166,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['AcmeTestBundle'],
+                        'mappings' => ['ONGRTestingBundle'],
                     ],
                 ],
             ],

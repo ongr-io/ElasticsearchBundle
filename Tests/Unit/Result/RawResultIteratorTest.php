@@ -34,9 +34,7 @@ class RawResultIteratorTest extends \PHPUnit_Framework_TestCase
                             '_type' => 'content',
                             '_id' => 'foo',
                             '_score' => 0,
-                            '_source' => [
-                                'header' => 'Test header',
-                            ],
+                            '_source' => ['header' => 'Test header'],
                         ],
                     ],
                 ],
@@ -46,9 +44,7 @@ class RawResultIteratorTest extends \PHPUnit_Framework_TestCase
                     '_type' => 'content',
                     '_id' => 'foo',
                     '_score' => 0,
-                    '_source' => [
-                        'header' => 'Test header',
-                    ],
+                    '_source' => ['header' => 'Test header'],
                 ],
             ],
         ];

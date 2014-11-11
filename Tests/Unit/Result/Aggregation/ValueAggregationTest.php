@@ -34,9 +34,7 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
         $cases[] = [
             [
                 'doc_count' => 15,
-                'agg_sub-aggregation' => [
-                    'doc_count' => 1,
-                ],
+                'agg_sub-aggregation' => ['doc_count' => 1],
             ],
             ['doc_count' => 15],
         ];
@@ -44,9 +42,7 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
         // Case #2 Aggregation without value.
         $cases[] = [
             [
-                'agg_sub-aggregation' => [
-                    'doc_count' => 1,
-                ],
+                'agg_sub-aggregation' => ['doc_count' => 1],
             ],
             [],
         ];
@@ -91,12 +87,8 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
     {
         $rawData = [
             'doc_count' => 15,
-            'agg_foo' => [
-                'doc_count' => 1,
-            ],
-            'agg_bar' => [
-                'doc_count' => 2,
-            ],
+            'agg_foo' => ['doc_count' => 1],
+            'agg_bar' => ['doc_count' => 2],
         ];
 
         $expectedResult = [
@@ -117,9 +109,7 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
     {
         $rawData = [
             'doc_count' => 15,
-            'agg_foo' => [
-                'doc_count' => 1,
-            ],
+            'agg_foo' => ['doc_count' => 1],
         ];
 
         $aggregation = new ValueAggregation($rawData);

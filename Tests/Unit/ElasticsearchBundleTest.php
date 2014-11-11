@@ -18,7 +18,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Unit test for ONGR\ElasticsearchBundle
+ * Unit test for ONGR\ElasticsearchBundle.
  */
 class ElasticsearchBundleTest extends \PHPUnit_Framework_TestCase
 {
@@ -39,7 +39,7 @@ class ElasticsearchBundleTest extends \PHPUnit_Framework_TestCase
         $bundle->build($container);
 
         /** @var array $loadedPasses Array of class names of loaded passes */
-        $loadedPasses = array();
+        $loadedPasses = [];
         /** @var PassConfig $passConfig */
         $passConfig = $container->getCompiler()->getPassConfig();
         foreach ($passConfig->getPasses() as $pass) {

@@ -97,7 +97,7 @@ class SearchTest extends ElasticsearchTestCase
     {
         parent::setUp();
 
-        $this->repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $this->repository = $this->getManager()->getRepository('ONGRTestingBundle:Product');
     }
 
     /**
@@ -257,7 +257,10 @@ class SearchTest extends ElasticsearchTestCase
 
         // Case #1 parameter as array.
         $out[] = [
-            ['_shards:2,3', '_primary'],
+            [
+                '_shards:2,3',
+                '_primary',
+            ],
             ['preference' => '_shards:2,3;_primary'],
         ];
 

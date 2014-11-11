@@ -86,7 +86,10 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
 
         $expected = new AggregationIterator($rawData);
 
-        $out[] = ['test_agg', $expected];
+        $out[] = [
+            'test_agg',
+            $expected,
+        ];
 
         $rawData = [
             'count' => 2,
@@ -98,7 +101,10 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
 
         $expected = new ValueAggregation($rawData);
 
-        $out[] = ['test_agg.0.test_agg_2', $expected];
+        $out[] = [
+            'test_agg.0.test_agg_2',
+            $expected,
+        ];
 
         return $out;
     }
@@ -114,7 +120,7 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
     public function testIteration($path, $expected)
     {
         $aggregation = $this->buildAggregation();
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search);
         $result = $results->getAggregations()->find($path);

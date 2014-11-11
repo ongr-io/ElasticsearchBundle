@@ -14,10 +14,10 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject;
+use ONGR\TestingBundle\Document\CdnObject;
+use ONGR\TestingBundle\Document\Comment;
+use ONGR\TestingBundle\Document\Product;
+use ONGR\TestingBundle\Document\UrlObject;
 
 /**
  * Functional tests for orm manager.
@@ -46,12 +46,15 @@ class ManagerTest extends ElasticsearchTestCase
         // Multiple urls.
         $product = new Product();
         $product->title = 'test';
-        $product->links = [$url, $url2];
+        $product->links = [
+            $url,
+            $url2,
+        ];
 
         $manager->persist($product);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $repository = $manager->getRepository('ONGRTestingBundle:Product');
         /** @var Product[] $actualProduct */
         $actualProducts = $repository->execute($repository->createSearch());
         $this->assertCount(1, $actualProducts);
@@ -90,7 +93,7 @@ class ManagerTest extends ElasticsearchTestCase
         $manager->persist($comment);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Comment');
+        $repository = $manager->getRepository('ONGRTestingBundle:Comment');
         $search = $repository->createSearch();
         $results = $repository->execute($search);
         /** @var DocumentInterface $actualProduct */
@@ -117,7 +120,7 @@ class ManagerTest extends ElasticsearchTestCase
         $manager->persist($comment);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Comment');
+        $repository = $manager->getRepository('ONGRTestingBundle:Comment');
         $search = $repository->createSearch();
         $results = $repository->execute($search);
         /** @var DocumentInterface $actualProduct */

@@ -92,7 +92,7 @@ class IndicesFilterTest extends ElasticsearchTestCase
     public function testIndicesFilter($filterParams, $noMatchFilterParams, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $filter = new PrefixFilter($filterParams[0], $filterParams[1]);
 
         if (is_string($noMatchFilterParams)) {

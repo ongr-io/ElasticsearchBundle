@@ -73,10 +73,32 @@ class IndexExportCommandTest extends ElasticsearchTestCase
         );
 
         $expectedResults = [
-            ['_id' => '1', '_type' => 'foocontent', '_source' => ['header' => 'test_1']],
-            ['_id' => '2', '_type' => 'foocontent', '_source' => ['header' => 'test_2']],
-            ['_id' => '1', '_type' => 'product', '_source' => ['title' => 'foo', 'price' => 10.45]],
-            ['_id' => '2', '_type' => 'product', '_source' => ['title' => 'bar', 'price' => 32]],
+            [
+                '_id' => '1',
+                '_type' => 'foocontent',
+                '_source' => ['header' => 'test_1']
+            ],
+            [
+                '_id' => '2',
+                '_type' => 'foocontent',
+                '_source' => ['header' => 'test_2']
+            ],
+            [
+                '_id' => '1',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'foo',
+                    'price' => 10.45,
+                ]
+            ],
+            [
+                '_id' => '2',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'bar',
+                    'price' => 32,
+                ]
+            ],
         ];
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), 4);

@@ -45,11 +45,20 @@ class JsonReaderTest extends \PHPUnit_Framework_TestCase
 OUT;
 
         $expectedDocuments = [
-            (object)['_id' => 'doc1', 'title' => 'Document 1'],
-            (object)['_id' => 'doc2', 'title' => 'Document 2'],
+            (object)[
+                '_id' => 'doc1',
+                'title' => 'Document 1',
+            ],
+            (object)[
+                '_id' => 'doc2',
+                'title' => 'Document 2',
+            ],
         ];
 
-        $cases[] = [$contents, $expectedDocuments];
+        $cases[] = [
+            $contents,
+            $expectedDocuments,
+        ];
 
         // Case #1 Empty metadata.
         $contents = <<<OUT
@@ -61,14 +70,26 @@ OUT;
 OUT;
 
         $expectedDocuments = [
-            (object)['_id' => 'doc1', 'title' => 'Document 1'],
-            (object)['_id' => 'doc2', 'title' => 'Document 2'],
+            (object)[
+                '_id' => 'doc1',
+                'title' => 'Document 1',
+            ],
+            (object)[
+                '_id' => 'doc2',
+                'title' => 'Document 2',
+            ],
         ];
 
-        $cases[] = [$contents, $expectedDocuments];
+        $cases[] = [
+            $contents,
+            $expectedDocuments,
+        ];
 
         // Case #2 No metadata or documents.
-        $cases[] = ["[\n[]\n]", []];
+        $cases[] = [
+            "[\n[]\n]",
+            [],
+        ];
 
         return $cases;
     }
@@ -129,14 +150,30 @@ OUT;
 OUT;
 
         $expectedDocuments = [
-            ['_type' => 'doc', '_id' => 'doc1', '_score' => null, '_source' => ['title' => 'Document 1']],
-            ['_type' => 'doc', '_id' => 'doc2', '_score' => null, '_source' => ['title' => 'Document 2']],
+            [
+                '_type' => 'doc',
+                '_id' => 'doc1',
+                '_score' => null,
+                '_source' => ['title' => 'Document 1'],
+            ],
+            [
+                '_type' => 'doc',
+                '_id' => 'doc2',
+                '_score' => null,
+                '_source' => ['title' => 'Document 2'],
+            ],
         ];
 
-        $cases[] = [$contents, $expectedDocuments];
+        $cases[] = [
+            $contents,
+            $expectedDocuments,
+        ];
 
         // Case #1 No metadata or documents.
-        $cases[] = ["[\n[]\n]", []];
+        $cases[] = [
+            "[\n[]\n]",
+            [],
+        ];
 
         return $cases;
     }

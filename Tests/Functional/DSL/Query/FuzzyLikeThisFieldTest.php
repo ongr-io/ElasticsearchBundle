@@ -99,7 +99,7 @@ class FuzzyLikeThisFieldTest extends ElasticsearchTestCase
     public function testFuzzyLikeThisFieldQuery($field, $likeText, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $fuzzyLikeThisFieldQuery = new FuzzyLikeThisField($field, $likeText, $parameters);
         $search = $repo->createSearch()->addQuery($fuzzyLikeThisFieldQuery);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);

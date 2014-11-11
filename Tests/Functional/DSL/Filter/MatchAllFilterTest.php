@@ -40,7 +40,7 @@ class MatchAllFilterTest extends ElasticsearchTestCase
     public function testMatchAllFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $matchAll = new MatchAllFilter();
         $search = $repo->createSearch()->addFilter($matchAll);
 

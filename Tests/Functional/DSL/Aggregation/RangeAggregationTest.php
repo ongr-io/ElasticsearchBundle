@@ -74,7 +74,10 @@ class RangeAggregationTest extends ElasticsearchTestCase
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         // Case #1 nested range aggregations.
 
@@ -112,7 +115,10 @@ class RangeAggregationTest extends ElasticsearchTestCase
             ],
         ];
 
-        $out[] = [$aggregation, $result];
+        $out[] = [
+            $aggregation,
+            $result,
+        ];
 
         return $out;
     }
@@ -128,7 +134,7 @@ class RangeAggregationTest extends ElasticsearchTestCase
     public function testRangeAggregation($aggregation, $expectedResult)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);

@@ -26,7 +26,7 @@ class MappingSettingsLoaderTest extends \PHPUnit_Framework_TestCase
         $container
             ->expects($this->once())
             ->method('getParameter')
-            ->willReturn(['AcmeTestBundle' => 'path']);
+            ->willReturn(['ONGRTestingBundle' => 'path']);
 
         $mappingResult = [
             'product' => [
@@ -35,9 +35,7 @@ class MappingSettingsLoaderTest extends \PHPUnit_Framework_TestCase
                         'type' => 'string',
                         'index' => 'not_analyzed',
                     ],
-                    'title' => [
-                        'type' => 'string',
-                    ],
+                    'title' => ['type' => 'string'],
                 ],
             ],
         ];
@@ -51,15 +49,13 @@ class MappingSettingsLoaderTest extends \PHPUnit_Framework_TestCase
             ->willReturn($mappingResult);
 
         $settings = [
-            'hosts' => [
-                '127.0.0.1:9200',
-            ],
+            'hosts' => ['127.0.0.1:9200'],
             'auth' => [
                 'username' => 'user',
                 'password' => 'pass',
                 'option' => 'Basic',
             ],
-            'index_name' => 'acmedemoindex',
+            'index_name' => 'ongr-testing-index',
             'settings' => [],
         ];
 
@@ -71,11 +67,13 @@ class MappingSettingsLoaderTest extends \PHPUnit_Framework_TestCase
         );
 
         $expectedParams = [
-            'hosts' => [
-                '127.0.0.1:9200',
-            ],
+            'hosts' => ['127.0.0.1:9200'],
             'connectionParams' => [
-                'auth' => ['user', 'pass', 'Basic'],
+                'auth' => [
+                    'user',
+                    'pass',
+                    'Basic',
+                ],
             ],
         ];
 
@@ -88,14 +86,12 @@ class MappingSettingsLoaderTest extends \PHPUnit_Framework_TestCase
                                 'type' => 'string',
                                 'index' => 'not_analyzed',
                             ],
-                            'title' => [
-                                'type' => 'string',
-                            ],
+                            'title' => ['type' => 'string'],
                         ],
                     ],
                 ],
             ],
-            'index' => 'acmedemoindex',
+            'index' => 'ongr-testing-index',
         ];
 
         $this->assertEquals($expectedSettings, $settings, 'Recieved incorrect mapping.');

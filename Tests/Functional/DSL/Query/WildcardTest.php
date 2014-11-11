@@ -93,7 +93,7 @@ class WildcardTest extends ElasticsearchTestCase
     public function testWildcardQuery($field, $value, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $wildcardQuery = new WildcardQuery($field, $value, $parameters);
         $search = $repo->createSearch()->addQuery($wildcardQuery);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);

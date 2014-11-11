@@ -15,7 +15,7 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
+use ONGR\TestingBundle\Document\Product;
 
 class RepositoryTest extends ElasticsearchTestCase
 {
@@ -60,29 +60,89 @@ class RepositoryTest extends ElasticsearchTestCase
         $out = [];
 
         // Case #0 simple find by title.
-        $out[] = [[1], ['title' => 'foo']];
+        $out[] = [
+            [1],
+            ['title' => 'foo'],
+        ];
 
         // Case #1 find by multiple titles.
-        $out[] = [[1, 2], ['title' => ['foo', 'bar']]];
+        $out[] = [
+            [1, 2],
+            [
+                'title' => [
+                    'foo',
+                    'bar',
+                ]
+            ],
+        ];
 
         // Case #2 find by multiple titles and simple sort.
-        $out[] = [[2, 1], ['title' => ['foo', 'bar']], ['title' => 'asc']];
+        $out[] = [
+            [2, 1],
+            [
+                'title' => [
+                    'foo',
+                    'bar',
+                ]
+            ],
+            ['title' => 'asc'],
+        ];
 
         // Case #3 find by multiple titles and multiple sorts.
         $criteria = [
-            'description' => ['foo', 'goo'],
-            'title' => ['foo', 'bar', 'gar'],
+            'description' => [
+                'foo',
+                'goo',
+            ],
+            'title' => [
+                'foo',
+                'bar',
+                'gar',
+            ],
         ];
-        $out[] = [[2, 3, 1], $criteria, ['description' => 'ASC', 'price' => 'DESC']];
+        $out[] = [
+            [2, 3, 1],
+            $criteria,
+            [
+                'description' => 'ASC',
+                'price' => 'DESC',
+            ],
+        ];
 
         // Case #4 offset.
-        $out[] = [[3, 1], $criteria, ['description' => 'ASC', 'price' => 'DESC'], null, 1];
+        $out[] = [
+            [3, 1],
+            $criteria,
+            [
+                'description' => 'ASC',
+                'price' => 'DESC',
+            ],
+            null,
+            1,
+        ];
 
         // Case #5 limit.
-        $out[] = [[2, 3], $criteria, ['description' => 'ASC', 'price' => 'DESC'], 2];
+        $out[] = [
+            [2, 3],
+            $criteria,
+            [
+                'description' => 'ASC',
+                'price' => 'DESC',
+            ],
+            2,
+        ];
 
         // Case #6 limit and offset.
-        $out[] = [[3], $criteria, ['description' => 'ASC', 'price' => 'DESC'], 1, 1];
+        $out[] = [
+            [3],
+            $criteria,
+            [
+                'description' => 'ASC',
+                'price' => 'DESC',
+            ],
+            1,
+            1,
+        ];
 
         return $out;
     }
@@ -100,7 +160,7 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testFindBy($expectedResults, $criteria, $orderBy = [], $limit = null, $offset = null)
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $fullResults = $repo->findBy($criteria, $orderBy, $limit, $offset);
 
@@ -134,7 +194,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        $repo = $manager->getRepository('AcmeTestBundle:Product');
+        $repo = $manager->getRepository('ONGRTestingBundle:Product');
 
         $result = $repo->find(123);
 
@@ -148,7 +208,7 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testFindException()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $repo->find(123);
     }
@@ -161,7 +221,7 @@ class RepositoryTest extends ElasticsearchTestCase
     public function testFindInMultiTypeRepo()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository(['AcmeTestBundle:Product', 'AcmeTestBundle:Content']);
+        $repo = $this->getManager()->getRepository(['ONGRTestingBundle:Product', 'ONGRTestingBundle:Content']);
 
         $repo->find(1);
     }
@@ -173,7 +233,7 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repo = $manager->getRepository('AcmeTestBundle:Product');
+        $repo = $manager->getRepository('ONGRTestingBundle:Product');
 
         $response = $repo->remove(3);
 
@@ -190,7 +250,7 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repo = $manager->getRepository('AcmeTestBundle:Product');
+        $repo = $manager->getRepository('ONGRTestingBundle:Product');
 
         $repo->remove(500);
     }
@@ -200,11 +260,11 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testCreateDocument()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
         $document = $repo->createDocument();
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
+            'ONGR\TestingBundle\Document\Product',
             $document
         );
     }
@@ -217,7 +277,7 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testCreateDocumentException()
     {
-        $repo = $this->getManager()->getRepository(['AcmeTestBundle:Product', 'AcmeTestBundle:Content']);
+        $repo = $this->getManager()->getRepository(['ONGRTestingBundle:Product', 'ONGRTestingBundle:Content']);
         $repo->createDocument();
     }
 
@@ -227,7 +287,7 @@ class RepositoryTest extends ElasticsearchTestCase
     public function testRepositoryExecuteWhenZeroResult()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $search = $repo->createSearch();
         $search->addFilter(new PrefixFilter('title', 'dummy'));
@@ -254,7 +314,7 @@ class RepositoryTest extends ElasticsearchTestCase
     public function testDocumentUpdate()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $repository = $manager->getRepository('ONGRTestingBundle:Product');
 
         /** @var Product $document */
         $document = $repository->createDocument();
@@ -268,7 +328,10 @@ class RepositoryTest extends ElasticsearchTestCase
         // Creates document.
         $document = $repository->find(5);
         $this->assertEquals(
-            ['id' => '5', 'title' => 'awesome'],
+            [
+                'id' => '5',
+                'title' => 'awesome',
+            ],
             array_filter(get_object_vars($document)),
             'Document should be created.'
         );
@@ -281,7 +344,10 @@ class RepositoryTest extends ElasticsearchTestCase
 
         $document = $repository->find(5);
         $this->assertEquals(
-            ['id' => '5', 'title' => 'more awesome'],
+            [
+                'id' => '5',
+                'title' => 'more awesome',
+            ],
             array_filter(get_object_vars($document)),
             'Document should be updated.'
         );

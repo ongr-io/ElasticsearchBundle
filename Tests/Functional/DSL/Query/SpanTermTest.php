@@ -75,7 +75,7 @@ class SpanTermTest extends ElasticsearchTestCase
     public function testSpanTermQuery($field, $value, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $termQuery = new SpanTermQuery($field, $value);
 

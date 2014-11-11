@@ -49,7 +49,10 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
             'hits' => [],
         ];
         $expected0 = [];
-        $out[] = [$raw0, $expected0];
+        $out[] = [
+            $raw0,
+            $expected0,
+        ];
 
         // Case #1: has data.
         $raw1 = [
@@ -66,8 +69,14 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
-        $expected1 = ['foo', 'baz'];
-        $out[] = [$raw1, $expected1];
+        $expected1 = [
+            'foo',
+            'baz',
+        ];
+        $out[] = [
+            $raw1,
+            $expected1,
+        ];
 
         return $out;
     }
@@ -108,9 +117,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
     {
         $hits = new HitsAggregationIterator(
             [
-                'hits' => [
-                    []
-                ]
+                'hits' => [[]]
             ],
             null
         );

@@ -38,8 +38,14 @@ class JsonWriterTest extends \PHPUnit_Framework_TestCase
         // Case #0 Standard case.
         $metadata = ['count' => 2];
         $documents = [
-            ['_id' => 'doc1', 'title' => 'Document 1'],
-            ['_id' => 'doc2', 'title' => 'Document 2'],
+            [
+                '_id' => 'doc1',
+                'title' => 'Document 1',
+            ],
+            [
+                '_id' => 'doc2',
+                'title' => 'Document 2',
+            ],
         ];
         $expectedOutput = <<<OUT
 [
@@ -49,13 +55,23 @@ class JsonWriterTest extends \PHPUnit_Framework_TestCase
 ]
 OUT;
 
-        $cases[] = [$metadata, $documents, $expectedOutput];
+        $cases[] = [
+            $metadata,
+            $documents,
+            $expectedOutput,
+        ];
 
         // Case #1 In case no "count" is provided.
         $metadata = [];
         $documents = [
-            ['_id' => 'doc1', 'title' => 'Document 1'],
-            ['_id' => 'doc2', 'title' => 'Document 2'],
+            [
+                '_id' => 'doc1',
+                'title' => 'Document 1',
+            ],
+            [
+                '_id' => 'doc2',
+                'title' => 'Document 2',
+            ],
         ];
         $expectedOutput = <<<OUT
 [
@@ -65,10 +81,18 @@ OUT;
 ]
 OUT;
 
-        $cases[] = [$metadata, $documents, $expectedOutput];
+        $cases[] = [
+            $metadata,
+            $documents,
+            $expectedOutput,
+        ];
 
         // Case #2 In case no "count" or documents provided.
-        $cases[] = [[], [], "[\n[]\n]"];
+        $cases[] = [
+            [],
+            [],
+            "[\n[]\n]",
+        ];
 
         return $cases;
     }
@@ -90,7 +114,6 @@ OUT;
 
         foreach ($documents as $document) {
             $writer->push($document);
-
         }
 
         $writer->finalize();

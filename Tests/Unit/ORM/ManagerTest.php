@@ -46,7 +46,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     public function testGetRepositories()
     {
         $manager = new Manager(null, null, [], []);
-        $types = ['type1', 'type2'];
+        $types = [
+            'type1',
+            'type2',
+        ];
         $repository = $manager->getRepository($types);
 
         $this->assertEquals(new Repository($manager, $types), $repository);

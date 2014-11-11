@@ -25,9 +25,7 @@ class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
             'hits' => [
                 'total' => 2,
                 'hits' => [
-                    [
-                        '_id' => 'foo',
-                    ],
+                    ['_id' => 'foo'],
                 ],
             ],
         ];
@@ -45,9 +43,7 @@ class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
                     'hits' => [
                         'total' => 2,
                         'hits' => [
-                            [
-                                '_id' => 'bar',
-                            ],
+                            ['_id' => 'bar'],
                         ],
                     ],
                 ]
@@ -63,12 +59,8 @@ class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
 
         $data = [];
         $expectedData = [
-            [
-                '_id' => 'foo',
-            ],
-            [
-                '_id' => 'bar',
-            ],
+            ['_id' => 'foo'],
+            ['_id' => 'bar'],
         ];
 
         foreach ($iterator as $key => $document) {

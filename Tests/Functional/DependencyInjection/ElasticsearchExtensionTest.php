@@ -21,9 +21,18 @@ class ElasticsearchExtensionTest extends WebTestCase
     public function getTestContainerData()
     {
         return [
-            ['es.manager', 'ONGR\ElasticsearchBundle\ORM\Manager'],
-            ['es.manager.default', 'ONGR\ElasticsearchBundle\ORM\Manager'],
-            ['es.manager.bar', 'ONGR\ElasticsearchBundle\ORM\Manager'],
+            [
+                'es.manager',
+                'ONGR\ElasticsearchBundle\ORM\Manager',
+            ],
+            [
+                'es.manager.default',
+                'ONGR\ElasticsearchBundle\ORM\Manager',
+            ],
+            [
+                'es.manager.bar',
+                'ONGR\ElasticsearchBundle\ORM\Manager',
+            ],
         ];
     }
 
@@ -52,9 +61,7 @@ class ElasticsearchExtensionTest extends WebTestCase
 
         $expectedConnections = [
             'default' => [
-                'hosts' => [
-                    '127.0.0.1:9200',
-                ],
+                'hosts' => ['127.0.0.1:9200'],
                 'index_name' => 'ongr-elasticsearch-bundle-test',
                 'settings' => [
                     'refresh_interval' => -1,
@@ -62,9 +69,7 @@ class ElasticsearchExtensionTest extends WebTestCase
                 ],
             ],
             'bar' => [
-                'hosts' => [
-                    '127.0.0.1:9200',
-                ],
+                'hosts' => ['127.0.0.1:9200'],
                 'index_name' => 'ongr-elasticsearch-bundle-bar-test',
                 'settings' => [
                     'refresh_interval' => -1,
@@ -77,15 +82,11 @@ class ElasticsearchExtensionTest extends WebTestCase
         $expectedManagers = [
             'default' => [
                 'connection' => 'default',
-                'mappings' => [
-                    'AcmeTestBundle',
-                ],
+                'mappings' => ['ONGRTestingBundle'],
             ],
             'bar' => [
                 'connection' => 'bar',
-                'mappings' => [
-                    'ONGRElasticsearchBundle',
-                ],
+                'mappings' => ['ONGRElasticsearchBundle'],
             ],
         ];
         $actualManagers = $container->getParameter('es.managers');

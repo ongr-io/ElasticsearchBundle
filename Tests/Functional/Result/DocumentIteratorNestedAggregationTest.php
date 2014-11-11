@@ -27,15 +27,15 @@ class DocumentIteratorNestedAggregationTest extends ElasticsearchTestCase
         $cases = [];
 
         $rawData = [
-            'foo' => [
-                'doc_count' => 1,
-            ],
-            'bar' => [
-                'doc_count' => 2,
-            ],
+            'foo' => ['doc_count' => 1],
+            'bar' => ['doc_count' => 2],
         ];
         $expected = new ValueAggregation($rawData['foo']);
-        $cases[] = ['foo', $rawData, $expected];
+        $cases[] = [
+            'foo',
+            $rawData,
+            $expected,
+        ];
 
         $rawData = [
             'foo' => [
@@ -43,12 +43,14 @@ class DocumentIteratorNestedAggregationTest extends ElasticsearchTestCase
                     'bucket_1' => ['doc_count' => 1],
                 ],
             ],
-            'bar' => [
-                'doc_count' => 2,
-            ],
+            'bar' => ['doc_count' => 2],
         ];
         $expected = new AggregationIterator($rawData['foo']['buckets']);
-        $cases[] = ['foo', $rawData, $expected];
+        $cases[] = [
+            'foo',
+            $rawData,
+            $expected,
+        ];
 
         $rawData = [
             'foo' => [
@@ -56,12 +58,14 @@ class DocumentIteratorNestedAggregationTest extends ElasticsearchTestCase
                     'bucket_1' => ['doc_count' => 1],
                 ],
             ],
-            'bar' => [
-                'doc_count' => 2,
-            ],
+            'bar' => ['doc_count' => 2],
         ];
         $expected = new ValueAggregation($rawData['foo']['buckets']['bucket_1']);
-        $cases[] = ['foo.bucket_1', $rawData, $expected];
+        $cases[] = [
+            'foo.bucket_1',
+            $rawData,
+            $expected,
+        ];
 
         return $cases;
     }

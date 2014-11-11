@@ -107,7 +107,7 @@ class FilterAggregationTest extends ElasticsearchTestCase
     public function testFilterAggregation($aggregation, $expectedResults)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
 
