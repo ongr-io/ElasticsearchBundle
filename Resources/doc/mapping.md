@@ -98,6 +98,9 @@ class content implements DocumentInterface
 `type` parameter is for type name. This parame is optional, if there will be no param set Elasticsearch bundle will create type with lovercase class name. Additional params: 
   * **TTL (time to live)** - `_ttl={"enabled": true, "default": "1d"}` param with which you can enable documents to   have time to live and set default time interval. After time runs out document deletes itself automatically.
 
+> You can use time units specified in [elasticsearch documentation][es-time-units].
+ ESB parses it if needed using [DateHelper][date-helper], e.g. for type mapping update.
+ 
 `DocumentTrait` includes support with all special fields in elasticsearch document such as `_id`, `_source`, `_ttl`, `_parent` handling.
  `DocumentTrait` has all parameters and setters already defined for you. Once there will be _ttl set Elasticsearch bundle will handle it automatically.
 
@@ -173,3 +176,7 @@ class content implements DocumentInterface
   To define object fields the same `@ES\Property` annotations could be used. In the objects there is possibility  to define other objects.
 
   > Nested types can be defined the same way as objects, except @ES\Nested annotation must be used.
+
+
+[es-time-units]:http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-ttl-field.html#_default
+[date-helper]:/Mapping/DateHelper.php

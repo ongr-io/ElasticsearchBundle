@@ -27,6 +27,14 @@ class MappingTool
     protected $ignoredFields = [
         'type' => 'object',
         '_routing' => ['required' => true],
+        'format' => 'dateOptionalTime',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $formatFields = [
+        '_ttl' => 'handleTime',
     ];
 
     /**
@@ -108,11 +116,34 @@ class MappingTool
                 unset($array[$key]);
                 continue;
             }
+
+            if (array_key_exists($key, $this->formatFields)) {
+                $array[$key] = call_user_func([$this, $this->formatFields[$key]], $array[$key]);
+            }
+
             if (is_array($array[$key])) {
                 $array[$key] = $this->arrayFilterRecursive($array[$key]);
             }
         }
 
         return $array;
+    }
+
+    /**
+     * Change time formats to fit elasticsearch.
+     *
+     * @param array $value
+     *
+     * @return array
+     */
+    private function handleTime($value)
+    {
+        if (!isset($value['default']) || !is_string($value['default'])) {
+            return $value;
+        }
+
+        $value['default'] = DateHelper::parseString($value['default']);
+
+        return $value;
     }
 }
