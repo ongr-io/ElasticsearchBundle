@@ -43,10 +43,10 @@ class Manager
     private $typesMapping = [];
 
     /**
-     * @param Connection        $connection
-     * @param MetadataCollector $metadataCollector
-     * @param array             $typesMapping
-     * @param array             $bundlesMapping
+     * @param Connection|null           $connection
+     * @param MetadataCollector|null    $metadataCollector
+     * @param array                     $typesMapping
+     * @param array                     $bundlesMapping
      */
     public function __construct($connection, $metadataCollector, $typesMapping, $bundlesMapping)
     {
@@ -75,7 +75,13 @@ class Manager
      */
     public function getRepository($type)
     {
-        return $this->createRepository(is_array($type) ? $type : [$type]);
+        $type = is_array($type) ? $type : [$type];
+
+        foreach ($type as $selectedType) {
+            $this->checkRepositoryType($selectedType);
+        }
+
+        return $this->createRepository($type);
     }
 
     /**
@@ -134,7 +140,6 @@ class Manager
             }
         }
 
-
         foreach ($getters as $field => $getter) {
             if ($getter['exec']) {
                 $value = $object->{$getter['name']}();
@@ -148,12 +153,12 @@ class Manager
                 if ($getter['multiple']) {
                     $this->isTraversable($value);
                     foreach ($value as $item) {
-                        $this->checkType($item, $getter['namespace']);
+                        $this->checkVariableType($item, $getter['namespace']);
                         $arrayValue = $this->convertToArray($item, $getter['properties']);
                         $newValue[] = $arrayValue;
                     }
                 } else {
-                    $this->checkType($value, $getter['namespace']);
+                    $this->checkVariableType($value, $getter['namespace']);
                     $newValue = $this->convertToArray($value, $getter['properties']);
                 }
 
@@ -236,6 +241,22 @@ class Manager
     }
 
     /**
+     * Checks if specified repository and type is defined, throws exception otherwise.
+     *
+     * @param string $type
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function checkRepositoryType($type)
+    {
+        if (!array_key_exists($type, $this->bundlesMapping)) {
+            $exceptionMessage = "Undefined repository {$type}, valid repositories are: " .
+                join(', ', array_keys($this->bundlesMapping)) . '.';
+            throw new \InvalidArgumentException($exceptionMessage);
+        }
+    }
+
+    /**
      * Check if class matches the expected one.
      *
      * @param mixed  $object
@@ -243,7 +264,7 @@ class Manager
      *
      * @throws \InvalidArgumentException
      */
-    private function checkType($object, $expectedClass)
+    private function checkVariableType($object, $expectedClass)
     {
         if (!is_object($object)) {
             $msg = 'Expected variable of type object, got ' . gettype($object) . ". (field isn't multiple)";
