@@ -143,15 +143,18 @@ class Manager
             }
 
             if ($value && isset($getter['properties'])) {
-                $newValue = [];
+                $newValue = null;
 
-                if (is_array($value) || $value instanceof \Traversable) {
+                if ($getter['multiple']) {
+                    $this->isTraversable($value);
                     foreach ($value as $item) {
+                        $this->checkType($item, $getter['namespace']);
                         $arrayValue = $this->convertToArray($item, $getter['properties']);
                         $newValue[] = $arrayValue;
                     }
                 } else {
-                    $newValue[] = $this->convertToArray($value, $getter['properties']);
+                    $this->checkType($value, $getter['namespace']);
+                    $newValue = $this->convertToArray($value, $getter['properties']);
                 }
 
                 $value = $newValue;
@@ -230,5 +233,40 @@ class Manager
     public function getTypesMapping()
     {
         return $this->typesMapping;
+    }
+
+    /**
+     * Check if class matches the expected one.
+     *
+     * @param mixed  $object
+     * @param string $expectedClass
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function checkType($object, $expectedClass)
+    {
+        if (!is_object($object)) {
+            $msg = 'Expected variable of type object, got ' . gettype($object) . ". (field isn't multiple)";
+            throw new \InvalidArgumentException($msg);
+        }
+
+        $class = get_class($object);
+        if ($class != $expectedClass) {
+            throw new \InvalidArgumentException("Expected object of type {$expectedClass}, got {$class}.");
+        }
+    }
+
+    /**
+     * Check if object is traversable, throw exception otherwise.
+     *
+     * @param mixed $value
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function isTraversable($value)
+    {
+        if (!(is_array($value) || (is_object($value) && $value instanceof \Traversable))) {
+            throw new \InvalidArgumentException("Variable isn't traversable, although field is set to multiple.");
+        }
     }
 }

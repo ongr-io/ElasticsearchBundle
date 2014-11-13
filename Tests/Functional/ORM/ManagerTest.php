@@ -69,10 +69,70 @@ class ManagerTest extends ElasticsearchTestCase
         $this->assertEquals($url->url, $actualUrl[0]->url);
         $this->assertEquals($url2->url, $actualUrl[1]->url);
 
-        /** @var CdnObject[] $actualCdn */
-        $actualCdn = iterator_to_array($actualUrl[0]->cdn);
-        $this->assertEquals(1, count($actualCdn));
-        $this->assertEquals($cdn->cdn_url, $actualCdn[0]->cdn_url);
+        $this->assertEquals($cdn->cdn_url, $actualUrl[0]->cdn->cdn_url);
+    }
+
+    /**
+     * Data provider for testPersistExceptions().
+     *
+     * @return array
+     */
+    public function getPersistExceptionsData()
+    {
+        $out = [];
+
+        // Case #0: multiple cdns are put into url object, although it isn't a multiple field.
+        $url = new UrlObject();
+        $url->cdn = [new CdnObject(), new CdnObject()];
+
+        $product = new Product();
+        $product->links = [$url];
+        $out[] = [$product, 'Expected variable of type object, got array.'];
+
+        // Case #1: a single link is set, although field is set to multiple.
+        $product = new Product();
+        $product->links = new UrlObject();
+        $out[] = [$product, "Variable isn't traversable, although field is set to multiple."];
+
+        // Case #2: invalid type of object is set in multiple field.
+        $product = new Product();
+        $product->links = new \ArrayIterator([new UrlObject(), new CdnObject()]);
+        $out[] = [
+            $product,
+            'Expected object of type ONGR\TestingBundle\Document\UrlObject, got ONGR\TestingBundle\Document\CdnObject.',
+        ];
+
+        // Case #3: invalid type of object is set in single field.
+        $url = new UrlObject();
+        $url->cdn = new UrlObject();
+
+        $product = new Product();
+        $product->links = [$url];
+        $out[] = [
+            $product,
+            'Expected object of type ONGR\TestingBundle\Document\CdnObject, got ONGR\TestingBundle\Document\UrlObject.',
+        ];
+
+        return $out;
+    }
+
+    /**
+     * Check if expected exceptions are thrown while trying to persisnt an invalid object.
+     *
+     * @param Product $product
+     * @param string  $exceptionMessage
+     * @param string  $exception
+     *
+     * @dataProvider getPersistExceptionsData()
+     */
+    public function testPersistExceptions(Product $product, $exceptionMessage, $exception = 'InvalidArgumentException')
+    {
+        $this->setExpectedException($exception, $exceptionMessage);
+
+        /** @var Manager $manager */
+        $manager = $this->getManager();
+        $manager->persist($product);
+        $manager->commit();
     }
 
     /**

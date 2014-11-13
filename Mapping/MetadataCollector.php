@@ -265,6 +265,8 @@ class MetadataCollector
             $getter['properties'] = $data['getter'];
             $getter['namespace'] = $data['namespace'];
             $setter['namespace'] = $data['namespace'];
+            $getter['multiple'] = $data['multiple'];
+            $setter['multiple'] = $data['multiple'];
         }
 
         return [
@@ -339,6 +341,7 @@ class MetadataCollector
             'setter' => $setters,
             'getter' => $getters,
             'namespace' => $this->getNamespace($type->objectName),
+            'multiple' => $type->multiple,
         ];
     }
 
@@ -393,6 +396,7 @@ class MetadataCollector
 
         /** @var \ReflectionProperty $property */
         foreach ($reflectionClass->getProperties() as $property) {
+            /** @var Property $type */
             $type = $this->reader->getPropertyAnnotation($property, 'ONGR\ElasticsearchBundle\Annotation\Property');
             if (!empty($type)) {
                 $maps = $type->filter();

@@ -92,7 +92,11 @@ class Converter
             $value = $array[$key];
 
             if (isset($setter['properties'])) {
-                $value = new ObjectIterator($this, $value, $setter);
+                if ($setter['multiple']) {
+                    $value = new ObjectIterator($this, $value, $setter);
+                } else {
+                    $value = $this->assignArrayToObject($value, new $setter['namespace'](), $setter['properties']);
+                }
             }
 
             if ($setter['type'] === 'date') {
