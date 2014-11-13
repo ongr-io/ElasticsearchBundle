@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection\Compiler\Helper;
+namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection\Helper;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\Helper\MappingSettingsLoader;
 
@@ -61,7 +61,10 @@ class MappingSettingsLoaderTest extends \PHPUnit_Framework_TestCase
 
         list($params, $settings) = $settingsLoader->getSettings(
             $settings,
-            ['mappings' => []],
+            [
+                'debug' => false,
+                'mappings' => [],
+            ],
             $container,
             $metadataCollector
         );

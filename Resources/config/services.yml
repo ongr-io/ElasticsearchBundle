@@ -1,5 +1,5 @@
 parameters:
-    es.connection_factory.params:
+    es.connection.logging:
         logPath: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
         tracePath: %kernel.logs_dir%/elasticsearch_trace_%kernel.environment%.log
 

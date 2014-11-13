@@ -29,6 +29,7 @@ class MappingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         /** @var MetadataCollector $metadataCollector */
+
         $metadataCollector = $container->get('es.metadata_collector');
         $connections = $container->getParameter('es.connections');
         $managers = $container->getParameter('es.managers');
@@ -50,12 +51,15 @@ class MappingPass implements CompilerPassInterface
 
             $client = new Definition(
                 'Elasticsearch\Client',
-                [ 'hosts' => $parameters ]
+                [$parameters]
             );
 
             $clientConnection = new Definition(
                 'ONGR\ElasticsearchBundle\Client\Connection',
-                [$client, $index]
+                [
+                    $client,
+                    $index,
+                ]
             );
 
             $bundlesMetadata = [];
@@ -73,7 +77,12 @@ class MappingPass implements CompilerPassInterface
 
             $manager = new Definition(
                 'ONGR\ElasticsearchBundle\ORM\Manager',
-                [$clientConnection, $container->getDefinition('es.metadata_collector'), $typeMapping, $bundlesMetadata]
+                [
+                    $clientConnection,
+                    $container->getDefinition('es.metadata_collector'),
+                    $typeMapping,
+                    $bundlesMetadata,
+                ]
             );
 
             $managerName = strtolower($managerName);

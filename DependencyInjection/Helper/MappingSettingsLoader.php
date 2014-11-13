@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Helper;
 
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -29,12 +30,18 @@ class MappingSettingsLoader
      */
     public function getSettings($connection, $settings, $container, $metadataCollector)
     {
-        $params = [
-            'hosts' => $connection['hosts']
-        ];
+        $params = ['hosts' => $connection['hosts']];
 
         if (!empty($connection['auth'])) {
             $params['connectionParams']['auth'] = array_values($connection['auth']);
+        }
+
+        if ($settings['debug']) {
+            $params['logging'] = true;
+            $params['logPath'] = $container->getParameter('es.connection.logging')['logPath'];
+            $params['logLevel'] = LogLevel::WARNING;
+            $params['tracePath'] = $container->getParameter('es.connection.logging')['tracePath'];
+            $params['traceLevel'] = LogLevel::DEBUG;
         }
 
         $index = [
