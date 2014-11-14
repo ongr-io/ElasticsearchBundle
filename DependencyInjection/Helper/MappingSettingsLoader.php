@@ -14,6 +14,8 @@ namespace ONGR\ElasticsearchBundle\DependencyInjection\Helper;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * MappingSettingsLoader class.
@@ -37,11 +39,11 @@ class MappingSettingsLoader
         }
 
         if ($settings['debug']) {
+            $container->setDefinition('es.logger.trace', $this->getLogTraceDefinition());
             $params['logging'] = true;
-            $params['logPath'] = $container->getParameter('es.connection.logging')['logPath'];
+            $params['logPath'] = $container->getParameter('es.logging.path');
             $params['logLevel'] = LogLevel::WARNING;
-            $params['tracePath'] = $container->getParameter('es.connection.logging')['tracePath'];
-            $params['traceLevel'] = LogLevel::DEBUG;
+            $params['traceObject'] = new Reference('es.logger.trace');
         }
 
         $index = [
@@ -74,6 +76,29 @@ class MappingSettingsLoader
             $index['body']['mappings'] = $mappings;
         }
 
-        return [$params, $index];
+        return [
+            $params,
+            $index,
+        ];
+    }
+
+    /**
+     * Returns logger used for collecting data.
+     *
+     * @return Definition
+     */
+    private function getLogTraceDefinition()
+    {
+        $handler = new Definition('ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler', []);
+
+        $logger = new Definition(
+            'Monolog\Logger',
+            [
+                'tracer',
+                [$handler],
+            ]
+        );
+
+        return $logger;
     }
 }

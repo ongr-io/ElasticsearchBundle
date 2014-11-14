@@ -29,7 +29,6 @@ class MappingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         /** @var MetadataCollector $metadataCollector */
-
         $metadataCollector = $container->get('es.metadata_collector');
         $connections = $container->getParameter('es.connections');
         $managers = $container->getParameter('es.managers');
