@@ -332,9 +332,11 @@ class MetadataCollector
         $setters = [];
         $getters = [];
 
-        foreach ($this->aliases[$childReflection->getName()] as $childField => $alias) {
-            list($setters[$childField], $getters[$childField]) = $this
-                ->getInfoAboutProperty($params[$childField], $alias, $childReflection);
+        if (isset($this->aliases[$childReflection->getName()])) {
+            foreach ($this->aliases[$childReflection->getName()] as $childField => $alias) {
+                list($setters[$childField], $getters[$childField]) = $this
+                    ->getInfoAboutProperty($params[$childField], $alias, $childReflection);
+            }
         }
 
         return [
@@ -393,7 +395,6 @@ class MetadataCollector
     private function getProperties(\ReflectionClass $reflectionClass)
     {
         $mapping = [];
-
         /** @var \ReflectionProperty $property */
         foreach ($reflectionClass->getProperties() as $property) {
             /** @var Property $type */
