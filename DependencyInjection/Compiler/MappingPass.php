@@ -11,12 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
-use ONGR\ElasticsearchBundle\DependencyInjection\Helper\MappingSettingsLoader;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Compiles elastic search data.
@@ -32,27 +33,18 @@ class MappingPass implements CompilerPassInterface
         $metadataCollector = $container->get('es.metadata_collector');
         $connections = $container->getParameter('es.connections');
         $managers = $container->getParameter('es.managers');
-        $settingsHelper = new MappingSettingsLoader();
 
         foreach ($managers as $managerName => $settings) {
             if (isset($connections[$settings['connection']])) {
-                list($parameters, $index) = $settingsHelper->getSettings(
-                    $connections[$settings['connection']],
-                    $settings,
-                    $container,
-                    $metadataCollector
-                );
+                $parameters = $this->getClientParams($connections[$settings['connection']], $settings, $container);
+                $index = $this->getIndexParams($connections[$settings['connection']], $settings, $container);
             } else {
                 throw new InvalidConfigurationException(
                     'There is no ES connection with name ' . $settings['connection']
                 );
             }
 
-            $client = new Definition(
-                'Elasticsearch\Client',
-                [$parameters]
-            );
-
+            $client = new Definition('Elasticsearch\Client', [$parameters]);
             $clientConnection = new Definition(
                 'ONGR\ElasticsearchBundle\Client\Connection',
                 [
@@ -103,5 +95,75 @@ class MappingPass implements CompilerPassInterface
                 );
             }
         }
+    }
+
+    /**
+     * Returns params for client.
+     *
+     * @param array            $connection
+     * @param array            $manager
+     * @param ContainerBuilder $container
+     *
+     * @return array
+     */
+    private function getClientParams(array $connection, array $manager, ContainerBuilder $container)
+    {
+        $params = ['hosts' => $connection['hosts']];
+
+        if (!empty($connection['auth'])) {
+            $params['connectionParams']['auth'] = array_values($connection['auth']);
+        }
+
+        if ($manager['debug']) {
+            $params['logging'] = true;
+            $params['logPath'] = $container->getParameter('es.logging.path');
+            $params['logLevel'] = LogLevel::WARNING;
+            $params['traceObject'] = new Reference('es.logger.trace');
+        }
+
+        return $params;
+    }
+
+    /**
+     * Returns params for index.
+     *
+     * @param array            $connection
+     * @param array            $manager
+     * @param ContainerBuilder $container
+     *
+     * @return array
+     */
+    private function getIndexParams(array $connection, array $manager, ContainerBuilder $container)
+    {
+        $index = ['index' => $connection['index_name']];
+
+        if (!empty($connection['settings'])) {
+            $index['body']['settings'] = $connection['settings'];
+        }
+
+        $mappings = [];
+        $metadataCollector = $container->get('es.metadata_collector');
+
+        if (!empty($settings['mappings'])) {
+            foreach ($settings['mappings'] as $bundle) {
+                $mappings = array_replace_recursive(
+                    $mappings,
+                    $metadataCollector->getMapping($bundle)
+                );
+            }
+        } else {
+            foreach ($container->getParameter('kernel.bundles') as $bundle => $path) {
+                $mappings = array_replace_recursive(
+                    $mappings,
+                    $metadataCollector->getMapping($bundle)
+                );
+            }
+        }
+
+        if (!empty($mappings)) {
+            $index['body']['mappings'] = $mappings;
+        }
+
+        return $index;
     }
 }

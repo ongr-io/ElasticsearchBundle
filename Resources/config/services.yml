@@ -6,7 +6,6 @@ parameters:
     es.export.class: ONGR\ElasticsearchBundle\Service\ExportService
     es.import.class: ONGR\ElasticsearchBundle\Service\ImportService
     es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Client\IndexSuffixFinder
-    es.collector.class: ONGR\ElasticsearchBundle\Service\ESDataCollector
 
 services:
     es.metadata_collector_factory:
@@ -30,10 +29,3 @@ services:
 
     es.client.index_suffix_finder:
         class: %es.client.index_suffix_finder.class%
-
-    es.collector:
-        class: "%es.collector.class%"
-        calls:
-            - [addLogger, ["@es.logger.trace"]]
-        tags:
-            - { name: data_collector, template: "ONGRElasticsearchBundle:Profiler:profiler.html.twig", id: "es" }
