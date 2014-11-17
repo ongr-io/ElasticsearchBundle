@@ -265,6 +265,8 @@ class MetadataCollector
             $getter['properties'] = $data['getter'];
             $getter['namespace'] = $data['namespace'];
             $setter['namespace'] = $data['namespace'];
+            $getter['multiple'] = $data['multiple'];
+            $setter['multiple'] = $data['multiple'];
         }
 
         return [
@@ -330,15 +332,18 @@ class MetadataCollector
         $setters = [];
         $getters = [];
 
-        foreach ($this->aliases[$childReflection->getName()] as $childField => $alias) {
-            list($setters[$childField], $getters[$childField]) = $this
-                ->getInfoAboutProperty($params[$childField], $alias, $childReflection);
+        if (isset($this->aliases[$childReflection->getName()])) {
+            foreach ($this->aliases[$childReflection->getName()] as $childField => $alias) {
+                list($setters[$childField], $getters[$childField]) = $this
+                    ->getInfoAboutProperty($params[$childField], $alias, $childReflection);
+            }
         }
 
         return [
             'setter' => $setters,
             'getter' => $getters,
             'namespace' => $this->getNamespace($type->objectName),
+            'multiple' => $type->multiple,
         ];
     }
 
@@ -390,9 +395,9 @@ class MetadataCollector
     private function getProperties(\ReflectionClass $reflectionClass)
     {
         $mapping = [];
-
         /** @var \ReflectionProperty $property */
         foreach ($reflectionClass->getProperties() as $property) {
+            /** @var Property $type */
             $type = $this->reader->getPropertyAnnotation($property, 'ONGR\ElasticsearchBundle\Annotation\Property');
             if (!empty($type)) {
                 $maps = $type->filter();

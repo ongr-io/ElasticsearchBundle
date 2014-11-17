@@ -4,7 +4,7 @@ Elasticsearch bundle requires mapping definition in order for it to work with in
 
 Here's  an example of configuration with tokenizer's, filters and analyzer's definitions:
 
-````yml
+```yaml
 elasticsearch:
     connections:
         default:
@@ -45,7 +45,7 @@ elasticsearch:
     managers:
         default:
             connection: default
-````
+```
 
 In the settings node user may choose a specific configuration for that connection with index settings.
 
@@ -54,7 +54,8 @@ In managers configuration mappings is optional. If there are no mappings defined
 
 ### Document mapping
 
-````php
+```php
+<?
 //AcmeTestBundle:Content
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
@@ -90,7 +91,7 @@ class content implements DocumentInterface
      */
     public $content;
 }
-````
+```
 
 >Important: be sure your @ES\Document class'es implements DocumentInterface, otherwise it will not work.
 
@@ -111,7 +112,8 @@ class content implements DocumentInterface
  It is little different to define nested and object types. For this user will need to create a separate class with object annotation.
  Lets assume we have a Content type with object field.
 
- ````php
+ ```php
+ <?
  //AcmeTestBundle:Content
 
  use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -135,17 +137,25 @@ class content implements DocumentInterface
      public $title;
 
      /**
-      * @var string
+      * @var ContentMetaObject
       *
       * @ES\Property(name="meta", type="object", objectName="AcmeTestBundle:ContentMetaObject")
       */
-     public $properties;
+     public $property;
+     
+      /**
+       * @var ContentMetaObject[]
+       *
+       * @ES\Property(name="meta_single", type="object", multiple=true, objectName="AcmeTestBundle:ContentMetaObject")
+       */
+      public $properties;
  }
- ````
+ ```
 
  To define an object:
 
-  ````php
+  ```php
+  <?
   //AcmeTestBundle:ContentMetaObject
 
   use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -171,11 +181,26 @@ class content implements DocumentInterface
        */
       public $value;
   }
-  ````
+  ```
+  
+  * ***Multiple objects***
+      As shown in example, by default only a single object will be saved in your document.
+      If you want multiple objects, you'll have to set `multiple=true`.
+      While initiating a document with multiple items you can simply set an array or any kind of traversable.
+      
+      ```php
+      <?
+      $content = new Content();
+      $content->properties = [new ContentMetaObject(), new ContentMetaObject()];
+      
+      $manager->persist($content);
+      $manager->commit();
+      ```
 
-  To define object fields the same `@ES\Property` annotations could be used. In the objects there is possibility  to define other objects.
 
-  > Nested types can be defined the same way as objects, except @ES\Nested annotation must be used.
+To define object fields the same `@ES\Property` annotations could be used. In the objects there is possibility  to define other objects.
+
+> Nested types can be defined the same way as objects, except @ES\Nested annotation must be used.
 
 
 [es-time-units]:http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-ttl-field.html#_default

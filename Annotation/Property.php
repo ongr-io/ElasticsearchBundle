@@ -76,6 +76,13 @@ final class Property
     public $objectName;
 
     /**
+     * OneToOne or OneToMany.
+     *
+     * @var bool
+     */
+    public $multiple;
+
+    /**
      * Filters object null values and name.
      *
      * @return array
@@ -84,7 +91,7 @@ final class Property
     {
         return array_diff_key(
             array_filter(get_object_vars($this)),
-            array_flip(['name', 'objectName'])
+            array_flip(['name', 'objectName', 'multiple'])
         );
     }
 }

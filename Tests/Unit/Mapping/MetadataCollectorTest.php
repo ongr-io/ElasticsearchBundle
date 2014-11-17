@@ -14,9 +14,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\FileCacheReader;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\Tests\Unit\TestHelperTrait;
 
 class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
 {
+    use TestHelperTrait;
+
     /**
      * Returns product fixture mapping.
      *
@@ -128,7 +131,7 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
 
         $mapping = $collector->getMapping('ONGRTestingBundle');
 
-        $this->assertEquals(
+        $this->assertArrayContainsArray(
             [
                 'product' => [
                     'properties' => $this->getProductMapping(),
@@ -205,7 +208,7 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $mapping = $collector->getMappingByNamespace($namespace);
-        $this->assertEquals($expectedMapping['product']['properties'], $mapping['product']['properties']);
+        $this->assertArrayContainsArray($expectedMapping['product']['properties'], $mapping['product']['properties']);
     }
 
     /**

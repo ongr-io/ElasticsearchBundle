@@ -99,7 +99,40 @@ class MappingTool
             }
         }
 
+        // Check for empty arrays.
+        foreach ($out as $key => $element) {
+            if ($this->countRecursiveScalars($element) == 0) {
+                unset($out[$key]);
+            }
+        }
+
         return $out;
+    }
+
+    /**
+     * Counts scalar values recursively in array.
+     *
+     * @param mixed $array
+     *
+     * @return int
+     */
+    private function countRecursiveScalars($array)
+    {
+        $count = 0;
+
+        if (!is_array($array)) {
+            return 1;
+        }
+
+        foreach ($array as $element) {
+            if (is_array($element)) {
+                $count += $this->countRecursiveScalars($element);
+            } else {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**
