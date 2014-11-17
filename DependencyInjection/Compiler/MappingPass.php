@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -29,8 +28,6 @@ class MappingPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        /** @var MetadataCollector $metadataCollector */
-        $metadataCollector = $container->get('es.metadata_collector');
         $connections = $container->getParameter('es.connections');
         $managers = $container->getParameter('es.managers');
 
@@ -57,7 +54,7 @@ class MappingPass implements CompilerPassInterface
             $typeMapping = [];
 
             foreach ($settings['mappings'] as $bundle) {
-                $data = $metadataCollector->getBundleMapping($bundle);
+                $data = $container->get('es.metadata_collector')->getBundleMapping($bundle);
                 foreach ($data as $typeName => $typeParams) {
                     $typeParams['type'] = $typeName;
                     $repositoryName = $bundle . ':' . $typeParams['class'];
@@ -144,8 +141,8 @@ class MappingPass implements CompilerPassInterface
         $mappings = [];
         $metadataCollector = $container->get('es.metadata_collector');
 
-        if (!empty($settings['mappings'])) {
-            foreach ($settings['mappings'] as $bundle) {
+        if (!empty($manager['mappings'])) {
+            foreach ($manager['mappings'] as $bundle) {
                 $mappings = array_replace_recursive(
                     $mappings,
                     $metadataCollector->getMapping($bundle)

@@ -90,7 +90,7 @@ class ONGRElasticsearchExtension extends Extension
      */
     private function addDataCollectorDefinition(array $config, ContainerBuilder $container)
     {
-        if($this->isDebugSet($config)) {
+        if ($this->isDebugSet($config)) {
             $container->setDefinition('es.logger.trace', $this->getLogTraceDefinition());
             $container->setDefinition('es.collector', $this->getDataCollectorDefinition(['es.logger.trace']));
         }
@@ -100,14 +100,13 @@ class ONGRElasticsearchExtension extends Extension
      * Finds out if debug is set to any manager.
      *
      * @param array            $config
-     * @param ContainerBuilder $container
      *
      * @return bool
      */
     private function isDebugSet(array $config)
     {
-        foreach($config['managers'] as $manager) {
-            if($manager['debug']) {
+        foreach ($config['managers'] as $manager) {
+            if ($manager['debug']) {
                 return true;
             }
         }
