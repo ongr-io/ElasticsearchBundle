@@ -22,6 +22,8 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
  */
 class ESDataCollector implements DataCollectorInterface
 {
+    const UNDEFINED_ROUTE = 'undefined_route';
+
     /**
      * @var Logger[]
      */
@@ -51,7 +53,8 @@ class ESDataCollector implements DataCollectorInterface
         foreach ($this->loggers as $logger) {
             foreach ($logger->getHandlers() as $handler) {
                 if ($handler instanceof CollectionHandler) {
-                    $this->handleRecords($handler->getRecords());
+                    $this->handleRecords($this->getRoute($request), $handler->getRecords());
+                    $handler->clearRecords();
                 }
             }
         }
@@ -104,17 +107,18 @@ class ESDataCollector implements DataCollectorInterface
     /**
      * Handles passed records.
      *
-     * @param array $records
+     * @param string $route
+     * @param array  $records
      */
-    private function handleRecords($records)
+    private function handleRecords($route, $records)
     {
-        $this->data['count'] = count($records) / 2;
+        $this->incQueryCount(count($records) / 2);
 
         foreach ($records as $record) {
             // First record will never have context.
             if (!empty($record['context'])) {
                 $this->addTime($record['context']['duration']);
-                $this->data['queries'][] = [
+                $this->data['queries'][$route][] = [
                     'body' => trim($queryBody, "'"),
                     'method' => $record['context']['method'],
                     'uri' => $record['context']['uri'],
@@ -139,5 +143,33 @@ class ESDataCollector implements DataCollectorInterface
         }
 
         $this->data['time'] += $time;
+    }
+
+    /**
+     * Increases query count.
+     *
+     * @param int $count
+     */
+    private function incQueryCount($count = 1)
+    {
+        if (!isset($this->data['count'])) {
+            $this->data['count'] = 0;
+        }
+
+        $this->data['count'] += $count;
+    }
+
+    /**
+     * Returns route name from request.
+     *
+     * @param Request $request
+     *
+     * @return string
+     */
+    private function getRoute(Request $request)
+    {
+        $route = $request->attributes->get('_route');
+
+        return empty($route) ? self::UNDEFINED_ROUTE : $route;
     }
 }

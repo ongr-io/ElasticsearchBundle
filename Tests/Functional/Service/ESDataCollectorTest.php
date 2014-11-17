@@ -85,7 +85,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
         $repository->find(2);
         $queries = $this->getCollector()->getQueries();
 
-        $lastQuery = end($queries);
+        $lastQuery = end($queries[ESDataCollector::UNDEFINED_ROUTE]);
         $time = $lastQuery['time'];
         unset($lastQuery['time']);
 

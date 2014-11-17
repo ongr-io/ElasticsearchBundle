@@ -32,10 +32,20 @@ class CollectionHandler extends AbstractProcessingHandler
     }
 
     /**
+     * Returns recorded data.
+     *
      * @return array
      */
     public function getRecords()
     {
         return $this->records;
+    }
+
+    /**
+     * Clears recorded data.
+     */
+    public function clearRecords()
+    {
+        $this->records = [];
     }
 }

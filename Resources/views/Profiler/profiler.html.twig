@@ -37,44 +37,52 @@
             </p>
         {% else %}
             <ul class="queries" id="queriesPlaceholder">
-                {% for i, query in collector.queries %}
-                    <li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ query.time }}" data-target-id="{{ i }}">
-                        <div id="queryNo-{{ i }}">
-                            <div>
-                                <span>
-                                    <strong>Path:</strong> {{ query.uri }}
-                                </span>
-                            </div>
-                            <div>
-                                <span>
-                                    <strong>Method:</strong> {{ query.method }}
-                                </span>
-                            </div>
-                            <div>
-                                <span>
-                                    <strong>Took:</strong> {{ query.time }} ms
-                                </span>
-                            </div>
-                            {% if query.body is not empty %}
-                                <div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-{{ i }}" style="cursor: pointer;">
-                                    <span id="smallcode-{{ i }}">
-                                        <strong>Body:</strong> <small>{{ query.body|slice(0, 100) }}</small>
-                                    </span>
-                                    <img alt="+" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
-                                    <img alt="-" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none;" />
-                                </div>
-                                <code id="code-{{ i }}" class="hide">
-                                    <pre class="code">{{ query.body }}</pre>
-                                </code>
-                            {% else %}
-                                <div>
+                {% for i, route in collector.queries %}
+                    <li>
+                        <h3>Route: <i>{{ i }}</i></h3>
+                        <ul>
+                            {% for q, query in route %}
+                                <li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ query.time }}" data-target-id="{{ i ~ q }}">
+                                    <div id="queryNo-{{ i ~ q }}">
+                                        <div>
                                     <span>
-                                        <strong>Body:</strong> <small>empty</small>
+                                        <strong>Path:</strong> {{ query.uri }}
                                     </span>
-                                </div>
-                            {% endif %}
-                        </div>
+                                        </div>
+                                        <div>
+                                    <span>
+                                        <strong>Method:</strong> {{ query.method }}
+                                    </span>
+                                        </div>
+                                        <div>
+                                    <span>
+                                        <strong>Took:</strong> {{ query.time }} ms
+                                    </span>
+                                        </div>
+                                        {% if query.body is not empty %}
+                                            <div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-{{ i ~q }}" style="cursor: pointer;">
+                                        <span id="smallcode-{{ i ~ q }}">
+                                            <strong>Body:</strong> <small>{{ query.body|slice(0, 100) }}</small>
+                                        </span>
+                                                <img alt="+" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
+                                                <img alt="-" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none;" />
+                                            </div>
+                                            <code id="code-{{ i ~ q }}" class="hide">
+                                                <pre class="code">{{ query.body }}</pre>
+                                            </code>
+                                        {% else %}
+                                            <div>
+                                        <span>
+                                            <strong>Body:</strong> <small>empty</small>
+                                        </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </li>
+                    {% if not loop.last %}<li><hr/></li>{% endif %}
                 {% endfor %}
             </ul>
         {% endif %}
@@ -100,9 +108,6 @@
         }
         //]]></script>
     <style>
-        h3 {
-            margin-bottom: 0px;
-        }
         code {
             display: none;
         }
@@ -111,13 +116,30 @@
             background-color: #DCDCDC;
         }
 
-        ul.queries li {
-            background-color: #f6f6f6;
-            padding: 10px;
-            margin-bottom: 10px;
+        ul.queries li h3 {
+            margin: 0px 0px 7px;
         }
 
-        ul.queries li div > div {
+        ul.queries hr {
+            border: 0;
+            height: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        ul h3 i {
+            font-style: normal;
+            font-weight: 400;
+            color: #313131
+        }
+
+        ul.queries li ul li {
+            background-color: #f6f6f6;
+            padding: 10px;
+            margin: 0px 0px 5px 10px;
+        }
+
+        ul.queries li ul li div > div {
             margin: 5px 0px;
         }
     </style>
