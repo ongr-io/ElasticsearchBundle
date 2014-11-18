@@ -21,7 +21,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
      *
      * @var array
      */
-    protected $documents;
+    protected $documents = [];
 
     /**
      * Documents casted to objects cache.
@@ -107,6 +107,9 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
      */
     public function offsetSet($offset, $value)
     {
+        if ($offset === null) {
+            $offset = $this->getKey();
+        }
         $this->documents[$offset] = $value;
 
         // Also invalidate converted document.
@@ -127,5 +130,22 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
     public function count()
     {
         return count($this->documents);
+    }
+
+    /**
+     * Return an integer key to be used for a new element in array.
+     *
+     * @return int
+     */
+    private function getKey()
+    {
+        $currentIntKeys = array_filter(array_keys($this->documents), 'is_int');
+        if (empty($currentIntKeys)) {
+            $offset = 0;
+        } else {
+            $offset = max($currentIntKeys) + 1;
+        }
+
+        return $offset;
     }
 }
