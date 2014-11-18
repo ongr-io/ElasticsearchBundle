@@ -45,13 +45,41 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositories()
     {
-        $manager = new Manager(null, null, [], []);
+        $manager = new Manager(null, null, [], ['rep1' => ['type' => ''], 'rep2' => ['type' => '']]);
         $types = [
-            'type1',
-            'type2',
+            'rep1',
+            'rep2',
         ];
         $repository = $manager->getRepository($types);
 
         $this->assertEquals(new Repository($manager, $types), $repository);
+    }
+
+    /**
+     * Check if an exception is thrown when an undefined repository is specified.
+     *
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Undefined repository rep1, valid repositories are: rep2, rep3.
+     */
+    public function testGetRepositoriesException()
+    {
+        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => '']);
+        $types = [
+            'rep1',
+            'rep4',
+        ];
+        $manager->getRepository($types);
+    }
+
+    /**
+     * Check if an exception is thrown when an undefined repository is specified and only a single rep is specified.
+     *
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Undefined repository rep1, valid repositories are: rep2, rep3.
+     */
+    public function testGetRepositoriesExceptionSingle()
+    {
+        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => '']);
+        $manager->getRepository('rep1');
     }
 }
