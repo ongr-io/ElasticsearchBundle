@@ -37,6 +37,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                     'managers' => [
                         'test' => [
                             'connection' => 'test2',
+                            'debug' => false,
                             'mappings' => ['testBundle'],
                         ],
                     ],
@@ -55,6 +56,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
         $expectedManagers = [
             'test' => [
                 'connection' => 'test2',
+                'debug' => false,
                 'mappings' => ['testBundle'],
             ],
         ];

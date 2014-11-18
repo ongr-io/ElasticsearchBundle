@@ -1,7 +1,5 @@
 parameters:
-    es.connection_factory.params:
-        logPath: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
-        tracePath: %kernel.logs_dir%/elasticsearch_trace_%kernel.environment%.log
+    es.logging.path: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
 
     es.metadata_collector.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
     es.metadata_collector_factory.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollectorFactory

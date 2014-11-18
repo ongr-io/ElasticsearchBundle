@@ -82,10 +82,12 @@ class ElasticsearchExtensionTest extends WebTestCase
         $expectedManagers = [
             'default' => [
                 'connection' => 'default',
+                'debug' => true,
                 'mappings' => ['ONGRTestingBundle'],
             ],
             'bar' => [
                 'connection' => 'bar',
+                'debug' => false,
                 'mappings' => ['ONGRElasticsearchBundle'],
             ],
         ];

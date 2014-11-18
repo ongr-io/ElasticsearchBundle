@@ -37,6 +37,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'managers' => [
                 'acme' => [
                     'connection' => 'acme',
+                    'debug' => false,
                     'mappings' => ['ONGRTestingBundle'],
                 ],
             ],
