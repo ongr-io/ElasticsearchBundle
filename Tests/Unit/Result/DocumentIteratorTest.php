@@ -73,33 +73,153 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteration($rawData)
     {
-        $typesMapping = ['content' => 'ONGRTestingBundle:Content'];
+        $iterator = new DocumentIterator($rawData, $this->getTypesMapping(), $this->getBundleMapping());
+        $this->assertContentEquals($iterator, ['Test header']);
+    }
 
-        $bundleMapping = [
-            'ONGRTestingBundle:Content' => [
-                'setters' => [
-                    'header' => [
-                        'exec' => false,
-                        'name' => 'header',
-                    ]
+    /**
+     * Check if offset set works as expected.
+     */
+    public function testOffsetSet()
+    {
+        $rawData = [
+            'hits' => [
+                'total' => 3,
+                'hits' => [
+                    [
+                        '_type' => 'content',
+                        '_id' => 'foo',
+                        '_score' => 0,
+                        '_source' => ['header' => 'Test header'],
+                    ],
+                    [
+                        '_type' => 'content',
+                        '_id' => 'foo1',
+                        '_score' => 0,
+                        '_source' => ['header' => 'Test header2'],
+                    ],
+                    [
+                        '_type' => 'content',
+                        '_id' => 'foo2',
+                        '_score' => 0,
+                        '_source' => ['header' => 'Test header3'],
+                    ],
                 ],
-                'properties' => [
-                    'header' => ['type' => 'string']
-                ],
-                'namespace' => 'ONGR\TestingBundle\Document\Content',
             ],
         ];
 
-        $iterator = new DocumentIterator($rawData, $typesMapping, $bundleMapping);
+        // Check if inital data is correct.
+        $iterator = new DocumentIterator($rawData, $this->getTypesMapping(), $this->getBundleMapping());
+        $this->assertContentEquals($iterator, [0 => 'Test header', 1 => 'Test header2', 2 => 'Test header3']);
 
-        $this->assertCount(1, $iterator);
-        $document = $iterator->current();
+        // Set a few numeric and string offsets.
+        $iterator['testOffset'] = $rawData['hits']['hits'][0];
+        $iterator['a'] = $rawData['hits']['hits'][1];
+        $iterator[5] = $rawData['hits']['hits'][1];
+        $iterator[1] = $rawData['hits']['hits'][2];
+        $expectedHeaders = [
+            0 => 'Test header',
+            1 => 'Test header3',
+            2 => 'Test header3',
+            5 => 'Test header2',
+            'testOffset' => 'Test header',
+            'a' => 'Test header2',
+        ];
+        $this->assertContentEquals($iterator, $expectedHeaders);
 
-        $this->assertInstanceOf(
-            'ONGR\TestingBundle\Document\Content',
-            $document
-        );
-        $this->assertEquals('Test header', $document->header);
+        // Check empty offset, should append array with highest int as a key.
+        $iterator[] = $rawData['hits']['hits'][0];
+        $iterator[] = $rawData['hits']['hits'][1];
+        $expectedHeaders = [
+            0 => 'Test header',
+            1 => 'Test header3',
+            2 => 'Test header3',
+            5 => 'Test header2',
+            6 => 'Test header',
+            7 => 'Test header2',
+            'testOffset' => 'Test header',
+            'a' => 'Test header2',
+        ];
+        $this->assertContentEquals($iterator, $expectedHeaders);
+
+        // Iterate through again.
+        $this->assertContentEquals($iterator, $expectedHeaders);
+
+        // Check what happens when we have only string offsets.
+        $iterator = new DocumentIterator([], $this->getTypesMapping(), $this->getBundleMapping());
+        $iterator['testOffset'] = $rawData['hits']['hits'][0];
+        $iterator['a'] = $rawData['hits']['hits'][1];
+        $iterator[] = $rawData['hits']['hits'][2];
+        $expectedHeaders = [
+            'testOffset' => 'Test header',
+            'a' => 'Test header2',
+            0 => 'Test header3',
+        ];
+        $this->assertContentEquals($iterator, $expectedHeaders);
+
+        // Check what happens when we have only string offsets.
+        $iterator = new DocumentIterator([], $this->getTypesMapping(), $this->getBundleMapping());
+        $iterator[] = $rawData['hits']['hits'][2];
+        $expectedHeaders = [
+            0 => 'Test header3',
+        ];
+        $this->assertContentEquals($iterator, $expectedHeaders);
+    }
+
+    /**
+     * Check if offsetExists works as expected.
+     */
+    public function testOffsetExists()
+    {
+        $rawData = [
+            'hits' => [
+                'total' => 1,
+                'hits' => [
+                    [
+                        '_type' => 'content',
+                        '_id' => 'foo',
+                        '_score' => 0,
+                        '_source' => ['header' => 'Test header'],
+                    ],
+                ],
+            ],
+        ];
+
+        $iterator = new DocumentIterator($rawData, $this->getTypesMapping(), $this->getBundleMapping());
+        $iterator['test'] = $rawData['hits']['hits'][0];
+        $iterator[] = $rawData['hits']['hits'][0];
+
+        $this->assertTrue(isset($iterator[0]), 'Item should be set from initial data.');
+        $this->assertTrue(isset($iterator['test']), 'String offset should be set');
+        $this->assertTrue(isset($iterator[1]), 'Highest array integer index should be set.');
+
+        $this->assertFalse(isset($iterator[2]));
+    }
+
+    /**
+     * Check if offset unset works as expected.
+     */
+    public function testOffsetUnset()
+    {
+        $rawData = [
+            'hits' => [
+                'total' => 1,
+                'hits' => [
+                    [
+                        '_type' => 'content',
+                        '_id' => 'foo',
+                        '_score' => 0,
+                        '_source' => ['header' => 'Test header'],
+                    ],
+                ],
+            ],
+        ];
+
+        $iterator = new DocumentIterator($rawData, $this->getTypesMapping(), $this->getBundleMapping());
+
+        $this->assertTrue(isset($iterator[0]), 'Item should be set from initial data.');
+        unset($iterator[0]);
+        $this->assertFalse(isset($iterator[0]), 'Item should be unset.');
     }
 
     /**
@@ -159,5 +279,57 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
             $iterator->getSuggestions()
         );
         $this->assertEquals($rawData['suggest']['foo'], $iterator->getSuggestions()['foo']);
+    }
+
+    /**
+     * Check if document iterator contains the documents we expect.
+     *
+     * @param array|DocumentIterator $iterator
+     * @param array                  $expectedHeaders
+     */
+    private function assertContentEquals($iterator, $expectedHeaders)
+    {
+        foreach ($iterator as $key => $item) {
+            $this->assertInstanceOf(
+                'ONGR\TestingBundle\Document\Content',
+                $item
+            );
+            $this->assertEquals($expectedHeaders[$key], $item->header);
+            unset($expectedHeaders[$key]);
+        }
+        $this->assertEmpty($expectedHeaders);
+    }
+
+    /**
+     * Returns bundle mapping for testing.
+     *
+     * @return array
+     */
+    private function getBundleMapping()
+    {
+        return [
+            'ONGRTestingBundle:Content' => [
+                'setters' => [
+                    'header' => [
+                        'exec' => false,
+                        'name' => 'header',
+                    ]
+                ],
+                'properties' => [
+                    'header' => ['type' => 'string']
+                ],
+                'namespace' => 'ONGR\TestingBundle\Document\Content',
+            ],
+        ];
+    }
+
+    /**
+     * Returns types mapping for testing.
+     *
+     * @return array
+     */
+    private function getTypesMapping()
+    {
+        return ['content' => 'ONGRTestingBundle:Content'];
     }
 }
