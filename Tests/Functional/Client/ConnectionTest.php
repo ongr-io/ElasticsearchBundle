@@ -63,4 +63,42 @@ class ConnectionTest extends ElasticsearchTestCase
         $status = $connection->updateMapping();
         $this->assertTrue($status, 'Mapping should be updated');
     }
+
+    /**
+     * Tests bulk operations.
+     */
+    public function testBulk()
+    {
+        $manager = $this->getManager();
+        $connection = $manager->getConnection();
+        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+
+        // CREATE.
+        $connection->bulk('create', 'product', ['_id' => 'baz', 'title' => 'Awesomo']);
+        $connection->commit();
+
+        $product = $repository->find('baz');
+        $this->assertEquals('Awesomo', $product->title, 'Document should be created.');
+
+        // UPDATE.
+        $connection->bulk('update', 'product', ['_id' => 'baz', 'title' => 'Improved awesomo']);
+        $connection->commit();
+
+        $product = $repository->find('baz');
+        $this->assertEquals('Improved awesomo', $product->title, 'Document should be updated.');
+
+        // INDEX.
+        $connection->bulk('index', 'product', ['_id' => 'baz', 'title' => 'Indexed awesomo']);
+        $connection->commit();
+
+        $product = $repository->find('baz');
+        $this->assertEquals('Indexed awesomo', $product->title, 'Document should be indexed.');
+
+        // DELETE.
+        $connection->bulk('delete', 'product', ['_id' => 'baz']);
+        $connection->commit();
+
+        $this->setExpectedException('Elasticsearch\Common\Exceptions\Missing404Exception');
+        $product = $repository->find('baz');
+    }
 }

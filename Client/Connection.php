@@ -89,28 +89,34 @@ class Connection
      */
     public function bulk($operation, $type, array $query)
     {
+        if (!in_array($operation, ['index', 'create', 'update', 'delete'])) {
+            throw new \InvalidArgumentException('Wrong bulk operation selected');
+        }
+
+        $this->bulkQueries['body'][] = [
+            $operation => array_filter(
+                [
+                    '_index' => $this->getIndexName(),
+                    '_type' => $type,
+                    '_id' => isset($query['_id']) ? $query['_id'] : null,
+                    '_ttl' => isset($query['_ttl']) ? $query['_ttl'] : null,
+                    '_parent' => isset($query['_parent']) ? $query['_parent'] : null,
+                ]
+            ),
+        ];
+        unset($query['_id'], $query['_ttl'], $query['_parent']);
+
         switch ($operation) {
             case 'index':
             case 'create':
-            case 'update':
-
-                $this->bulkQueries['body'][] = [
-                    $operation => [
-                        '_index' => $this->getIndexName(),
-                        '_type' => $type,
-                        '_id' => isset($query['_id']) ? $query['_id'] : null,
-                        '_ttl' => isset($query['_ttl']) ? $query['_ttl'] : null,
-                        '_parent' => isset($query['_parent']) ? $query['_parent'] : null
-                    ]
-                ];
-
-                // Unset reserved keys.
-                unset($query['_id'], $query['_ttl'], $query['_parent']);
-
                 $this->bulkQueries['body'][] = $query;
                 break;
+            case 'update':
+                $this->bulkQueries['body'][] = ['doc' => $query];
+                break;
             default:
-                throw new \InvalidArgumentException('Wrong bulk operation selected');
+                // Do nothing.
+                break;
         }
     }
 
