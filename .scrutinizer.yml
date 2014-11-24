@@ -3,5 +3,6 @@ imports:
 tools:
   external_code_coverage:
       timeout: 600
-excluded_paths:
-  - Tests/*
+filter:
+  excluded_paths:
+    - Tests/*
