@@ -146,6 +146,13 @@ class Repository
     }
 
     /**
+     * Returns auto complete data.
+     */
+    public function getAutoComplete()
+    {
+    }
+
+    /**
      * Returns search instance.
      *
      * @return Search

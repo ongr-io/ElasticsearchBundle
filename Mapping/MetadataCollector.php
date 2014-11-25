@@ -25,13 +25,6 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 class MetadataCollector
 {
     /**
-     * Annotations to load.
-     *
-     * @var array
-     */
-    protected $annotations = ['Document', 'Property', 'Object', 'Nested', 'MultiField'];
-
-    /**
      * @var array
      */
     protected $bundles;
@@ -399,9 +392,14 @@ class MetadataCollector
         foreach ($reflectionClass->getProperties() as $property) {
             /** @var Property $type */
             $type = $this->reader->getPropertyAnnotation($property, 'ONGR\ElasticsearchBundle\Annotation\Property');
+            if ($type === null) {
+                $type = $this->reader->getPropertyAnnotation($property, 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty');
+            }
             if (!empty($type)) {
                 $maps = $type->filter();
                 $this->aliases[$reflectionClass->getName()][$type->name] = $property->getName();
+
+                // Object.
                 if (($type->type === 'object' || $type->type === 'nested') && !empty($type->objectName)) {
                     if (!empty($this->objects[strtolower($type->objectName)])) {
                         $objMap = $this->objects[strtolower($type->objectName)];
@@ -411,6 +409,8 @@ class MetadataCollector
                     }
                     $maps = array_replace_recursive($maps, $objMap);
                 }
+
+                // MultiField.
                 if (isset($maps['fields']) && !in_array($type, ['object', 'nested'])) {
                     $fieldsMap = [];
                     /** @var MultiField $field */
@@ -431,7 +431,19 @@ class MetadataCollector
      */
     private function registerAnnotations()
     {
-        foreach ($this->annotations as $annotation) {
+        $annotations = [
+            'Document',
+            'Property',
+            'Object',
+            'Nested',
+            'MultiField',
+            'Suggester/CompletionSuggesterProperty',
+            'Suggester/ContextSuggesterProperty',
+            'Suggester/Context/CategoryContext',
+            'Suggester/Context/GeoLocationContext',
+        ];
+
+        foreach ($annotations as $annotation) {
             AnnotationRegistry::registerFile(__DIR__ . "/../Annotation/{$annotation}.php");
         }
     }
