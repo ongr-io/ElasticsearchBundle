@@ -33,7 +33,6 @@ class IndexSuffixFinder
             $time = new \DateTime();
         }
 
-        $suffix = null;
         $date = $time->format('Y.m.d');
         $indexName = $connection->getIndexName();
 
