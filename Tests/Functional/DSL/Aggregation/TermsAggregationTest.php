@@ -14,9 +14,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
 class TermsAggregationTest extends ElasticsearchTestCase
 {
+    use TestHelperTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -210,6 +213,6 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('aggregations', $results);
-        $this->assertEquals($expectedResult, $results['aggregations']);
+        $this->assertArrayContainsArray($expectedResult, $results['aggregations']);
     }
 }
