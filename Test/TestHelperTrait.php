@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit;
+namespace ONGR\ElasticsearchBundle\Test;
 
 /**
  * A helper used to check if array contains a sub array.
