@@ -17,12 +17,43 @@ namespace ONGR\ElasticsearchBundle\Document\Suggester\Context;
 class GeoLocationContext extends AbstractContext
 {
     /**
-     * Returns context type.
-     *
-     * @return string
+     * @var array|string
      */
-    public function getType()
+    private $location;
+
+    /**
+     * Returns location.
+     *
+     * @return array|string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * Sets location.
+     *
+     * @param array|string $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContextType()
     {
         return 'geo_location';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValue()
+    {
+        return $this->getLocation();
     }
 }

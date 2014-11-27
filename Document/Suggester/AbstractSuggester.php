@@ -19,9 +19,16 @@ abstract class AbstractSuggester
     /**
      * Input to store.
      *
-     * @var string[]
+     * @var string[]|string
      */
     private $input;
+
+    /**
+     * String to return.
+     *
+     * @var string
+     */
+    private $output;
 
     /**
      * Setter for input to store.
@@ -30,7 +37,7 @@ abstract class AbstractSuggester
      */
     public function setInput($input)
     {
-        $this->input = is_array($input) ? $input : [$input];
+        $this->input = $input;
     }
 
     /**
@@ -44,9 +51,58 @@ abstract class AbstractSuggester
     }
 
     /**
+     * Setter for string to return.
+     *
+     * @param string $output
+     */
+    public function setOutput($output)
+    {
+        $this->output = $output;
+    }
+
+    /**
+     * Returns output to be set.
+     *
+     * @return string
+     */
+    public function getOutput()
+    {
+        return $this->output;
+    }
+
+    /**
      * Returns suggester type.
      *
      * @return string
      */
     abstract public function getType();
+
+    /**
+     * Returns array value of this suggester.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $out = [];
+
+        if ($this->getInput() !== null) {
+            $out['input'] = $this->getInput();
+        }
+
+        if ($this->getOutput() !== null) {
+            $out['output'] = $this->getOutput();
+        }
+
+        return $out;
+    }
+
+    /**
+     * Sets object fields using the array passed.
+     *
+     * @param array $rawArray
+     */
+    public function fromArray($rawArray)
+    {
+    }
 }

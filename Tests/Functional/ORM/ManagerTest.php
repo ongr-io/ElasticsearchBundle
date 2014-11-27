@@ -12,6 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Document\Suggester\Context\CategoryContext;
+use ONGR\ElasticsearchBundle\Document\Suggester\Context\GeoLocationContext;
+use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggester;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use ONGR\TestingBundle\Document\CdnObject;
@@ -70,6 +73,42 @@ class ManagerTest extends ElasticsearchTestCase
         $this->assertEquals($url2->url, $actualUrl[1]->url);
 
         $this->assertEquals($cdn->cdn_url, $actualUrl[0]->cdn->cdn_url);
+    }
+
+    /**
+     * Check if indexed suggest fields are stored as expected.
+     */
+    public function testSuggesters()
+    {
+        /** @var Manager $manager */
+        $manager = $this->getManager();
+
+        $suggester = new ContextSuggester();
+        $suggester->setInput(['test']);
+        $categoryContext = new CategoryContext();
+        $categoryContext->setName('price');
+        $categoryContext->setTypes('500');
+
+        $locationContext = new GeoLocationContext();
+        $locationContext->setName('location');
+        $locationContext->setLocation(['lat' => 50, 'lon' => 50]);
+
+        $suggester->addContext($categoryContext);
+        $suggester->addContext($locationContext);
+
+        $product = new Product();
+        $product->suggesting = $suggester;
+
+        $manager->persist($product);
+        $manager->commit();
+
+        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+        /** @var Product[] $actualProduct */
+        $actualProducts = $repository->execute($repository->createSearch());
+        $this->assertCount(1, $actualProducts);
+
+        /** @var Product $actualProduct */
+        $actualProduct = $actualProducts->current();
     }
 
     /**

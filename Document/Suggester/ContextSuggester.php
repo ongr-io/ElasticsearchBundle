@@ -11,16 +11,57 @@
 
 namespace ONGR\ElasticsearchBundle\Document\Suggester;
 
-use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\Suggester\Context\AbstractContext;
 
 /**
  * Class to be used for context suggestion objects.
- *
- * @ES\Object
  */
 class ContextSuggester extends AbstractSuggester
 {
+    /**
+     * Contexts for context suggester.
+     *
+     * @var AbstractContext[]
+     */
     private $contexts;
+
+    /**
+     * @return AbstractContext[]
+     */
+    public function getContexts()
+    {
+        return $this->contexts;
+    }
+
+    /**
+     * @param AbstractContext[] $contexts
+     */
+    public function setContexts($contexts)
+    {
+        $this->contexts = $contexts;
+    }
+
+    /**
+     * @param AbstractContext $context
+     */
+    public function addContext(AbstractContext $context)
+    {
+        $this->contexts[] = $context;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        $out = parent::toArray();
+
+        foreach ($this->contexts as $context) {
+            $out['context'][$context->getName()] = $context->getValue();
+        }
+
+        return $out;
+    }
 
     /**
      * {@inheritdoc}

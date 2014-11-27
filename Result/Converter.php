@@ -103,6 +103,10 @@ class Converter
                 $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
             }
 
+            if ($setter['type'] === 'completion') {
+                $value = $this->handleSuggester($setter, $value);
+            }
+
             if ($setter['exec']) {
                 $object->{$setter['name']}($value);
             } else {
@@ -111,5 +115,15 @@ class Converter
         }
 
         return $object;
+    }
+
+    /**
+     * Returns a suggester to set.
+     *
+     * @param array $setter
+     * @param array $value
+     */
+    private function handleSuggester($setter, $value)
+    {
     }
 }

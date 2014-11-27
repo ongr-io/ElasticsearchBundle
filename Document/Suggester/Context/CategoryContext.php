@@ -17,27 +17,45 @@ namespace ONGR\ElasticsearchBundle\Document\Suggester\Context;
 class CategoryContext extends AbstractContext
 {
     /**
-     * @var String|string[]
+     * Type to use as a context.
+     *
+     * @var string|array
      */
-    private $value;
+    private $types;
 
     /**
-     * Returns context value.
+     * Returns type.
      *
-     * @return array
+     * @return string|array
      */
-    public function getValue()
+    public function getTypes()
     {
-        return [];
+        return $this->types;
     }
 
     /**
-     * Returns context type.
+     * Sets type.
      *
-     * @return string
+     * @param $type string|array
      */
-    public function getType()
+    public function setTypes($types)
+    {
+        $this->types = $types;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContextType()
     {
         return 'category';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValue()
+    {
+        return $this->types;
     }
 }

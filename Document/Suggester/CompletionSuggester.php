@@ -15,22 +15,13 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
  * Class to be used for completion suggestion objects.
- *
- * @ES\Object
  */
-class CompletionSuggester extends AbstractSuggester
+abstract class CompletionSuggester extends AbstractSuggester
 {
-    /**
-     * String to return.
-     *
-     * @var string
-     */
-    private $output;
-
     /**
      * Object to be returned in the suggest option.
      *
-     * @var object
+     * @var array
      */
     private $payload;
 
@@ -42,29 +33,9 @@ class CompletionSuggester extends AbstractSuggester
     private $weight;
 
     /**
-     * Setter for string to return.
-     *
-     * @param string $output
-     */
-    public function setOutput($output)
-    {
-        $this->output = $output;
-    }
-
-    /**
-     * Returns output to be set.
-     *
-     * @return string
-     */
-    public function getOutput()
-    {
-        return $this->output;
-    }
-
-    /**
      * Setter for object to be returned in the suggest option.
      *
-     * @param object $payload
+     * @param array $payload
      */
     public function setPayload($payload)
     {
@@ -74,7 +45,7 @@ class CompletionSuggester extends AbstractSuggester
     /**
      * Returns object to be returned in the suggest option.
      *
-     * @return object
+     * @return array
      */
     public function getPayload()
     {
@@ -85,8 +56,6 @@ class CompletionSuggester extends AbstractSuggester
      * Setter for a weight used to rank suggestions.
      *
      * @param int|string $weight
-     *
-     * @return mixed
      */
     public function setWeight($weight)
     {
@@ -96,11 +65,29 @@ class CompletionSuggester extends AbstractSuggester
     /**
      * Returns object to be returned in the suggest option.
      *
-     * @return object
+     * @return int|string
      */
     public function getWeight()
     {
         return $this->weight;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        $out = parent::toArray();
+
+        if ($this->getWeight() !== null) {
+            $out['weight'] = $this->getWeight();
+        }
+
+        if ($this->getPayload() !== null) {
+            $out['payload'] = $this->getPayload();
+        }
+
+        return $out;
     }
 
     /**

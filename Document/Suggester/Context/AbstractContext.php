@@ -48,5 +48,12 @@ abstract class AbstractContext
      *
      * @return string
      */
-    abstract public function getType();
+    abstract public function getContextType();
+
+    /**
+     * Returns context object value.
+     *
+     * @return string
+     */
+    abstract public function getValue();
 }
