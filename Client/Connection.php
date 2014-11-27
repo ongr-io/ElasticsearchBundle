@@ -114,6 +114,8 @@ class Connection
             case 'update':
                 $this->bulkQueries['body'][] = ['doc' => $query];
                 break;
+            case 'delete':
+                // Body for delete opertation is not needed to apply.
             default:
                 // Do nothing.
                 break;
