@@ -176,6 +176,30 @@ class Repository
     }
 
     /**
+     * Executes given search.
+     *
+     * @param string|array $search
+     * @param string $resultsType
+     *
+     * @return DocumentIterator|array
+     *
+     * @throws \Exception
+     */
+    public function search($search, $resultsType = self::RESULTS_OBJECT)
+    {
+        if (is_string($search)) {
+            $search = json_decode($search, true);
+        }
+
+        $results = $this
+            ->manager
+            ->getConnection()
+            ->search($this->types, $this->checkFields($search));
+
+        return $this->parseResult($results, $resultsType, Search::SCROLL_DURATION);
+    }
+
+    /**
      * Fetches next set of results.
      *
      * @param string $scrollId
