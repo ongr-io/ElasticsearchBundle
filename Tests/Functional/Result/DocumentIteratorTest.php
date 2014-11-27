@@ -84,4 +84,18 @@ class DocumentIteratorTest extends ElasticsearchTestCase
             }
         }
     }
+
+    /**
+     * Tests if current() returns null when data doesn't exist.
+     */
+    public function testCurrentWithEmptyIterator()
+    {
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Content');
+        $search = $repo
+            ->createSearch()
+            ->addQuery(new MatchAllQuery());
+        $result = $repo->execute($search);
+
+        $this->assertNull($result->current());
+    }
 }

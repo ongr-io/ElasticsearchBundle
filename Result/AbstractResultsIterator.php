@@ -93,6 +93,10 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
     public function offsetGet($offset)
     {
         if (!isset($this->converted[$offset])) {
+            if (!isset($this->documents[$offset])) {
+                return null;
+            }
+
             $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
 
             // Clear memory.
