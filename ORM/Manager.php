@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 
 /**
@@ -164,10 +163,6 @@ class Manager
                 }
 
                 $value = $newValue;
-            }
-
-            if ($value instanceof AbstractSuggester) {
-                $value = $value->toArray();
             }
 
             if ($value instanceof \DateTime) {

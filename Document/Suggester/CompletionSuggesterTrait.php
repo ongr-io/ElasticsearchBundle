@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Annotation\Suggester;
+namespace ONGR\ElasticsearchBundle\Document\Suggester;
+
+use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * Class for completion suggester.
- *
- * @Annotation
- * @Target("PROPERTY")
+ * Trait to be used for completion suggestion objects.
  */
-class CompletionSuggesterProperty extends AbstractSuggesterProperty
+trait CompletionSuggesterTrait
 {
+    use SuggesterTrait;
 }

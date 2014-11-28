@@ -29,19 +29,54 @@ abstract class AbstractSuggesterProperty
     public $name;
 
     /**
-     * Object name to map.
-     *
      * @var string
+     *
+     * @Required
      */
      public $objectName;
 
     /**
+     * @var string
+     */
+    public $index_analyzer;
+
+    /**
+     * @var string
+     */
+    public $search_analyzer;
+
+    /**
+     * @var int
+     */
+    public $preserve_separators;
+
+    /**
+     * @var bool
+     */
+    public $preserve_position_increments;
+
+    /**
+     * @var int
+     */
+    public $max_input_length;
+
+    /**
+     * @var bool
+     */
+    public $payloads;
+
+    /**
      * Returns required properties.
+     *
+     * @param array $extraExclude Extra object variables to exclude.
      *
      * @return array
      */
-    public function filter()
+    public function filter($extraExclude = [])
     {
-        return ['type' => $this->type];
+        return array_diff_key(
+            array_filter(get_object_vars($this)),
+            array_flip(array_merge(['name', 'objectName', 'classObjectName'], $extraExclude))
+        );
     }
 }

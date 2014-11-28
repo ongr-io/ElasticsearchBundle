@@ -14,12 +14,14 @@ namespace ONGR\ElasticsearchBundle\Document\Suggester;
 /**
  * Abstract record document for various suggesters.
  */
-abstract class AbstractSuggester
+trait SuggesterTrait
 {
     /**
      * Input to store.
      *
      * @var string[]|string
+     *
+     * @ES\Property(type="string", name="input")
      */
     private $input;
 
@@ -27,8 +29,28 @@ abstract class AbstractSuggester
      * String to return.
      *
      * @var string
+     *
+     * @ES\Property(type="string", name="output")
      */
     private $output;
+
+    /**
+     * Object to be returned in the suggest option.
+     *
+     * @var object
+     *
+     * @ES\Property(type="object", name="payload")
+     */
+    private $payload;
+
+    /**
+     * Weight used to rank suggestions.
+     *
+     * @var int|string
+     *
+     * @ES\Property(type="string", name="weight")
+     */
+    private $weight;
 
     /**
      * Setter for input to store.
@@ -71,38 +93,42 @@ abstract class AbstractSuggester
     }
 
     /**
-     * Returns suggester type.
+     * Setter for object to be returned in the suggest option.
      *
-     * @return string
+     * @param object $payload
      */
-    abstract public function getType();
-
-    /**
-     * Returns array value of this suggester.
-     *
-     * @return array
-     */
-    public function toArray()
+    public function setPayload($payload)
     {
-        $out = [];
-
-        if ($this->getInput() !== null) {
-            $out['input'] = $this->getInput();
-        }
-
-        if ($this->getOutput() !== null) {
-            $out['output'] = $this->getOutput();
-        }
-
-        return $out;
+        $this->payload = (object)$payload;
     }
 
     /**
-     * Sets object fields using the array passed.
+     * Returns object to be returned in the suggest option.
      *
-     * @param array $rawArray
+     * @return object
      */
-    public function fromArray($rawArray)
+    public function getPayload()
     {
+        return $this->payload;
+    }
+
+    /**
+     * Setter for a weight used to rank suggestions.
+     *
+     * @param int|string $weight
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+    }
+
+    /**
+     * Returns object to be returned in the suggest option.
+     *
+     * @return int|string
+     */
+    public function getWeight()
+    {
+        return $this->weight;
     }
 }

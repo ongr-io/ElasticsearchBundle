@@ -12,14 +12,14 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Document\Suggester\Context\CategoryContext;
-use ONGR\ElasticsearchBundle\Document\Suggester\Context\GeoLocationContext;
-use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggester;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use ONGR\TestingBundle\Document\CdnObject;
 use ONGR\TestingBundle\Document\Comment;
+use ONGR\TestingBundle\Document\CompletionSuggesting;
 use ONGR\TestingBundle\Document\Product;
+use ONGR\TestingBundle\Document\PriceLocationSuggesting;
+use ONGR\TestingBundle\Document\PriceLocationContext;
 use ONGR\TestingBundle\Document\UrlObject;
 
 /**
@@ -78,26 +78,29 @@ class ManagerTest extends ElasticsearchTestCase
     /**
      * Check if indexed suggest fields are stored as expected.
      */
-    public function testSuggesters()
+    public function testPersistSuggesters()
     {
         /** @var Manager $manager */
         $manager = $this->getManager();
 
-        $suggester = new ContextSuggester();
+        $categoryContext = new PriceLocationContext();
+        $categoryContext->price = '500';
+        $categoryContext->location = ['lat' => 50, 'lon' => 50];
+        $suggester = new PriceLocationSuggesting();
         $suggester->setInput(['test']);
-        $categoryContext = new CategoryContext();
-        $categoryContext->setName('price');
-        $categoryContext->setTypes('500');
+        $suggester->setOutput('success');
+        $suggester->setContext($categoryContext);
+        $suggester->setPayload(['test']);
+        $suggester->setWeight(50);
 
-        $locationContext = new GeoLocationContext();
-        $locationContext->setName('location');
-        $locationContext->setLocation(['lat' => 50, 'lon' => 50]);
-
-        $suggester->addContext($categoryContext);
-        $suggester->addContext($locationContext);
+        $completionSuggester = new CompletionSuggesting();
+        $completionSuggester->setInput(['a', 'b', 'c']);
+        $completionSuggester->setOutput('completion success');
+        $completionSuggester->setWeight(30);
 
         $product = new Product();
-        $product->suggesting = $suggester;
+        $product->contextSuggesting = $suggester;
+        $product->completionSuggesting = $completionSuggester;
 
         $manager->persist($product);
         $manager->commit();
@@ -109,6 +112,10 @@ class ManagerTest extends ElasticsearchTestCase
 
         /** @var Product $actualProduct */
         $actualProduct = $actualProducts->current();
+        $actualProduct->setId(null);
+        $actualProduct->setScore(null);
+
+        $this->assertEquals($product, $actualProduct);
     }
 
     /**

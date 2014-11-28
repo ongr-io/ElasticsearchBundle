@@ -17,6 +17,9 @@ use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
+use ONGR\ElasticsearchBundle\Annotation\Suggester\CompletionSuggesterProperty;
+use ONGR\ElasticsearchBundle\Annotation\Suggester\ContextSuggesterProperty;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 
 /**
@@ -24,6 +27,17 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
  */
 class MetadataCollector
 {
+
+    /**
+     * @const string
+     */
+    const SUGGESTER_PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty';
+
+    /**
+     * @const string
+     */
+    const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
+
     /**
      * @var array
      */
@@ -54,6 +68,13 @@ class MetadataCollector
      * @var array
      */
     private $aliases = [];
+
+    /**
+     * Contains suggester object mapping to be used for getters and setters.
+     *
+     * @var array
+     */
+    private $suggesters = [];
 
     /**
      * Directory in bundle to load documents from.
@@ -242,7 +263,7 @@ class MetadataCollector
 
     /**
      * @param array            $params          Property parameters.
-     * @param array            $alias           Actual property name (not field name).
+     * @param string           $alias           Actual property name (not field name).
      * @param \ReflectionClass $reflectionClass Reflection class.
      *
      * @return array
@@ -251,6 +272,13 @@ class MetadataCollector
     {
         $setter = $this->checkPropertyAccess($alias, 'set', $reflectionClass);
         $getter = $this->checkPropertyAccess($alias, 'get', $reflectionClass);
+
+        if ($params['type'] === 'completion') {
+            if (isset($this->suggesters[$reflectionClass->getName()][$alias])) {
+                $suggestionObjectNamespace = $this->suggesters[$reflectionClass->getName()][$alias];
+                $params['properties'] = $this->objects[$suggestionObjectNamespace]['properties'];
+            }
+        }
 
         if (isset($params['properties'])) {
             $data = $this->getInfoAboutPropertyObject($params['properties'], $alias, $reflectionClass);
@@ -315,10 +343,7 @@ class MetadataCollector
     private function getInfoAboutPropertyObject($params, $propertyName, $reflectionClass)
     {
         /** @var Property $type */
-        $type = $this->reader->getPropertyAnnotation(
-            $reflectionClass->getProperty($propertyName),
-            'ONGR\ElasticsearchBundle\Annotation\Property'
-        );
+        $type = $this->getPropertyAnnotationData($reflectionClass->getProperty($propertyName));
 
         $childReflection = new \ReflectionClass($this->getNamespace($type->objectName));
 
@@ -336,7 +361,7 @@ class MetadataCollector
             'setter' => $setters,
             'getter' => $getters,
             'namespace' => $this->getNamespace($type->objectName),
-            'multiple' => $type->multiple,
+            'multiple' => $type instanceof Property ? $type->multiple : false,
         ];
     }
 
@@ -390,40 +415,61 @@ class MetadataCollector
         $mapping = [];
         /** @var \ReflectionProperty $property */
         foreach ($reflectionClass->getProperties() as $property) {
-            /** @var Property $type */
-            $type = $this->reader->getPropertyAnnotation($property, 'ONGR\ElasticsearchBundle\Annotation\Property');
-            if ($type === null) {
-                $type = $this->reader->getPropertyAnnotation($property, 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty');
-            }
-            if (!empty($type)) {
-                $maps = $type->filter();
-                $this->aliases[$reflectionClass->getName()][$type->name] = $property->getName();
+            $type = $this->getPropertyAnnotationData($property);
 
-                // Object.
-                if (($type->type === 'object' || $type->type === 'nested') && !empty($type->objectName)) {
-                    if (!empty($this->objects[strtolower($type->objectName)])) {
-                        $objMap = $this->objects[strtolower($type->objectName)];
-                    } else {
-                        $objMap = $this->getRelationMapping($type->objectName);
-                        $this->objects[strtolower($type->objectName)] = $objMap;
-                    }
-                    $maps = array_replace_recursive($maps, $objMap);
-                }
-
-                // MultiField.
-                if (isset($maps['fields']) && !in_array($type, ['object', 'nested'])) {
-                    $fieldsMap = [];
-                    /** @var MultiField $field */
-                    foreach ($maps['fields'] as $field) {
-                        $fieldsMap[$field->name] = $field->filter();
-                    }
-                    $maps['fields'] = $fieldsMap;
-                }
-                $mapping[$type->name] = $maps;
+            if (empty($type)) {
+                continue;
             }
+
+            $maps = $type->filter();
+            $this->aliases[$reflectionClass->getName()][$type->name] = $property->getName();
+
+            // Object.
+            if (in_array($type->type, ['object', 'nested']) && !empty($type->objectName)) {
+                $maps = array_replace_recursive($maps, $this->getObjectMapping($type->objectName));
+            }
+
+            // MultiField.
+            if (isset($maps['fields']) && !in_array($type->type, ['object', 'nested'])) {
+                $fieldsMap = [];
+                /** @var MultiField $field */
+                foreach ($maps['fields'] as $field) {
+                    $fieldsMap[$field->name] = $field->filter();
+                }
+                $maps['fields'] = $fieldsMap;
+            }
+
+            // Suggesters.
+            if ($type instanceof AbstractSuggesterProperty) {
+                $this->getObjectMapping($type->objectName);
+                $this->suggesters[$reflectionClass->getName()][$property->getName()] = strtolower($type->objectName);
+            }
+
+            $mapping[$type->name] = $maps;
         }
 
         return $mapping;
+    }
+
+    /**
+     * Returns object mapping.
+     *
+     * Loads from cache if it's already loaded.
+     *
+     * @param string $objectName
+     *
+     * @return array
+     */
+    private function getObjectMapping($objectName)
+    {
+        if (!empty($this->objects[strtolower($objectName)])) {
+            $objMap = $this->objects[strtolower($objectName)];
+        } else {
+            $objMap = $this->getRelationMapping($objectName);
+            $this->objects[strtolower($objectName)] = $objMap;
+        }
+
+        return $objMap;
     }
 
     /**
@@ -482,5 +528,22 @@ class MetadataCollector
         }
 
         throw new \LogicException(sprintf('Bundle \'%s\' does not exist.', $name));
+    }
+
+    /**
+     * Returns property annotation data.
+     *
+     * @param \ReflectionProperty $property
+     *
+     * @return AbstractSuggesterProperty|Property
+     */
+    private function getPropertyAnnotationData($property)
+    {
+        $type = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
+        if ($type === null) {
+            $type = $this->reader->getPropertyAnnotation($property, self::SUGGESTER_PROPERTY_ANNOTATION);
+        }
+
+        return $type;
     }
 }

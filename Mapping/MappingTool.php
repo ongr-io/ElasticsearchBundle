@@ -26,6 +26,8 @@ class MappingTool
         'max_input_length' => 50,
         'preserve_separators' => true,
         'preserve_position_increments' => true,
+        'index_analyzer' => 'simple',
+        'search_analyzer' => 'simple',
         'analyzer' => 'simple',
         'payloads' => false,
     ];
