@@ -112,14 +112,4 @@ class Converter
 
         return $object;
     }
-
-    /**
-     * Returns a suggester to set.
-     *
-     * @param array $setter
-     * @param array $value
-     */
-    private function handleSuggester($setter, $value)
-    {
-    }
 }
