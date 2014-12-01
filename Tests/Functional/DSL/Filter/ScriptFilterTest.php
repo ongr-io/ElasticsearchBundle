@@ -28,7 +28,7 @@ class ScriptFilterTest extends ElasticsearchTestCase
                     [
                         '_id' => 1,
                         'title' => 'foo',
-                        'price' => 20
+                        'price' => 20,
                     ],
                     [
                         '_id' => 2,
@@ -60,7 +60,7 @@ class ScriptFilterTest extends ElasticsearchTestCase
 
         // Case #0 with params and caching.
         $out[] = [
-            "doc['price'].value > min_val and doc['price'].value < max_val",
+            "doc['price'].value > min_val && doc['price'].value < max_val",
             [
                 'params' => [
                     'min_val' => 20,

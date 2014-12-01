@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\FileCacheReader;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use ONGR\ElasticsearchBundle\Tests\Unit\TestHelperTrait;
+use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
 class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
 {
