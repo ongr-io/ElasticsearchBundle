@@ -55,9 +55,14 @@ class RangeAggregationTest extends ElasticsearchTestCase
         $out = [];
 
         // Case #0 single range aggregation.
-        $aggregation = new RangeAggregation('test_agg');
-        $aggregation->setField('price');
-        $aggregation->addRange('10', 20);
+        $aggregation = [
+            'name' => 'test_agg',
+            'field' => 'price',
+            'range' => [
+                'from' => '10',
+                'to' => 20,
+            ]
+        ];
 
         $result = [
             'agg_test_agg' => [
@@ -81,15 +86,23 @@ class RangeAggregationTest extends ElasticsearchTestCase
 
         // Case #1 nested range aggregations.
 
-        $aggregation = new RangeAggregation('test_agg');
-        $aggregation->setField('price');
-        $aggregation->addRange('10', 20);
-
-        $aggregation2 = new RangeAggregation('test_agg2');
-        $aggregation2->setKeyed(true);
-        $aggregation2->addRange(15, null, 'test_keyed_range');
-
-        $aggregation->aggregations->addAggregation($aggregation2);
+        $aggregation2 = [
+            'name' => 'test_agg',
+            'field' => 'price',
+            'range' => [
+                'from' => '10',
+                'to' => 20,
+            ],
+            'agg' => [
+                'name' => 'test_agg2',
+                'keyed' => true,
+                'key' => 'test_keyed_range',
+                'range' => [
+                    'from' => 15,
+                    'to' => null,
+                ]
+            ]
+        ];
 
         $result = [
             'agg_test_agg' => [
@@ -116,7 +129,7 @@ class RangeAggregationTest extends ElasticsearchTestCase
         ];
 
         $out[] = [
-            $aggregation,
+            $aggregation2,
             $result,
         ];
 
@@ -126,8 +139,8 @@ class RangeAggregationTest extends ElasticsearchTestCase
     /**
      * Test for range aggregation.
      *
-     * @param RangeAggregation $aggregation
-     * @param array            $expectedResult
+     * @param array $aggregation
+     * @param array $expectedResult
      *
      * @dataProvider getRangeAggregationData
      */
@@ -136,7 +149,20 @@ class RangeAggregationTest extends ElasticsearchTestCase
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
 
-        $search = $repo->createSearch()->addAggregation($aggregation);
+        $rangeAggregation = new RangeAggregation($aggregation['name']);
+        $rangeAggregation->setField($aggregation['field']);
+        $rangeAggregation->addRange($aggregation['range']['from'], $aggregation['range']['to']);
+
+        if (!empty($aggregation['agg'])) {
+            $childAgg = $aggregation['agg'];
+            $aggregation2 = new RangeAggregation($childAgg['name']);
+            $aggregation2->setKeyed($childAgg['keyed']);
+            $aggregation2->addRange($childAgg['range']['from'], $childAgg['range']['to'], $childAgg['key']);
+
+            $rangeAggregation->aggregations->addAggregation($aggregation2);
+        }
+
+        $search = $repo->createSearch()->addAggregation($rangeAggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('aggregations', $results);
