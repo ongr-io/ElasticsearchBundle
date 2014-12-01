@@ -19,12 +19,7 @@ class MappingTool
     /**
      * @var array
      */
-    protected $mapping;
-
-    /**
-     * @var array
-     */
-    protected $ignoredFields = [
+    private $ignoredFields = [
         'type' => 'object',
         '_routing' => ['required' => true],
         'format' => 'dateOptionalTime',
@@ -33,41 +28,91 @@ class MappingTool
     /**
      * @var array
      */
-    protected $formatFields = [
-        '_ttl' => 'handleTime',
-    ];
+    private $formatFields = ['_ttl' => 'handleTime'];
 
     /**
-     * @param array $mapping
+     * @var array
      */
-    public function __construct($mapping = [])
+    private $removedTypes = [];
+
+    /**
+     * @var array
+     */
+    private $updatedTypes = [];
+
+    /**
+     * Compares two mappings and returns true if changes detected.
+     * 
+     * @param array $oldMapping
+     * @param array $newMapping
+     * 
+     * @return bool
+     */
+    public function checkMapping($oldMapping, $newMapping)
     {
-        $this->setMapping($mapping);
+        $updated = false;
+
+        // Find out which types don't exist anymore.
+        $typeDiff = array_diff_key($oldMapping, $newMapping);
+        foreach ($typeDiff as $oldTypeName => $oldType) {
+            $this->removedTypes[] = $oldTypeName;
+            $updated = true;
+        }
+
+        // Search for differences in types.
+        foreach ($newMapping as $type => $properties) {
+            $diff = null;
+            if (array_key_exists($type, $oldMapping)) {
+                $diff = $this->symDifference($properties, $oldMapping[$type]);
+            }
+
+            // Empty array type properties hasn't changed, NULL - new type.
+            if ($diff !== [] || $diff === null) {
+                $this->updatedTypes[$type] = $properties;
+                $updated = true;
+            }
+        }
+
+        return $updated;
     }
 
     /**
      * Returns symmetric difference.
      *
+     * @param array $oldMapping
      * @param array $newMapping
      *
      * @return array
      */
-    public function symDifference($newMapping)
+    public function symDifference($oldMapping, $newMapping)
     {
+        $oldMapping = $this->arrayFilterRecursive($oldMapping);
         $newMapping = $this->arrayFilterRecursive($newMapping);
 
         return array_replace_recursive(
-            $this->recursiveDiff($this->mapping, $newMapping),
-            $this->recursiveDiff($newMapping, $this->mapping)
+            $this->recursiveDiff($oldMapping, $newMapping),
+            $this->recursiveDiff($newMapping, $oldMapping)
         );
     }
 
     /**
-     * @param array $mapping
+     * Retuns type name which has been removed.
+     * 
+     * @return array
      */
-    public function setMapping($mapping)
+    public function getRemovedTypes()
     {
-        $this->mapping = $this->arrayFilterRecursive($mapping);
+        return $this->removedTypes;
+    }
+
+    /**
+     * Returns type names with new properties which has been updated.
+     * 
+     * @return array
+     */
+    public function getUpdatedTypes()
+    {
+        return $this->updatedTypes;
     }
 
     /**
@@ -78,7 +123,7 @@ class MappingTool
      *
      * @return array
      */
-    protected function recursiveDiff($compareFrom, $compareAgainst)
+    private function recursiveDiff($compareFrom, $compareAgainst)
     {
         $out = [];
 

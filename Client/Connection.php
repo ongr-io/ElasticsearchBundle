@@ -314,49 +314,35 @@ class Connection
         }
 
         $newMapping = $this->settings['body']['mappings'];
-        $indexName = $this->getIndexName();
         $oldMapping = $this
             ->client
             ->indices()
-            ->getMapping(['index' => $indexName]);
+            ->getMapping(['index' => $this->getIndexName()]);
+
+        if (array_key_exists($this->getIndexName(), $oldMapping)) {
+            $oldMapping = $oldMapping[$this->getIndexName()]['mappings'];
+        }
+
         $tool = new MappingTool();
-        $updated = false;
-        $quick = empty($oldMapping);
-        if (!$quick) {
-            $oldMapping = $oldMapping[$indexName]['mappings'];
-        }
+        $updated = $tool->checkMapping($oldMapping, $newMapping);
 
-        // Find out which types don't exist anymore.
-        $typeDiff = array_diff_key($oldMapping, $newMapping);
-        foreach ($typeDiff as $oldTypeName => $oldType) {
-            $this->client->indices()->deleteMapping(
-                [
-                    'index' => $indexName,
-                    'type' => $oldTypeName,
-                ]
-            );
-            $updated = true;
-        }
-
-        // Search for differences in types.
-        foreach ($newMapping as $type => $properties) {
-            $diff = null;
-            if (!$quick && array_key_exists($type, $oldMapping)) {
-                $tool->setMapping($properties);
-                $diff = $tool->symDifference($oldMapping[$type]);
-            }
-
-            if ($diff !== [] || $diff === null || $quick) {
-                $this->client->indices()->putMapping(
+        if ($updated) {
+            foreach ($tool->getRemovedTypes() as $type) {
+                $this->client->indices()->deleteMapping(
                     [
-                        'index' => $indexName,
+                        'index' => $this->getIndexName(),
                         'type' => $type,
-                        'body' => [
-                            $type => $properties
-                        ]
                     ]
                 );
-                $updated = true;
+            }
+            foreach ($tool->getUpdatedTypes() as $type => $properties) {
+                $this->client->indices()->putMapping(
+                    [
+                        'index' => $this->getIndexName(),
+                        'type' => $type,
+                        'body' => [$type => $properties],
+                    ]
+                );
             }
         }
 

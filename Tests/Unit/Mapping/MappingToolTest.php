@@ -93,8 +93,8 @@ class MappingToolTest extends \PHPUnit_Framework_TestCase
      */
     public function testSymDiff($array1, $array2, $expected)
     {
-        $tool = new MappingTool($array1);
-        $diff = $tool->symDifference($array2);
+        $tool = new MappingTool();
+        $diff = $tool->symDifference($array1, $array2);
 
         $this->assertEquals($expected, $diff);
     }
