@@ -19,24 +19,6 @@ use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 class ConnectionTest extends ElasticsearchTestCase
 {
     /**
-     * @return array
-     */
-    protected function getTestMapping()
-    {
-        return [
-            'product' => [
-                'properties' => [
-                    'id' => [
-                        'type' => 'string',
-                        'index' => 'not_analyzed',
-                    ],
-                    'title' => ['type' => 'string'],
-                ],
-            ],
-        ];
-    }
-
-    /**
      * Tests updateMapping with real data.
      */
     public function testUpdateMapping()
@@ -62,6 +44,20 @@ class ConnectionTest extends ElasticsearchTestCase
 
         $status = $connection->updateMapping();
         $this->assertTrue($status, 'Mapping should be updated');
+
+        $connection->forceMapping($this->getTestLessMapping());
+
+        $status = $connection->updateMapping();
+        $this->assertTrue($status, 'Mapping should be updated');
+
+        $clientMapping = $connection->getClient()->indices()->getMapping(
+            [
+                'index' => $connection->getIndexName(),
+                'type' => 'product',
+            ]
+        );
+
+        $this->assertArrayNotHasKey('category', $clientMapping[$connection->getIndexName()]['mappings']);
     }
 
     /**
@@ -100,5 +96,50 @@ class ConnectionTest extends ElasticsearchTestCase
 
         $this->setExpectedException('Elasticsearch\Common\Exceptions\Missing404Exception');
         $product = $repository->find('baz');
+    }
+
+    /**
+     * @return array
+     */
+    private function getTestMapping()
+    {
+        return [
+            'product' => [
+                'properties' => [
+                    'id' => [
+                        'type' => 'string',
+                        'index' => 'not_analyzed',
+                    ],
+                    'title' => ['type' => 'string'],
+                ],
+            ],
+            'category' => [
+                'properties' => [
+                    'id' => [
+                        'type' => 'string',
+                        'index' => 'not_analyzed',
+                    ],
+                    'title' => ['type' => 'string'],
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getTestLessMapping()
+    {
+        return [
+            'product' => [
+                'properties' => [
+                    'id' => [
+                        'type' => 'string',
+                        'index' => 'not_analyzed',
+                    ],
+                    'title' => ['type' => 'string'],
+                ],
+            ],
+        ];
     }
 }
