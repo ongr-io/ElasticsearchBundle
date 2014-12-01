@@ -15,6 +15,8 @@ use ONGR\ElasticsearchBundle\Service\JsonFormatter;
 class JsonFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * Data provider for testPrettify.
+     * 
      * @return array
      */
     public function getTestPrettifyData()
@@ -26,14 +28,7 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
             'total' => 0,
             'raw' => []
         ];
-        $pretty0 = <<<OUT
-{
-    "total": 0,
-    "raw": [
-        
-    ]
-}
-OUT;
+        $pretty0 = $this->getFileContents('formatted_0.json');
         $out[] = [
             json_encode($data0),
             $pretty0,
@@ -59,33 +54,7 @@ OUT;
                 ]
             ]
         ];
-        $pretty1 = <<<OUT
-{
-    "total": {
-        "hit": 1,
-        "name": "bunch"
-    },
-    "hits": [
-        {
-            "_id": 1
-        },
-        {
-            "_id": 2
-        }
-    ],
-    "0": {
-        "level1": {
-            "level2": {
-                "level3": {
-                    "level4": [
-                        
-                    ]
-                }
-            }
-        }
-    }
-}
-OUT;
+        $pretty1 = $this->getFileContents('formatted_1.json');
         $out[] = [
             json_encode($data1),
             $pretty1,
@@ -105,5 +74,24 @@ OUT;
     public function testPrettify($inlineJson, $prettyJson)
     {
         $this->assertEquals($prettyJson, JsonFormatter::prettify($inlineJson));
+    }
+
+    /**
+     * Returns file contents from fixture.
+     * 
+     * @param string $filename
+     *
+     * @return string
+     */
+    private function getFileContents($filename)
+    {
+        $contents = file_get_contents(__DIR__ . '/../../app/fixtures/JsonFormatter/' . $filename);
+
+        // Checks for new line at the end of file.
+        if (substr($contents, -1) == "\n") {
+            $contents = substr($contents, 0, -1);
+        }
+
+        return $contents;
     }
 }
