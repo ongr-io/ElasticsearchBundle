@@ -119,7 +119,7 @@ class ESDataCollector implements DataCollectorInterface
             if (!empty($record['context'])) {
                 $this->addTime($record['context']['duration']);
                 $this->data['queries'][$route][] = [
-                    'body' => trim($queryBody, "'"),
+                    'body' => JsonFormatter::prettify(trim($queryBody, "'")),
                     'method' => $record['context']['method'],
                     'uri' => $record['context']['uri'],
                     'time' => $record['context']['duration'] * 100,
