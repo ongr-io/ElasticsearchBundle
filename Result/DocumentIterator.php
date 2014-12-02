@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Result;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\Aggregations;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
+use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
 
 /**
  * This class is able to iterate over Elasticsearch result documents while casting data into models.
@@ -41,7 +42,7 @@ class DocumentIterator extends AbstractResultsIterator
     private $aggregations;
 
     /**
-     * @var Suggestions
+     * @var SuggestionIterator
      */
     private $suggestions;
 
@@ -143,12 +144,12 @@ class DocumentIterator extends AbstractResultsIterator
     /**
      * Returns suggestions.
      *
-     * @return Suggestions
+     * @return SuggestionIterator
      */
     public function getSuggestions()
     {
         if (isset($this->rawData['suggest'])) {
-            $this->suggestions = new Suggestions($this->rawData['suggest']);
+            $this->suggestions = new SuggestionIterator($this->rawData['suggest']);
 
             // Clear memory.
             unset($this->rawData['suggest']);

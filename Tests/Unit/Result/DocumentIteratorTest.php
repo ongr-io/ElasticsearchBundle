@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
+use ONGR\ElasticsearchBundle\Result\Suggestion\OptionIterator;
+use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
 
 class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -258,14 +260,16 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
             ],
             'suggest' => [
                 'foo' => [
-                    'text' => 'foobar',
-                    'offset' => 0,
-                    'length' => 6,
-                    'options' => [
-                        [
-                            'text' => 'foobar',
-                            'freq' => 77,
-                            'score' => 0.8888889,
+                    [
+                        'text' => 'foobar',
+                        'offset' => 0,
+                        'length' => 6,
+                        'options' => [
+                            [
+                                'text' => 'foobar',
+                                'freq' => 77,
+                                'score' => 0.8888889,
+                            ],
                         ],
                     ],
                 ],
@@ -273,12 +277,21 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
         ];
 
         $iterator = new DocumentIterator($rawData, [], []);
+        $suggestions = $iterator->getSuggestions();
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Result\Suggestions',
+            'ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator',
             $iterator->getSuggestions()
         );
-        $this->assertEquals($rawData['suggest']['foo'], $iterator->getSuggestions()['foo']);
+
+        $expectedSuggestion = new SuggestionEntry(
+            'foobar',
+            0,
+            6,
+            new OptionIterator($rawData['suggest']['foo'][0]['options'])
+        );
+
+        $this->assertEquals($expectedSuggestion, $suggestions['foo'][0]);
     }
 
     /**
