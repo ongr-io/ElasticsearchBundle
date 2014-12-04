@@ -16,9 +16,12 @@ use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\StatsAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
 class NestedAggregationTest extends ElasticsearchTestCase
 {
+    use TestHelperTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -38,7 +41,7 @@ class NestedAggregationTest extends ElasticsearchTestCase
                                 '_id' => 1,
                                 'title' => 'baz',
                                 'price' => 25,
-                            ]
+                            ],
                         ],
                     ],
                     [
@@ -47,7 +50,7 @@ class NestedAggregationTest extends ElasticsearchTestCase
                                 '_id' => 2,
                                 'title' => 'foo',
                                 'price' => 100,
-                            ]
+                            ],
                         ],
                     ],
                     [
@@ -56,7 +59,7 @@ class NestedAggregationTest extends ElasticsearchTestCase
                                 '_id' => 3,
                                 'title' => 'bar',
                                 'price' => 1000,
-                            ]
+                            ],
                         ],
                     ],
                 ],
@@ -122,7 +125,7 @@ class NestedAggregationTest extends ElasticsearchTestCase
         $out[] = [
             $aggregation,
             $result,
-            $mapping
+            $mapping,
         ];
 
         // Case #1 simple stats aggregation.
@@ -143,7 +146,7 @@ class NestedAggregationTest extends ElasticsearchTestCase
         $out[] = [
             $aggregation,
             $result,
-            $mapping
+            $mapping,
         ];
 
         return $out;
@@ -172,6 +175,6 @@ class NestedAggregationTest extends ElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('aggregations', $results);
-        $this->assertEquals($expectedResult, $results['aggregations']['agg_test_nested_agg']);
+        $this->assertArrayContainsArray($expectedResult, $results['aggregations']['agg_test_nested_agg']);
     }
 }

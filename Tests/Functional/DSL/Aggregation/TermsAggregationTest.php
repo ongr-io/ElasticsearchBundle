@@ -72,10 +72,6 @@ class TermsAggregationTest extends ElasticsearchTestCase
                         'key' => 'weak',
                         'doc_count' => 2,
                     ],
-                    [
-                        'key' => 'solid',
-                        'doc_count' => 1,
-                    ],
                 ],
             ],
         ];
@@ -259,6 +255,7 @@ class TermsAggregationTest extends ElasticsearchTestCase
      * Test for terms aggregation with range query and zero min_doc_count.
      *
      * @param TermsAggregation $aggregation
+     * @param array            $parameters
      * @param array            $expectedResult
      *
      * @dataProvider getTermsAggregationDataWithRangeQuery
@@ -274,6 +271,6 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('aggregations', $results);
-        $this->assertEquals($expectedResult, $results['aggregations']);
+        $this->assertArrayContainsArray($expectedResult, $results['aggregations']);
     }
 }
