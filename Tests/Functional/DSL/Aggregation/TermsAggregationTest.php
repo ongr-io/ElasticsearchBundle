@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
 use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
+use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
@@ -197,6 +198,44 @@ class TermsAggregationTest extends ElasticsearchTestCase
     }
 
     /**
+     * Data provider for testTermsAggregationWithRangeQuery.
+     *
+     * @return array
+     */
+    public function getTermsAggregationDataWithRangeQuery()
+    {
+        $out = [];
+
+        // Case #6 terms aggregation with zero minimum document count.
+        $aggregation = new TermsAggregation('test_agg');
+        $aggregation->setField('surface');
+        $aggregation->setMinDocumentCount(0);
+
+        $result = [
+            'agg_test_agg' => [
+                'buckets' => [
+                    [
+                        'key' => 'weak',
+                        'doc_count' => 2,
+                    ],
+                    [
+                        'key' => 'solid',
+                        'doc_count' => 0,
+                    ],
+                ],
+            ],
+        ];
+
+        $out[] = [
+            $aggregation,
+            [RangeQuery::GT => 15],
+            $result,
+        ];
+
+        return $out;
+    }
+
+    /**
      * Test for terms aggregation.
      *
      * @param TermsAggregation $aggregation
@@ -214,5 +253,27 @@ class TermsAggregationTest extends ElasticsearchTestCase
 
         $this->assertArrayHasKey('aggregations', $results);
         $this->assertArrayContainsArray($expectedResult, $results['aggregations']);
+    }
+
+    /**
+     * Test for terms aggregation with range query and zero min_doc_count.
+     *
+     * @param TermsAggregation $aggregation
+     * @param array            $expectedResult
+     *
+     * @dataProvider getTermsAggregationDataWithRangeQuery
+     */
+    public function testTermsAggregationWithRangeQuery($aggregation, $parameters, $expectedResult)
+    {
+        /** @var Repository $repo */
+        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+
+        $rangeQuery = new RangeQuery('price', $parameters);
+
+        $search = $repo->createSearch()->addQuery($rangeQuery)->addAggregation($aggregation);
+        $results = $repo->execute($search, Repository::RESULTS_RAW);
+
+        $this->assertArrayHasKey('aggregations', $results);
+        $this->assertEquals($expectedResult, $results['aggregations']);
     }
 }
