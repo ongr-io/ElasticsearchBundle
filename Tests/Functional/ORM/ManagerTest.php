@@ -145,7 +145,8 @@ class ManagerTest extends ElasticsearchTestCase
         $product->links = new \ArrayIterator([new UrlObject(), new CdnObject()]);
         $out[] = [
             $product,
-            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject, got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject.',
+            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject, ' .
+            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject.',
         ];
 
         // Case #3: invalid type of object is set in single field.
@@ -156,7 +157,8 @@ class ManagerTest extends ElasticsearchTestCase
         $product->links = [$url];
         $out[] = [
             $product,
-            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject, got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject.',
+            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject, ' .
+            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject.',
         ];
 
         return $out;

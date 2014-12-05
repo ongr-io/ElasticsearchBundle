@@ -22,6 +22,7 @@ use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\PhraseOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
+use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class SuggestionsIteratorTest extends ElasticsearchTestCase
@@ -113,7 +114,7 @@ class SuggestionsIteratorTest extends ElasticsearchTestCase
         // Case #3, Multiple suggesters.
         $term = new Term('description', 'ipsu');
         $phrase = new Phrase('description', 'Lorm adip');
-        $expectedOptions = [new TermOption('ipsum', 0.0, 3), new SimpleOption('lorem adip', 0.0)];
+        $expectedOptions = [new SimpleOption('lorem adip', 0.0), new TermOption('ipsum', 0.0, 3)];
 
         $out[] = ['suggesters' => [$term, $phrase], 'expectedOptions' => $expectedOptions];
 
@@ -121,9 +122,9 @@ class SuggestionsIteratorTest extends ElasticsearchTestCase
         $term = new Term('description', 'distibutd');
         $phrase = new Phrase('description', 'Lorm adip');
         $expectedOptions = [
+            new SimpleOption('lorem adip', 0.0),
             new TermOption('disributed', 0.0, 1),
             new TermOption('distributed', 0.0, 1),
-            new SimpleOption('lorem adip', 0.0),
         ];
 
         $out[] = ['suggesters' => [$term, $phrase], 'expectedOptions' => $expectedOptions];
@@ -170,13 +171,21 @@ class SuggestionsIteratorTest extends ElasticsearchTestCase
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
-        $suggestions = $iterator->getSuggestions();
+        $suggestions = iterator_to_array($iterator->getSuggestions());
+
+        sort($suggestions);
+        sort($expectedOptions);
 
         $optionCount = 0;
+        /** @var SuggestionEntry[] $suggestionEntries */
         foreach ($suggestions as $suggestionEntries) {
             foreach ($suggestionEntries as $suggestionEntry) {
                 $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry', $suggestionEntry);
-                foreach ($suggestionEntry->getOptions() as $option) {
+                $options = iterator_to_array($suggestionEntry->getOptions());
+                sort($options);
+
+                /** @var SimpleOption $option */
+                foreach ($options as $option) {
                     $option->setScore(0.0);
                     $this->assertEquals($expectedOptions[$optionCount++], $option);
                 }
