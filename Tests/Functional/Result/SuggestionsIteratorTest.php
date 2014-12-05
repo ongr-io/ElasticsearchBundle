@@ -158,7 +158,7 @@ class SuggestionsIteratorTest extends ElasticsearchTestCase
     public function testSuggestionIteration($suggesters, $expectedOptions)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
 
@@ -191,7 +191,7 @@ class SuggestionsIteratorTest extends ElasticsearchTestCase
     public function testSuggestionProperties()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
         $search->addSuggester(new Phrase('description', 'Lorm adip', 'test'));

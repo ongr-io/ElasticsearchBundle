@@ -93,7 +93,7 @@ class QueryStringTest extends ElasticsearchTestCase
     public function testQueryStringQuery($query, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $queryStringQuery = new QueryStringQuery($query, $parameters);
 

@@ -97,7 +97,7 @@ class SearchTest extends ElasticsearchTestCase
     {
         parent::setUp();
 
-        $this->repository = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $this->repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
     }
 
     /**

@@ -304,7 +304,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
     {
         foreach ($iterator as $key => $item) {
             $this->assertInstanceOf(
-                'ONGR\TestingBundle\Document\Content',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
                 $item
             );
             $this->assertEquals($expectedHeaders[$key], $item->header);
@@ -321,7 +321,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
     private function getBundleMapping()
     {
         return [
-            'ONGRTestingBundle:Content' => [
+            'AcmeTestBundle:Content' => [
                 'setters' => [
                     'header' => [
                         'exec' => false,
@@ -331,7 +331,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                 'properties' => [
                     'header' => ['type' => 'string']
                 ],
-                'namespace' => 'ONGR\TestingBundle\Document\Content',
+                'namespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
             ],
         ];
     }
@@ -343,6 +343,6 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
      */
     private function getTypesMapping()
     {
-        return ['content' => 'ONGRTestingBundle:Content'];
+        return ['content' => 'AcmeTestBundle:Content'];
     }
 }

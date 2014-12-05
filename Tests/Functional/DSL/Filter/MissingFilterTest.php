@@ -45,7 +45,7 @@ class MissingFilterTest extends ElasticsearchTestCase
     public function testMissingFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $missing = new MissingFilter('price');
         $search = $repo->createSearch()->addFilter($missing);
 

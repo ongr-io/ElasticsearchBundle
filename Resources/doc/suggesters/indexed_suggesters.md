@@ -125,7 +125,7 @@ class PriceLocationSuggesting implements ContextSuggesterInterface
     /**
      * @var object
      *
-     * @ES\Property(type="object", objectName="ONGRTestingBundle:PriceLocationContext", name="context")
+     * @ES\Property(type="object", objectName="AcmeDemoBundle:PriceLocationContext", name="context")
      */
     private $context;
 }
@@ -138,7 +138,7 @@ And you also need to define your context object, for example.
 ```php
 <?php
 
-namespace ONGR\TestingBundle\Document;
+namespace Acme\DemoBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 

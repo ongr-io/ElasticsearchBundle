@@ -56,7 +56,7 @@ class TermTest extends ElasticsearchTestCase
         $term = new Term('description', 'ipsu');
         $term->setAnalyzer('simple');
 
-        $repository = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $search = $repository->createSearch()->addSuggester($term);
 
         $raw = $repository->execute($search, Repository::RESULTS_RAW);

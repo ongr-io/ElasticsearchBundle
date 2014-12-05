@@ -84,7 +84,7 @@ class MatchTest extends ElasticsearchTestCase
     public function testMatchQuery($query, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $matchQuery = new MatchQuery($query, 'description', $parameters);
 

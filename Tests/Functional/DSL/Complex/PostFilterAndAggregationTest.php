@@ -73,7 +73,7 @@ class PostFilterAndAggregationTest extends ElasticsearchTestCase
      */
     public function testBoolWithFuzzyQueryAndSortFilter()
     {
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $search = $repo->createSearch();
 
         $rangeFilter = new RangeFilter('price', ['from' => 200, 'to' => 999]);

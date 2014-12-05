@@ -51,7 +51,7 @@ class TypeFilterTest extends ElasticsearchTestCase
     public function testTypeFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $type = new TypeFilter('product');
         $search = $repo->createSearch()->addFilter($type);
 

@@ -83,7 +83,7 @@ class IdsTest extends ElasticsearchTestCase
     public function testIdsQuery($values, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $idsQuery = new IdsQuery($values);
         $search = $repo->createSearch()->addQuery($idsQuery);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);

@@ -39,7 +39,7 @@ class IndexImportCommandTest extends ElasticsearchTestCase
         );
 
         $manager = $this->getManager('default', false);
-        $repo = $manager->getRepository('ONGRTestingBundle:Product');
+        $repo = $manager->getRepository('AcmeTestBundle:Product');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());

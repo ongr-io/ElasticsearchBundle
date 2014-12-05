@@ -66,7 +66,7 @@ class PhraseTest extends ElasticsearchTestCase
             ]
         );
 
-        $repository = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $search = $repository->createSearch()->addSuggester($phrase);
 
         $results = $repository->execute($search, Repository::RESULTS_RAW);

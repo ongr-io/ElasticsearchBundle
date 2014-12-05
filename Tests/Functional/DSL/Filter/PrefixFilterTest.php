@@ -45,7 +45,7 @@ class PrefixFilterTest extends ElasticsearchTestCase
     public function testPrefixFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $prefix = new PrefixFilter('title', 'f', ['_cache' => true]);
         $search = $repo->createSearch()->addFilter($prefix);
 

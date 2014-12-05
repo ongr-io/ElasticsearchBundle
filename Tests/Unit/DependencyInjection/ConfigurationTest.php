@@ -38,7 +38,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'acme' => [
                     'connection' => 'acme',
                     'debug' => false,
-                    'mappings' => ['ONGRTestingBundle'],
+                    'mappings' => ['AcmeTestBundle'],
                 ],
             ],
             'document_dir' => 'Document',
@@ -56,7 +56,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['ONGRTestingBundle'],
+                        'mappings' => ['AcmeTestBundle'],
                     ],
                 ],
             ],
@@ -77,7 +77,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['ONGRTestingBundle'],
+                        'mappings' => ['AcmeTestBundle'],
                     ],
                 ],
             ],
@@ -96,7 +96,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['ONGRTestingBundle'],
+                        'mappings' => ['AcmeTestBundle'],
                     ],
                 ],
             ],
@@ -117,7 +117,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['ONGRTestingBundle'],
+                        'mappings' => ['AcmeTestBundle'],
                     ],
                 ],
             ],
@@ -167,7 +167,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'acme' => [
                         'connection' => 'acme',
-                        'mappings' => ['ONGRTestingBundle'],
+                        'mappings' => ['AcmeTestBundle'],
                     ],
                 ],
             ],

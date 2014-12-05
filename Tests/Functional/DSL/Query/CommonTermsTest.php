@@ -104,7 +104,7 @@ class CommonTermsTest extends ElasticsearchTestCase
     public function testCommonTermsQuery($query, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $commonTermsQuery = new CommonTermsQuery('description', $query, $parameters);
 

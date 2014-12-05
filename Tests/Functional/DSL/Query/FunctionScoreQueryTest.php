@@ -60,7 +60,7 @@ class FunctionScoreQueryTest extends ElasticsearchTestCase
     public function testFunctionScoreQuery()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $functions = [
             'field_value_factor' => [

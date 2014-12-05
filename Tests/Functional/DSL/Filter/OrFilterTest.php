@@ -108,7 +108,7 @@ class OrFilterTest extends ElasticsearchTestCase
     public function testOrFilter($termFieldOne, $termValueOne, $termFieldTwo, $termValueTwo, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $filters = [
             new TermFilter($termFieldOne, $termValueOne),

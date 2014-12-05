@@ -90,7 +90,7 @@ class QueryFilterTest extends ElasticsearchTestCase
     public function testQueryFilter($query, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $not = new QueryFilter($query, $parameters);
         $search = $repo->createSearch()->addFilter($not);
 

@@ -87,7 +87,7 @@ class ContextTest extends ElasticsearchTestCase
         $context->addContext($geoContext);
         $context->addContext($categoryContext);
 
-        $repository = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $search = $repository->createSearch()->addSuggester($context);
         $result = $repository->execute($search, Repository::RESULTS_RAW);
 
@@ -127,7 +127,7 @@ class ContextTest extends ElasticsearchTestCase
         $context->addContext($geoContext);
         $context->addContext($categoryContext);
 
-        $repository = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $search = $repository->createSearch()->addSuggester($context);
         $result = $repository->execute($search, Repository::RESULTS_RAW);
 

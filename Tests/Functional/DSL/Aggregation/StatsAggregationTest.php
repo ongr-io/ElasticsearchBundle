@@ -51,7 +51,7 @@ class StatsAggregationTest extends ElasticsearchTestCase
     public function testStatsAggregation()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $aggregation = new StatsAggregation('test_agg');
         $aggregation->setField('price');

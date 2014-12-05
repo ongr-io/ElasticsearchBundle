@@ -89,7 +89,7 @@ class NotFilterTest extends ElasticsearchTestCase
     public function testNotFilter($missingField, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $missing = new MissingFilter($missingField);
         $not = new NotFilter($missing, $parameters);
         $search = $repo->createSearch()->addFilter($not);

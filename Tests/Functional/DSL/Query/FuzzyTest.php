@@ -88,7 +88,7 @@ class FuzzyTest extends ElasticsearchTestCase
     public function testFuzzyQuery($field, $value, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $fuzzyQuery = new FuzzyQuery($field, $value, $parameters);
         $search = $repo->createSearch()->addQuery($fuzzyQuery);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);

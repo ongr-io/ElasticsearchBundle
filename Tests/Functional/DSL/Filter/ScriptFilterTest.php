@@ -98,7 +98,7 @@ class ScriptFilterTest extends ElasticsearchTestCase
     public function testScriptFilter($script, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $script = new ScriptFilter($script, $parameters);
         $search = $repo->createSearch()->addFilter($script);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);

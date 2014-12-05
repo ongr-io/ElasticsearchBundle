@@ -57,7 +57,7 @@ class FieldTest extends ElasticsearchTestCase
     public function testHighlightedField()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $termQuery = new TermQuery('title', 'foo');
 
@@ -96,7 +96,7 @@ class FieldTest extends ElasticsearchTestCase
     public function testFieldHighlightQuery()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $termQuery = new TermQuery('title', 'foo');
 
@@ -123,7 +123,7 @@ class FieldTest extends ElasticsearchTestCase
     public function testNoMatchSize()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $termQuery = new TermQuery('description', 'description');
 

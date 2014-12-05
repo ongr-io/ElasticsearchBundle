@@ -30,7 +30,7 @@ class MappingPassTest extends WebTestCase
         $container = $this->createClient()->getContainer();
 
         $this->assertArrayHasKey(
-            'ONGRTestingBundle',
+            'AcmeTestBundle',
             $container->getParameter('kernel.bundles'),
             'Test bundle is not loaded.'
         );
@@ -42,7 +42,7 @@ class MappingPassTest extends WebTestCase
         $connection = $container->get('es.manager')->getConnection();
         $productMapping = $connection->getMapping('product');
         $expectedMapping = $mappingService->getMappingByNamespace(
-            'ONGR\TestingBundle\Document\Product'
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product'
         );
 
         $this->assertEquals($expectedMapping['product']['properties'], $productMapping['properties']);

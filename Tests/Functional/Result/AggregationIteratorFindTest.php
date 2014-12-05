@@ -120,7 +120,7 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
     public function testIteration($path, $expected)
     {
         $aggregation = $this->buildAggregation();
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search);
         $result = $results->getAggregations()->find($path);
