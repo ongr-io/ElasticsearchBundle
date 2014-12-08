@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
+use ONGR\ElasticsearchBundle\Document\Warmer\WarmerInterface;
+use ONGR\ElasticsearchBundle\DSL\Search;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -41,6 +43,7 @@ class MappingPass implements CompilerPassInterface
                 );
             }
 
+            $managerName = strtolower($managerName);
             $client = new Definition('Elasticsearch\Client', [$parameters]);
             $clientConnection = new Definition(
                 'ONGR\ElasticsearchBundle\Client\Connection',
@@ -49,6 +52,7 @@ class MappingPass implements CompilerPassInterface
                     $index,
                 ]
             );
+            $this->setWarmers($clientConnection, $settings['connection'], $container);
 
             $bundlesMetadata = [];
             $typeMapping = [];
@@ -72,8 +76,6 @@ class MappingPass implements CompilerPassInterface
                     $bundlesMetadata,
                 ]
             );
-
-            $managerName = strtolower($managerName);
 
             $container->setDefinition(
                 sprintf('es.manager.%s', $managerName),
@@ -162,5 +164,34 @@ class MappingPass implements CompilerPassInterface
         }
 
         return $index;
+    }
+
+    /**
+     * Returns warmers for client.
+     *
+     * @param Definition       $connectionDefinition
+     * @param string           $connection
+     * @param ContainerBuilder $container
+     *
+     * @return array
+     * @throws \LogicException If connection is not found.
+     */
+    private function setWarmers($connectionDefinition, $connection, ContainerBuilder $container)
+    {
+        $warmers = [];
+        foreach ($container->findTaggedServiceIds('es.warmer') as $id => $tags) {
+            if (array_key_exists('connection', $tags[0])) {
+                $connections = [];
+                if (strpos($tags[0]['connection'], ',')) {
+                    $connections = explode(',', $tags[0]['connection']);
+                }
+
+                if (in_array($connection, $connections) || $tags[0]['connection'] === $connection) {
+                    $connectionDefinition->addMethodCall('addWarmer', [new Reference($id)]);
+                }
+            }
+        }
+
+        return $warmers;
     }
 }

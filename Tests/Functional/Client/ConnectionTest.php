@@ -142,4 +142,23 @@ class ConnectionTest extends ElasticsearchTestCase
             ],
         ];
     }
+
+    /**
+     * Tests if warmers are being loaded.
+     */
+    public function testWarmers()
+    {
+        $manager = $this->getManager('default', false);
+        $connection = $manager->getConnection();
+        $connection->dropAndCreateIndex(true);
+
+        $warmers = $connection->getClient()->indices()->getWarmer(
+            [
+                'index' => $connection->getIndexName(),
+                'name' => '*',
+            ]
+        );
+
+        $this->assertArrayHasKey('test_foo_warmer', $warmers[$connection->getIndexName()]['warmers']);
+    }
 }
