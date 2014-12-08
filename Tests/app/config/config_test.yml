@@ -34,4 +34,4 @@ services:
     es_test.foo.warmer:
         class: ONGR\ElasticsearchBundle\Tests\app\fixtures\Warmer\FooWarmer
         tags:
-            - { name: es.warmer, connection: default }
+            - { name: es.warmer, connection: "default,bar" }
