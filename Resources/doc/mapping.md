@@ -50,7 +50,7 @@ elasticsearch:
 
 In the settings node user may choose a specific configuration for that connection with index settings.
 
-In managers configuration `mappings` is optional. If there are no mappings defined it will look up through all bundles `Document` folders. If `debug` is set to true, profiler and logging will be enbaled (by default it is set to false).
+In managers configuration `mappings` is optional. If there are no mappings defined it will look up through all bundles `Document` folders. If `debug` is set to true, profiler and logging will be enabled (by default it is set to false).
 
 
 ### Document mapping

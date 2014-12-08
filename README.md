@@ -14,9 +14,19 @@ Technical goodies:
 - Registers console commands for index and types management and data import / export.
 - Designed in an extensible way for all your custom needs.
 
-## Installation
+[![Build Status](https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master)](https://travis-ci.org/ongr-io/ElasticsearchBundle)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master)
+[![Total Downloads](https://poser.pugx.org/ongr/elasticsearch-bundle/downloads.svg)](https://packagist.org/packages/ongr/elasticsearch-bundle)
+[![Latest Stable Version](https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable.svg)](https://packagist.org/packages/ongr/elasticsearch-bundle)
+[![Latest Unstable Version](https://poser.pugx.org/ongr/elasticsearch-bundle/v/unstable.svg)](https://packagist.org/packages/ongr/elasticsearch-bundle)
+[![License](https://poser.pugx.org/ongr/elasticsearch-bundle/license.svg)](https://packagist.org/packages/ongr/elasticsearch-bundle)
 
-Installation instructions can be found in the [documentation](https://github.com/ongr-io/ElasticsearchBundle/blob/master/Resources/doc/setup.md)
+## Documentation
+
+Documentation for ONGRElasticsearchBundle can be found in `Resources/doc/index.md`
+
+[Read the documentation (master)](https://github.com/ongr-io/ElasticsearchBundle/blob/master/Resources/doc/index.md)
 
 ## License
 
