@@ -174,6 +174,7 @@ class Connection
      */
     public function search(array $types, array $query, array $queryStringParams = [])
     {
+        $params = [];
         $params['index'] = $this->getIndexName();
         $params['type'] = implode(',', $types);
         $params['body'] = $query;
@@ -196,6 +197,7 @@ class Connection
      */
     public function scroll($scrollId, $scrollDuration)
     {
+        $params = [];
         $params['scroll_id'] = $scrollId;
         $params['scroll'] = $scrollDuration;
 
