@@ -17,4 +17,4 @@ Main things you should know while working with this bundle.
 
 More specific features and usages that you might need.
 
-- (Coming soon)
+- [Warmers](warmers.md)
