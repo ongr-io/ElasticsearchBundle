@@ -19,30 +19,6 @@ class MappingTool
     /**
      * @var array
      */
-    private $ignoredFields = [
-        'type' => 'object',
-        '_routing' => ['required' => true],
-        'format' => 'dateOptionalTime',
-        'max_input_length' => 50,
-        'preserve_separators' => true,
-        'preserve_position_increments' => true,
-        'index_analyzer' => 'simple',
-        'search_analyzer' => 'simple',
-        'analyzer' => 'simple',
-        'payloads' => false,
-    ];
-
-    /**
-     * @var array
-     */
-    protected $formatFields = [
-        '_ttl' => 'handleTime',
-        'precision' => 'handlePrecision',
-    ];
-
-    /**
-     * @var array
-     */
     private $removedTypes = [];
 
     /**
@@ -96,9 +72,6 @@ class MappingTool
      */
     public function symDifference($oldMapping, $newMapping)
     {
-        $oldMapping = $this->arrayFilterRecursive($oldMapping);
-        $newMapping = $this->arrayFilterRecursive($newMapping);
-
         return array_replace_recursive(
             $this->recursiveDiff($oldMapping, $newMapping),
             $this->recursiveDiff($newMapping, $oldMapping)
@@ -106,8 +79,8 @@ class MappingTool
     }
 
     /**
-     * Retuns type name which has been removed.
-     * 
+     * Returns type name which has been removed.
+     *
      * @return array
      */
     public function getRemovedTypes()
@@ -188,64 +161,5 @@ class MappingTool
         }
 
         return $count;
-    }
-
-    /**
-     * Filters fields not returned by elastica mapping e.g. 'type' of value 'object'.
-     *
-     * @param array $array
-     *
-     * @return array
-     */
-    private function arrayFilterRecursive(array $array)
-    {
-        foreach ($array as $key => $value) {
-            if (array_key_exists($key, $this->ignoredFields) && $this->ignoredFields[$key] == $array[$key]) {
-                unset($array[$key]);
-                continue;
-            }
-
-            if (array_key_exists($key, $this->formatFields)) {
-                $array[$key] = call_user_func([$this, $this->formatFields[$key]], $array[$key]);
-            }
-
-            if (is_array($array[$key])) {
-                $array[$key] = $this->arrayFilterRecursive($array[$key]);
-            }
-        }
-
-        return $array;
-    }
-
-    /**
-     * Change time formats to fit elasticsearch.
-     *
-     * @param array $value
-     *
-     * @return array
-     */
-    private function handleTime($value)
-    {
-        if (!isset($value['default']) || !is_string($value['default'])) {
-            return $value;
-        }
-
-        $value['default'] = DateHelper::parseString($value['default']);
-
-        return $value;
-    }
-
-    /**
-     * Handles precision.
-     *
-     * @param array|string $value
-     *
-     * @return array
-     */
-    private function handlePrecision($value)
-    {
-        // TODO: currently precision is not checked. Issue #46.
-
-        return [];
     }
 }
