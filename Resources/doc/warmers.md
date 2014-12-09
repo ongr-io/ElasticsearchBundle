@@ -41,7 +41,7 @@ As you notice we can define multiple connections to load warmers to, just be sur
 
 ## Putting warmers into index.
 
-The easiet way to load warmers are through Commands (Coming Soon).
+The easiet way to load warmers are through [Commands](commands.md).
 
 Also we can load them manually. f.e.
 

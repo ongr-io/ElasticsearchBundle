@@ -223,6 +223,8 @@ class Connection
         $this->client->indices()->create($this->settings);
 
         if ($putWarmers) {
+            // Sometimes Elasticsearch gives service unavailable.
+            usleep(200000);
             $this->putWarmers();
         }
     }

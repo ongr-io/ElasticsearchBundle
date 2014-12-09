@@ -27,15 +27,24 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         return [
             [
                 'bar',
-                false,
+                [
+                    'timestamp' => false,
+                    'warm' => false,
+                ],
             ],
             [
                 'default',
-                false,
+                [
+                    'timestamp' => false,
+                    'warm' => true,
+                ],
             ],
             [
                 'default',
-                true,
+                [
+                    'timestamp' => true,
+                    'warm' => false,
+                ],
             ],
         ];
     }
@@ -44,11 +53,11 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
      * Tests creating index. Configuration from tests yaml.
      *
      * @param string $argument
-     * @param bool   $hasTimestamp
+     * @param array  $options
      *
      * @dataProvider getTestExecuteData
      */
-    public function testExecute($argument, $hasTimestamp)
+    public function testExecute($argument, $options)
     {
         $manager = $this->getManager($argument, false);
 
@@ -67,9 +76,13 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
             'command' => $command->getName(),
             '--manager' => $argument,
         ];
-        if ($hasTimestamp) {
+        if ($options['timestamp']) {
             $arguments['--time'] = null;
         }
+        if ($options['warm']) {
+            $arguments['--with-warmers'] = null;
+        }
+
         $commandTester->execute($arguments);
 
         $indexName = $this->extractIndexName($commandTester);
