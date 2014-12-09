@@ -161,7 +161,7 @@ class Repository
      * @param Search $search
      * @param string $resultsType
      *
-     * @return DocumentIterator|array
+     * @return DocumentIterator|DocumentScanIterator|RawResultIterator|array
      *
      * @throws \Exception
      */
@@ -264,7 +264,7 @@ class Repository
      * @param string $resultsType
      * @param string $scrollDuration
      *
-     * @return DocumentIterator|DocumentScanIterator|array
+     * @return DocumentIterator|DocumentScanIterator|RawResultIterator|array
      *
      * @throws \Exception
      */
@@ -285,6 +285,7 @@ class Repository
 
                     return $iterator;
                 }
+
                 return new DocumentIterator(
                     $raw,
                     $this->manager->getTypesMapping(),
@@ -304,6 +305,7 @@ class Repository
 
                     return $iterator;
                 }
+
                 return new RawResultIterator($raw);
             default:
                 throw new \Exception('Wrong results type selected');

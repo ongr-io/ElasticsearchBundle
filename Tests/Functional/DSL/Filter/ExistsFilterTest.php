@@ -55,7 +55,7 @@ class ExistsFilterTest extends ElasticsearchTestCase
             [
                 'title' => 'bar',
                 'price' => 100,
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $results);

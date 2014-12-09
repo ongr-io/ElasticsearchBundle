@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\SpanTermQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * SpanTerm query functional test.
+ */
 class SpanTermTest extends ElasticsearchTestCase
 {
     /**

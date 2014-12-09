@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 /**
- * Match query functional test
+ * Match query functional test.
  */
 class MatchTest extends ElasticsearchTestCase
 {

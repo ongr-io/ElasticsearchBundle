@@ -20,16 +20,19 @@ use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Search functional test.
+ */
 class SearchTest extends ElasticsearchTestCase
 {
     /**
-     * {@inheritdoc}
+     * @var Repository $repository
      */
-
-    /** @var Repository */
-
     protected $repository;
 
+    /**
+     * @return array
+     */
     protected function getDataArray()
     {
         return [
@@ -194,13 +197,12 @@ class SearchTest extends ElasticsearchTestCase
         $postFilter1 = new IdsFilter(['1']);
         $postFilter2 = new IdsFilter(['3']);
 
-
         $search = $this->repository->createSearch()
             ->addQuery(new MatchAllQuery())
             ->addPostFilter($postFilter1, 'should')
             ->addPostFilter($postFilter2, 'should');
 
-        $results=$this->getSearchResultsArray($search);
+        $results = $this->getSearchResultsArray($search);
 
         $expected = [
             $this->getProductsArray()[0],

@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\MoreLikeThisQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * More like this query functional test.
+ */
 class MoreLikeThisTest extends ElasticsearchTestCase
 {
     /**

@@ -17,7 +17,7 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 /**
- * function_score query functional test
+ * Function_score query functional test.
  */
 class FunctionScoreQueryTest extends ElasticsearchTestCase
 {

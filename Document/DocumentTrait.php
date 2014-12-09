@@ -13,6 +13,9 @@ namespace ONGR\ElasticsearchBundle\Document;
 
 use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
 
+/**
+ * Trait with common document fields and methods.
+ */
 trait DocumentTrait
 {
     /**
@@ -201,7 +204,7 @@ trait DocumentTrait
     /**
      * Sets time to live timestamp.
      *
-     * @param int $ttl
+     * @param string $ttl
      *
      * @return DocumentInterface
      */

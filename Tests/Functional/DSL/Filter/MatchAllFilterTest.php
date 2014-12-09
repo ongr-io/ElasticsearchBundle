@@ -49,7 +49,7 @@ class MatchAllFilterTest extends ElasticsearchTestCase
         $expected = [
             [
                 'title' => 'foo',
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $results);

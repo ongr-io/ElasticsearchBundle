@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\WildcardQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Wildcard query functional test.
+ */
 class WildcardTest extends ElasticsearchTestCase
 {
     /**

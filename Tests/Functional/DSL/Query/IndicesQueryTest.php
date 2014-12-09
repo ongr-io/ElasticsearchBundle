@@ -16,6 +16,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Indices query functional test.
+ */
 class IndicesQueryTest extends ElasticsearchTestCase
 {
     /**

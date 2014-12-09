@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\SimpleQueryStringQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * SimpleQueryStringQuery query functional test.
+ */
 class SimpleQueryStringTest extends ElasticsearchTestCase
 {
     /**

@@ -54,7 +54,7 @@ class MissingFilterTest extends ElasticsearchTestCase
         $expected = [
             [
                 'title' => 'foo',
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $results);

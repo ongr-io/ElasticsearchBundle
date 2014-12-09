@@ -28,7 +28,7 @@ class TypeFilterTest extends ElasticsearchTestCase
                     [
                         '_id' => 1,
                         'title' => 'foo',
-                    ]
+                    ],
                 ],
                 'category' => [
                     [
@@ -60,7 +60,7 @@ class TypeFilterTest extends ElasticsearchTestCase
         $expected = [
             [
                 'title' => 'foo',
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $results);

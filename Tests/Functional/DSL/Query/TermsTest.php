@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\TermsQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Terms query functional test.
+ */
 class TermsTest extends ElasticsearchTestCase
 {
     /**

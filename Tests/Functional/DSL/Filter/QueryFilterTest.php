@@ -30,7 +30,7 @@ class QueryFilterTest extends ElasticsearchTestCase
                     [
                         '_id' => 1,
                         'title' => 'foo',
-                        'description' => 'super foo'
+                        'description' => 'super foo',
                     ],
                     [
                         '_id' => 2,
