@@ -60,6 +60,14 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
             $pretty1,
         ];
 
+        // Case #2: no data.
+        $data2 = [new \stdClass(), [] ];
+        $pretty2 = $this->getFileContents('formatted_2.json');
+        $out[] = [
+            json_encode($data2),
+            $pretty2,
+        ];
+
         return $out;
     }
 

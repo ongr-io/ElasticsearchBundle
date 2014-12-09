@@ -21,8 +21,6 @@ class JsonFormatter
      * @param string $json
      *
      * @return string
-     * 
-     * TODO: don't put new lines if array or object is empty.
      */
     public static function prettify($json)
     {
@@ -53,7 +51,15 @@ class JsonFormatter
             }
 
             if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
-                $result .= $newLine;
+                $nextChar = (isset($json[$i + 1]) ? $json[$i + 1] : '');
+
+                if ($nextChar != ']' && $nextChar != '}') {
+                    $result .= $newLine;
+                } else {
+                    $result .= $nextChar;
+                    $i++;
+                    continue;
+                }
                 if ($char == '{' || $char == '[') {
                     $pos++;
                 }
