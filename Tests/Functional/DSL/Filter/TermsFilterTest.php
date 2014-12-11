@@ -51,7 +51,7 @@ class TermsFilterTest extends ElasticsearchTestCase
     public function testTermsFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $field = 'user';
         $terms = [

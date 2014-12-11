@@ -85,7 +85,7 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
      */
     private function getFileContents($filename)
     {
-        $contents = file_get_contents(__DIR__ . '/../../app/fixtures/JsonFormatter/' . $filename);
+        $contents = file_get_contents(__DIR__ . '/../../app/fixture/JsonFormatter/' . $filename);
 
         // Checks for new line at the end of file.
         if (substr($contents, -1) == "\n") {

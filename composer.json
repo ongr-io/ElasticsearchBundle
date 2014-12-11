@@ -18,7 +18,8 @@
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.4",
-        "ongr/testing-bundle": "~1.0"
+        "phpunit/phpunit": "~4.1",
+        "squizlabs/php_codesniffer": "~1.5"
     },
     "autoload": {
         "psr-4": { "ONGR\\ElasticsearchBundle\\": "" }

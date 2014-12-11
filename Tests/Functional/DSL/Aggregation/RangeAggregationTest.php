@@ -147,7 +147,7 @@ class RangeAggregationTest extends ElasticsearchTestCase
     public function testRangeAggregation($aggregation, $expectedResult)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $rangeAggregation = new RangeAggregation($aggregation['name']);
         $rangeAggregation->setField($aggregation['field']);

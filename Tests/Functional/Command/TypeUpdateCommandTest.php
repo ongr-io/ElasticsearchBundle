@@ -60,7 +60,7 @@ class TypeUpdateCommandTest extends WebTestCase
         $this->manager = $this->container->get('es.manager');
 
         // Set up custom document to test mapping with.
-        $this->documentDir = $this->container->get('kernel')->locateResource('@ONGRTestingBundle/Document/');
+        $this->documentDir = $this->container->get('kernel')->locateResource('@AcmeTestBundle/Document/');
         $this->file = $this->documentDir . 'Article.php';
 
         // Create index for testing.

@@ -135,7 +135,7 @@ class BoolTestWithFuzzyQueryAndSortFilterTest extends ElasticsearchTestCase
     public function testBoolWithFuzzyQueryAndSortFilter($field, $value, $parameters, $sort_field, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $FuzzyQuery = new FuzzyQuery($field, $value, $parameters);
         $SortFilter = new Sort($sort_field);
         $search = $repo->createSearch()->addQuery($FuzzyQuery);

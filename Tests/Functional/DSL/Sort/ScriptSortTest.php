@@ -95,7 +95,7 @@ class ScriptSortTest extends ElasticsearchTestCase
     public function testScriptSort($sorts, $expectedIds)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $search = $repo->createSearch();
         foreach ($sorts as $sort) {
             $search->addSort(new ScriptSort($sort['script'], $sort['type'], $sort['params'], $sort['order']));

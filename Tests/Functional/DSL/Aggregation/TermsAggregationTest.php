@@ -242,7 +242,7 @@ class TermsAggregationTest extends ElasticsearchTestCase
     public function testTermsAggregation($aggregation, $expectedResult)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
@@ -263,7 +263,7 @@ class TermsAggregationTest extends ElasticsearchTestCase
     public function testTermsAggregationWithRangeQuery($aggregation, $parameters, $expectedResult)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $rangeQuery = new RangeQuery('price', $parameters);
 

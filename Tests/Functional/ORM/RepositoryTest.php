@@ -13,9 +13,17 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
+use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
+use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
+use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
+use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
 use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
+use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
+use ONGR\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
+use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\TestingBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 
 class RepositoryTest extends ElasticsearchTestCase
 {
@@ -31,19 +39,34 @@ class RepositoryTest extends ElasticsearchTestCase
                         '_id' => 1,
                         'title' => 'foo',
                         'price' => 10,
-                        'description' => 'goo',
+                        'description' => 'goo Lorem',
+                        'suggestions' => [
+                            'input' => ['Lorem', 'ipsum', 'cons'],
+                            'output' => 'Lorem ipsum',
+                            'payload' => ['test' => true],
+                            'weight' => 1,
+                            'context' => [
+                                'location' => [0, 0],
+                                'price' => 500,
+                            ],
+                        ],
+                        'completion_suggesting' => [
+                            'input' => ['Lorem', 'ipsum'],
+                            'output' => 'Lorem ipsum',
+                            'weight' => 1,
+                        ],
                     ],
                     [
                         '_id' => 2,
                         'title' => 'bar',
                         'price' => 1000,
-                        'description' => 'foo bar',
+                        'description' => 'foo bar Lorem adips distributed disributed',
                     ],
                     [
                         '_id' => 3,
                         'title' => 'gar',
                         'price' => 100,
-                        'description' => 'foo bar',
+                        'description' => 'foo bar Loremo',
                     ],
                 ],
             ],
@@ -160,7 +183,7 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testFindBy($expectedResults, $criteria, $orderBy = [], $limit = null, $offset = null)
     {
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $fullResults = $repo->findBy($criteria, $orderBy, $limit, $offset);
 
@@ -194,7 +217,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        $repo = $manager->getRepository('ONGRTestingBundle:Product');
+        $repo = $manager->getRepository('AcmeTestBundle:Product');
 
         $result = $repo->find(123);
 
@@ -208,7 +231,7 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testFindException()
     {
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $repo->find(123);
     }
@@ -221,7 +244,7 @@ class RepositoryTest extends ElasticsearchTestCase
     public function testFindInMultiTypeRepo()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository(['ONGRTestingBundle:Product', 'ONGRTestingBundle:Content']);
+        $repo = $this->getManager()->getRepository(['AcmeTestBundle:Product', 'AcmeTestBundle:Content']);
 
         $repo->find(1);
     }
@@ -233,7 +256,7 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repo = $manager->getRepository('ONGRTestingBundle:Product');
+        $repo = $manager->getRepository('AcmeTestBundle:Product');
 
         $response = $repo->remove(3);
 
@@ -250,7 +273,7 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repo = $manager->getRepository('ONGRTestingBundle:Product');
+        $repo = $manager->getRepository('AcmeTestBundle:Product');
 
         $repo->remove(500);
     }
@@ -260,11 +283,11 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testCreateDocument()
     {
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $document = $repo->createDocument();
 
         $this->assertInstanceOf(
-            'ONGR\TestingBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             $document
         );
     }
@@ -277,7 +300,7 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testCreateDocumentException()
     {
-        $repo = $this->getManager()->getRepository(['ONGRTestingBundle:Product', 'ONGRTestingBundle:Content']);
+        $repo = $this->getManager()->getRepository(['AcmeTestBundle:Product', 'AcmeTestBundle:Content']);
         $repo->createDocument();
     }
 
@@ -287,7 +310,7 @@ class RepositoryTest extends ElasticsearchTestCase
     public function testRepositoryExecuteWhenZeroResult()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $search = $repo->createSearch();
         $search->addFilter(new PrefixFilter('title', 'dummy'));
@@ -314,7 +337,7 @@ class RepositoryTest extends ElasticsearchTestCase
     public function testDocumentUpdate()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
 
         /** @var Product $document */
         $document = $repository->createDocument();
@@ -351,5 +374,180 @@ class RepositoryTest extends ElasticsearchTestCase
             array_filter(get_object_vars($document)),
             'Document should be updated.'
         );
+    }
+
+    /**
+     * Data provider for testSuggest().
+     *
+     * @return array
+     */
+    public function getSuggestData()
+    {
+        $out = [];
+
+        // Case #0: simple single term suggester.
+        $expectedResults = [
+            'description-term' => [
+                [
+                    'text' => 'distibutd',
+                    'offset' => '0',
+                    'length' => '9',
+                    'options' => [
+                        new TermOption('disributed', 0.0, 1),
+                        new TermOption('distributed', 0.0, 1),
+                    ],
+                ],
+            ]
+        ];
+
+        $suggesters = [new Term('description', 'distibutd')];
+        $out[] = ['suggesters' => $suggesters, 'expectedResults' => $expectedResults];
+
+        // Case #1: simple single phrase suggester.
+        $expectedResults = [
+            'description-phrase' => [
+                [
+                    'text' => 'Lorm adip',
+                    'offset' => '0',
+                    'length' => '9',
+                    'options' => [new SimpleOption('lorem adip', 0.0)],
+                ],
+            ]
+        ];
+
+        $suggesters = [new Phrase('description', 'Lorm adip')];
+        $out[] = ['suggesters' => $suggesters, 'expectedResults' => $expectedResults];
+
+        // Case #2: simple context suggester.
+        $geoContext = new Context\GeoContext('location', ['lat' => 0, 'lon' => 0]);
+        $categoryContext = new Context\CategoryContext('price', '500');
+        $context = new Context('suggestions', 'cons');
+        $context->addContext($geoContext);
+        $context->addContext($categoryContext);
+
+        $expectedResults = [
+            'suggestions-completion' => [
+                [
+                    'text' => 'cons',
+                    'offset' => '0',
+                    'length' => '4',
+                    'options' => [new CompletionOption('Lorem ipsum', 0.0, ['test' => true])],
+                ],
+            ]
+        ];
+
+        $out[] = ['suggesters' => $context, 'expectedResults' => $expectedResults];
+
+        // Case #3: simple completion suggester.
+        $completion = new Completion('completion_suggesting', 'ipsum');
+        $expectedResults = [
+            'completion_suggesting-completion' => [
+                [
+                    'text' => 'ipsum',
+                    'offset' => '0',
+                    'length' => '5',
+                    'options' => [new SimpleOption('Lorem ipsum', 0.0, null)],
+                ],
+            ]
+        ];
+
+        $out[] = ['suggesters' => $completion, 'expectedResults' => $expectedResults];
+
+        // Case #4: all together.
+        $geoContext = new Context\GeoContext('location', ['lat' => 0, 'lon' => 0]);
+        $categoryContext = new Context\CategoryContext('price', '500');
+        $context = new Context('suggestions', 'cons');
+        $context->addContext($geoContext);
+        $context->addContext($categoryContext);
+        $suggesters = [
+            new Term('description', 'distibutd'),
+            new Phrase('description', 'Lorm adip'),
+            $context,
+            new Completion('completion_suggesting', 'ipsum'),
+        ];
+        $expectedResults = [
+            'description-term' => [
+                [
+                    'text' => 'distibutd',
+                    'offset' => '0',
+                    'length' => '9',
+                    'options' => [
+                        new TermOption('disributed', 0.0, 1),
+                        new TermOption('distributed', 0.0, 1),
+                    ],
+                ],
+            ],
+            'description-phrase' => [
+                [
+                    'text' => 'Lorm adip',
+                    'offset' => '0',
+                    'length' => '9',
+                    'options' => [new SimpleOption('lorem adip', 0.0)],
+                ],
+            ],
+            'suggestions-completion' => [
+                [
+                    'text' => 'cons',
+                    'offset' => '0',
+                    'length' => '4',
+                    'options' => [new CompletionOption('Lorem ipsum', 0.0, ['test' => true])],
+                ],
+            ],
+            'completion_suggesting-completion' => [
+                [
+                    'text' => 'ipsum',
+                    'offset' => '0',
+                    'length' => '5',
+                    'options' => [new SimpleOption('Lorem ipsum', 0.0, null)],
+                ],
+            ]
+        ];
+        $out[] = ['suggesters' => $suggesters, 'expectedResults' => $expectedResults];
+
+        return $out;
+    }
+
+    /**
+     * Check if suggest api works as expected.
+     *
+     * @param array $suggesters
+     * @param array $expectedResults
+     *
+     * @dataProvider getSuggestData()
+     */
+    public function testSuggest($suggesters, $expectedResults)
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+
+        $results = $repository->suggest($suggesters);
+        $this->assertScore($results);
+
+        $this->assertSameSize($expectedResults, $results);
+        foreach ($expectedResults as $name => $expectedSuggestion) {
+            foreach ($expectedResults[$name] as $key => $entry) {
+                $this->assertEquals($entry['text'], $results[$name][$key]->getText());
+                $this->assertEquals($entry['offset'], $results[$name][$key]->getOffset());
+                $this->assertEquals($entry['length'], $results[$name][$key]->getLength());
+                $this->assertEquals($entry['options'], iterator_to_array($results[$name][$key]->getOptions()));
+            }
+        }
+    }
+
+    /**
+     * Assert suggestion score is set.
+     *
+     * @param SuggestionIterator $suggestions
+     */
+    private function assertScore(SuggestionIterator $suggestions)
+    {
+        foreach ($suggestions as $suggestion) {
+            foreach ($suggestion as $suggestionEntry) {
+                foreach ($suggestionEntry->getOptions() as $option) {
+                    $this->assertTrue($option->getScore() > 0.0);
+                    $option->setScore(0.0);
+                }
+            }
+        }
     }
 }

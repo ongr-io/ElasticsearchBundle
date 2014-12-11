@@ -51,7 +51,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
     public function testGetQueryCount()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
 
         $document = $repository->createDocument();
         $document->title = 'Awesomo';
@@ -69,7 +69,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
     public function testGetTime()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
         $repository->find(3);
 
         $this->assertGreaterThan(0.0, $this->getCollector()->getTime(), 'Time should be greater than 0ms');
@@ -81,7 +81,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
     public function testGetQueries()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
         $repository->find(2);
         $queries = $this->getCollector()->getQueries();
 

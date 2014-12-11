@@ -98,7 +98,7 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
             ->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
             ->setConstructorArgs(
                 [
-                    ['ONGRTestingBundle' => 'ONGR/TestingBundle/ONGRTestingBundle'],
+                    ['AcmeTestBundle' => 'ONGR/TestingBundle/AcmeTestBundle'],
                     $this->getCachedReaderMock(),
                 ]
             )
@@ -108,13 +108,13 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
         $collector
             ->expects($this->exactly(1))
             ->method('getBundleMapping')
-            ->with('ONGRTestingBundle')
+            ->with('AcmeTestBundle')
             ->will($this->returnValue($mapping));
 
         // Caches.
-        $this->assertEquals($expectedMapping, $collector->getMapping('ONGRTestingBundle'));
+        $this->assertEquals($expectedMapping, $collector->getMapping('AcmeTestBundle'));
         // Loads from local cache.
-        $this->assertEquals($expectedMapping, $collector->getMapping('ONGRTestingBundle'));
+        $this->assertEquals($expectedMapping, $collector->getMapping('AcmeTestBundle'));
     }
 
     /**
@@ -125,11 +125,11 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
     public function testGet()
     {
         $collector = new MetadataCollector(
-            ['ONGRTestingBundle' => 'ONGR\TestingBundle\ONGRTestingBundle'],
+            ['AcmeTestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle'],
             new AnnotationReader()
         );
 
-        $mapping = $collector->getMapping('ONGRTestingBundle');
+        $mapping = $collector->getMapping('AcmeTestBundle');
 
         $this->assertArrayContainsArray(
             [
@@ -165,7 +165,7 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
     public function testBundleNotFound()
     {
         $collector = new MetadataCollector([], $this->getCachedReaderMock());
-        $collector->getMapping('ONGRTestingBundle');
+        $collector->getMapping('AcmeTestBundle');
     }
 
     /**
@@ -176,17 +176,17 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
         $mapping = [
             'product' => [
                 'properties' => $this->getProductMapping(),
-                'class' => 'ONGR\TestingBundle\Document\Product',
+                'class' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             ]
         ];
 
         return [
             [
-                'ONGRTestingBundle:Product',
+                'AcmeTestBundle:Product',
                 $mapping,
             ],
             [
-                'ONGR\TestingBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
                 $mapping,
             ],
         ];
@@ -203,7 +203,7 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
     public function testGetMappingByNamespace($namespace, $expectedMapping)
     {
         $collector = new MetadataCollector(
-            ['ONGRTestingBundle' => 'ONGR\TestingBundle\ONGRTestingBundle'],
+            ['AcmeTestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestingBundle'],
             new AnnotationReader()
         );
 

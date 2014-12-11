@@ -69,7 +69,7 @@ class MatchAllTest extends ElasticsearchTestCase
     public function testMatchAllQuery($parameters)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $matchAllQuery = new MatchAllQuery($parameters);
         $search = $repo->createSearch()->addQuery($matchAllQuery);
 

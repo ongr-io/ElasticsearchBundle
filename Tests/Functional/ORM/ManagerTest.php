@@ -14,10 +14,13 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\TestingBundle\Document\CdnObject;
-use ONGR\TestingBundle\Document\Comment;
-use ONGR\TestingBundle\Document\Product;
-use ONGR\TestingBundle\Document\UrlObject;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationSuggesting;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationContext;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject;
 
 /**
  * Functional tests for orm manager.
@@ -54,7 +57,7 @@ class ManagerTest extends ElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
         /** @var Product[] $actualProduct */
         $actualProducts = $repository->execute($repository->createSearch());
         $this->assertCount(1, $actualProducts);
@@ -70,6 +73,49 @@ class ManagerTest extends ElasticsearchTestCase
         $this->assertEquals($url2->url, $actualUrl[1]->url);
 
         $this->assertEquals($cdn->cdn_url, $actualUrl[0]->cdn->cdn_url);
+    }
+
+    /**
+     * Check if indexed suggest fields are stored as expected.
+     */
+    public function testPersistSuggesters()
+    {
+        /** @var Manager $manager */
+        $manager = $this->getManager();
+
+        $categoryContext = new PriceLocationContext();
+        $categoryContext->price = '500';
+        $categoryContext->location = ['lat' => 50, 'lon' => 50];
+        $suggester = new PriceLocationSuggesting();
+        $suggester->setInput(['test']);
+        $suggester->setOutput('success');
+        $suggester->setContext($categoryContext);
+        $suggester->setPayload(['test']);
+        $suggester->setWeight(50);
+
+        $completionSuggester = new CompletionSuggesting();
+        $completionSuggester->setInput(['a', 'b', 'c']);
+        $completionSuggester->setOutput('completion success');
+        $completionSuggester->setWeight(30);
+
+        $product = new Product();
+        $product->contextSuggesting = $suggester;
+        $product->completionSuggesting = $completionSuggester;
+
+        $manager->persist($product);
+        $manager->commit();
+
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        /** @var Product[] $actualProduct */
+        $actualProducts = $repository->execute($repository->createSearch());
+        $this->assertCount(1, $actualProducts);
+
+        /** @var Product $actualProduct */
+        $actualProduct = $actualProducts->current();
+        $actualProduct->setId(null);
+        $actualProduct->setScore(null);
+
+        $this->assertEquals($product, $actualProduct);
     }
 
     /**
@@ -99,7 +145,8 @@ class ManagerTest extends ElasticsearchTestCase
         $product->links = new \ArrayIterator([new UrlObject(), new CdnObject()]);
         $out[] = [
             $product,
-            'Expected object of type ONGR\TestingBundle\Document\UrlObject, got ONGR\TestingBundle\Document\CdnObject.',
+            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject, ' .
+            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject.',
         ];
 
         // Case #3: invalid type of object is set in single field.
@@ -110,7 +157,8 @@ class ManagerTest extends ElasticsearchTestCase
         $product->links = [$url];
         $out[] = [
             $product,
-            'Expected object of type ONGR\TestingBundle\Document\CdnObject, got ONGR\TestingBundle\Document\UrlObject.',
+            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject, ' .
+            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject.',
         ];
 
         return $out;
@@ -153,7 +201,7 @@ class ManagerTest extends ElasticsearchTestCase
         $manager->persist($comment);
         $manager->commit();
 
-        $repository = $manager->getRepository('ONGRTestingBundle:Comment');
+        $repository = $manager->getRepository('AcmeTestBundle:Comment');
         $search = $repository->createSearch();
         $results = $repository->execute($search);
         /** @var DocumentInterface $actualProduct */
@@ -180,7 +228,7 @@ class ManagerTest extends ElasticsearchTestCase
         $manager->persist($comment);
         $manager->commit();
 
-        $repository = $manager->getRepository('ONGRTestingBundle:Comment');
+        $repository = $manager->getRepository('AcmeTestBundle:Comment');
         $search = $repository->createSearch();
         $results = $repository->execute($search);
         /** @var DocumentInterface $actualProduct */

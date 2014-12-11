@@ -119,7 +119,7 @@ class MoreLikeThisTest extends ElasticsearchTestCase
     public function testMoreLikeThisQuery($query, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $moreLikeThisQuery = new MoreLikeThisQuery($query, $parameters);
 

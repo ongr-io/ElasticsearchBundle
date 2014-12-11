@@ -164,7 +164,7 @@ class NestedAggregationTest extends ElasticsearchTestCase
     public function testNestedAggregation($aggregation, $expectedResult, $mapping)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager('default', true, $mapping)->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager('default', true, $mapping)->getRepository('AcmeTestBundle:Product');
 
         $nestedAggregation = new NestedAggregation('test_nested_agg');
         $nestedAggregation->setPath('sub_products');

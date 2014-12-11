@@ -1,0 +1,22 @@
+<?php
+
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
+
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
+
+/**
+ * @ES\Document
+ */
+class Article implements DocumentInterface
+{
+    use DocumentTrait;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(name="title", type="string")
+     */
+    public $title;
+}

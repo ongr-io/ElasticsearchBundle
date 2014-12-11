@@ -114,7 +114,7 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
     public function testTopHitsAggregation(AbstractAggregation $aggregation, $expectedHits)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $functions = [
             'script_score' => ['script' => "doc['price'].value"]
         ];
@@ -143,7 +143,7 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
     public function testTopHitsAggregationUsingGetter(AbstractAggregation $aggregation, $expectedHits)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $functions = [
             'script_score' => ['script' => "doc['price'].value"]
         ];
@@ -176,7 +176,7 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
         $termAggregation->aggregations->addAggregation($topAggregation);
 
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($termAggregation)->addSort(new Sort('_id', Sort::ORDER_ASC));
         $results = $repo->execute($search, Repository::RESULTS_RAW);

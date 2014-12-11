@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
+use ONGR\ElasticsearchBundle\Result\Suggestion\OptionIterator;
+use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
 
 class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -258,14 +260,16 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
             ],
             'suggest' => [
                 'foo' => [
-                    'text' => 'foobar',
-                    'offset' => 0,
-                    'length' => 6,
-                    'options' => [
-                        [
-                            'text' => 'foobar',
-                            'freq' => 77,
-                            'score' => 0.8888889,
+                    [
+                        'text' => 'foobar',
+                        'offset' => 0,
+                        'length' => 6,
+                        'options' => [
+                            [
+                                'text' => 'foobar',
+                                'freq' => 77,
+                                'score' => 0.8888889,
+                            ],
                         ],
                     ],
                 ],
@@ -273,12 +277,21 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
         ];
 
         $iterator = new DocumentIterator($rawData, [], []);
+        $suggestions = $iterator->getSuggestions();
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Result\Suggestions',
+            'ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator',
             $iterator->getSuggestions()
         );
-        $this->assertEquals($rawData['suggest']['foo'], $iterator->getSuggestions()['foo']);
+
+        $expectedSuggestion = new SuggestionEntry(
+            'foobar',
+            0,
+            6,
+            new OptionIterator($rawData['suggest']['foo'][0]['options'])
+        );
+
+        $this->assertEquals($expectedSuggestion, $suggestions['foo'][0]);
     }
 
     /**
@@ -291,7 +304,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
     {
         foreach ($iterator as $key => $item) {
             $this->assertInstanceOf(
-                'ONGR\TestingBundle\Document\Content',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
                 $item
             );
             $this->assertEquals($expectedHeaders[$key], $item->header);
@@ -308,7 +321,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
     private function getBundleMapping()
     {
         return [
-            'ONGRTestingBundle:Content' => [
+            'AcmeTestBundle:Content' => [
                 'setters' => [
                     'header' => [
                         'exec' => false,
@@ -318,7 +331,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                 'properties' => [
                     'header' => ['type' => 'string']
                 ],
-                'namespace' => 'ONGR\TestingBundle\Document\Content',
+                'namespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
             ],
         ];
     }
@@ -330,6 +343,6 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
      */
     private function getTypesMapping()
     {
-        return ['content' => 'ONGRTestingBundle:Content'];
+        return ['content' => 'AcmeTestBundle:Content'];
     }
 }

@@ -115,7 +115,7 @@ class GlobalAggregationTest extends ElasticsearchTestCase
     public function testGlobalAggregation($aggregation, $query, $expectedResults, $hitsCount)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         if ($query) {

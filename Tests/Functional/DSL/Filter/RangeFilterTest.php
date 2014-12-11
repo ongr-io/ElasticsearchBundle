@@ -51,7 +51,7 @@ class RangeFilterTest extends ElasticsearchTestCase
     public function testRangeFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $range = new RangeFilter('price', ['from' => 50, 'to' => 80]);
         $search = $repo->createSearch()->addFilter($range);
 

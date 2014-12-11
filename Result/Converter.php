@@ -99,7 +99,7 @@ class Converter
                 }
             }
 
-            if ($setter['type'] === 'date') {
+            if (isset($setter['type']) && $setter['type'] === 'date') {
                 $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
             }
 

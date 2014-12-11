@@ -77,7 +77,7 @@ class RegexpTest extends ElasticsearchTestCase
     public function testRegexpQuery($regexp, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $matchQuery = new RegexpQuery('title', $regexp, $parameters);
 

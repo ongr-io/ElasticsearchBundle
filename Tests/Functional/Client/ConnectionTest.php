@@ -67,7 +67,7 @@ class ConnectionTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
         $connection = $manager->getConnection();
-        $repository = $manager->getRepository('ONGRTestingBundle:Product');
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
 
         // CREATE.
         $connection->bulk('create', 'product', ['_id' => 'baz', 'title' => 'Awesomo']);

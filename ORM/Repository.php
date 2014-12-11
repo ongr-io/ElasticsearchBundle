@@ -15,11 +15,14 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Query\TermsQuery;
 use ONGR\ElasticsearchBundle\DSL\Search;
 use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
+use ONGR\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
+use ONGR\ElasticsearchBundle\DSL\Suggester\Suggesters;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
 use ONGR\ElasticsearchBundle\Result\RawResultIterator;
 use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
+use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
 
 /**
  * Repository class.
@@ -194,6 +197,30 @@ class Repository
         $results = $this->manager->getConnection()->scroll($scrollId, $scrollDuration);
 
         return $this->parseResult($results, $resultsType, $scrollDuration);
+    }
+
+    /**
+     * Get suggestions using suggest api.
+     *
+     * @param AbstractSuggester[]|AbstractSuggester $suggesters
+     *
+     * @return SuggestionIterator
+     */
+    public function suggest($suggesters)
+    {
+        if (!is_array($suggesters)) {
+            $suggesters = [$suggesters];
+        }
+
+        $body = [];
+        /** @var AbstractSuggester $suggester */
+        foreach ($suggesters as $suggester) {
+            $body = array_merge($suggester->toArray(), $body);
+        }
+        $results = $this->manager->getConnection()->getClient()->suggest(['body' => $body]);
+        unset($results['_shards']);
+
+        return new SuggestionIterator($results);
     }
 
     /**

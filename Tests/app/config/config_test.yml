@@ -24,7 +24,7 @@ ongr_elasticsearch:
             connection: default
             debug: true
             mappings:
-                - ONGRTestingBundle
+                - AcmeTestBundle
         bar:
             connection: bar
             mappings:

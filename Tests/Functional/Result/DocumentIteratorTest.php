@@ -60,7 +60,7 @@ class DocumentIteratorTest extends ElasticsearchTestCase
     public function testIteration()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
         $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
@@ -71,14 +71,14 @@ class DocumentIteratorTest extends ElasticsearchTestCase
             $urls = $document->links;
 
             $this->assertInstanceOf(
-                'ONGR\TestingBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
                 $document
             );
             $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $urls);
 
             foreach ($urls as $url) {
                 $this->assertInstanceOf(
-                    'ONGR\TestingBundle\Document\UrlObject',
+                    'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject',
                     $url
                 );
             }
@@ -90,7 +90,7 @@ class DocumentIteratorTest extends ElasticsearchTestCase
      */
     public function testCurrentWithEmptyIterator()
     {
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Content');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Content');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());

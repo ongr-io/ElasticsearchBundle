@@ -45,7 +45,7 @@ class ExistsFilterTest extends ElasticsearchTestCase
     public function testExistsFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $exists = new ExistsFilter('field', 'price');
         $search = $repo->createSearch()->addFilter($exists);
 

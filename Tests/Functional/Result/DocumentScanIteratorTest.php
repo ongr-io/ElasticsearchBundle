@@ -41,7 +41,7 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
     {
         /** @var Repository $repo */
 
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Content');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Content');
 
         $search = $repo->createSearch();
         $search->setSize(2);

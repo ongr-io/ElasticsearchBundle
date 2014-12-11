@@ -83,7 +83,7 @@ class ElasticsearchExtensionTest extends WebTestCase
             'default' => [
                 'connection' => 'default',
                 'debug' => true,
-                'mappings' => ['ONGRTestingBundle'],
+                'mappings' => ['AcmeTestBundle'],
             ],
             'bar' => [
                 'connection' => 'bar',

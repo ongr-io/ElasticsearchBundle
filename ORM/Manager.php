@@ -164,6 +164,7 @@ class Manager
 
                 $value = $newValue;
             }
+
             if ($value instanceof \DateTime) {
                 $value = $value->format(\DateTime::ISO8601);
             }

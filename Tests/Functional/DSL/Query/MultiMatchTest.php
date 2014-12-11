@@ -101,7 +101,7 @@ class MultiMatchTest extends ElasticsearchTestCase
     public function testMultiMatchQuery($query, $fields, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $multiMatchQuery = new MultiMatchQuery($query, $fields);
 

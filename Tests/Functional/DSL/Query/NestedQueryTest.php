@@ -132,7 +132,7 @@ class NestedQueryTest extends ElasticsearchTestCase
     public function testNestedQuery($query, $expected, $mapping)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager('default', true, $mapping)->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager('default', true, $mapping)->getRepository('AcmeTestBundle:Product');
         $search = $repo->createSearch()->addQuery($query, 'must');
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
 

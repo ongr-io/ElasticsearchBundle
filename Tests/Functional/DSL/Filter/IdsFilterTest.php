@@ -109,7 +109,7 @@ class IdsFilterTest extends ElasticsearchTestCase
     public function testIdsFilter($values, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $ids = new IdsFilter($values, $parameters);
         $search = $repo->createSearch()->addFilter($ids);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);

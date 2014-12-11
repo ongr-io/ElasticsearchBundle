@@ -46,7 +46,7 @@ class LimitFilterTest extends ElasticsearchTestCase
     public function testLimitFilter()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('ONGRTestingBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $limit = new LimitFilter(1);
         $search = $repo->createSearch()->addFilter($limit);
 

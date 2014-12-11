@@ -88,7 +88,7 @@ class CompletionTest extends ElasticsearchTestCase
 
         $repository = $this
             ->getManager('default', true, $this->getCustomMapping())
-            ->getRepository('ONGRTestingBundle:Product');
+            ->getRepository('AcmeTestBundle:Product');
 
         $search = $repository->createSearch()->addSuggester($completion);
         $result = $repository->execute($search, Repository::RESULTS_RAW);
