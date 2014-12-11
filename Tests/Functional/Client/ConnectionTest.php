@@ -61,6 +61,14 @@ class ConnectionTest extends ElasticsearchTestCase
     }
 
     /**
+     * Check if ES version getter works as expected.
+     */
+    public function testGetVersionNumber()
+    {
+        $this->assertTrue(version_compare($this->getManager()->getConnection()->getVersionNumber(), '1.0.0', '>='));
+    }
+
+    /**
      * Tests bulk operations.
      */
     public function testBulk()

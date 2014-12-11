@@ -352,6 +352,16 @@ class Connection
     }
 
     /**
+     * Returns Elasticsearch version number.
+     *
+     * @return string
+     */
+    public function getVersionNumber()
+    {
+        return $this->client->info()['version']['number'];
+    }
+
+    /**
      * Updates index settings recursive.
      *
      * @param array $settings Settings.
