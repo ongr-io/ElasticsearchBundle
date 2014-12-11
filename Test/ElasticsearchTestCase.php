@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
+use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -64,6 +65,41 @@ abstract class ElasticsearchTestCase extends WebTestCase
     protected function getDataArray()
     {
         return [];
+    }
+
+    /**
+     * Ignores versions specified.
+     *
+     * Returns two dimensional array, first item in sub array is version to ignore, second is comparator.
+     * Comparator types can be found in `version_compare` documentation.
+     *
+     * Example: [
+     *   ['1.2.7', '<='],
+     *   ['1.2.9', '==']
+     * ]
+     *
+     * @return array
+     */
+    protected function getIgnoredVersions()
+    {
+        return [];
+    }
+
+    /**
+     * Ignores version specified.
+     *
+     * @param Connection $connection
+     */
+    protected function ignoreVersions(Connection $connection)
+    {
+        $currentVersion = $connection->getVersionNumber();
+        foreach ($this->getIgnoredVersions() as $ignoredVersion) {
+            if (version_compare($currentVersion, $ignoredVersion[0], $ignoredVersion[1])) {
+                $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
+
+                return;
+            }
+        }
     }
 
     /**
@@ -152,13 +188,19 @@ abstract class ElasticsearchTestCase extends WebTestCase
             throw new \LogicException(sprintf("Manager '%s' does not exist", $name));
         }
 
+        $connection = $manager->getConnection();
+
+        if ($connection instanceof Connection) {
+            $this->ignoreVersions($connection);
+        }
+
         // Updates settings.
         if (!empty($customMapping)) {
-            $manager->getConnection()->updateSettings(['body' => ['mappings' => $customMapping]]);
+            $connection->updateSettings(['body' => ['mappings' => $customMapping]]);
         }
 
         // Drops and creates index.
-        $createIndex && $manager->getConnection()->dropAndCreateIndex();
+        $createIndex && $connection->dropAndCreateIndex();
 
         // Populates elasticsearch index with data.
         $data = $this->getDataArray();

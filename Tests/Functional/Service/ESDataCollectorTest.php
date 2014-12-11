@@ -60,7 +60,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
         $manager->commit();
 
         // Four queries executed while index was being created.
-        $this->assertEquals(2, $this->getCollector()->getQueryCount() - self::START_QUERY_COUNT);
+        $this->assertEquals(4, $this->getCollector()->getQueryCount() - self::START_QUERY_COUNT);
     }
 
     /**
