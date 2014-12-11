@@ -19,6 +19,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Nested query functional test.
+ */
 class NestedQueryTest extends ElasticsearchTestCase
 {
     /**
@@ -96,7 +99,7 @@ class NestedQueryTest extends ElasticsearchTestCase
                 $testData['default']['product'][2],
                 $testData['default']['product'][1],
             ],
-            $mapping
+            $mapping,
         ];
 
         // Case #1: Test MatchAll with no data.
@@ -109,7 +112,7 @@ class NestedQueryTest extends ElasticsearchTestCase
                 $testData['default']['product'][2],
                 $testData['default']['product'][0],
             ],
-            $mapping
+            $mapping,
         ];
 
         // Case #2: Test fuzzy.
@@ -123,9 +126,9 @@ class NestedQueryTest extends ElasticsearchTestCase
     /**
      * Test Ids query for expected search results.
      *
-     * @param BuilderInterface  $query
-     * @param array             $expected
-     * @param array             $mapping
+     * @param BuilderInterface $query
+     * @param array            $expected
+     * @param array            $mapping
      *
      * @dataProvider getTestNestedQueryData
      */

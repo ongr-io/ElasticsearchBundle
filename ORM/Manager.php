@@ -43,10 +43,10 @@ class Manager
     private $typesMapping = [];
 
     /**
-     * @param Connection|null           $connection
-     * @param MetadataCollector|null    $metadataCollector
-     * @param array                     $typesMapping
-     * @param array                     $bundlesMapping
+     * @param Connection|null        $connection
+     * @param MetadataCollector|null $metadataCollector
+     * @param array                  $typesMapping
+     * @param array                  $bundlesMapping
      */
     public function __construct($connection, $metadataCollector, $typesMapping, $bundlesMapping)
     {

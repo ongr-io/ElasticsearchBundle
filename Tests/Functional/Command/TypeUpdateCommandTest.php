@@ -165,7 +165,7 @@ class TypeUpdateCommandTest extends WebTestCase
     /**
      * Creates index for testing.
      *
-     * @param string        $manager
+     * @param string $manager
      */
     protected function createIndexCommand($manager = 'default')
     {

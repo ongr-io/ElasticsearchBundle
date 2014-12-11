@@ -68,7 +68,7 @@ class TermsFilterTest extends ElasticsearchTestCase
             [
                 'title' => 'dog',
                 'user' => 'zoo',
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $results);

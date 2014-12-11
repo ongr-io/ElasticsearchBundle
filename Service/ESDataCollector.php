@@ -113,7 +113,7 @@ class ESDataCollector implements DataCollectorInterface
     private function handleRecords($route, $records)
     {
         $this->incQueryCount(count($records) / 2);
-
+        $queryBody = '';
         foreach ($records as $record) {
             // First record will never have context.
             if (!empty($record['context'])) {

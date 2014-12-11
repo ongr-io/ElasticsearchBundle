@@ -61,7 +61,7 @@ class RangeFilterTest extends ElasticsearchTestCase
             [
                 'title' => 'bar',
                 'price' => 70,
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $results);

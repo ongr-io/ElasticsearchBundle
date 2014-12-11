@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the ONGR package.
  *
@@ -64,7 +65,7 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests prettfy method.
+     * Tests prettify method.
      *
      * @param string $inlineJson
      * @param string $prettyJson

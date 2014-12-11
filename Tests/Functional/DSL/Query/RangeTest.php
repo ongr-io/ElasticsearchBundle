@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Range query query functional test.
+ */
 class RangeTest extends ElasticsearchTestCase
 {
     /**

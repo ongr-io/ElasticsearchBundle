@@ -99,7 +99,7 @@ class ONGRElasticsearchExtension extends Extension
     /**
      * Finds out if debug is set to any manager.
      *
-     * @param array            $config
+     * @param array $config
      *
      * @return bool
      */

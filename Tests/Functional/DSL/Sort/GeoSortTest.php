@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Sort\GeoSort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * GeoSort functional test.
+ */
 class GeoSortTest extends ElasticsearchTestCase
 {
     /**
@@ -64,9 +67,9 @@ class GeoSortTest extends ElasticsearchTestCase
         $sorts[] = [
             'field' => 'location',
             'order' => GeoSort::ORDER_DESC,
-            'loc'  => [0, 0],
+            'loc' => [0, 0],
             'unit' => null,
-            'mode' => null
+            'mode' => null,
         ];
         $expectedIds = [2, 3, 1];
         $expectedDistances = [4608667.8658243, 3115618.3302211, 1570237.8876592];
@@ -76,9 +79,9 @@ class GeoSortTest extends ElasticsearchTestCase
         $sorts[] = [
             'field' => 'location',
             'order' => GeoSort::ORDER_DESC,
-            'loc'  => [0, 0],
+            'loc' => [0, 0],
             'unit' => 'mi',
-            'mode' => null
+            'mode' => null,
         ];
         $expectedIds = [2, 3, 1];
         $expectedDistances = [2863.6934464131, 1935.955476406, 975.70058835102];
@@ -88,9 +91,9 @@ class GeoSortTest extends ElasticsearchTestCase
         $sorts[] = [
             'field' => 'location',
             'order' => GeoSort::ORDER_ASC,
-            'loc'  => [22, 22],
+            'loc' => [22, 22],
             'unit' => 'km',
-            'mode' => GeoSort::MODE_AVG
+            'mode' => GeoSort::MODE_AVG,
         ];
         $expectedIds = [3, 2, 1];
         $expectedDistances = [304.44075552441, 1195.8066938337, 1850.2997852109];

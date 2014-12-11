@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\MultiMatchQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Multi match query functional test.
+ */
 class MultiMatchTest extends ElasticsearchTestCase
 {
     /**
@@ -51,7 +54,6 @@ class MultiMatchTest extends ElasticsearchTestCase
                         'price' => 100,
                         'description' => 'Lorem ipsum dolor sit amet...',
                         'description2' => 'Lorem ipsum',
-
                     ],
                     [
                         '_id' => 3,
@@ -80,11 +82,15 @@ class MultiMatchTest extends ElasticsearchTestCase
         }
 
         // Should return the product with price equal to 1000.
-        $out[] = ['Lorem ipsum', ['description', 'description2'], [
-            $testProducts[2],
-            $testProducts[1],
-            $testProducts[0],
-        ]];
+        $out[] = [
+            'Lorem ipsum',
+            ['description', 'description2'],
+            [
+                $testProducts[2],
+                $testProducts[1],
+                $testProducts[0],
+            ],
+        ];
 
         return $out;
     }

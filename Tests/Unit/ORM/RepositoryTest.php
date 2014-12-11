@@ -16,7 +16,6 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Data provider for testExecute().
      *

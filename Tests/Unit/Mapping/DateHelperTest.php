@@ -46,10 +46,10 @@ class DateHelperTest extends \PHPUnit_Framework_TestCase
     /**
      * Check if string are parsed correctly.
      *
-     * @param string    $stringValue
-     * @param int       $expectedValue
-     * @param string    $expectedException
-     * @param string    $exceptionMessage
+     * @param string $stringValue
+     * @param int    $expectedValue
+     * @param string $expectedException
+     * @param string $exceptionMessage
      *
      * @dataProvider getParseStringData()
      */

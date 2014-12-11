@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\IdsQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Ids query functional test.
+ */
 class IdsTest extends ElasticsearchTestCase
 {
     /**
@@ -64,10 +67,13 @@ class IdsTest extends ElasticsearchTestCase
 
         $out[] = [[1], [$testProducts[0]]];
 
-        $out[] = [[2, 3], [
-            $testProducts[2],
-            $testProducts[1],
-        ]];
+        $out[] = [
+            [2, 3],
+            [
+                $testProducts[2],
+                $testProducts[1],
+            ],
+        ];
 
         return $out;
     }

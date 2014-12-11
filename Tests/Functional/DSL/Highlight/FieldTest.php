@@ -18,7 +18,7 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 /**
- * Highlighting functional test
+ * Highlighting functional test.
  */
 class FieldTest extends ElasticsearchTestCase
 {

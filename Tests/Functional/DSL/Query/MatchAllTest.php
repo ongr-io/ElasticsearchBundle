@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * MatchAll query functional test.
+ */
 class MatchAllTest extends ElasticsearchTestCase
 {
     /**

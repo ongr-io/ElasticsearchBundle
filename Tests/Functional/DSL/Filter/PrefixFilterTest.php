@@ -54,7 +54,7 @@ class PrefixFilterTest extends ElasticsearchTestCase
         $expected = [
             [
                 'title' => 'foo',
-            ]
+            ],
         ];
 
         $this->assertEquals($expected, $results);

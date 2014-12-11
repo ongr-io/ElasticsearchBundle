@@ -13,6 +13,9 @@ namespace ONGR\ElasticsearchBundle\Document;
 
 use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
 
+/**
+ * Interface for ES Documents.
+ */
 interface DocumentInterface
 {
     /**

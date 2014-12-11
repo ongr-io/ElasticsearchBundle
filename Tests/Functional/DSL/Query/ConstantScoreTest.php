@@ -17,7 +17,7 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 /**
- * Constant score query functional test
+ * Constant score query functional test.
  */
 class ConstantScoreTest extends ElasticsearchTestCase
 {
@@ -32,12 +32,12 @@ class ConstantScoreTest extends ElasticsearchTestCase
                     [
                         '_id' => 1,
                         'title' => 'foo',
-                        'description' => 'foo'
+                        'description' => 'foo',
                     ],
                     [
                         '_id' => 2,
                         'title' => 'bar',
-                        'description' => 'foo baz'
+                        'description' => 'foo baz',
                     ],
                 ],
             ],

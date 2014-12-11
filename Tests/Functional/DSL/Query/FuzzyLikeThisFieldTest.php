@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\FuzzyLikeThisField;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * FuzzyLikeThisField query functional test.
+ */
 class FuzzyLikeThisFieldTest extends ElasticsearchTestCase
 {
     /**

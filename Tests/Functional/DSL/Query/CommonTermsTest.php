@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 /**
- * CommonTerms query functional test
+ * CommonTerms query functional test.
  */
 class CommonTermsTest extends ElasticsearchTestCase
 {

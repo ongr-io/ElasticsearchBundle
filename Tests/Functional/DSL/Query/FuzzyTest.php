@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Query\FuzzyQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
+/**
+ * Fuzzy query functional test.
+ */
 class FuzzyTest extends ElasticsearchTestCase
 {
     /**
@@ -66,11 +69,16 @@ class FuzzyTest extends ElasticsearchTestCase
         $out[] = ['price', 1000, ['fuzziness' => 10], [$testProducts[2]]];
 
         // Should return the product with price in range [-800..1000].
-        $out[] = ['price', 100, ['fuzziness' => 900], [
-            $testProducts[2],
-            $testProducts[1],
-            $testProducts[0],
-        ]];
+        $out[] = [
+            'price',
+            100,
+            ['fuzziness' => 900],
+            [
+                $testProducts[2],
+                $testProducts[1],
+                $testProducts[0],
+            ],
+        ];
 
         return $out;
     }

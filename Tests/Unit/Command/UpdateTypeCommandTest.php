@@ -85,7 +85,6 @@ class UpdateTypeCommandTest extends \PHPUnit_Framework_TestCase
         $command = new TypeUpdateCommand();
         $command->setContainer($containerMock);
 
-
         $app = new Application();
         $app->add($command);
 

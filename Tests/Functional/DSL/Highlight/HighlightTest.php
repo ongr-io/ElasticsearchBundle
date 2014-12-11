@@ -19,7 +19,7 @@ use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 
 /**
- * Highlighting functional test
+ * Highlighting functional test.
  */
 class HighlightTest extends ElasticsearchTestCase
 {
