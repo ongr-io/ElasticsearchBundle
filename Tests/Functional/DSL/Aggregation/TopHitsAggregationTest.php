@@ -29,6 +29,16 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
     /**
      * {@inheritdoc}
      */
+    protected function getIgnoredVersions()
+    {
+        return [
+            ['1.3.0', '<'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDataArray()
     {
         return [
