@@ -53,6 +53,7 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
     {
         $this->connectionMock = $this
             ->getMockBuilder('ONGR\ElasticsearchBundle\Client\Connection')
+            ->setMethods(['getVersionNumber', 'dropAndCreateIndex', 'dropIndex'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -72,6 +73,7 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
 
         $this->dummyBase = $this
             ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
+            ->setMethods(['getContainer'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -218,5 +220,103 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
         $reflection = new \ReflectionMethod($this->dummyBase, 'getManager');
         $reflection->setAccessible(true);
         $reflection->invokeArgs($this->dummyBase, []);
+    }
+
+    /**
+     * Data provider for testIgnoreVersion().
+     *
+     * @return array
+     */
+    public function getIgnoreVersionData()
+    {
+        $out = [];
+
+        // Case #0, version falls within the range, should be skipped.
+        $ignoredVersion = [
+            ['1.2.5', '='],
+            ['1.3.0', '<='],
+        ];
+        $expectedMessage = 'Elasticsearch version 1.2.0 not supported by this test.';
+        $out[] = ['1.2.0', $ignoredVersion, true, $expectedMessage];
+
+        // Case #1, version isn't in the range, should not be skipped.
+        $ignoredVersion = [
+            ['1.2.5', '='],
+            ['1.2.0', '<'],
+        ];
+        $out[] = ['1.2.0', $ignoredVersion, false];
+
+        // Case #2, nothing is ignored, should not be skipped.
+        $out[] = ['1.2.0', [], false];
+
+        // Case #3, version equals the ignored version, should be skipped.
+        $ignoredVersion = [
+            ['1.2.0', '='],
+        ];
+        $expectedMessage = 'Elasticsearch version 1.2.0 not supported by this test.';
+        $out[] = ['1.2.0', $ignoredVersion, true, $expectedMessage];
+
+        return $out;
+    }
+
+    /**
+     * Check if ignored version skipping works as expected.
+     *
+     * @param string $version
+     * @param array  $ignoredVersions
+     * @param bool   $shouldSkip
+     * @param string $expectedMessage
+     *
+     * @dataProvider getIgnoreVersionData()
+     */
+    public function testIgnoreVersion($version, $ignoredVersions, $shouldSkip, $expectedMessage = '')
+    {
+        $actualMessage = '';
+        $skipped = false;
+
+        $this->dummyBase = $this
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
+            ->setMethods(['getIgnoredVersions', 'getContainer'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->dummyBase
+            ->expects($this->any())
+            ->method('getContainer')
+            ->will($this->returnValue($this->containerMock));
+
+        $this->dummyBase
+            ->expects($this->once())
+            ->method('getIgnoredVersions')
+            ->willReturn($ignoredVersions);
+
+        $this->containerMock
+            ->expects($this->once())
+            ->method('has')
+            ->with('es.manager.default')
+            ->will($this->returnValue(true));
+
+        $this->containerMock
+            ->expects($this->once())
+            ->method('get')
+            ->with('es.manager.default')
+            ->will($this->returnValue($this->managerMock));
+
+        $this->managerMock->expects($this->once())->method('getConnection')->willReturn($this->connectionMock);
+        $this->connectionMock->expects($shouldSkip ? $this->never() : $this->once())->method('dropAndCreateIndex');
+        $this->connectionMock->expects($this->once())->method('getVersionNumber')->willReturn($version);
+
+        $reflection = new \ReflectionMethod($this->dummyBase, 'setUp');
+        $reflection->setAccessible(true);
+
+        try {
+            $reflection->invokeArgs($this->dummyBase, []);
+        } catch (\PHPUnit_Framework_SkippedTestError $ex) {
+            $actualMessage = $ex->getMessage();
+            $skipped = true;
+        }
+
+        $this->assertEquals($shouldSkip, $skipped);
+        $this->assertEquals($actualMessage, $expectedMessage);
     }
 }
