@@ -69,6 +69,19 @@ class ConnectionTest extends ElasticsearchTestCase
     }
 
     /**
+     * Check if open and close works as expected.
+     */
+    public function testOpenClose()
+    {
+        $connection = $this->getManager()->getConnection();
+        $this->assertTrue($connection->isOpen());
+        $connection->close();
+        $this->assertFalse($connection->isOpen());
+        $connection->open();
+        $this->assertTrue($connection->isOpen());
+    }
+
+    /**
      * Tests bulk operations.
      */
     public function testBulk()

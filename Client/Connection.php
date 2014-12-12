@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Client;
 
 use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Mapping\MappingTool;
 
 /**
@@ -350,6 +351,38 @@ class Connection
         }
 
         return $updated;
+    }
+
+    /**
+     * Closes index.
+     */
+    public function close()
+    {
+        $this->getClient()->indices()->close(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Returns whether the index is opened.
+     *
+     * @return bool
+     */
+    public function isOpen()
+    {
+        try {
+            $this->getClient()->indices()->recovery(['index' => $this->getIndexName()]);
+        } catch (Forbidden403Exception $ex) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Opens index.
+     */
+    public function open()
+    {
+        $this->getClient()->indices()->open(['index' => $this->getIndexName()]);
     }
 
     /**
