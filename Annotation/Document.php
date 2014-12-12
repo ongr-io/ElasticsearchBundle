@@ -20,6 +20,11 @@ namespace ONGR\ElasticsearchBundle\Annotation;
 final class Document
 {
     /**
+     * @var bool
+     */
+    public $create;
+
+    /**
      * @var string
      */
     public $type;
@@ -33,4 +38,12 @@ final class Document
      * @var array
      */
     public $ttl;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->create = true;
+    }
 }
