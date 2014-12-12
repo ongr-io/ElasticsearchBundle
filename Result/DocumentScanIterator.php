@@ -103,7 +103,7 @@ class DocumentScanIterator extends DocumentIterator
      */
     public function valid()
     {
-        if (isset($this->documents[$this->key])) {
+        if (array_key_exists($this->key, $this->documents)) {
             return true;
         }
 
