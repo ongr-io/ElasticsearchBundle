@@ -78,6 +78,3 @@ $documents = $repository->findBy(['title' => 'Acme']);
 ````
 
 To perform a more complex queries there is a Search DSL API. Read more about it in [Search DSL](search.md) chapter.
-
-### Autocomplete
-To use autocomplete follow [suggesters](suggesters/usage.md) section.
