@@ -150,6 +150,8 @@ class Connection
 
     /**
      * Send refresh call to index.
+     *
+     * Makes your documents available for search.
      */
     public function refresh()
     {
@@ -157,7 +159,9 @@ class Connection
     }
 
     /**
-     * Send refresh call to index.
+     * Send flush call to index.
+     *
+     * Causes a Lucene commit to happen (more expensive than refresh).
      */
     public function flush()
     {
