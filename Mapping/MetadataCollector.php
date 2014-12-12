@@ -27,7 +27,6 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
  */
 class MetadataCollector
 {
-
     /**
      * @const string
      */
@@ -234,9 +233,17 @@ class MetadataCollector
 
             list($setters, $getters) = $this->getSettersAndGetters($reflectionClass, $properties);
 
+            $hasLifecycleCallbacks = $this->reader->getClassAnnotation(
+                $reflectionClass,
+                'ONGR\ElasticsearchBundle\Annotation\LifecycleCallback'
+            );
+
+            $callbacks['lifecycleCallback'] = $hasLifecycleCallbacks ? $this->getCallbacks($reflectionClass) : [];
+
             $class = [
                 $type => [
                     'properties' => $properties,
+                    'callbacks' => $callbacks,
                     'setters' => $setters,
                     'getters' => $getters,
                     'fields' => [
@@ -555,8 +562,10 @@ class MetadataCollector
             'Document',
             'Property',
             'Object',
+            'LifecycleCallback',
             'Nested',
             'MultiField',
+            'PrePersist',
             'Inherit',
             'Skip',
             'Suggester/CompletionSuggesterProperty',
@@ -622,5 +631,28 @@ class MetadataCollector
         }
 
         return $type;
+    }
+
+    /**
+     * Gathers and returns annotated methods callbacks.
+     *
+     * @param \ReflectionClass $reflectionClass
+     *
+     * @return array
+     */
+    public function getCallbacks(\ReflectionClass $reflectionClass)
+    {
+        $callbacks = [];
+
+        foreach ($reflectionClass->getMethods() as $method) {
+            $annotations = $this->reader->getMethodAnnotations($method);
+            if (!empty($annotations)) {
+                foreach ($annotations as $annotation) {
+                    $callbacks[$annotation->type] = $method->getName();
+                }
+            }
+        }
+
+        return $callbacks;
     }
 }

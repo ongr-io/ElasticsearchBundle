@@ -68,7 +68,7 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
 
         $this->managerMock = $this
             ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
-            ->setConstructorArgs([$this->connectionMock, $this->collectorMock, [], []])
+            ->setConstructorArgs([$this->connectionMock, $this->collectorMock, [], [], null])
             ->getMock();
 
         $this->dummyBase = $this

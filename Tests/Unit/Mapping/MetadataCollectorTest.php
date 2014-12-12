@@ -196,6 +196,33 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return array
+     */
+    public function getTestGetLifeCycleCallbackMethodsData()
+    {
+        $mapping = [
+            'order' => [
+                'callbacks' => [
+                    'lifecycleCallback' => [
+                        'document.pre_persist' => 'fooPrePersist',
+                    ],
+                ],
+            ],
+        ];
+
+        return [
+            [
+                'AcmeTestBundle:Order',
+                $mapping,
+            ],
+            [
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Order',
+                $mapping,
+            ],
+        ];
+    }
+
+    /**
      * Tests if correct mapping is retrieved from getMappingByNamespace method.
      *
      * @param string $namespace
@@ -212,6 +239,27 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
 
         $mapping = $collector->getMappingByNamespace($namespace);
         $this->assertArrayContainsArray($expectedMapping['product']['properties'], $mapping['product']['properties']);
+    }
+
+    /**
+     * Test if correct callbacks is returned.
+     *
+     * @param string $namespace
+     * @param array  $expectedMapping
+     *
+     * @dataProvider getTestGetLifeCycleCallbackMethodsData
+     */
+    public function testGetLifeCycleCallbackMethods($namespace, $expectedMapping)
+    {
+        $collector = new MetadataCollector(
+            ['AcmeTestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestingBundle'],
+            new AnnotationReader()
+        );
+        $mapping = $collector->getMappingByNamespace($namespace);
+        $this->assertArrayContainsArray(
+            $expectedMapping['order']['callbacks'],
+            $mapping['order']['callbacks']
+        );
     }
 
     /**

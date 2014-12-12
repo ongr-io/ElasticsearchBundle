@@ -25,7 +25,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDocumentMapping()
     {
-        $manager = new Manager(null, null, [], []);
+        $manager = new Manager(null, null, [], [], null);
         $this->assertNull($manager->getDocumentMapping('test'));
     }
 
@@ -35,7 +35,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     public function testGetMetadataCollector()
     {
         $metaDataCollector = new MetadataCollector(['test'], null);
-        $manager = new Manager(null, $metaDataCollector, [], []);
+        $manager = new Manager(null, $metaDataCollector, [], [], null);
 
         $this->assertEquals($metaDataCollector, $manager->getMetadataCollector());
     }
@@ -45,7 +45,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositories()
     {
-        $manager = new Manager(null, null, [], ['rep1' => ['type' => ''], 'rep2' => ['type' => '']]);
+        $manager = new Manager(null, null, [], ['rep1' => ['type' => ''], 'rep2' => ['type' => '']], null);
         $types = [
             'rep1',
             'rep2',
@@ -63,7 +63,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositoriesException()
     {
-        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => '']);
+        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => ''], null);
         $types = [
             'rep1',
             'rep4',
@@ -79,7 +79,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositoriesExceptionSingle()
     {
-        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => '']);
+        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => ''], null);
         $manager->getRepository('rep1');
     }
 }

@@ -13,7 +13,9 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Event\FilterDocumentEvent;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Manager class.
@@ -43,17 +45,24 @@ class Manager
     private $typesMapping = [];
 
     /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
+
+    /**
      * @param Connection|null        $connection
      * @param MetadataCollector|null $metadataCollector
      * @param array                  $typesMapping
      * @param array                  $bundlesMapping
+     * @param EventDispatcher        $eventDispatcher
      */
-    public function __construct($connection, $metadataCollector, $typesMapping, $bundlesMapping)
+    public function __construct($connection, $metadataCollector, $typesMapping, $bundlesMapping, $eventDispatcher)
     {
         $this->connection = $connection;
         $this->metadataCollector = $metadataCollector;
         $this->typesMapping = $typesMapping;
         $this->bundlesMapping = $bundlesMapping;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -104,6 +113,9 @@ class Manager
     public function persist(DocumentInterface $object)
     {
         $repository = $this->getDocumentMapping($object);
+        if ($this->eventDispatcher) {
+            $this->eventDispatcher->dispatch('document.pre_persist', new FilterDocumentEvent($object));
+        }
         $document = $this->convertToArray($object, $repository['getters']);
 
         $this->getConnection()->bulk(
