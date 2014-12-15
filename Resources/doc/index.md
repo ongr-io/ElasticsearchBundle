@@ -19,3 +19,4 @@ More specific features and usages that you might need.
 
 - [Document inheritance](inheritance.md)
 - [Autocomplete, suggesters](suggesters/usage.md)
+- [Warmers](warmers.md)

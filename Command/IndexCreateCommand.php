@@ -31,7 +31,8 @@ class IndexCreateCommand extends AbstractElasticsearchCommand
         $this
             ->setName('es:index:create')
             ->setDescription('Creates elasticsearch index.')
-            ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to new index name.');
+            ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to new index name.')
+            ->addOption('with-warmers', 'w', InputOption::VALUE_NONE, 'Puts warmers into index.');
     }
 
     /**
@@ -48,7 +49,7 @@ class IndexCreateCommand extends AbstractElasticsearchCommand
             $finder->setNextFreeIndex($connection);
         }
 
-        $connection->createIndex();
+        $connection->createIndex($input->getOption('with-warmers'));
 
         $output->writeln(sprintf('<info>Index %s created.</info>', $connection->getIndexName()));
     }
