@@ -12,6 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Client;
 
 use Elasticsearch\Client;
+use ONGR\ElasticsearchBundle\Cache\WarmerInterface;
+use ONGR\ElasticsearchBundle\Cache\WarmersContainer;
 use ONGR\ElasticsearchBundle\Mapping\MappingTool;
 
 /**
@@ -58,6 +60,11 @@ class Connection
     private $bulkParams;
 
     /**
+     * @var WarmersContainer
+     */
+    private $warmers;
+
+    /**
      * Construct.
      *
      * @param Client $client   Elasticsearch client.
@@ -69,6 +76,7 @@ class Connection
         $this->settings = $settings;
         $this->bulkQueries = [];
         $this->bulkParams = [];
+        $this->warmers = new WarmersContainer();
     }
 
     /**
@@ -211,10 +219,18 @@ class Connection
 
     /**
      * Creates fresh elasticsearch index.
+     * 
+     * @param bool $putWarmers Determines if warmers should be loaded.
      */
-    public function createIndex()
+    public function createIndex($putWarmers = false)
     {
         $this->client->indices()->create($this->settings);
+
+        if ($putWarmers) {
+            // Sometimes Elasticsearch gives service unavailable.
+            usleep(200000);
+            $this->putWarmers();
+        }
     }
 
     /**
@@ -227,8 +243,10 @@ class Connection
 
     /**
      * Tries to drop and create fresh elasticsearch index.
+     * 
+     * @param bool $putWarmers Determines if warmers should be loaded.
      */
-    public function dropAndCreateIndex()
+    public function dropAndCreateIndex($putWarmers = false)
     {
         try {
             $this->dropIndex();
@@ -236,7 +254,7 @@ class Connection
             // Do nothing because I'm only trying.
         }
 
-        $this->createIndex();
+        $this->createIndex($putWarmers);
     }
 
     /**
@@ -378,6 +396,40 @@ class Connection
             $this->settings = $settings;
         } else {
             $this->settings = array_replace_recursive($this->settings, $settings);
+        }
+    }
+
+    /**
+     * Clears elasticsearch cache.
+     */
+    public function clearCache()
+    {
+        $this->client->indices()->clearCache(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Adds warmer to conatiner.
+     * 
+     * @param WarmerInterface $warmer
+     */
+    public function addWarmer(WarmerInterface $warmer)
+    {
+        $this->warmers->addWarmer($warmer);
+    }
+
+    /**
+     * Loads warmers into elasticseach.
+     */
+    public function putWarmers()
+    {
+        foreach ($this->warmers->getWarmers() as $name => $body) {
+            $this->getClient()->indices()->putWarmer(
+                [
+                    'index' => $this->getIndexName(),
+                    'name' => $name,
+                    'body' => $body,
+                ]
+            );
         }
     }
 }

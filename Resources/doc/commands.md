@@ -10,13 +10,14 @@ To use it simply type ```bash app/console <command_name> <arguments/options>``` 
 * Description: Creates a new index in Elasticsearch for the specified [*manager*][managers].
 * Options:
 
-    | Full name  | Short name  | Value          | What it does                                                                                         |
-    |------------|-------------|----------------|------------------------------------------------------------------------------------------------------|
-    | `--manager` | *undefined* | Manager name.  | Used to select [*manager*][managers] to create index for. If not specified, default manager is used. |
-    | `--time`   | `-t`        | *not required* | Creates an index for manager `shop` with current timestamp appended to its name.                     |
+    | Full name       | Short name  | Value          | What it does                                                                                         |
+    |-----------------|-------------|----------------|------------------------------------------------------------------------------------------------------|
+    | `--manager`     | *undefined* | Manager name.  | Used to select [*manager*][managers] to create index for. If not specified, default manager is used. |
+    | `--time`        | `-t`        | *not required* | Creates an index with current timestamp appended to its name.                     |
+    | `--with-warmers`| `-w`        | *not required* | Creates an index with warmers included.                                                              |
 * Examples: 
 
-    | Input                                   | What it does                                                            |
+    | Input                                   | What it does                                                                     |
     |-----------------------------------------|----------------------------------------------------------------------------------|
     | `es:index:create`                       | Creates an index in Elasticsearch for the default [*manager*][managers].         |
     | `es:index:create --manager shop --time` | Creates an index for manager `shop` with current timestamp appended to its name. |
@@ -27,16 +28,16 @@ To use it simply type ```bash app/console <command_name> <arguments/options>``` 
 * Description: Drops the index for the specified [*manager*][managers].
 * Options:
 
-    | Full name  | Short name  | Value          | What it does                                                                                         |
-    |------------|-------------|----------------|------------------------------------------------------------------------------------------------------|
-    | `--manager` | *undefined* | Manager name.  | Used to select [*manager*][managers] to create index for. If not specified, default manager is used. |
-    | `--force`   | *undefined* | *not required* | This flag is required for the command to work.               |
+    | Full name   | Short name  | Value          | What it does                                                                                          |
+    |-------------|-------------|----------------|-------------------------------------------------------------------------------------------------------|
+    | `--manager` | *undefined* | Manager name.  | Used to select [*manager*][managers] to create index for. If not specified, default manager is used.  |
+    | `--force`   | *undefined* | *not required* | This flag is required for the command to work.                                                        |
 * Examples: 
 
-    | Input                                   | What it does                                                                     |
-    |-----------------------------------------|----------------------------------------------------------------------------------|
-    | `es:index:drop --force`                 | Drops an index in Elasticsearch of the default [*manager*][managers].            |
-    | `es:index:create --manager shop` | Drop an index of [*manager*][managers] `shop` with current timestamp appended to its name.        |
+    | Input                                   | What it does                                                                                |
+    |-----------------------------------------|---------------------------------------------------------------------------------------------|
+    | `es:index:drop --force`                 | Drops an index in Elasticsearch of the default [*manager*][managers].                       |
+    | `es:index:create --manager shop`        | Drop an index of [*manager*][managers] `shop` with current timestamp appended to its name.  |
 
 
 ## Import index.

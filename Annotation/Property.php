@@ -69,6 +69,11 @@ final class Property
     public $fields;
 
     /**
+     * @var array
+     */
+    public $fielddata;
+
+    /**
      * Object name to map.
      *
      * @var string

@@ -29,3 +29,9 @@ ongr_elasticsearch:
             connection: bar
             mappings:
                 - ONGRElasticsearchBundle
+
+services:
+    es_test.foo.warmer:
+        class: ONGR\ElasticsearchBundle\Tests\app\fixtures\Warmer\FooWarmer
+        tags:
+            - { name: es.warmer, connection: "default,bar" }
