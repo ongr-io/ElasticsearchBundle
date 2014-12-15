@@ -43,10 +43,41 @@ abstract class AbstractElasticsearchCommand extends ContainerAwareCommand
      */
     protected function getManager($name)
     {
-        /** @var Manager $manager */
-        $manager = $this->getContainer()->get($this->getManagerId($name));
+        return $this->getContainer()->get($this->getManagerId($name));
+    }
 
-        return $manager;
+    /**
+     * Returns elasticsearch connection by name.
+     * 
+     * @param string $name
+     *
+     * @return \ONGR\ElasticsearchBundle\Client\Connection
+     */
+    protected function getConnection($name)
+    {
+        return $this->getManager($this->getManagerNameByConnection($name))->getConnection();
+    }
+
+    /**
+     * Returns manager name which is using passed connection.
+     *
+     * @param string $name Connection name.
+     *
+     * @return string
+     * 
+     * @throws \RuntimeException
+     */
+    private function getManagerNameByConnection($name)
+    {
+        foreach ($this->getContainer()->getParameter('es.managers') as $managerName => $params) {
+            if ($params['connection'] === $name) {
+                return $managerName;
+            }
+        }
+
+        throw new \RuntimeException(
+            sprintf('Connection named %s is not used by any manager. Check your configuration.', $name)
+        );
     }
 
     /**

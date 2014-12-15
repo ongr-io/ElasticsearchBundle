@@ -29,13 +29,20 @@ class UpdateTypeCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuteUnexpectedValue()
     {
+        $managerMock = $this
+            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->disableOriginalConstructor()
+            ->setMethods(['getConnection', 'updateMapping'])
+            ->getMock();
+
+        $managerMock->expects($this->once())->method('getConnection')->willReturnSelf();
+        $managerMock->expects($this->once())->method('updateMapping')->willReturn(3);
+
         /** @var TypeUpdateCommand|\PHPUnit_Framework_MockObject_MockObject $command */
         $command = $this->getMockBuilder('ONGR\ElasticsearchBundle\Command\TypeUpdateCommand')
-            ->setMethods(['clearMappingCache', 'getConnection', 'updateMapping'])
+            ->setMethods(['clearMappingCache'])
             ->getMock();
-        $command->expects($this->once())->method('clearMappingCache')->willReturnSelf();
-        $command->expects($this->once())->method('getConnection')->willReturnSelf();
-        $command->expects($this->once())->method('updateMapping')->willReturn(3);
+        $command->expects($this->once())->method('clearMappingCache')->willReturn($managerMock);
 
         $app = new Application();
         $app->add($command);
