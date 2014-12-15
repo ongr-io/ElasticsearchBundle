@@ -19,8 +19,10 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  * Product document for testing.
  *
  * @ES\Document(type="product")
+ * @ES\Skip({"name"})
+ * @ES\Inherit({"price"})
  */
-class Product implements DocumentInterface
+class Product extends Item implements DocumentInterface
 {
     use DocumentTrait;
 
@@ -67,9 +69,9 @@ class Product implements DocumentInterface
     public $completionSuggesting;
 
     /**
-     * @var float
+     * @var int
      *
-     * @ES\Property(type="float", name="price")
+     * @ES\Property(type="integer", name="price")
      */
     public $price;
 

@@ -215,19 +215,24 @@ class MetadataCollector
     {
         /** @var Document $class */
         $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
-        if ($class !== null) {
+        if ($class !== null && $class->create) {
             $type = $this->getDocumentType($reflectionClass, $class);
             $parent = $class->parent === null ? $class->parent : $this->getDocumentParentType($class->parent);
-            $properties = $this->getProperties($reflectionClass);
+            $inherit = $this->getInheritedProperties($reflectionClass);
 
-            $setters = [];
-            $getters = [];
+            $properties = $this->getProperties(
+                $reflectionClass,
+                array_merge($inherit, $this->getSkippedProperties($reflectionClass))
+            );
 
-            foreach ($properties as $property => $params) {
-                $alias = $this->aliases[$reflectionClass->getName()][$property];
-                list($setters[$property], $getters[$property]) = $this
-                    ->getInfoAboutProperty($params, $alias, $reflectionClass);
+            if (!empty($inherit)) {
+                $properties = array_merge(
+                    $properties,
+                    $this->getProperties($reflectionClass->getParentClass(), $inherit, true)
+                );
             }
+
+            list($setters, $getters) = $this->getSettersAndGetters($reflectionClass, $properties);
 
             $class = [
                 $type => [
@@ -246,6 +251,70 @@ class MetadataCollector
         }
 
         return $class;
+    }
+
+    /**
+     * Returns information about accessing properties from document.
+     * 
+     * @param \ReflectionClass $reflectionClass Document reflection class.
+     * @param array            $properties      Document properties.
+     *
+     * @return array
+     */
+    private function getSettersAndGetters(\ReflectionClass $reflectionClass, array $properties)
+    {
+        $setters = [];
+        $getters = [];
+
+        foreach ($properties as $property => $params) {
+            if (array_key_exists($property, $this->aliases[$reflectionClass->getName()])) {
+                list($setters[$property], $getters[$property]) = $this
+                    ->getInfoAboutProperty(
+                        $params,
+                        $this->aliases[$reflectionClass->getName()][$property],
+                        $reflectionClass
+                    );
+            } elseif ($reflectionClass->getParentClass() !== false) {
+                list($parentSetters, $parentGetters) = $this
+                    ->getSettersAndGetters($reflectionClass->getParentClass(), [$property => $params]);
+
+                if ($parentSetters !== []) {
+                    $setters = array_merge($setters, $parentSetters);
+                }
+
+                if ($parentGetters !== []) {
+                    $getters = array_merge($getters, $parentGetters);
+                }
+            }
+        }
+
+        return [$setters, $getters];
+    }
+
+    /**
+     * @param \ReflectionClass $reflectionClass
+     *
+     * @return array
+     */
+    private function getSkippedProperties(\ReflectionClass $reflectionClass)
+    {
+        /** @var Skip $class */
+        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Skip');
+
+        return $class === null ? [] : $class->value;
+    }
+
+    /**
+     * @param \ReflectionClass $reflectionClass
+     *
+     * @return array
+     */
+    private function getInheritedProperties(\ReflectionClass $reflectionClass)
+    {
+        /** @var Inherit $class */
+        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Inherit');
+
+        return $class === null ? [] : $class->value;
     }
 
     /**
@@ -304,6 +373,7 @@ class MetadataCollector
      * @param \ReflectionClass $reflectionClass
      *
      * @return array
+     * 
      * @throws \LogicException
      */
     private function checkPropertyAccess($property, $methodPrefix, $reflectionClass)
@@ -405,19 +475,23 @@ class MetadataCollector
     /**
      * Returns properties of reflection class.
      *
-     * @param \ReflectionClass $reflectionClass
+     * @param \ReflectionClass $reflectionClass Class to read properties from.
+     * @param array            $properties      Properties to skip.
+     * @param array            $flag            If false exludes properties, true only includes properties.
      *
      * @return array
-     * @throws \RuntimeException
      */
-    private function getProperties(\ReflectionClass $reflectionClass)
+    private function getProperties(\ReflectionClass $reflectionClass, $properties = [], $flag = false)
     {
         $mapping = [];
         /** @var \ReflectionProperty $property */
         foreach ($reflectionClass->getProperties() as $property) {
             $type = $this->getPropertyAnnotationData($property);
 
-            if (empty($type)) {
+            if ((in_array($property->getName(), $properties) && !$flag)
+                || (!in_array($property->getName(), $properties) && $flag)
+                || empty($type)
+            ) {
                 continue;
             }
 
@@ -483,6 +557,8 @@ class MetadataCollector
             'Object',
             'Nested',
             'MultiField',
+            'Inherit',
+            'Skip',
             'Suggester/CompletionSuggesterProperty',
             'Suggester/ContextSuggesterProperty',
             'Suggester/Context/CategoryContext',
@@ -519,6 +595,7 @@ class MetadataCollector
      * @param string $name
      *
      * @return string
+     * 
      * @throws \LogicException
      */
     private function getBundle($name)

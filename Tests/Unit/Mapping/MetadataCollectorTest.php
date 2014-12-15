@@ -73,6 +73,9 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
+            'created_at' => [
+                'type' => 'date',
+            ]
         ];
     }
 

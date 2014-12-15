@@ -17,4 +17,5 @@ Main things you should know while working with this bundle.
 
 More specific features and usages that you might need.
 
-- (Coming soon)
+- [Document inheritance](inheritance.md)
+- [Autocomplete, suggesters](suggesters/usage.md)
