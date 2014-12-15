@@ -12,11 +12,17 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
 class DocumentScanIteratorTest extends ElasticsearchTestCase
 {
+    use TestHelperTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -35,29 +41,62 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
     }
 
     /**
-     * Iteration test.
+     * Data provider for testIteration.
+     *
+     * @return array
      */
-    public function testIteration()
+    public function getIterationData()
     {
-        /** @var Repository $repo */
+        $out = [];
 
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Content');
-
-        $search = $repo->createSearch();
+        // Case #0: no search type set, with a sort, results should be sorted.
+        $search = new Search();
         $search->setSize(2);
         $search->setScroll('1m');
+        $search->addSort(new Sort('header'));
         $search->addQuery(new MatchAllQuery());
+
+        $out[] = ['search' => $search, true];
+
+        // Case #1: search type set to scan, with a sort, results should not be sorted.
+        $search = new Search();
+        $search->setSize(2);
+        $search->setScroll('1m');
+        $search->setSearchType('scan');
+        $search->addSort(new Sort('header'));
+        $search->addQuery(new MatchAllQuery());
+
+        $out[] = ['search' => $search, false];
+
+        // Case #3: minimum size, should give the same results.
+        $search = new Search();
+        $search->setSize(1);
+        $search->setScroll('1m');
+        $search->addSort(new Sort('header'));
+        $search->addQuery(new MatchAllQuery());
+
+        $out[] = ['search' => $search, true];
+
+        return $out;
+    }
+
+    /**
+     * Iteration test.
+     *
+     * @param Search $search
+     * @param bool   $isSorted
+     *
+     * @dataProvider getIterationData()
+     */
+    public function testIteration(Search $search, $isSorted)
+    {
+        /** @var Repository $repo */
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Content');
 
         $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentScanIterator', $iterator);
         $this->assertCount(4, $iterator);
-
-        $headers = [];
-        foreach ($iterator as $_result) {
-            $headers[] = $_result->header;
-        }
-        sort($headers);
 
         $expectedHeaders = [
             'content_0',
@@ -66,6 +105,30 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
             'content_3',
         ];
 
-        $this->assertEquals($expectedHeaders, $headers);
+        // Iterate multiple times to see if it's cached correctly.
+        if ($isSorted) {
+            $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
+            $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
+        } else {
+            $this->assertArrayContainsArrayValues($expectedHeaders, $this->iterateThrough($iterator), true);
+            $this->assertArrayContainsArrayValues($expectedHeaders, $this->iterateThrough($iterator), true);
+        }
+    }
+
+    /**
+     * Returns relevant data by iterating through.
+     *
+     * @param DocumentScanIterator $iterator
+     *
+     * @return array
+     */
+    protected function iterateThrough($iterator)
+    {
+        $data = [];
+        foreach ($iterator as $result) {
+            $data[] = $result->header;
+        }
+
+        return $data;
     }
 }

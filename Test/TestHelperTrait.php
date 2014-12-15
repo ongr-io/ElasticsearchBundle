@@ -33,4 +33,26 @@ trait TestHelperTrait
             }
         }
     }
+
+    /**
+     * Check if one array has the values of other array.
+     *
+     * Used to compare unsorted single dimension arrays.
+     *
+     * @param array $needle              Subset.
+     * @param array $haystack            Set.
+     * @param bool  $shouldFitCompletely Set should only contain specified values.
+     */
+    protected function assertArrayContainsArrayValues($needle, $haystack, $shouldFitCompletely = false)
+    {
+        foreach ($needle as $val) {
+            $key = array_search($val, $haystack);
+            \PHPUnit_Framework_Assert::assertNotFalse($key, "Failed asserting that array contains {$val}.");
+            unset($haystack[$key]);
+        }
+
+        if ($shouldFitCompletely) {
+            \PHPUnit_Framework_Assert::assertTrue(empty($haystack), 'Failed asserting that array contains all values.');
+        }
+    }
 }
