@@ -338,15 +338,15 @@ class Connection
             throw new \LogicException('Connection does not have any mapping loaded.');
         }
 
-        $newMapping = $this->settings['body']['mappings'];
-        $oldMapping = $this
-            ->client
-            ->indices()
-            ->getMapping(['index' => $this->getIndexName()]);
+        $tempSettings = $this->settings;
+        $tempSettings['index'] = uniqid('mapping_check_');
+        $mappingCheckConnection = new Connection($this->client, $tempSettings);
+        $mappingCheckConnection->createIndex();
 
-        if (array_key_exists($this->getIndexName(), $oldMapping)) {
-            $oldMapping = $oldMapping[$this->getIndexName()]['mappings'];
-        }
+        $newMapping = $mappingCheckConnection->getMappingFromIndex();
+        $oldMapping = $this->getMappingFromIndex();
+
+        $mappingCheckConnection->dropIndex();
 
         $tool = new MappingTool();
         $updated = $tool->checkMapping($oldMapping, $newMapping);
@@ -372,6 +372,25 @@ class Connection
         }
 
         return $updated;
+    }
+
+    /**
+     * Returns mapping from index.
+     *
+     * @return array
+     */
+    public function getMappingFromIndex()
+    {
+        $mapping = $this
+            ->client
+            ->indices()
+            ->getMapping(['index' => $this->getIndexName()]);
+
+        if (array_key_exists($this->getIndexName(), $mapping)) {
+            return $mapping[$this->getIndexName()]['mappings'];
+        }
+
+        return [];
     }
 
     /**
