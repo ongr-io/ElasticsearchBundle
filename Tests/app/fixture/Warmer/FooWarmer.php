@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixtures\Warmer;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Warmer;
 
 use ONGR\ElasticsearchBundle\Cache\WarmerInterface;
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
