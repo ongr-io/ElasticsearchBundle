@@ -405,17 +405,40 @@ class Connection
 
     /**
      * Loads warmers into elasticseach.
+     * 
+     * @param array $names Warmers names to put.
      */
-    public function putWarmers()
+    public function putWarmers(array $names = [])
     {
         foreach ($this->warmers->getWarmers() as $name => $body) {
-            $this->getClient()->indices()->putWarmer(
-                [
-                    'index' => $this->getIndexName(),
-                    'name' => $name,
-                    'body' => $body,
-                ]
-            );
+            if (empty($names) || in_array($name, $names)) {
+                $this->getClient()->indices()->putWarmer(
+                    [
+                        'index' => $this->getIndexName(),
+                        'name' => $name,
+                        'body' => $body,
+                    ]
+                );
+            }
+        }
+    }
+
+    /**
+     * Deletes warmers from elasticsearch index.
+     * 
+     * @param array $names Warmers names to delete.
+     */
+    public function deleteWarmers(array $names = [])
+    {
+        foreach ($this->warmers->getWarmers() as $name => $body) {
+            if (empty($names) || in_array($name, $names)) {
+                $this->getClient()->indices()->deleteWarmer(
+                    [
+                        'index' => $this->getIndexName(),
+                        'name' => $name,
+                    ]
+                );
+            }
         }
     }
 }
