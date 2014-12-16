@@ -16,42 +16,43 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  *
  * @Annotation
  * @Target("ANNOTATION")
+ * @Attributes({
+ *     @Attribute("index_analyzer", type = "string"),
+ *     @Attribute("search_analyzer",  type = "string"),
+ *     @Attribute("name", type = "string", required = true),
+ *     @Attribute("type", type = "string", required = true),
+ *     @Attribute("index", type = "string"),
+ *     @Attribute("analyzer", type = "string"),
+ * })
  */
 final class MultiField
 {
     /**
-     * @var string
+     * @var array
+     */
+    private $settings;
+
+    /**
+     * Constructor for lowercase settings.
      *
-     * @Required
+     * @param array $values
+     */
+    public function __construct(array $values)
+    {
+        $this->type = $values['type'];
+        $this->name = $values['name'];
+        $this->settings = $values;
+    }
+
+    /**
+     * @var string
      */
     public $name;
 
     /**
      * @var string
-     *
-     * @Required
      */
     public $type;
-
-    /**
-     * @var string
-     */
-    public $index;
-
-    /**
-     * @var string
-     */
-    public $analyzer;
-
-    /**
-     * @var string
-     */
-    public $index_analyzer;
-
-    /**
-     * @var string
-     */
-    public $search_analyzer;
 
     /**
      * Filters object values.
@@ -61,7 +62,7 @@ final class MultiField
     public function filter()
     {
         return array_diff_key(
-            array_filter(get_object_vars($this)),
+            array_filter($this->settings),
             array_flip(['name'])
         );
     }

@@ -20,12 +20,7 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function testFilter()
     {
-        $type = new Property();
-
-        $type->name = 'id';
-        $type->index = 'no_index';
-        $type->type = 'string';
-        $type->analyzer = null;
+        $type = new Property(['name' => 'id', 'index' => 'no_index', 'type' => 'string', 'analyzer' => null]);
 
         $this->assertEquals(
             [

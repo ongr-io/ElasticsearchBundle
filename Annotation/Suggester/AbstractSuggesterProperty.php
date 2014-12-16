@@ -13,9 +13,38 @@ namespace ONGR\ElasticsearchBundle\Annotation\Suggester;
 
 /**
  * Abstract class for various suggester annotations.
+ *
+ * @Attributes({
+ *     @Attribute("name", type = "string", required = true),
+ *     @Attribute("type", type = "string", required = true),
+ *     @Attribute("index_analyzer", type = "string"),
+ *     @Attribute("search_analyzer",  type = "string"),
+ *     @Attribute("preserve_separators",  type = "int"),
+ *     @Attribute("preserve_position_increments",  type = "bool"),
+ *     @Attribute("max_input_length",  type = "int"),
+ *     @Attribute("objectName", type = "string", required = true),
+ * })
  */
 abstract class AbstractSuggesterProperty
 {
+    /**
+     * @var array
+     */
+    private $settings;
+
+    /**
+     * Constructor for lowercase settings.
+     *
+     * @param array $values
+     */
+    public function __construct(array $values)
+    {
+        $this->settings = $values;
+        $this->name = $values['name'];
+        $this->objectName = $values['objectName'];
+        $this->settings['type'] = $this->type;
+    }
+
     /**
      * @var string
      */
@@ -23,47 +52,13 @@ abstract class AbstractSuggesterProperty
 
     /**
      * @var string
-     *
-     * @Required
      */
     public $name;
 
     /**
      * @var string
-     *
-     * @Required
      */
-     public $objectName;
-
-    /**
-     * @var string
-     */
-    public $index_analyzer;
-
-    /**
-     * @var string
-     */
-    public $search_analyzer;
-
-    /**
-     * @var int
-     */
-    public $preserve_separators;
-
-    /**
-     * @var bool
-     */
-    public $preserve_position_increments;
-
-    /**
-     * @var int
-     */
-    public $max_input_length;
-
-    /**
-     * @var bool
-     */
-    public $payloads;
+    public $objectName;
 
     /**
      * Returns required properties.
@@ -75,7 +70,7 @@ abstract class AbstractSuggesterProperty
     public function filter($extraExclude = [])
     {
         return array_diff_key(
-            array_filter(get_object_vars($this)),
+            array_filter($this->settings),
             array_flip(array_merge(['name', 'objectName', 'classObjectName'], $extraExclude))
         );
     }

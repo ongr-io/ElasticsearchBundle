@@ -15,8 +15,10 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Annotation\Document;
+use ONGR\ElasticsearchBundle\Annotation\Inherit;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use ONGR\ElasticsearchBundle\Annotation\Skip;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\CompletionSuggesterProperty;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\ContextSuggesterProperty;
@@ -477,7 +479,7 @@ class MetadataCollector
      *
      * @param \ReflectionClass $reflectionClass Class to read properties from.
      * @param array            $properties      Properties to skip.
-     * @param array            $flag            If false exludes properties, true only includes properties.
+     * @param bool             $flag            If false exludes properties, true only includes properties.
      *
      * @return array
      */
