@@ -12,14 +12,15 @@
     ],
     "require": {
         "php": ">=5.4",
-        "symfony/symfony": "~2.3",
+        "symfony/symfony": "~2.6",
         "elasticsearch/elasticsearch": "~1.0",
         "doctrine/annotations": "~1.2"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.4",
         "phpunit/phpunit": "~4.1",
-        "squizlabs/php_codesniffer": "~1.5"
+        "squizlabs/php_codesniffer": "~1.5",
+        "ongr/ongr-strict-standard": "~1.0.0-beta"
     },
     "autoload": {
         "psr-4": { "ONGR\\ElasticsearchBundle\\": "" }
