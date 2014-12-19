@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
+namespace ONGR\ElasticsearchBundle\Tests\Unit\DataCollector;
 
-use ONGR\ElasticsearchBundle\Service\ESDataCollector;
+use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
 
-class ESDataCollectorTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchDataCollectorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Tests if correct name is being returned.
      */
     public function testGetName()
     {
-        $collector = new ESDataCollector();
+        $collector = new ElasticsearchDataCollector();
         $this->assertEquals('es', $collector->getName());
     }
 }

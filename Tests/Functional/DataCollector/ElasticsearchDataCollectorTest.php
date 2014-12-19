@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
+namespace ONGR\ElasticsearchBundle\Tests\Functional\DataCollector;
 
-use ONGR\ElasticsearchBundle\Service\ESDataCollector;
+use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ESDataCollectorTest extends ElasticsearchTestCase
+class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
 {
     const START_QUERY_COUNT = 8;
 
@@ -54,7 +54,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
         $repository = $manager->getRepository('AcmeTestBundle:Product');
 
         $document = $repository->createDocument();
-        $document->title = 'Awesomo';
+        $document->title = 'tuna';
 
         $manager->persist($document);
         $manager->commit();
@@ -85,7 +85,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
         $repository->find(2);
         $queries = $this->getCollector()->getQueries();
 
-        $lastQuery = end($queries[ESDataCollector::UNDEFINED_ROUTE]);
+        $lastQuery = end($queries[ElasticsearchDataCollector::UNDEFINED_ROUTE]);
         $time = $lastQuery['time'];
         unset($lastQuery['time']);
 
@@ -94,7 +94,11 @@ class ESDataCollectorTest extends ElasticsearchTestCase
             [
                 'body' => '',
                 'method' => 'GET',
-                'uri' => 'http://127.0.0.1:9200/ongr-elasticsearch-bundle-test/product/2',
+                'path' => '/ongr-elasticsearch-bundle-test/product/2',
+                'host' => '127.0.0.1',
+                'httpParameters' => [],
+                'scheme' => 'http',
+                'port' => 9200,
             ],
             $lastQuery,
             'Logged data did not match expected data.'
@@ -102,7 +106,7 @@ class ESDataCollectorTest extends ElasticsearchTestCase
     }
 
     /**
-     * @return ESDataCollector
+     * @return ElasticsearchDataCollector
      */
     private function getCollector()
     {

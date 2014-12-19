@@ -9,10 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Service;
+namespace ONGR\ElasticsearchBundle\DataCollector;
 
 use Monolog\Logger;
 use ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler;
+use ONGR\ElasticsearchBundle\Service\JsonFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
@@ -20,7 +21,7 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
 /**
  * Data collector for profiling elasticsearch bundle.
  */
-class ESDataCollector implements DataCollectorInterface
+class ElasticsearchDataCollector implements DataCollectorInterface
 {
     const UNDEFINED_ROUTE = 'undefined_route';
 
@@ -33,6 +34,11 @@ class ESDataCollector implements DataCollectorInterface
      * @var array
      */
     private $data = [];
+
+    /**
+     * @var array
+     */
+    private $managers = [];
 
     /**
      * Adds logger to look for collector handler.
@@ -97,6 +103,28 @@ class ESDataCollector implements DataCollectorInterface
     }
 
     /**
+     * @return array
+     */
+    public function getManagers()
+    {
+        if (is_array(reset($this->managers))) {
+            foreach ($this->managers as $name => &$manager) {
+                $manager = $name === 'default' ? 'es.manager' : sprintf('es.manager.%s', $name);
+            }
+        }
+
+        return $this->managers;
+    }
+
+    /**
+     * @param array $managers
+     */
+    public function setManagers($managers)
+    {
+        $this->managers = $managers;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getName()
@@ -118,12 +146,7 @@ class ESDataCollector implements DataCollectorInterface
             // First record will never have context.
             if (!empty($record['context'])) {
                 $this->addTime($record['context']['duration']);
-                $this->data['queries'][$route][] = [
-                    'body' => JsonFormatter::prettify(trim($queryBody, "'")),
-                    'method' => $record['context']['method'],
-                    'uri' => $record['context']['uri'],
-                    'time' => $record['context']['duration'] * 100,
-                ];
+                $this->addQuery($route, $record, $queryBody);
             } else {
                 $position = strpos($record['message'], '-d');
                 $queryBody = $position !== false ? substr($record['message'], $position + 3) : '';
@@ -143,6 +166,27 @@ class ESDataCollector implements DataCollectorInterface
         }
 
         $this->data['time'] += $time;
+    }
+
+    /**
+     * Adds query to collected data array.
+     * 
+     * @param string $route
+     * @param array  $record
+     * @param string $queryBody
+     */
+    private function addQuery($route, $record, $queryBody)
+    {
+        parse_str(parse_url($record['context']['uri'], PHP_URL_QUERY), $httpParameters);
+        $this->data['queries'][$route][] = array_merge(
+            [
+                'body' => JsonFormatter::prettify(trim($queryBody, "'")),
+                'method' => $record['context']['method'],
+                'httpParameters' => $httpParameters,
+                'time' => $record['context']['duration'] * 100,
+            ],
+            array_diff_key(parse_url($record['context']['uri']), array_flip(['query']))
+        );
     }
 
     /**
