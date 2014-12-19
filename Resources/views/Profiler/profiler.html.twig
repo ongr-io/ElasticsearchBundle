@@ -28,65 +28,93 @@
 </span>
 {% endblock %}
 
-{% block panel %}
-    <h2>Queries</h2>
-    <div>
-        {% if collector.queryCount == 0 %}
-            <p>
-                <em>No queries.</em>
-            </p>
-        {% else %}
-            <ul class="queries" id="queriesPlaceholder">
-                {% for i, route in collector.queries %}
-                    <li>
-                        <h3>Route: <i>{{ i }}</i></h3>
-                        <ul>
-                            {% for q, query in route %}
-                                <li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ query.time }}" data-target-id="{{ i ~ q }}">
-                                    <div id="queryNo-{{ i ~ q }}">
-                                        <div>
-                                    <span>
-                                        <strong>Path:</strong> {{ query.uri }}
-                                    </span>
-                                        </div>
-                                        <div>
-                                    <span>
-                                        <strong>Method:</strong> {{ query.method }}
-                                    </span>
-                                        </div>
-                                        <div>
-                                    <span>
-                                        <strong>Took:</strong> {{ query.time }} ms
-                                    </span>
-                                        </div>
-                                        {% if query.body is not empty %}
-                                            <div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-{{ i ~q }}" style="cursor: pointer;">
+{% block queries %}
+    {% if collector.queryCount == 0 %}
+        <p>
+            <em>No queries.</em>
+        </p>
+    {% else %}
+        <ul class="queries" id="queriesPlaceholder">
+            {% for i, route in collector.queries %}
+                <li>
+                    <h3>Route: <i>{{ i }}</i></h3>
+                    <ul>
+                        {% for q, query in route %}
+                            <li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ query.time }}" data-target-id="{{ i ~ q }}">
+                                <div id="queryNo-{{ i ~ q }}">
+                                    <div>
+                                            <span>
+                                                <strong>Method:</strong> {{ query.method }}
+                                            </span>
+                                    </div>
+                                    <div>
+                                            <span>
+                                                <strong>Host: </strong>
+                                                {% if query.scheme is defined %}{{- query.scheme ~ "://" -}}{% endif %}
+                                                {{- query.host -}}
+                                                {% if query.port is defined %}:{{ query.port }}{% endif %}
+                                            </span>
+                                    </div>
+                                    <div>
+                                            <span>
+                                                <strong>Path:</strong> {{ query.path }}
+                                            </span>
+                                    </div>
+                                    <div>
+                                            <span>
+                                                <strong>Http parameters: </strong>
+                                                {% if query.httpParameters is not empty -%}
+                                                    {{ profiler_dump(query.httpParameters) }}
+                                                {%- else -%}
+                                                    <small>empty</small>
+                                                {%- endif -%}
+                                            </span>
+                                    </div>
+                                    <div>
+                                            <span>
+                                                <strong>Took:</strong> {{ query.time }} ms
+                                            </span>
+                                    </div>
+                                    {% if query.body is not empty %}
+                                        <div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-{{ i ~q }}" style="cursor: pointer;">
                                         <span id="smallcode-{{ i ~ q }}">
                                             <strong>Body:</strong> <small>{{ query.body|slice(0, 100) }}</small>
                                         </span>
-                                                <img alt="+" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
-                                                <img alt="-" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none;" />
-                                            </div>
-                                            <code id="code-{{ i ~ q }}" class="hide">
-                                                <pre class="code">{{ query.body }}</pre>
-                                            </code>
-                                        {% else %}
-                                            <div>
+                                            <img alt="+" src="{{ asset('bundles/framework/images/blue_picto_more.gif') }}" style="display: inline;" />
+                                            <img alt="-" src="{{ asset('bundles/framework/images/blue_picto_less.gif') }}" style="display: none;" />
+                                        </div>
+                                        <code id="code-{{ i ~ q }}" class="hide">
+                                            <pre class="code">{{ query.body }}</pre>
+                                        </code>
+                                    {% else %}
+                                        <div>
                                         <span>
                                             <strong>Body:</strong> <small>empty</small>
                                         </span>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    {% if not loop.last %}<li><hr/></li>{% endif %}
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% if not loop.last %}<li><hr/></li>{% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block panel %}
+    <h2>Queries</h2>
+    {{ block('queries') }}
+    <h2>Managers</h2>
+    {% if collector.managers %}
+        {% include 'WebProfilerBundle:Profiler:table.html.twig' with {data: collector.managers} only %}
+    {% else %}
+        <p>
+            <em>No managers.</em>
+        </p>
+    {% endif %}
 
     <script type="text/javascript">//<![CDATA[
         function expandQuery(link) {
