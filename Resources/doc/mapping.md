@@ -171,14 +171,14 @@ class content implements DocumentInterface
       /**
        * @var string
        *
-       * @ES\Property(name="title", type="string", index="not_analyzer")
+       * @ES\Property(name="title", type="string", index="not_analyzed")
        */
       public $key;
 
       /**
        * @var string
        *
-       * @ES\Property(name="value", type="string", index="not_analyzer")
+       * @ES\Property(name="value", type="string", index="not_analyzed")
        */
       public $value;
   }
