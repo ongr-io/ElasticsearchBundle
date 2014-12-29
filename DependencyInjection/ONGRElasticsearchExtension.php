@@ -16,6 +16,7 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -143,8 +144,10 @@ class ONGRElasticsearchExtension extends Extension
      */
     private function getDataCollectorDefinition($loggers = [])
     {
-        $collector = new Definition('ONGR\ElasticsearchBundle\Service\ESDataCollector');
-
+        $collector = new Definition('ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector');
+        $collector->addMethodCall('setManagers', [new Parameter('es.managers')]);
+        
+        
         foreach ($loggers as $logger) {
             $collector->addMethodCall('addLogger', [new Reference($logger)]);
         }
