@@ -23,9 +23,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class ElasticsearchBundleTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * List of passes, which should not be added to compiler.
-     *
-     * @var array
+     * @var array List of passes, which should not be added to compiler.
      */
     protected $passesBlacklist = [];
 

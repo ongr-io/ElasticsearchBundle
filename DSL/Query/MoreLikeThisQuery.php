@@ -22,9 +22,7 @@ class MoreLikeThisQuery implements BuilderInterface
     use ParametersTrait;
 
     /**
-     * The text to find documents like it, required if ids or docs are not specified.
-     *
-     * @var string
+     * @var string The text to find documents like it, required if ids or docs are not specified.
      */
     private $likeText;
 

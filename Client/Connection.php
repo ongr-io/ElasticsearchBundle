@@ -47,16 +47,12 @@ class Connection
     private $settings;
 
     /**
-     * Container for bulk queries.
-     *
-     * @var array
+     * @var array Container for bulk queries.
      */
     private $bulkQueries;
 
     /**
-     * Holder for consistency, refresh and replication parameters.
-     *
-     * @var array
+     * @var array Holder for consistency, refresh and replication parameters.
      */
     private $bulkParams;
 

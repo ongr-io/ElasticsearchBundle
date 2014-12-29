@@ -22,9 +22,7 @@ class QueryStringQuery implements BuilderInterface
     use ParametersTrait;
 
     /**
-     * The actual query to be parsed.
-     *
-     * @var string
+     * @var string The actual query to be parsed.
      */
     private $query;
 
