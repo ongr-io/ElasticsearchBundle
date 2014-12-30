@@ -39,23 +39,62 @@ class ONGRElasticsearchExtension extends Extension
         $container->setParameter('es.connections', $config['connections']);
         $container->setParameter('es.managers', $config['managers']);
 
+        $this->addDocumentFinderDefinition($config, $container);
         $this->addMedadataCollectorDefinition($config, $container);
         $this->addDocumentsResource($config, $container);
         $this->addDataCollectorDefinition($config, $container);
     }
 
     /**
-     * Adds MetadataCollector definition to container.
+     * Adds DocumentFinder definition to container (ID: es.document_finder).
+     *
+     * @param array            $config
+     * @param ContainerBuilder $container
+     */
+    private function addDocumentFinderDefinition(array $config, ContainerBuilder $container)
+    {
+        $documentFinder = new Definition(
+            'ONGR\ElasticsearchBundle\Mapping\DocumentFinder',
+            [
+                $container->getParameter('kernel.bundles'),
+            ]
+        );
+        $documentFinder->addMethodCall('setDocumentDir', [$config['document_dir']]);
+        $container->setDefinition('es.document_finder', $documentFinder);
+    }
+
+    /**
+     * Adds MetadataCollector definition to container (ID: es.metadata_collector).
      *
      * @param array            $config
      * @param ContainerBuilder $container
      */
     private function addMedadataCollectorDefinition(array $config, ContainerBuilder $container)
     {
-        $metadataCollector = new Definition('ONGR\ElasticsearchBundle\Mapping\MetadataCollector');
-        $metadataCollector->setFactoryService('es.metadata_collector_factory');
-        $metadataCollector->setFactoryMethod('get');
-        $metadataCollector->addMethodCall('setDocumentDir', [$config['document_dir']]);
+        $cachedReader = new Definition(
+            'Doctrine\Common\Annotations\FileCacheReader',
+            [
+                new Definition('Doctrine\Common\Annotations\AnnotationReader'),
+                $container->getParameter('kernel.cache_dir') . DIRECTORY_SEPARATOR . '/annotations',
+                $container->getParameter('kernel.debug'),
+            ]
+        );
+
+        $documentParser = new Definition(
+            'ONGR\ElasticsearchBundle\Mapping\DocumentParser',
+            [
+                $cachedReader,
+                new Reference('es.document_finder'),
+            ]
+        );
+
+        $metadataCollector = new Definition(
+            'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
+            [
+                new Reference('es.document_finder'),
+                $documentParser,
+            ]
+        );
         $container->setDefinition('es.metadata_collector', $metadataCollector);
     }
 
@@ -146,8 +185,7 @@ class ONGRElasticsearchExtension extends Extension
     {
         $collector = new Definition('ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector');
         $collector->addMethodCall('setManagers', [new Parameter('es.managers')]);
-        
-        
+
         foreach ($loggers as $logger) {
             $collector->addMethodCall('addLogger', [new Reference($logger)]);
         }

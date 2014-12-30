@@ -49,8 +49,8 @@ class MetadataCollector
      */
     public function __construct($finder, $parser)
     {
-        $this->parser = $parser;
         $this->finder = $finder;
+        $this->parser = $parser;
     }
 
     /**
@@ -125,7 +125,7 @@ class MetadataCollector
         foreach ($documents as $document) {
             $documentReflection = new \ReflectionClass(
                 substr($bundle, 0, strrpos($bundle, '\\')) .
-                '\\' . str_replace('/', '\\', $this->getDocumentDir()) .
+                '\\' . str_replace('/', '\\', $this->finder->getDocumentDir()) .
                 '\\' . pathinfo($document, PATHINFO_FILENAME)
             );
 
