@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\FileCacheReader;
+use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
+use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
@@ -127,9 +129,14 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
+        $finder = new DocumentFinder(
+            [
+                'AcmeTestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle',
+            ]
+        );
         $collector = new MetadataCollector(
-            ['AcmeTestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle'],
-            new AnnotationReader()
+            $finder,
+            new DocumentParser(new AnnotationReader(), $finder)
         );
 
         $mapping = $collector->getMapping('AcmeTestBundle');
@@ -152,7 +159,7 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
                     ],
                     'properties' => [
                         'userName' => ['type' => 'string'],
-                        'createdAt' => ['type' => 'date']
+                        'createdAt' => ['type' => 'date'],
                     ],
                 ],
             ],

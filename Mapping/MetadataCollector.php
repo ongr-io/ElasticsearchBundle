@@ -15,83 +15,42 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Annotation\Document;
-use ONGR\ElasticsearchBundle\Annotation\Inherit;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Annotation\Skip;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader;
 
 /**
- * Service for getting metadata from documents.
+ * DocumentParser wrapper for getting bundle documents mapping.
  */
 class MetadataCollector
 {
-
     /**
-     * @const string
+     * @var DocumentFinder
      */
-    const SUGGESTER_PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty';
+    private $finder;
 
     /**
-     * @const string
+     * @var DocumentParser
      */
-    const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
+    private $parser;
 
     /**
-     * @var array
-     */
-    protected $bundles;
-
-    /**
-     * @var FileCacheReader
-     */
-    protected $reader;
-
-    /**
-     * Contains mappings gathered from bundle documents.
-     *
-     * @var array
+     * @var array Contains mappings gathered from bundle documents.
      */
     private $documents = [];
 
     /**
-     * Contains gathered objects which later adds to documents.
+     * Construct.
      *
-     * @var array
+     * @param DocumentFinder $finder For finding documents.
+     * @param DocumentParser $parser For reading document annotations.
      */
-    private $objects = [];
-
-    /**
-     * Contains gathered aliases for object parameters.
-     *
-     * @var array
-     */
-    private $aliases = [];
-
-    /**
-     * Contains suggester object mapping to be used for getters and setters.
-     *
-     * @var array
-     */
-    private $suggesters = [];
-
-    /**
-     * Directory in bundle to load documents from.
-     *
-     * @var string
-     */
-    private $documentDir = 'Document';
-
-    /**
-     * @param array           $bundles Loaded bundles array.
-     * @param FileCacheReader $reader  FileCacheReader.
-     */
-    public function __construct($bundles, $reader)
+    public function __construct($finder, $parser)
     {
-        $this->reader = $reader;
-        $this->bundles = $bundles;
-        $this->registerAnnotations();
+        $this->parser = $parser;
+        $this->finder = $finder;
     }
 
     /**
@@ -132,7 +91,7 @@ class MetadataCollector
      */
     public function getMappingByNamespace($namespace)
     {
-        return $this->getDocumentReflectionMapping(new \ReflectionClass($this->getNamespace($namespace)));
+        return $this->getDocumentReflectionMapping(new \ReflectionClass($this->finder->getNamespace($namespace)));
     }
 
     /**
@@ -159,18 +118,13 @@ class MetadataCollector
     public function getBundleMapping($bundle)
     {
         $mappings = [];
-
-        $bundleReflection = new \ReflectionClass($this->getBundle($bundle));
-        $documents = glob(
-            dirname($bundleReflection->getFileName()) .
-            DIRECTORY_SEPARATOR . $this->getDocumentDir() .
-            DIRECTORY_SEPARATOR . '*.php'
-        );
+        $documents = $this->finder->getBundleDocumentPaths($bundle);
+        $bundle = $this->finder->getBundle($bundle);
 
         // Loop through documents found in bundle.
         foreach ($documents as $document) {
             $documentReflection = new \ReflectionClass(
-                $bundleReflection->getNamespaceName() .
+                substr($bundle, 0, strrpos($bundle, '\\')) .
                 '\\' . str_replace('/', '\\', $this->getDocumentDir()) .
                 '\\' . pathinfo($document, PATHINFO_FILENAME)
             );
@@ -185,26 +139,6 @@ class MetadataCollector
     }
 
     /**
-     * Document directory in bundle to load documents from.
-     *
-     * @param string $documentDir
-     */
-    public function setDocumentDir($documentDir)
-    {
-        $this->documentDir = $documentDir;
-    }
-
-    /**
-     * Returns directory name in which documents should be put.
-     *
-     * @return string
-     */
-    public function getDocumentDir()
-    {
-        return $this->documentDir;
-    }
-
-    /**
      * Gathers annotation data from class.
      *
      * @param \ReflectionClass $reflectionClass
@@ -213,44 +147,22 @@ class MetadataCollector
      */
     private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
     {
-        /** @var Document $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
-        if ($class !== null && $class->create) {
-            $type = $this->getDocumentType($reflectionClass, $class);
-            $parent = $class->parent === null ? $class->parent : $this->getDocumentParentType($class->parent);
-            $inherit = $this->getInheritedProperties($reflectionClass);
+        $mapping = $this->parser->parse($reflectionClass);
 
-            $properties = $this->getProperties(
-                $reflectionClass,
-                array_merge($inherit, $this->getSkippedProperties($reflectionClass))
-            );
-
-            if (!empty($inherit)) {
-                $properties = array_merge(
-                    $properties,
-                    $this->getProperties($reflectionClass->getParentClass(), $inherit, true)
-                );
-            }
-
-            list($setters, $getters) = $this->getSettersAndGetters($reflectionClass, $properties);
-
-            $class = [
-                $type => [
-                    'properties' => $properties,
-                    'setters' => $setters,
-                    'getters' => $getters,
-                    'fields' => [
-                        '_parent' => $parent,
-                        '_ttl' => $class->ttl,
-                    ],
-                    // Class info.
+        if ($mapping !== null) {
+            $key = key($mapping);
+            // TODO: generate proxy classes with setters and getters.
+//            list($setters, $getters) = $this->getSettersAndGetters($reflectionClass, $mapping[$key]['properties']);
+            $mapping[$key] = array_merge(
+                $mapping[$key],
+                [
                     'namespace' => $reflectionClass->getNamespaceName() . '\\' . $reflectionClass->getShortName(),
                     'class' => $reflectionClass->getShortName(),
                 ]
-            ];
+            );
         }
 
-        return $class;
+        return $mapping;
     }
 
     /**
@@ -291,45 +203,6 @@ class MetadataCollector
         }
 
         return [$setters, $getters];
-    }
-
-    /**
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array
-     */
-    private function getSkippedProperties(\ReflectionClass $reflectionClass)
-    {
-        /** @var Skip $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Skip');
-
-        return $class === null ? [] : $class->value;
-    }
-
-    /**
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array
-     */
-    private function getInheritedProperties(\ReflectionClass $reflectionClass)
-    {
-        /** @var Inherit $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Inherit');
-
-        return $class === null ? [] : $class->value;
-    }
-
-    /**
-     * Returns document type.
-     *
-     * @param \ReflectionClass $reflectionClass
-     * @param Document         $document
-     *
-     * @return string
-     */
-    private function getDocumentType(\ReflectionClass $reflectionClass, Document $document)
-    {
-        return strtolower(empty($document->type) ? $reflectionClass->getShortName() : $document->type);
     }
 
     /**
@@ -415,9 +288,9 @@ class MetadataCollector
     private function getInfoAboutPropertyObject($params, $propertyName, $reflectionClass)
     {
         /** @var Property $type */
-        $type = $this->getPropertyAnnotationData($reflectionClass->getProperty($propertyName));
+        $type = $this->parser->getPropertyAnnotationData($reflectionClass->getProperty($propertyName));
 
-        $childReflection = new \ReflectionClass($this->getNamespace($type->objectName));
+        $childReflection = new \ReflectionClass($this->finder->getNamespace($type->objectName));
 
         $setters = [];
         $getters = [];
@@ -432,204 +305,8 @@ class MetadataCollector
         return [
             'setter' => $setters,
             'getter' => $getters,
-            'namespace' => $this->getNamespace($type->objectName),
+            'namespace' => $this->finder->getNamespace($type->objectName),
             'multiple' => $type instanceof Property ? $type->multiple : false,
         ];
-    }
-
-    /**
-     * Returns relation mapping by its namespace.
-     *
-     * @param string $namespace
-     *
-     * @return array|null
-     */
-    private function getRelationMapping($namespace)
-    {
-        $reflectionClass = new \ReflectionClass($this->getNamespace($namespace));
-
-        if ($this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Object')
-            || $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Nested')
-        ) {
-            return ['properties' => $this->getProperties($reflectionClass)];
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns document parent.
-     *
-     * @param string $namespace
-     *
-     * @return string|null
-     */
-    private function getDocumentParentType($namespace)
-    {
-        $reflectionClass = new \ReflectionClass($this->getNamespace($namespace));
-
-        /** @var Document $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
-
-        return $class ? $this->getDocumentType($reflectionClass, $class) : null;
-    }
-
-    /**
-     * Returns properties of reflection class.
-     *
-     * @param \ReflectionClass $reflectionClass Class to read properties from.
-     * @param array            $properties      Properties to skip.
-     * @param bool             $flag            If false exludes properties, true only includes properties.
-     *
-     * @return array
-     */
-    private function getProperties(\ReflectionClass $reflectionClass, $properties = [], $flag = false)
-    {
-        $mapping = [];
-        /** @var \ReflectionProperty $property */
-        foreach ($reflectionClass->getProperties() as $property) {
-            $type = $this->getPropertyAnnotationData($property);
-
-            if ((in_array($property->getName(), $properties) && !$flag)
-                || (!in_array($property->getName(), $properties) && $flag)
-                || empty($type)
-            ) {
-                continue;
-            }
-
-            $maps = $type->filter();
-            $this->aliases[$reflectionClass->getName()][$type->name] = $property->getName();
-
-            // Object.
-            if (in_array($type->type, ['object', 'nested']) && !empty($type->objectName)) {
-                $maps = array_replace_recursive($maps, $this->getObjectMapping($type->objectName));
-            }
-
-            // MultiField.
-            if (isset($maps['fields']) && !in_array($type->type, ['object', 'nested'])) {
-                $fieldsMap = [];
-                /** @var MultiField $field */
-                foreach ($maps['fields'] as $field) {
-                    $fieldsMap[$field->name] = $field->filter();
-                }
-                $maps['fields'] = $fieldsMap;
-            }
-
-            // Suggesters.
-            if ($type instanceof AbstractSuggesterProperty) {
-                $this->getObjectMapping($type->objectName);
-                $this->suggesters[$reflectionClass->getName()][$property->getName()] = strtolower($type->objectName);
-            }
-
-            $mapping[$type->name] = $maps;
-        }
-
-        if ($parentClass = $reflectionClass->getParentClass()) {
-            $parent_mapping = $this->getProperties(new \ReflectionClass($parentClass->getName()), $properties, $flag);
-            if (count($parent_mapping) > 0) {
-                $mapping = array_merge($parent_mapping, $mapping);
-            }
-        }
-
-        return $mapping;
-    }
-
-    /**
-     * Returns object mapping.
-     *
-     * Loads from cache if it's already loaded.
-     *
-     * @param string $objectName
-     *
-     * @return array
-     */
-    private function getObjectMapping($objectName)
-    {
-        if (!empty($this->objects[strtolower($objectName)])) {
-            $objMap = $this->objects[strtolower($objectName)];
-        } else {
-            $objMap = $this->getRelationMapping($objectName);
-            $this->objects[strtolower($objectName)] = $objMap;
-        }
-
-        return $objMap;
-    }
-
-    /**
-     * Registers annotations to registry so that it could be used by reader.
-     */
-    private function registerAnnotations()
-    {
-        $annotations = [
-            'Document',
-            'Property',
-            'Object',
-            'Nested',
-            'MultiField',
-            'Inherit',
-            'Skip',
-            'Suggester/CompletionSuggesterProperty',
-            'Suggester/ContextSuggesterProperty',
-            'Suggester/Context/CategoryContext',
-            'Suggester/Context/GeoLocationContext',
-        ];
-
-        foreach ($annotations as $annotation) {
-            AnnotationRegistry::registerFile(__DIR__ . "/../Annotation/{$annotation}.php");
-        }
-    }
-
-    /**
-     * Formats namespace from short syntax.
-     *
-     * @param string $namespace
-     *
-     * @return string
-     */
-    private function getNamespace($namespace)
-    {
-        if (strpos($namespace, ':') !== false) {
-            list($bundle, $document) = explode(':', $namespace);
-            $bundle = $this->getBundle($bundle);
-            $namespace = substr($bundle, 0, strrpos($bundle, '\\')) . '\\' .
-                $this->getDocumentDir() . '\\' . $document;
-        }
-
-        return $namespace;
-    }
-
-    /**
-     * Returns bundle namesapce else throws an exception.
-     *
-     * @param string $name
-     *
-     * @return string
-     *
-     * @throws \LogicException
-     */
-    private function getBundle($name)
-    {
-        if (array_key_exists($name, $this->bundles)) {
-            return $this->bundles[$name];
-        }
-
-        throw new \LogicException(sprintf('Bundle \'%s\' does not exist.', $name));
-    }
-
-    /**
-     * Returns property annotation data.
-     *
-     * @param \ReflectionProperty $property
-     *
-     * @return AbstractSuggesterProperty|Property
-     */
-    private function getPropertyAnnotationData($property)
-    {
-        $type = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
-        if ($type === null) {
-            $type = $this->reader->getPropertyAnnotation($property, self::SUGGESTER_PROPERTY_ANNOTATION);
-        }
-
-        return $type;
     }
 }
