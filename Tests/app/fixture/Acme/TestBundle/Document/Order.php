@@ -19,7 +19,7 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  * Order document for testing.
  *
  * @ES\Document(type="order")
- * @ES\LifecycleCallback
+ * @ES\HasLifecycleCallbacks
  */
 class Order implements DocumentInterface
 {

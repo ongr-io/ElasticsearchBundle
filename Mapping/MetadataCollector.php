@@ -235,7 +235,7 @@ class MetadataCollector
 
             $hasLifecycleCallbacks = $this->reader->getClassAnnotation(
                 $reflectionClass,
-                'ONGR\ElasticsearchBundle\Annotation\LifecycleCallback'
+                'ONGR\ElasticsearchBundle\Annotation\HasLifecycleCallbacks'
             );
 
             $callbacks['lifecycleCallback'] = $hasLifecycleCallbacks ? $this->getCallbacks($reflectionClass) : [];
@@ -562,7 +562,7 @@ class MetadataCollector
             'Document',
             'Property',
             'Object',
-            'LifecycleCallback',
+            'HasLifecycleCallbacks',
             'Nested',
             'MultiField',
             'PrePersist',

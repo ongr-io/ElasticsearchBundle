@@ -17,6 +17,6 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  * @Annotation
  * @Target("CLASS")
  */
-class LifecycleCallback
+class HasLifecycleCallbacks
 {
 }
