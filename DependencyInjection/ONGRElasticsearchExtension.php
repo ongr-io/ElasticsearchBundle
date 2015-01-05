@@ -75,7 +75,7 @@ class ONGRElasticsearchExtension extends Extension
             'Doctrine\Common\Annotations\FileCacheReader',
             [
                 new Definition('Doctrine\Common\Annotations\AnnotationReader'),
-                $container->getParameter('kernel.cache_dir') . DIRECTORY_SEPARATOR . '/annotations',
+                $this->getCacheDir($container, 'annotations'),
                 $container->getParameter('kernel.debug'),
             ]
         );
@@ -88,11 +88,20 @@ class ONGRElasticsearchExtension extends Extension
             ]
         );
 
+        $proxyLoader = new Definition(
+            'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader',
+            [
+                $this->getCacheDir($container, 'proxies'),
+                $container->getParameter('kernel.debug'),
+            ]
+        );
+
         $metadataCollector = new Definition(
             'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
             [
                 new Reference('es.document_finder'),
                 $documentParser,
+                $proxyLoader,
             ]
         );
         $container->setDefinition('es.metadata_collector', $metadataCollector);
@@ -199,5 +208,19 @@ class ONGRElasticsearchExtension extends Extension
         );
 
         return $collector;
+    }
+
+    /**
+     * Returns cache directory.
+     *
+     * @param ContainerBuilder $container
+     * @param string           $dir
+     *
+     * @return string
+     */
+    private function getCacheDir(ContainerBuilder $container, $dir = '')
+    {
+        return $container->getParameter('kernel.cache_dir')
+        . DIRECTORY_SEPARATOR . 'ongr' . DIRECTORY_SEPARATOR . $dir;
     }
 }

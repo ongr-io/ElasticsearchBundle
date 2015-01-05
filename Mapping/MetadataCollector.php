@@ -37,20 +37,27 @@ class MetadataCollector
     private $parser;
 
     /**
+     * @var ProxyLoader
+     */
+    private $proxyLoader;
+
+    /**
      * @var array Contains mappings gathered from bundle documents.
      */
     private $documents = [];
 
     /**
-     * Construct.
+     * Constructor.
      *
-     * @param DocumentFinder $finder For finding documents.
-     * @param DocumentParser $parser For reading document annotations.
+     * @param DocumentFinder $finder      For finding documents.
+     * @param DocumentParser $parser      For reading document annotations.
+     * @param ProxyLoader    $proxyLoader For creating proxy documents.
      */
-    public function __construct($finder, $parser)
+    public function __construct($finder, $parser, $proxyLoader)
     {
         $this->finder = $finder;
         $this->parser = $parser;
+        $this->proxyLoader = $proxyLoader;
     }
 
     /**
@@ -66,18 +73,16 @@ class MetadataCollector
             return $this->documents[$bundle];
         }
 
-        $mappings = $this->getBundleMapping($bundle);
-        $filteredMappings = [];
-
-        foreach ($mappings as $type => $mapping) {
-            $filteredMappings[$type]['properties'] = $mapping['properties'];
-            $mapping['fields']['_parent'] &&
-                $filteredMappings[$type]['_parent'] = ['type' => $mapping['fields']['_parent']];
-            $mapping['fields']['_ttl'] &&
-                $filteredMappings[$type]['_ttl'] = $mapping['fields']['_ttl'];
+        $mappings = [];
+        foreach ($this->getBundleMapping($bundle) as $type => $mapping) {
+            $mappings[$type] = array_filter(
+                array_merge(
+                    ['properties' => $mapping['properties']],
+                    $mapping['fields']
+                )
+            );
         }
-
-        $this->documents[$bundle] = $filteredMappings;
+        $this->documents[$bundle] = $mappings;
 
         return $this->documents[$bundle];
     }
@@ -118,14 +123,15 @@ class MetadataCollector
     public function getBundleMapping($bundle)
     {
         $mappings = [];
-        $documents = $this->finder->getBundleDocumentPaths($bundle);
-        $bundle = $this->finder->getBundle($bundle);
+        $bundleNamespace = $this->finder->getBundle($bundle);
+        $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
+        $documentDir = str_replace('/', '\\', $this->finder->getDocumentDir());
 
         // Loop through documents found in bundle.
-        foreach ($documents as $document) {
+        foreach ($this->finder->getBundleDocumentPaths($bundle) as $document) {
             $documentReflection = new \ReflectionClass(
-                substr($bundle, 0, strrpos($bundle, '\\')) .
-                '\\' . str_replace('/', '\\', $this->finder->getDocumentDir()) .
+                $bundleNamespace .
+                '\\' . $documentDir .
                 '\\' . pathinfo($document, PATHINFO_FILENAME)
             );
 
@@ -141,7 +147,7 @@ class MetadataCollector
     /**
      * Gathers annotation data from class.
      *
-     * @param \ReflectionClass $reflectionClass
+     * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
      *
      * @return array|null
      */
@@ -151,11 +157,10 @@ class MetadataCollector
 
         if ($mapping !== null) {
             $key = key($mapping);
-            // TODO: generate proxy classes with setters and getters.
-//            list($setters, $getters) = $this->getSettersAndGetters($reflectionClass, $mapping[$key]['properties']);
             $mapping[$key] = array_merge(
                 $mapping[$key],
                 [
+                    'proxyNamespace' => $this->proxyLoader->load($reflectionClass),
                     'namespace' => $reflectionClass->getNamespaceName() . '\\' . $reflectionClass->getShortName(),
                     'class' => $reflectionClass->getShortName(),
                 ]
@@ -163,150 +168,5 @@ class MetadataCollector
         }
 
         return $mapping;
-    }
-
-    /**
-     * Returns information about accessing properties from document.
-     *
-     * @param \ReflectionClass $reflectionClass Document reflection class.
-     * @param array            $properties      Document properties.
-     *
-     * @return array
-     */
-    private function getSettersAndGetters(\ReflectionClass $reflectionClass, array $properties)
-    {
-        $setters = [];
-        $getters = [];
-
-        foreach ($properties as $property => $params) {
-            if (isset($this->aliases[$reflectionClass->getName()]) &&
-                array_key_exists($property, $this->aliases[$reflectionClass->getName()])
-            ) {
-                list($setters[$property], $getters[$property]) = $this
-                    ->getInfoAboutProperty(
-                        $params,
-                        $this->aliases[$reflectionClass->getName()][$property],
-                        $reflectionClass
-                    );
-            } elseif ($reflectionClass->getParentClass() !== false) {
-                list($parentSetters, $parentGetters) = $this
-                    ->getSettersAndGetters($reflectionClass->getParentClass(), [$property => $params]);
-
-                if ($parentSetters !== []) {
-                    $setters = array_merge($setters, $parentSetters);
-                }
-
-                if ($parentGetters !== []) {
-                    $getters = array_merge($getters, $parentGetters);
-                }
-            }
-        }
-
-        return [$setters, $getters];
-    }
-
-    /**
-     * @param array            $params          Property parameters.
-     * @param string           $alias           Actual property name (not field name).
-     * @param \ReflectionClass $reflectionClass Reflection class.
-     *
-     * @return array
-     */
-    private function getInfoAboutProperty($params, $alias, $reflectionClass)
-    {
-        $setter = $this->checkPropertyAccess($alias, 'set', $reflectionClass);
-        $getter = $this->checkPropertyAccess($alias, 'get', $reflectionClass);
-
-        if ($params['type'] === 'completion') {
-            if (isset($this->suggesters[$reflectionClass->getName()][$alias])) {
-                $suggestionObjectNamespace = $this->suggesters[$reflectionClass->getName()][$alias];
-                $params['properties'] = $this->objects[$suggestionObjectNamespace]['properties'];
-            }
-        }
-
-        if (isset($params['properties'])) {
-            $data = $this->getInfoAboutPropertyObject($params['properties'], $alias, $reflectionClass);
-            $setter['properties'] = $data['setter'];
-            $getter['properties'] = $data['getter'];
-            $getter['namespace'] = $data['namespace'];
-            $setter['namespace'] = $data['namespace'];
-            $getter['multiple'] = $data['multiple'];
-            $setter['multiple'] = $data['multiple'];
-        }
-
-        return [
-            $setter,
-            $getter,
-        ];
-    }
-
-    /**
-     * Checks property access.
-     *
-     * @param string           $property
-     * @param string           $methodPrefix
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array
-     *
-     * @throws \LogicException
-     */
-    private function checkPropertyAccess($property, $methodPrefix, $reflectionClass)
-    {
-        $method = $methodPrefix . ucfirst(Inflector::classify($property));
-
-        if ($reflectionClass->hasMethod($method)
-            && $reflectionClass->getMethod($method)->isPublic()
-        ) {
-            return [
-                'exec' => true,
-                'name' => $reflectionClass->getMethod($method)->getName(),
-            ];
-        } elseif ($reflectionClass->hasProperty($property)
-            && $reflectionClass->getProperty($property)->isPublic()
-        ) {
-            return [
-                'exec' => false,
-                'name' => $reflectionClass->getProperty($property)->getName(),
-            ];
-        } else {
-            throw new \LogicException(
-                sprintf('%ster for property "%s" can not be found.', ucfirst($methodPrefix), $property)
-            );
-        }
-    }
-
-    /**
-     * Returns information about property object.
-     *
-     * @param array            $params          Parameters.
-     * @param string           $propertyName    Property to be investigated name.
-     * @param \ReflectionClass $reflectionClass Reflection class.
-     *
-     * @return array
-     */
-    private function getInfoAboutPropertyObject($params, $propertyName, $reflectionClass)
-    {
-        /** @var Property $type */
-        $type = $this->parser->getPropertyAnnotationData($reflectionClass->getProperty($propertyName));
-
-        $childReflection = new \ReflectionClass($this->finder->getNamespace($type->objectName));
-
-        $setters = [];
-        $getters = [];
-
-        if (isset($this->aliases[$childReflection->getName()])) {
-            foreach ($this->aliases[$childReflection->getName()] as $childField => $alias) {
-                list($setters[$childField], $getters[$childField]) = $this
-                    ->getInfoAboutProperty($params[$childField], $alias, $childReflection);
-            }
-        }
-
-        return [
-            'setter' => $setters,
-            'getter' => $getters,
-            'namespace' => $this->finder->getNamespace($type->objectName),
-            'multiple' => $type instanceof Property ? $type->multiple : false,
-        ];
     }
 }
