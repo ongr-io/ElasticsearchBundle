@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\Document\Warmer\WarmerInterface;
 use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -141,6 +142,7 @@ class MappingPass implements CompilerPassInterface
         }
 
         $mappings = [];
+        /** @var MetadataCollector $metadataCollector */
         $metadataCollector = $container->get('es.metadata_collector');
 
         if (!empty($manager['mappings'])) {

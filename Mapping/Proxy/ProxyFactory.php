@@ -26,7 +26,7 @@ class ProxyFactory
      *
      * @return string
      */
-    public static function getProxyNamespace(\ReflectionClass $reflectionClass, $withName = false)
+    public static function getProxyNamespace(\ReflectionClass $reflectionClass, $withName = true)
     {
         $namespace = $reflectionClass->getNamespaceName() . '\\_Proxy';
 
@@ -48,7 +48,7 @@ class ProxyFactory
     {
         $code = static::getHeader(
             [
-                'namespace' => static::getProxyNamespace($reflectionClass),
+                'namespace' => static::getProxyNamespace($reflectionClass, false),
                 'class' => $reflectionClass->getShortName(),
                 'base' => $reflectionClass->getName(),
             ]
@@ -57,7 +57,7 @@ class ProxyFactory
         /** @var \ReflectionProperty $property */
         foreach ($reflectionClass->getProperties() as $property) {
             $name = $property->getName();
-            $methodName = Inflector::classify(Inflector::classify($name));
+            $methodName = ucfirst(Inflector::classify($name));
 
             if (!$reflectionClass->hasMethod("get{$methodName}")) {
                 $code .= static::getMethod(
@@ -142,9 +142,6 @@ EOF;
      */
     private static function getFooter()
     {
-        return <<<EOF
-}
-
-EOF;
+        return "}\n";
     }
 }

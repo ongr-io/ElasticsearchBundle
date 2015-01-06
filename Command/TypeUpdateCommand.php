@@ -99,7 +99,7 @@ class TypeUpdateCommand extends AbstractElasticsearchCommand
                 foreach ($setting['mappings'] as $bundle) {
                     $mappings = array_replace_recursive(
                         $mappings,
-                        $collector->getMapping($bundle)
+                        $collector->getMapping($bundle, true)
                     );
                 }
             }

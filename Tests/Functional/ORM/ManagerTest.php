@@ -98,14 +98,14 @@ class ManagerTest extends ElasticsearchTestCase
         $completionSuggester->setOutput('completion success');
         $completionSuggester->setWeight(30);
 
-        $product = new Product();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $product = $repository->createDocument();
         $product->contextSuggesting = $suggester;
         $product->completionSuggesting = $completionSuggester;
 
         $manager->persist($product);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
         /** @var Product[] $actualProduct */
         $actualProducts = $repository->execute($repository->createSearch());
         $this->assertCount(1, $actualProducts);

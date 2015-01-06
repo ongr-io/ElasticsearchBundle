@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 
 /**
@@ -55,15 +56,10 @@ class Converter
         }
 
         $metadata = $this->bundlesMapping[$this->typesMapping[$rawData['_type']]];
-
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
 
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject(
-            $data,
-            new $metadata['namespace'](),
-            array_merge_recursive($metadata['properties'], $metadata['setters'])
-        );
+        $object = $this->assignArrayToObject($data, new $metadata['proxyNamespace'](), $metadata['aliases']);
 
         isset($rawData['_id']) && $object->setId($rawData['_id']);
         isset($rawData['_score']) && $object->setScore($rawData['_score']);
@@ -79,35 +75,33 @@ class Converter
      *
      * @param array  $array
      * @param object $object
-     * @param array  $setters
+     * @param array  $aliases
      *
      * @return object
+     *
+     * @throws \LogicException
      */
-    public function assignArrayToObject(array $array, $object, array $setters)
+    public function assignArrayToObject(array $array, $object, array $aliases)
     {
-        foreach ($setters as $key => $setter) {
-            if (!isset($array[$key])) {
-                continue;
-            }
-            $value = $array[$key];
-
-            if (isset($setter['properties'])) {
-                if ($setter['multiple']) {
-                    $value = new ObjectIterator($this, $value, $setter);
-                } else {
-                    $value = $this->assignArrayToObject($value, new $setter['namespace'](), $setter['properties']);
-                }
+        foreach ($array as $name => $value) {
+            if (!array_key_exists($name, $aliases)) {
+                throw new \LogicException("Undefined property '{$name}'.");
             }
 
-            if (isset($setter['type']) && $setter['type'] === 'date') {
+            if ($aliases[$name]['type'] === 'date') {
                 $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
             }
 
-            if ($setter['exec']) {
-                $object->{$setter['name']}($value);
-            } else {
-                $object->{$setter['name']} = $value;
+            if (array_key_exists('aliases', $aliases[$name])) {
+                if ($aliases[$name]['multiple']) {
+                    $value = new ObjectIterator($this, $value, $aliases[$name]);
+                } else {
+                    $value = $this->assignArrayToObject($value, new $aliases[$name]['proxyNamespace'](), $aliases[$name]['aliases']);
+                }
             }
+
+            $method = ucfirst(Inflector::classify($aliases[$name]['propertyName']));
+            $object->{'set' . $method}($value);
         }
 
         return $object;

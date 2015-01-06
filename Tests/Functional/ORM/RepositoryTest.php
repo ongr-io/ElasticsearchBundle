@@ -211,7 +211,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $manager = $this->getManager();
 
         $product = new Product();
-        $product->setId(123);
+        $product->setId('123');
         $product->title = 'foo';
 
         $manager->persist($product);
@@ -221,7 +221,7 @@ class RepositoryTest extends ElasticsearchTestCase
 
         $result = $repo->find(123);
 
-        $this->assertEquals($product, $result);
+        $this->assertEquals(get_object_vars($product), get_object_vars($result));
     }
 
     /**

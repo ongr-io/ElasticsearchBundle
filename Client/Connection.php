@@ -324,6 +324,23 @@ class Connection
     }
 
     /**
+     * Sets multiple mappings.
+     *
+     * @param array $mapping Mapping to set.
+     * @param bool  $cleanUp Cleans currect mapping.
+     */
+    public function setMultipleMapping(array $mapping, $cleanUp = false)
+    {
+        if ($cleanUp === true) {
+            unset($this->settings['body']['mappings']);
+        }
+
+        foreach ($mapping as $type => $map) {
+            $this->setMapping($type, $map);
+        }
+    }
+
+    /**
      * Mapping is compared with loaded, if needed updates it and returns true.
      *
      * @return bool

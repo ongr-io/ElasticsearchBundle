@@ -14,7 +14,9 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
+use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
+use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 
 /**
  * Document parser used for reading document annotations.
@@ -45,6 +47,11 @@ class DocumentParser
      * @var array Contains gathered objects which later adds to documents.
      */
     private $objects = [];
+
+    /**
+     * @var array
+     */
+    private $aliases = [];
 
     /**
      * Constructor.
@@ -100,9 +107,10 @@ class DocumentParser
                 $type => [
                     'properties' => $properties,
                     'fields' => [
-                        '_parent' => $parent,
+                        '_parent' => $parent === null ? null : ['type' => $parent],
                         '_ttl' => $class->ttl,
                     ],
+                    'aliases' => $this->getAliases($reflectionClass),
                 ],
             ];
         }
@@ -125,6 +133,47 @@ class DocumentParser
         }
 
         return $type;
+    }
+
+    /**
+     * @param \ReflectionClass $reflectionClass
+     *
+     * @return array
+     */
+    private function getAliases(\ReflectionClass $reflectionClass)
+    {
+        $reflectionName = $reflectionClass->getName();
+        if (array_key_exists($reflectionName, $this->aliases)) {
+            return $this->aliases[$reflectionName];
+        }
+
+        $alias = [];
+        /** @var \ReflectionProperty $property */
+        foreach ($reflectionClass->getProperties() as $property) {
+            $type = $this->getPropertyAnnotationData($property);
+            if ($type !== null) {
+                $alias[$type->name] = [
+                    'propertyName' => $property->getName(),
+                    'type' => $type->type,
+                ];
+                if ($type->objectName) {
+                    $child = new \ReflectionClass($this->finder->getNamespace($type->objectName));
+                    $alias[$type->name] = array_merge(
+                        $alias[$type->name],
+                        [
+                            'multiple' => $type instanceof Property ? $type->multiple : false,
+                            'aliases' => $this->getAliases($child),
+                            'proxyNamespace' => ProxyFactory::getProxyNamespace($child, true),
+                            'namespace' => $child->getName(),
+                        ]
+                    );
+                }
+            }
+        }
+
+        $this->aliases[$reflectionName] = $alias;
+
+        return $this->aliases[$reflectionName];
     }
 
     /**

@@ -17,11 +17,11 @@ namespace ONGR\ElasticsearchBundle\Result;
 class ObjectIterator extends AbstractResultsIterator
 {
     /**
-     * Setters information.
+     * Aliases information.
      *
      * @var array
      */
-    private $setters;
+    private $alias;
 
     /**
      * Raw data from Elasticsearch.
@@ -40,13 +40,13 @@ class ObjectIterator extends AbstractResultsIterator
      *
      * @param Converter $converter
      * @param array     $rawData
-     * @param array     $setters
+     * @param array     $alias
      */
-    public function __construct($converter, $rawData, $setters)
+    public function __construct($converter, $rawData, $alias)
     {
         $this->converter = $converter;
         $this->rawData = $rawData;
-        $this->setters = $setters;
+        $this->alias = $alias;
         $this->converted = [];
 
         // Alias documents to have shorter path.
@@ -59,6 +59,6 @@ class ObjectIterator extends AbstractResultsIterator
     protected function convertDocument($rawData)
     {
         return $this->converter
-            ->assignArrayToObject($rawData, new $this->setters['namespace'](), $this->setters['properties']);
+            ->assignArrayToObject($rawData, new $this->alias['proxyNamespace'](), $this->alias['aliases']);
     }
 }

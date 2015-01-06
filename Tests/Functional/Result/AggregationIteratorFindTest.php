@@ -42,7 +42,7 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
                     [
                         '_id' => 3,
                         'title' => 'pizza',
-                        'surface' => 'weak',
+                        'description' => 'weak',
                         'price' => 15.1,
                     ],
                 ],

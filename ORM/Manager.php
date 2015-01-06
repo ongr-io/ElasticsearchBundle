@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\ORM;
 
+use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
@@ -21,9 +22,7 @@ use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 class Manager
 {
     /**
-     * Elasticsearch connection.
-     *
-     * @var Connection
+     * @var Connection Elasticsearch connection.
      */
     private $connection;
 
@@ -33,12 +32,12 @@ class Manager
     private $metadataCollector;
 
     /**
-     * @var array Repository structure info
+     * @var array Repository structure info.
      */
     private $bundlesMapping = [];
 
     /**
-     * @var array Document type map to repositories
+     * @var array Document type map to repositories.
      */
     private $typesMapping = [];
 
@@ -103,12 +102,12 @@ class Manager
      */
     public function persist(DocumentInterface $object)
     {
-        $repository = $this->getDocumentMapping($object);
-        $document = $this->convertToArray($object, $repository['getters']);
+        $mapping = $this->getDocumentMapping($object);
+        $document = $this->convertToArray($object, $mapping['aliases']);
 
         $this->getConnection()->bulk(
             'index',
-            $repository['type'],
+            $mapping['type'],
             $document
         );
     }
@@ -117,64 +116,72 @@ class Manager
      * Converts object to an array.
      *
      * @param DocumentInterface $object
-     * @param array             $getters
+     * @param array             $aliases
      *
      * @return array
+     *
+     * @throws \RuntimeException
      */
-    private function convertToArray($object, $getters)
+    private function convertToArray($object, $aliases)
     {
-        $document = [];
+        $array = [];
 
         // Special fields.
         if ($object instanceof DocumentInterface) {
             if ($object->getId()) {
-                $document['_id'] = $object->getId();
+                $array['_id'] = $object->getId();
             }
 
             if ($object->hasParent()) {
-                $document['_parent'] = $object->getParent();
+                $array['_parent'] = $object->getParent();
             }
 
             if ($object->getTtl()) {
-                $document['_ttl'] = $object->getTtl();
+                $array['_ttl'] = $object->getTtl();
             }
         }
 
-        foreach ($getters as $field => $getter) {
-            if ($getter['exec']) {
-                $value = $object->{$getter['name']}();
-            } else {
-                $value = $object->{$getter['name']};
+        // Variable $name defined in client.
+        foreach ($aliases as $name => $alias) {
+            try {
+                $method = 'get' . ucfirst(Inflector::classify($alias['propertyName']));
+                if (method_exists($object, $method)) {
+                    $value = $object->{$method}();
+                } else {
+                    $value = $object->{$alias['propertyName']};
+                }
+            } catch (\Exception $e) {
+                throw new \RuntimeException(
+                    "Cannot access {$alias['propertyName']} property. "
+                    . 'Please define a setter or create document with Manager::createDocument.'
+                );
             }
 
-            if ($value && isset($getter['properties'])) {
-                $newValue = null;
-
-                if ($getter['multiple']) {
-                    $this->isTraversable($value);
-                    foreach ($value as $item) {
-                        $this->checkVariableType($item, $getter['namespace']);
-                        $arrayValue = $this->convertToArray($item, $getter['properties']);
-                        $newValue[] = $arrayValue;
+            if (isset($value)) {
+                if (array_key_exists('aliases', $alias)) {
+                    $new = null;
+                    if ($alias['multiple']) {
+                        $this->isTraversable($value);
+                        foreach ($value as $item) {
+                            $this->checkVariableType($item, [$alias['namespace'], $alias['proxyNamespace']]);
+                            $new[] = $this->convertToArray($item, $alias['aliases']);
+                        }
+                    } else {
+                        $this->checkVariableType($value, [$alias['namespace'], $alias['proxyNamespace']]);
+                        $new = $this->convertToArray($value, $alias['aliases']);
                     }
-                } else {
-                    $this->checkVariableType($value, $getter['namespace']);
-                    $newValue = $this->convertToArray($value, $getter['properties']);
+                    $value = $new;
                 }
 
-                $value = $newValue;
-            }
+                if ($value instanceof \DateTime) {
+                    $value = $value->format(\DateTime::ISO8601);
+                }
 
-            if ($value instanceof \DateTime) {
-                $value = $value->format(\DateTime::ISO8601);
-            }
-
-            if ($value) {
-                $document[$field] = $value;
+                $array[$name] = $value;
             }
         }
 
-        return $document;
+        return $array;
     }
 
     /**
@@ -209,7 +216,7 @@ class Manager
     public function getDocumentMapping($document)
     {
         foreach ($this->bundlesMapping as $repository) {
-            if ($repository['namespace'] == get_class($document)) {
+            if (in_array(get_class($document), [$repository['namespace'], $repository['proxyNamespace']])) {
                 return $repository;
             }
         }
@@ -260,12 +267,12 @@ class Manager
     /**
      * Check if class matches the expected one.
      *
-     * @param mixed  $object
-     * @param string $expectedClass
+     * @param object $object
+     * @param array  $expectedClasses
      *
      * @throws \InvalidArgumentException
      */
-    private function checkVariableType($object, $expectedClass)
+    private function checkVariableType($object, array $expectedClasses)
     {
         if (!is_object($object)) {
             $msg = 'Expected variable of type object, got ' . gettype($object) . ". (field isn't multiple)";
@@ -273,8 +280,8 @@ class Manager
         }
 
         $class = get_class($object);
-        if ($class != $expectedClass) {
-            throw new \InvalidArgumentException("Expected object of type {$expectedClass}, got {$class}.");
+        if (!in_array($class, $expectedClasses)) {
+            throw new \InvalidArgumentException("Expected object of type {$expectedClasses[0]}, got {$class}.");
         }
     }
 
@@ -283,6 +290,8 @@ class Manager
      *
      * @param mixed $value
      *
+     * @return bool
+     *
      * @throws \InvalidArgumentException
      */
     private function isTraversable($value)
@@ -290,5 +299,7 @@ class Manager
         if (!(is_array($value) || (is_object($value) && $value instanceof \Traversable))) {
             throw new \InvalidArgumentException("Variable isn't traversable, although field is set to multiple.");
         }
+
+        return true;
     }
 }

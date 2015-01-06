@@ -63,13 +63,14 @@ class MetadataCollector
     /**
      * Retrieves mapping from local cache otherwise runs through bundle files.
      *
-     * @param string $bundle
+     * @param string $bundle Bundle name to retrieve mappings from.
+     * @param bool   $force  Forces to rescan bundles and skip local cache.
      *
      * @return array
      */
-    public function getMapping($bundle)
+    public function getMapping($bundle, $force = false)
     {
-        if (array_key_exists($bundle, $this->documents)) {
+        if (!$force && array_key_exists($bundle, $this->documents)) {
             return $this->documents[$bundle];
         }
 
@@ -154,13 +155,22 @@ class MetadataCollector
     private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
     {
         $mapping = $this->parser->parse($reflectionClass);
+        $proxy = null;
+
+        if (!$reflectionClass->isAbstract()
+            && !$reflectionClass->isInterface()
+            && !$reflectionClass->isFinal()
+            && !$reflectionClass->isTrait()
+        ) {
+            $proxy = $this->proxyLoader->load($reflectionClass);
+        }
 
         if ($mapping !== null) {
             $key = key($mapping);
             $mapping[$key] = array_merge(
                 $mapping[$key],
                 [
-                    'proxyNamespace' => $this->proxyLoader->load($reflectionClass),
+                    'proxyNamespace' => $proxy,
                     'namespace' => $reflectionClass->getNamespaceName() . '\\' . $reflectionClass->getShortName(),
                     'class' => $reflectionClass->getShortName(),
                 ]

@@ -52,7 +52,7 @@ class ProxyLoader
      *
      * @param \ReflectionClass $reflectionClass
      *
-     * @return string Proxy document namespace.
+     * @return string Proxy document path.
      */
     public function load(\ReflectionClass $reflectionClass)
     {
