@@ -32,6 +32,8 @@ class MappingPass implements CompilerPassInterface
     {
         $connections = $container->getParameter('es.connections');
         $managers = $container->getParameter('es.managers');
+        $eventDispatcher = $this->createEventDispatcher($container);
+        $callbacks = [];
 
         foreach ($managers as $managerName => $settings) {
             if (isset($connections[$settings['connection']])) {
@@ -64,6 +66,7 @@ class MappingPass implements CompilerPassInterface
                     $repositoryName = $bundle . ':' . $typeParams['class'];
                     $bundlesMetadata[$repositoryName] = $typeParams;
                     $typeMapping[$typeName] = $repositoryName;
+                    $callbacks[$typeParams['namespace']] = $typeParams['callbacks'];
                 }
             }
 
@@ -74,6 +77,7 @@ class MappingPass implements CompilerPassInterface
                     $container->getDefinition('es.metadata_collector'),
                     $typeMapping,
                     $bundlesMetadata,
+                    $eventDispatcher,
                 ]
             );
 
@@ -94,6 +98,7 @@ class MappingPass implements CompilerPassInterface
                 );
             }
         }
+        $this->registerCallbacks($callbacks, $container);
     }
 
     /**
@@ -193,5 +198,73 @@ class MappingPass implements CompilerPassInterface
         }
 
         return $warmers;
+    }
+
+    /**
+     * Registers event subscriber for callbacks.
+     *
+     * @param array            $callbacks
+     * @param ContainerBuilder $container
+     */
+    private function registerCallbacks($callbacks, ContainerBuilder $container)
+    {
+        if (!$container->hasDefinition('es.event_dispatcher')) {
+            return;
+        }
+
+        $filteredMethods = $this->filterMethods('lifecycleCallback', $callbacks);
+        if (!empty($filteredMethods)) {
+            $subscriber = new Definition('ONGR\ElasticsearchBundle\Event\LifecycleCallbackSubscriber');
+            $subscriber->addTag('es.document.event.event_subscriber');
+            $subscriber->addMethodCall('setMetadata', [$filteredMethods]);
+            $container->setDefinition('es.document.event_subscriber', $subscriber);
+
+            $eventDispatcher = $container->getDefinition('es.event_dispatcher');
+            $taggedServices = $container->findTaggedServiceIds(
+                'es.document.event.event_subscriber'
+            );
+            foreach ($taggedServices as $id => $tags) {
+                $def = $container->getDefinition($id);
+                $eventDispatcher->addMethodCall('addSubscriberService', [$id, $def->getClass()]);
+            }
+        }
+    }
+
+    /**
+     * Create Event dispatcher definition.
+     *
+     * @param ContainerBuilder $container
+     *
+     * @return Definition
+     */
+    private function createEventDispatcher(ContainerBuilder $container)
+    {
+        return $container->setDefinition(
+            'es.event_dispatcher',
+            new Definition(
+                'Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher',
+                [new Reference('service_container')]
+            )
+        );
+    }
+
+    /**
+     * Filter callbacks by annotation type.
+     *
+     * @param string $annotationType
+     * @param array  $methods
+     *
+     * @return array
+     */
+    private function filterMethods($annotationType, $methods)
+    {
+        $filteredMethods = [];
+        foreach ($methods as $class => $type) {
+            if (!empty($type[$annotationType])) {
+                $filteredMethods[$class] = $type[$annotationType];
+            }
+        }
+
+        return $filteredMethods;
     }
 }

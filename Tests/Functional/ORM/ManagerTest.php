@@ -17,6 +17,7 @@ use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Order;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationSuggesting;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationContext;
@@ -73,6 +74,29 @@ class ManagerTest extends ElasticsearchTestCase
         $this->assertEquals($url2->url, $actualUrl[1]->url);
 
         $this->assertEquals($cdn->cdn_url, $actualUrl[0]->cdn->cdn_url);
+    }
+
+    /**
+     * Check if per persist event was executed.
+     */
+    public function testPreCreateEvent()
+    {
+        /** @var Manager $manager */
+        $manager = $this->getManager();
+
+        $order = new Order();
+        $order->name = 'foo name';
+
+        $manager->persist($order);
+        $manager->commit();
+
+        $repository = $manager->getRepository('AcmeTestBundle:Order');
+        /** @var Order[] $actualOrders */
+        $actualOrders = $repository->execute($repository->createSearch());
+
+        /** @var Order $actualOrder */
+        $actualOrder = $actualOrders->current();
+        $this->assertEquals('fooPrePersistEvent', $actualOrder->name);
     }
 
     /**

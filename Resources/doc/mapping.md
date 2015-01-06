@@ -97,7 +97,7 @@ class content implements DocumentInterface
 >Important: be sure your @ES\Document class'es implements DocumentInterface, otherwise it will not work.
 
 `@ES\Document(type="content")` Annotation defines that this class will represent elasticsearch type.
-`type` parameter is for type name. This parame is optional, if there will be no param set Elasticsearch bundle will create type with lovercase class name. Additional params: 
+`type` parameter is for type name. This parameter is optional, if there will be no param set Elasticsearch bundle will create type with lowercase class name. Additional params: 
   * **TTL (time to live)** - `_ttl={"enabled": true, "default": "1d"}` param with which you can enable documents to   have time to live and set default time interval. After time runs out document deletes itself automatically.
 
 > You can use time units specified in [elasticsearch documentation][es-time-units].
@@ -202,6 +202,92 @@ class content implements DocumentInterface
 To define object fields the same `@ES\Property` annotations could be used. In the objects there is possibility  to define other objects.
 
 > Nested types can be defined the same way as objects, except @ES\Nested annotation must be used.
+
+### Document lifecycle events
+
+ES Documents can have lifecycle callbacks.
+
+Events supported:
+
+- PrePersist (executed when object is passed to manager persist method)
+
+
+
+
+#### Usage
+
+Class must have `LifecycleCallback` annotation.
+
+Class method must have `PrePersist` annotation.
+
+> LifecycleCallback and PrePersist annotations are in the same namespace as other ElasticsearchBundle annotaitons.
+
+```php
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
+
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
+
+/**
+ * Order document for testing.
+ *
+ * @ES\Document(type="order")
+ * @ES\LifecycleCallback
+ */
+class Order implements DocumentInterface
+{
+    use DocumentTrait;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="name")
+     */
+    public $name;
+
+    /**
+     * @var \DateTime
+     *
+     * @ES\Property(name="createdAt", type="date")
+     */
+    private $createdAt;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * Called on pre create event.
+     *
+     * @ES\PrePersist
+     */
+    public function fooPrePersist()
+    {
+        $this->name = 'fooPrePersistEvent';
+    }
+}
+```
 
 
 [es-time-units]:http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-ttl-field.html#_default

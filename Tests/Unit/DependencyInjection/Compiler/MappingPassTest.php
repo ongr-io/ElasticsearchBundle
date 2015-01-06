@@ -29,7 +29,12 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $bundleMappingData = ['class' => 'Comment', 'type' => 'comment'];
+        $bundleMappingData = [
+            'class' => 'Comment',
+            'type' => 'comment',
+            'namespace' => 'AcmeTestBundle',
+            'callbacks' => []
+        ];
         $metadataCollectorMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
             ->disableOriginalConstructor()
             ->getMock();
