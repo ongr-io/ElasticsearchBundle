@@ -48,7 +48,7 @@ abstract class AbstractElasticsearchCommand extends ContainerAwareCommand
 
     /**
      * Returns elasticsearch connection by name.
-     * 
+     *
      * @param string $name
      *
      * @return \ONGR\ElasticsearchBundle\Client\Connection
@@ -64,7 +64,7 @@ abstract class AbstractElasticsearchCommand extends ContainerAwareCommand
      * @param string $name Connection name.
      *
      * @return string
-     * 
+     *
      * @throws \RuntimeException
      */
     private function getManagerNameByConnection($name)
