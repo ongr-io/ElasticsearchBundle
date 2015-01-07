@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
@@ -27,6 +28,11 @@ use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObjec
  */
 class ManagerTest extends ElasticsearchTestCase
 {
+    /**
+     * @var Converter
+     */
+    private $converter;
+
     /**
      * Check if persisted objects are flushed.
      */
@@ -115,7 +121,7 @@ class ManagerTest extends ElasticsearchTestCase
         $actualProduct->setId(null);
         $actualProduct->setScore(null);
 
-        $this->assertEquals($product, $actualProduct);
+        $this->assertEquals($this->convertToArray($product), $this->convertToArray($actualProduct));
     }
 
     /**
@@ -235,5 +241,23 @@ class ManagerTest extends ElasticsearchTestCase
         $actualProduct = $results[0];
 
         $this->assertGreaterThan(time(), $actualProduct->getCreatedAt()->getTimestamp());
+    }
+
+    /**
+     * Converts document to array.
+     *
+     * @param DocumentInterface $document
+     *
+     * @return array
+     */
+    private function convertToArray($document)
+    {
+        $manager = $this->getManager();
+
+        if (!$this->converter) {
+            $this->converter = new Converter($manager->getTypesMapping(), $manager->getBundlesMapping());
+        }
+
+        return $this->converter->convertToArray($document);
     }
 }

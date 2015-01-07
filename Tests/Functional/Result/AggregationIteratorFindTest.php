@@ -30,13 +30,13 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
                     [
                         '_id' => 1,
                         'title' => 'foo',
-                        'surface' => 'solid',
+                        'description' => 'solid',
                         'price' => 10.45,
                     ],
                     [
                         '_id' => 2,
                         'title' => 'bar',
-                        'surface' => 'weak',
+                        'description' => 'weak',
                         'price' => 32,
                     ],
                     [
@@ -136,7 +136,7 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
     private function buildAggregation()
     {
         $aggregation = new TermsAggregation('test_agg');
-        $aggregation->setField('surface');
+        $aggregation->setField('description');
         $aggregation2 = new StatsAggregation('test_agg_2');
         $aggregation2->setField('price');
         $aggregation->aggregations->addAggregation($aggregation2);
