@@ -72,9 +72,7 @@ class ProxyLoader
             $cache->write($code, [new FileResource($reflectionClass->getFileName())]);
         }
 
-        include_once $cache;
-
-        return ProxyFactory::getProxyNamespace($reflectionClass, true);
+        return $cache->__toString();
     }
 
     /**

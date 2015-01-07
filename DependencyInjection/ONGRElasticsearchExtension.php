@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader;
@@ -117,17 +117,18 @@ class ONGRElasticsearchExtension extends Extension
     {
         $watchedBundles = [];
         foreach ($config['managers'] as $manager) {
-            $watchedBundles += $manager['mappings'];
+            $watchedBundles = array_merge($watchedBundles, $manager['mappings']);
         }
 
-        foreach ($container->getParameter('kernel.bundles') as $name => $class) {
-            if (!in_array($name, $watchedBundles)) {
-                continue;
-            }
+        $watchedBundles = array_intersect_key(
+            $container->getParameter('kernel.bundles'),
+            array_flip(array_unique($watchedBundles))
+        );
 
+        foreach ($watchedBundles as $name => $class) {
             $bundle = new \ReflectionClass($class);
             $dir = dirname($bundle->getFileName()) . DIRECTORY_SEPARATOR . $config['document_dir'];
-            $container->addResource(new FileResource($dir));
+            $container->addResource(new DirectoryResource($dir));
         }
     }
 

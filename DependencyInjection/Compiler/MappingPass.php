@@ -161,6 +161,12 @@ class MappingPass implements CompilerPassInterface
             }
         }
 
+        $paths = $metadataCollector->getProxyPaths();
+        if ($container->hasParameter('es.proxy_paths')) {
+            $paths = array_merge($paths, $container->getParameter('es.proxy_paths'));
+        }
+        $container->setParameter('es.proxy_paths', $paths);
+
         if (!empty($mappings)) {
             $index['body']['mappings'] = $mappings;
         }

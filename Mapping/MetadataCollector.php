@@ -19,6 +19,7 @@ use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader;
 
 /**
@@ -40,6 +41,11 @@ class MetadataCollector
      * @var ProxyLoader
      */
     private $proxyLoader;
+
+    /**
+     * @var array
+     */
+    private $proxyPaths = [];
 
     /**
      * @var array Contains mappings gathered from bundle documents.
@@ -124,6 +130,7 @@ class MetadataCollector
     public function getBundleMapping($bundle)
     {
         $mappings = [];
+        $this->proxyPaths = [];
         $bundleNamespace = $this->finder->getBundle($bundle);
         $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
         $documentDir = str_replace('/', '\\', $this->finder->getDocumentDir());
@@ -146,6 +153,16 @@ class MetadataCollector
     }
 
     /**
+     * Returns document proxy paths.
+     *
+     * @return array
+     */
+    public function getProxyPaths()
+    {
+        return $this->proxyPaths;
+    }
+
+    /**
      * Gathers annotation data from class.
      *
      * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
@@ -162,7 +179,8 @@ class MetadataCollector
             && !$reflectionClass->isFinal()
             && !$reflectionClass->isTrait()
         ) {
-            $proxy = $this->proxyLoader->load($reflectionClass);
+            $proxy = ProxyFactory::getProxyNamespace($reflectionClass);
+            $this->proxyPaths[$proxy] = $this->proxyLoader->load($reflectionClass);
         }
 
         if ($mapping !== null) {
