@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
 
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 
@@ -34,10 +33,16 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetMetadataCollector()
     {
-        $metaDataCollector = new MetadataCollector(['test'], null);
-        $manager = new Manager(null, $metaDataCollector, [], []);
+        $metadataCollectorMock = $this
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $metadataCollectorMock
+            ->expects($this->never())
+            ->method($this->anything());
+        $manager = new Manager(null, $metadataCollectorMock, [], []);
 
-        $this->assertEquals($metaDataCollector, $manager->getMetadataCollector());
+        $this->assertNotNull($manager->getMetadataCollector(), 'MetadataCollector was not returned.');
     }
 
     /**

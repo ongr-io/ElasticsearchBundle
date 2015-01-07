@@ -26,6 +26,8 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $container = new ContainerBuilder();
         $container->setParameter('kernel.bundles', []);
+        $container->setParameter('kernel.cache_dir', '');
+        $container->setParameter('kernel.debug', true);
         $extension = new ONGRElasticsearchExtension();
         $extension->load(
             [
@@ -61,17 +63,19 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->assertEquals($expectedConnections, $container->getParameter('es.connections'));
-        $this->assertEquals($expectedManagers, $container->getParameter('es.managers'));
-        $this->assertTrue($container->hasDefinition('es.metadata_collector'));
         $this->assertEquals(
-            [
-                [
-                    'setDocumentDir',
-                    ['customDir'],
-                ],
-            ],
-            $container->getDefinition('es.metadata_collector')->getMethodCalls()
+            $expectedConnections,
+            $container->getParameter('es.connections'),
+            'Incorrect connections parameter.'
+        );
+        $this->assertEquals(
+            $expectedManagers,
+            $container->getParameter('es.managers'),
+            'Incorrect managers parameter'
+        );
+        $this->assertTrue(
+            $container->hasDefinition('es.metadata_collector'),
+            'Container should have MetadataCollector definition set.'
         );
     }
 }
