@@ -457,7 +457,7 @@ class Connection
 
     /**
      * Adds warmer to conatiner.
-     * 
+     *
      * @param WarmerInterface $warmer
      */
     public function addWarmer(WarmerInterface $warmer)
@@ -467,39 +467,58 @@ class Connection
 
     /**
      * Loads warmers into elasticseach.
-     * 
+     *
      * @param array $names Warmers names to put.
      */
     public function putWarmers(array $names = [])
     {
-        foreach ($this->warmers->getWarmers() as $name => $body) {
-            if (empty($names) || in_array($name, $names)) {
-                $this->getClient()->indices()->putWarmer(
-                    [
-                        'index' => $this->getIndexName(),
-                        'name' => $name,
-                        'body' => $body,
-                    ]
-                );
-            }
-        }
+        $this->warmersAction('put', $names);
     }
 
     /**
      * Deletes warmers from elasticsearch index.
-     * 
+     *
      * @param array $names Warmers names to delete.
      */
     public function deleteWarmers(array $names = [])
     {
+        $this->warmersAction('delete', $names);
+    }
+
+    /**
+     * Executes warmers actions.
+     *
+     * @param string $action Action name.
+     * @param array  $names  Warmers names.
+     *
+     * @throws \LogicException
+     */
+    private function warmersAction($action, $names = [])
+    {
         foreach ($this->warmers->getWarmers() as $name => $body) {
             if (empty($names) || in_array($name, $names)) {
-                $this->getClient()->indices()->deleteWarmer(
-                    [
-                        'index' => $this->getIndexName(),
-                        'name' => $name,
-                    ]
-                );
+                switch($action)
+                {
+                    case 'put':
+                        $this->getClient()->indices()->putWarmer(
+                            [
+                                'index' => $this->getIndexName(),
+                                'name' => $name,
+                                'body' => $body,
+                            ]
+                        );
+                        break;
+                    case 'delete':
+                        $this->getClient()->indices()->deleteWarmer(
+                            [
+                                'index' => $this->getIndexName(),
+                                'name' => $name,
+                            ]
+                        );
+                        break;
+                    default:
+                        throw new \LogicException('Unknown warmers action');
+                }
             }
         }
     }

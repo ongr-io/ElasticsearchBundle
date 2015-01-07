@@ -19,28 +19,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * This command puts warmers into elasticsearch index.
  */
-class WarmerPutCommand extends AbstractElasticsearchCommand
+class WarmerPutCommand extends AbstractWarmerCommand
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this
-            ->setName('es:warmer:put')
-            ->addArgument(
-                'names',
-                InputArgument::IS_ARRAY | InputArgument::OPTIONAL,
-                'Warmers names to put into index.',
-                []
-            )
-            ->addOption(
-                'connection',
-                'c',
-                InputOption::VALUE_REQUIRED,
-                'Connection name to put warmers to.',
-                'default'
-            );
+        parent::configure();
+        $this->setName('es:warmer:put');
     }
 
     /**
@@ -51,7 +38,6 @@ class WarmerPutCommand extends AbstractElasticsearchCommand
         $names = $input->getArgument('names');
         $this->getConnection($input->getOption('connection'))->putWarmers($names);
 
-        $message = '';
         if (empty($names)) {
             $message = 'All warmers have been put into <info>%s</info> index.';
         } else {

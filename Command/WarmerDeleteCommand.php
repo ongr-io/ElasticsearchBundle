@@ -19,28 +19,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * This command removes warmers from elasticsearch index.
  */
-class WarmerDeleteCommand extends AbstractElasticsearchCommand
+class WarmerDeleteCommand extends AbstractWarmerCommand
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this
-            ->setName('es:warmer:delete')
-            ->addArgument(
-                'names',
-                InputArgument::IS_ARRAY | InputArgument::OPTIONAL,
-                'Warmers names to delete from index.',
-                []
-            )
-            ->addOption(
-                'connection',
-                'c',
-                InputOption::VALUE_REQUIRED,
-                'Connection name to delete warmers from.',
-                'default'
-            );
+        parent::configure();
+        $this->setName('es:warmer:delete');
     }
 
     /**
@@ -51,7 +38,6 @@ class WarmerDeleteCommand extends AbstractElasticsearchCommand
         $names = $input->getArgument('names');
         $this->getConnection($input->getOption('connection'))->deleteWarmers($names);
 
-        $message = '';
         if (empty($names)) {
             $message = 'All warmers have been deleted from <info>%s</info> index.';
         } else {

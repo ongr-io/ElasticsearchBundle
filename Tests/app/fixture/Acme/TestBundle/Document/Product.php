@@ -24,8 +24,6 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  */
 class Product extends Item implements DocumentInterface
 {
-    use DocumentTrait;
-
     /**
      * @var string
      *
