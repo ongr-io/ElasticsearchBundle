@@ -523,9 +523,9 @@ class MetadataCollector
         }
 
         if ($parentClass = $reflectionClass->getParentClass()) {
-            $parent_properties = $this->getProperties(new \ReflectionClass($parentClass->getName()), $properties, $flag);
-            if (count($parent_properties) > 0) {
-                $mapping = array_merge($parent_properties, $mapping);
+            $parent_mapping = $this->getProperties(new \ReflectionClass($parentClass->getName()), $properties, $flag);
+            if (count($parent_mapping) > 0) {
+                $mapping = array_merge($parent_mapping, $mapping);
             }
         }
 
