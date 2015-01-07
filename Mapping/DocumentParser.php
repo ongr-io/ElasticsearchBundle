@@ -15,6 +15,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use ONGR\ElasticsearchBundle\Annotation\Skip;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
 use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 
@@ -259,7 +260,7 @@ class DocumentParser
      *
      * @param \ReflectionClass $reflectionClass Class to read properties from.
      * @param array            $properties      Properties to skip.
-     * @param array            $flag            If false exludes properties, true only includes properties.
+     * @param bool             $flag            If false exludes properties, true only includes properties.
      *
      * @return array
      */
@@ -292,12 +293,6 @@ class DocumentParser
                     $fieldsMap[$field->name] = $field->filter();
                 }
                 $maps['fields'] = $fieldsMap;
-            }
-
-            // Suggesters.
-            if ($type instanceof AbstractSuggesterProperty) {
-                $this->getObjectMapping($type->objectName);
-                $this->suggesters[$reflectionClass->getName()][$property->getName()] = strtolower($type->objectName);
             }
 
             $mapping[$type->name] = $maps;

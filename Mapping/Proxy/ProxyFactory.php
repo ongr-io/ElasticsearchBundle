@@ -46,9 +46,9 @@ class ProxyFactory
      */
     public static function generate(\ReflectionClass $reflectionClass)
     {
-        $code = static::getHeader(
+        $code = self::getHeader(
             [
-                'namespace' => static::getProxyNamespace($reflectionClass, false),
+                'namespace' => self::getProxyNamespace($reflectionClass, false),
                 'class' => $reflectionClass->getShortName(),
                 'base' => $reflectionClass->getName(),
             ]
@@ -60,7 +60,7 @@ class ProxyFactory
             $methodName = ucfirst(Inflector::classify($name));
 
             if (!$reflectionClass->hasMethod("get{$methodName}")) {
-                $code .= static::getMethod(
+                $code .= self::getMethod(
                     [
                         'name' => "get{$methodName}",
                         'content' => "return \$this->{$name};",
@@ -69,7 +69,7 @@ class ProxyFactory
             }
 
             if (!$reflectionClass->hasMethod("set{$methodName}")) {
-                $code .= static::getMethod(
+                $code .= self::getMethod(
                     [
                         'name' => "set{$methodName}",
                         'content' => "\$this->{$name} = \${$name};",
@@ -78,7 +78,7 @@ class ProxyFactory
                 );
             }
         }
-        $code .= static::getFooter();
+        $code .= self::getFooter();
 
         return $code;
     }

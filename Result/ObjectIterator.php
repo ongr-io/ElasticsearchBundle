@@ -17,16 +17,12 @@ namespace ONGR\ElasticsearchBundle\Result;
 class ObjectIterator extends AbstractResultsIterator
 {
     /**
-     * Aliases information.
-     *
-     * @var array
+     * @var array Aliases information.
      */
     private $alias;
 
     /**
-     * Raw data from Elasticsearch.
-     *
-     * @var array
+     * @var array Raw data from Elasticsearch.
      */
     private $rawData;
 

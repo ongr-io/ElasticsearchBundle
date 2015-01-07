@@ -118,8 +118,6 @@ class Converter
      * @param array             $aliases
      *
      * @return array
-     *
-     * @throws \RuntimeException Property could not be accessed.
      */
     public function convertToArray($object, $aliases = [])
     {
@@ -145,18 +143,11 @@ class Converter
 
         // Variable $name defined in client.
         foreach ($aliases as $name => $alias) {
-            try {
-                $value = $this->getPropertyValue($object, $alias['propertyName']);
-            } catch (\Exception $e) {
-                throw new \RuntimeException(
-                    "Cannot access {$alias['propertyName']} property. "
-                    . 'Please define a setter or create document with Manager::createDocument.'
-                );
-            }
+            $value = $this->getPropertyValue($object, $alias['propertyName']);
 
             if (isset($value)) {
                 if (array_key_exists('aliases', $alias)) {
-                    $new = null;
+                    $new = [];
                     if ($alias['multiple']) {
                         $this->isTraversable($value);
                         foreach ($value as $item) {
@@ -188,6 +179,8 @@ class Converter
      * @param string            $propertyName
      *
      * @return mixed
+     *
+     * @throws \RuntimeException Property could not be accessed.
      */
     private function getPropertyValue($document, $propertyName)
     {
@@ -197,7 +190,14 @@ class Converter
             return $document->{$method}();
         }
 
-        return $document->{$propertyName};
+        try {
+            return $document->{$propertyName};
+        } catch (\Exception $e) {
+            throw new \RuntimeException(
+                "Cannot access {$propertyName} property. "
+                . 'Please define a getter or create document with Manager::createDocument.'
+            );
+        }
     }
 
     /**
@@ -206,15 +206,23 @@ class Converter
      * @param DocumentInterface $document
      * @param string            $propertyName
      * @param mixed             $value
+     *
+     * @throws \RuntimeException
      */
     private function setPropertyValue($document, $propertyName, $value)
     {
         $method = 'set' . ucfirst(Inflector::classify($propertyName));
 
-        if (method_exists($document, $method)) {
-            $document->{$method}($value);
-        } else {
-            $document->{$propertyName} = $value;
+        try {
+            if (method_exists($document, $method)) {
+                $document->{$method}($value);
+            } else {
+                $document->{$propertyName} = $value;
+            }
+        } catch (\Exception $e) {
+            throw new \RuntimeException(
+                "Cannot set {$propertyName} property. Please define a setter or change visibility to public."
+            );
         }
     }
 
@@ -262,7 +270,7 @@ class Converter
      *
      * @param DocumentInterface $document
      *
-     * @return array|null
+     * @return array
      *
      * @throws \DomainException
      */
