@@ -36,12 +36,44 @@ class Item implements DocumentInterface
      *
      * @ES\Property(type="float", name="price")
      */
-    public $price;
+    protected $price;
 
     /**
      * @var \DateTime
      * 
      * @ES\Property(name="created_at", type="date")
      */
-    public $createdAt;
+    private $createdAt;
+
+    /**
+     * @return float
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param float $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
 }
