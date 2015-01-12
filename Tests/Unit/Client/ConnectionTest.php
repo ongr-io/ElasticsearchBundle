@@ -194,10 +194,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
                 'body' => [
                     'mappings' => [
                         'foo' => [
-                            'properties' => []
-                        ]
-                    ]
-                ]
+                            'properties' => [],
+                        ],
+                    ],
+                ],
             ]
         );
 

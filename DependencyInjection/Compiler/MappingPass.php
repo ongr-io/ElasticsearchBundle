@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\Document\Warmer\WarmerInterface;
 use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -34,52 +35,28 @@ class MappingPass implements CompilerPassInterface
         $managers = $container->getParameter('es.managers');
 
         foreach ($managers as $managerName => $settings) {
-            if (isset($connections[$settings['connection']])) {
-                $parameters = $this->getClientParams($connections[$settings['connection']], $settings, $container);
-                $index = $this->getIndexParams($connections[$settings['connection']], $settings, $container);
-            } else {
-                throw new InvalidConfigurationException(
-                    'There is no ES connection with name ' . $settings['connection']
-                );
-            }
+            $bundlesMetadata = $this->getBundlesMetadata($container, $settings);
 
-            $managerName = strtolower($managerName);
-            $client = new Definition('Elasticsearch\Client', [$parameters]);
-            $clientConnection = new Definition(
-                'ONGR\ElasticsearchBundle\Client\Connection',
+            $classMetadataCollection = new Definition(
+                'ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection',
                 [
-                    $client,
-                    $index,
-                ]
-            );
-            $this->setWarmers($clientConnection, $settings['connection'], $container);
-
-            $bundlesMetadata = [];
-            $typeMapping = [];
-
-            foreach ($settings['mappings'] as $bundle) {
-                $data = $container->get('es.metadata_collector')->getBundleMapping($bundle);
-                foreach ($data as $typeName => $typeParams) {
-                    $typeParams['type'] = $typeName;
-                    $repositoryName = $bundle . ':' . $typeParams['class'];
-                    $bundlesMetadata[$repositoryName] = $typeParams;
-                    $typeMapping[$typeName] = $repositoryName;
-                }
-            }
-
-            $manager = new Definition(
-                'ONGR\ElasticsearchBundle\ORM\Manager',
-                [
-                    $clientConnection,
-                    $container->getDefinition('es.metadata_collector'),
-                    $typeMapping,
                     $bundlesMetadata,
                 ]
             );
 
+            $managerDefinition = new Definition(
+                'ONGR\ElasticsearchBundle\ORM\Manager',
+                [
+                    $this->getConnectionDefinition($container, $connections, $settings),
+                    $classMetadataCollection,
+                ]
+            );
+
+            $managerName = strtolower($managerName);
+
             $container->setDefinition(
                 sprintf('es.manager.%s', $managerName),
-                $manager
+                $managerDefinition
             );
 
             if ($managerName === 'default') {
@@ -87,13 +64,81 @@ class MappingPass implements CompilerPassInterface
             }
 
             foreach ($bundlesMetadata as $repo => $data) {
-                $repository = new Definition('ONGR\ElasticsearchBundle\ORM\Repository', [$manager, [$repo]]);
+                $repository = new Definition(
+                    'ONGR\ElasticsearchBundle\ORM\Repository',
+                    [
+                        $managerDefinition,
+                        [$repo],
+                    ]
+                );
                 $container->setDefinition(
                     sprintf('es.manager.%s.%s', $managerName, strtolower($data['class'])),
                     $repository
                 );
             }
         }
+    }
+
+    /**
+     * Fetches bundles metadata for specific manager settings.
+     *
+     * @param ContainerBuilder $container
+     * @param array            $settings
+     *
+     * @return array
+     */
+    private function getBundlesMetadata(ContainerBuilder $container, $settings)
+    {
+        $out = [];
+
+        /** @var MetadataCollector $collector */
+        $collector = $container->get('es.metadata_collector');
+        foreach ($settings['mappings'] as $bundle) {
+            foreach ($collector->getBundleMapping($bundle) as $typeName => $typeParams) {
+                $typeParams['type'] = $typeName;
+                $out[$bundle . ':' . $typeParams['class']] = $typeParams;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Builds connection definition.
+     *
+     * @param ContainerBuilder $container
+     * @param array            $connections
+     * @param array            $settings
+     *
+     * @return Definition
+     *
+     * @throws InvalidConfigurationException
+     */
+    private function getConnectionDefinition(ContainerBuilder $container, $connections, $settings)
+    {
+        if (!isset($connections[$settings['connection']])) {
+            throw new InvalidConfigurationException(
+                'There is no ES connection with name ' . $settings['connection']
+            );
+        }
+
+        $client = new Definition(
+            'Elasticsearch\Client',
+            [
+                $this->getClientParams($connections[$settings['connection']], $settings, $container),
+            ]
+        );
+        $connection = new Definition(
+            'ONGR\ElasticsearchBundle\Client\Connection',
+            [
+                $client,
+                $this->getIndexParams($connections[$settings['connection']], $settings, $container),
+            ]
+        );
+
+        $this->setWarmers($connection, $settings['connection'], $container);
+
+        return $connection;
     }
 
     /**
@@ -141,6 +186,7 @@ class MappingPass implements CompilerPassInterface
         }
 
         $mappings = [];
+        /** @var MetadataCollector $metadataCollector */
         $metadataCollector = $container->get('es.metadata_collector');
 
         if (!empty($manager['mappings'])) {
@@ -158,6 +204,12 @@ class MappingPass implements CompilerPassInterface
                 );
             }
         }
+
+        $paths = $metadataCollector->getProxyPaths();
+        if ($container->hasParameter('es.proxy_paths')) {
+            $paths = array_merge($paths, $container->getParameter('es.proxy_paths'));
+        }
+        $container->setParameter('es.proxy_paths', $paths);
 
         if (!empty($mappings)) {
             $index['body']['mappings'] = $mappings;

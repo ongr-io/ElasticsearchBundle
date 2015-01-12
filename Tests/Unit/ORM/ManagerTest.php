@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
 
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 
@@ -25,19 +25,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDocumentMapping()
     {
-        $manager = new Manager(null, null, [], []);
+        $manager = new Manager(null, $this->getClassMetadataCollectionMock());
         $this->assertNull($manager->getDocumentMapping('test'));
-    }
-
-    /**
-     * Check if metadata collector returned is correct.
-     */
-    public function testGetMetadataCollector()
-    {
-        $metaDataCollector = new MetadataCollector(['test'], null);
-        $manager = new Manager(null, $metaDataCollector, [], []);
-
-        $this->assertEquals($metaDataCollector, $manager->getMetadataCollector());
     }
 
     /**
@@ -45,7 +34,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositories()
     {
-        $manager = new Manager(null, null, [], ['rep1' => ['type' => ''], 'rep2' => ['type' => '']]);
+        $manager = new Manager(
+            null,
+            $this->getClassMetadataCollectionMock(['rep1' => ['type' => ''], 'rep2' => ['type' => '']])
+        );
         $types = [
             'rep1',
             'rep2',
@@ -63,7 +55,10 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositoriesException()
     {
-        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => '']);
+        $manager = new Manager(
+            null,
+            $this->getClassMetadataCollectionMock(['rep2' => '', 'rep3' => ''])
+        );
         $types = [
             'rep1',
             'rep4',
@@ -79,7 +74,37 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositoriesExceptionSingle()
     {
-        $manager = new Manager(null, null, [], ['rep2' => '', 'rep3' => '']);
+        $manager = new Manager(
+            null,
+            $this->getClassMetadataCollectionMock(['rep2' => '', 'rep3' => ''])
+        );
         $manager->getRepository('rep1');
+    }
+
+    /**
+     * Returns class metadata collection mock.
+     *
+     * @param array $metadata
+     * @param array $typeMap
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|ClassMetadataCollection
+     */
+    private function getClassMetadataCollectionMock($metadata = [], $typeMap = [])
+    {
+        $mock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mock
+            ->expects($this->any())
+            ->method('getMetadata')
+            ->will($this->returnValue($metadata));
+
+        $mock
+            ->expects($this->any())
+            ->method('getTypeMap')
+            ->will($this->returnValue($typeMap));
+
+        return $mock;
     }
 }

@@ -13,7 +13,9 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\Result\Converter;
 
 /**
  * Manager class.
@@ -21,39 +23,30 @@ use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 class Manager
 {
     /**
-     * Elasticsearch connection.
-     *
-     * @var Connection
+     * @var Connection Elasticsearch connection.
      */
     private $connection;
 
     /**
-     * @var MetadataCollector
+     * @var ClassMetadataCollection
      */
-    private $metadataCollector;
+    private $classMetadataCollection;
 
     /**
-     * @var array Repository structure info
+     * @var Converter
      */
-    private $bundlesMapping = [];
+    private $converter;
 
     /**
-     * @var array Document type map to repositories
+     * Constructor.
+     *
+     * @param Connection              $connection
+     * @param ClassMetadataCollection $classMetadataCollection
      */
-    private $typesMapping = [];
-
-    /**
-     * @param Connection|null        $connection
-     * @param MetadataCollector|null $metadataCollector
-     * @param array                  $typesMapping
-     * @param array                  $bundlesMapping
-     */
-    public function __construct($connection, $metadataCollector, $typesMapping, $bundlesMapping)
+    public function __construct($connection, $classMetadataCollection)
     {
         $this->connection = $connection;
-        $this->metadataCollector = $metadataCollector;
-        $this->typesMapping = $typesMapping;
-        $this->bundlesMapping = $bundlesMapping;
+        $this->classMetadataCollection = $classMetadataCollection;
     }
 
     /**
@@ -103,78 +96,14 @@ class Manager
      */
     public function persist(DocumentInterface $object)
     {
-        $repository = $this->getDocumentMapping($object);
-        $document = $this->convertToArray($object, $repository['getters']);
+        $mapping = $this->getDocumentMapping($object);
+        $document = $this->getConverter()->convertToArray($object);
 
         $this->getConnection()->bulk(
             'index',
-            $repository['type'],
+            $mapping['type'],
             $document
         );
-    }
-
-    /**
-     * Converts object to an array.
-     *
-     * @param DocumentInterface $object
-     * @param array             $getters
-     *
-     * @return array
-     */
-    private function convertToArray($object, $getters)
-    {
-        $document = [];
-
-        // Special fields.
-        if ($object instanceof DocumentInterface) {
-            if ($object->getId()) {
-                $document['_id'] = $object->getId();
-            }
-
-            if ($object->hasParent()) {
-                $document['_parent'] = $object->getParent();
-            }
-
-            if ($object->getTtl()) {
-                $document['_ttl'] = $object->getTtl();
-            }
-        }
-
-        foreach ($getters as $field => $getter) {
-            if ($getter['exec']) {
-                $value = $object->{$getter['name']}();
-            } else {
-                $value = $object->{$getter['name']};
-            }
-
-            if ($value && isset($getter['properties'])) {
-                $newValue = null;
-
-                if ($getter['multiple']) {
-                    $this->isTraversable($value);
-                    foreach ($value as $item) {
-                        $this->checkVariableType($item, $getter['namespace']);
-                        $arrayValue = $this->convertToArray($item, $getter['properties']);
-                        $newValue[] = $arrayValue;
-                    }
-                } else {
-                    $this->checkVariableType($value, $getter['namespace']);
-                    $newValue = $this->convertToArray($value, $getter['properties']);
-                }
-
-                $value = $newValue;
-            }
-
-            if ($value instanceof \DateTime) {
-                $value = $value->format(\DateTime::ISO8601);
-            }
-
-            if ($value) {
-                $document[$field] = $value;
-            }
-        }
-
-        return $document;
     }
 
     /**
@@ -202,14 +131,16 @@ class Manager
     }
 
     /**
+     * Returns repository metadata for document.
+     *
      * @param object $document
      *
-     * @return null
+     * @return array|null
      */
     public function getDocumentMapping($document)
     {
-        foreach ($this->bundlesMapping as $repository) {
-            if ($repository['namespace'] == get_class($document)) {
+        foreach ($this->getBundlesMapping() as $repository) {
+            if (in_array(get_class($document), [$repository['namespace'], $repository['proxyNamespace']])) {
                 return $repository;
             }
         }
@@ -222,15 +153,7 @@ class Manager
      */
     public function getBundlesMapping()
     {
-        return $this->bundlesMapping;
-    }
-
-    /**
-     * @return MetadataCollector
-     */
-    public function getMetadataCollector()
-    {
-        return $this->metadataCollector;
+        return $this->classMetadataCollection->getMetadata();
     }
 
     /**
@@ -238,7 +161,7 @@ class Manager
      */
     public function getTypesMapping()
     {
-        return $this->typesMapping;
+        return $this->classMetadataCollection->getTypesMap();
     }
 
     /**
@@ -250,45 +173,24 @@ class Manager
      */
     private function checkRepositoryType($type)
     {
-        if (!array_key_exists($type, $this->bundlesMapping)) {
+        if (!array_key_exists($type, $this->getBundlesMapping())) {
             $exceptionMessage = "Undefined repository {$type}, valid repositories are: " .
-                join(', ', array_keys($this->bundlesMapping)) . '.';
+                join(', ', array_keys($this->getBundlesMapping())) . '.';
             throw new \InvalidArgumentException($exceptionMessage);
         }
     }
 
     /**
-     * Check if class matches the expected one.
+     * Returns converter instance.
      *
-     * @param mixed  $object
-     * @param string $expectedClass
-     *
-     * @throws \InvalidArgumentException
+     * @return Converter
      */
-    private function checkVariableType($object, $expectedClass)
+    private function getConverter()
     {
-        if (!is_object($object)) {
-            $msg = 'Expected variable of type object, got ' . gettype($object) . ". (field isn't multiple)";
-            throw new \InvalidArgumentException($msg);
+        if (!$this->converter) {
+            $this->converter = new Converter($this->getTypesMapping(), $this->getBundlesMapping());
         }
 
-        $class = get_class($object);
-        if ($class != $expectedClass) {
-            throw new \InvalidArgumentException("Expected object of type {$expectedClass}, got {$class}.");
-        }
-    }
-
-    /**
-     * Check if object is traversable, throw exception otherwise.
-     *
-     * @param mixed $value
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function isTraversable($value)
-    {
-        if (!(is_array($value) || (is_object($value) && $value instanceof \Traversable))) {
-            throw new \InvalidArgumentException("Variable isn't traversable, although field is set to multiple.");
-        }
+        return $this->converter;
     }
 }

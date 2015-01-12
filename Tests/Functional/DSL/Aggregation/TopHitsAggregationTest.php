@@ -47,18 +47,18 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
                     [
                         '_id' => 1,
                         'title' => 'foo',
-                        'surface' => 'solid',
+                        'description' => 'solid',
                         'price' => 10.45,
                     ],
                     [
                         '_id' => 2,
                         'title' => 'bar',
-                        'surface' => 'weak',
+                        'description' => 'weak',
                         'price' => 15.1,
                     ],
                     [
                         '_id' => 3,
-                        'surface' => 'weak',
+                        'description' => 'weak',
                         'title' => 'pizza',
                         'price' => 16.1,
                     ],
@@ -126,7 +126,10 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $functions = [
-            'script_score' => ['script' => "doc['price'].value"]
+            'script_score' =>
+                [
+                    'script' => "doc['price'].value",
+                ],
         ];
         $functionScore = new FunctionScoreQuery(new MatchAllQuery(), $functions);
         $search = $repo->createSearch()->addAggregation($aggregation)->addQuery($functionScore);
@@ -155,7 +158,10 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $functions = [
-            'script_score' => ['script' => "doc['price'].value"]
+            'script_score' =>
+                [
+                    'script' => "doc['price'].value",
+                ],
         ];
         $functionScore = new FunctionScoreQuery(new MatchAllQuery(), $functions);
         $search = $repo->createSearch()->addAggregation($aggregation)->addQuery($functionScore);
@@ -182,7 +188,7 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
     {
         $topAggregation = new TopHitsAggregation('test-top_hits');
         $termAggregation = new TermsAggregation('test_term');
-        $termAggregation->setField('surface');
+        $termAggregation->setField('description');
         $termAggregation->aggregations->addAggregation($topAggregation);
 
         /** @var Repository $repo */

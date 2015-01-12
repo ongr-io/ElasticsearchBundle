@@ -377,7 +377,7 @@ class Repository
             );
         }
 
-        $class = $this->manager->getBundlesMapping()[reset($this->namespaces)]['namespace'];
+        $class = $this->manager->getBundlesMapping()[reset($this->namespaces)]['proxyNamespace'];
 
         return new $class();
     }

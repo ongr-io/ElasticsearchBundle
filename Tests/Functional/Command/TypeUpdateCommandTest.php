@@ -117,8 +117,8 @@ class TypeUpdateCommandTest extends WebTestCase
         $this->assertNotNull($mapping, $message);
         $expectedMapping = [
             'properties' => [
-                'title' => ['type' => 'string']
-            ]
+                'title' => ['type' => 'string'],
+            ],
         ];
         $this->assertEquals($expectedMapping, $mapping);
     }

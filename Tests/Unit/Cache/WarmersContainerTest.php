@@ -27,7 +27,7 @@ class WarmersContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 'warmer1' => [],
-                'warmer2' => []
+                'warmer2' => [],
             ],
             $container->getWarmers()
         );
@@ -35,7 +35,7 @@ class WarmersContainerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Returns mocked warmers array.
-     * 
+     *
      * @return array
      */
     private function getWarmers()
