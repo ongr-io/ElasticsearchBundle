@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
+use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Annotation\Skip;
 use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;

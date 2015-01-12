@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * This class converts array to document object.
@@ -28,6 +30,11 @@ class Converter
      * @var array
      */
     private $bundlesMapping;
+
+    /**
+     * @var PropertyAccessor
+     */
+    private $propertyAccessor;
 
     /**
      * Constructor.
@@ -105,7 +112,7 @@ class Converter
                 }
             }
 
-            $this->setPropertyValue($object, $aliases[$name]['propertyName'], $value);
+            $this->getPropertyAccessor()->setValue($object, $aliases[$name]['propertyName'], $value);
         }
 
         return $object;
@@ -143,7 +150,7 @@ class Converter
 
         // Variable $name defined in client.
         foreach ($aliases as $name => $alias) {
-            $value = $this->getPropertyValue($object, $alias['propertyName']);
+            $value = $this->getPropertyAccessor()->getValue($object, $alias['propertyName']);
 
             if (isset($value)) {
                 if (array_key_exists('aliases', $alias)) {
@@ -170,60 +177,6 @@ class Converter
         }
 
         return $array;
-    }
-
-    /**
-     * Returns property value from a document.
-     *
-     * @param DocumentInterface $document
-     * @param string            $propertyName
-     *
-     * @return mixed
-     *
-     * @throws \RuntimeException Property could not be accessed.
-     */
-    private function getPropertyValue($document, $propertyName)
-    {
-        $method = 'get' . ucfirst(Inflector::classify($propertyName));
-
-        if (method_exists($document, $method)) {
-            return $document->{$method}();
-        }
-
-        try {
-            return $document->{$propertyName};
-        } catch (\Exception $e) {
-            throw new \RuntimeException(
-                "Cannot access {$propertyName} property. "
-                . 'Please define a getter or create document with Manager::createDocument.'
-            );
-        }
-    }
-
-    /**
-     * Sets property value to a document.
-     *
-     * @param DocumentInterface $document
-     * @param string            $propertyName
-     * @param mixed             $value
-     *
-     * @throws \RuntimeException
-     */
-    private function setPropertyValue($document, $propertyName, $value)
-    {
-        $method = 'set' . ucfirst(Inflector::classify($propertyName));
-
-        try {
-            if (method_exists($document, $method)) {
-                $document->{$method}($value);
-            } else {
-                $document->{$propertyName} = $value;
-            }
-        } catch (\Exception $e) {
-            throw new \RuntimeException(
-                "Cannot set {$propertyName} property. Please define a setter or change visibility to public."
-            );
-        }
     }
 
     /**
@@ -285,5 +238,21 @@ class Converter
         }
 
         throw new \DomainException("Aliases could not be found for {$class} document.");
+    }
+
+    /**
+     * Returns property accessor instance.
+     *
+     * @return PropertyAccessor
+     */
+    private function getPropertyAccessor()
+    {
+        if (!$this->propertyAccessor) {
+            $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
+                ->enableMagicCall()
+                ->getPropertyAccessor();
+        }
+
+        return $this->propertyAccessor;
     }
 }
