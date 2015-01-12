@@ -9,11 +9,29 @@ use ONGR\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext;
  *
  * @Annotation
  * @Target("PROPERTY")
+ * @Attributes({
+ *     @Attribute(
+ *        "context",
+ *        type = "array<\ONGR\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext>",
+ *        required = true
+ *     ),
+ * })
  */
 class ContextSuggesterProperty extends AbstractSuggesterProperty
 {
     /**
-     * @var array<\ONGR\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext>
+     * Constructor for lowercase settings.
+     *
+     * @param array $values
+     */
+    public function __construct(array $values)
+    {
+        $this->context = $values['context'];
+        parent::__construct($values);
+    }
+
+    /**
+     * @var AbstractContext[]
      */
     public $context;
 

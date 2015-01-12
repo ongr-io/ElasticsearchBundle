@@ -16,73 +16,58 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  *
  * @Annotation
  * @Target("PROPERTY")
+ * @Attributes({
+ *     @Attribute("index_analyzer", type = "string"),
+ *     @Attribute("search_analyzer",  type = "string"),
+ *     @Attribute("name", type = "string", required = true),
+ *     @Attribute("type", type = "string", required = true),
+ *     @Attribute("index", type = "string"),
+ *     @Attribute("analyzer", type = "string"),
+ *     @Attribute("boost", type = "float"),
+ *     @Attribute("payloads", type = "bool"),
+ *     @Attribute("fields", type = "array<\ONGR\ElasticsearchBundle\Annotation\MultiField>"),
+ *     @Attribute("fielddata", type = "array"),
+ *     @Attribute("objectName", type = "string"),
+ *     @Attribute("multiple", type = "bool"),
+ * })
  */
 final class Property
 {
     /**
-     * @var string
+     * @var array
+     */
+    private $settings;
+
+    /**
+     * Constructor for lowercase settings.
      *
-     * @Required
+     * @param array $values
+     */
+    public function __construct(array $values)
+    {
+        $this->type = $values['type'];
+        $this->name = $values['name'];
+        $this->objectName = isset($values['objectName']) ? $values['objectName'] : null;
+        $this->multiple = isset($values['multiple']) ? $values['multiple'] : null;
+        $this->settings = $values;
+    }
+
+    /**
+     * @var string
      */
     public $name;
 
     /**
      * @var string
-     *
-     * @Required
      */
     public $type;
 
     /**
      * @var string
      */
-    public $index;
-
-    /**
-     * @var string
-     */
-    public $analyzer;
-
-    /**
-     * @var string
-     */
-    public $index_analyzer;
-
-    /**
-     * @var string
-     */
-    public $search_analyzer;
-
-    /**
-     * @var float
-     */
-    public $boost;
-
-    /**
-     * @var bool
-     */
-    public $payloads;
-
-    /**
-     * @var array<\ONGR\ElasticsearchBundle\Annotation\MultiField>
-     */
-    public $fields;
-
-    /**
-     * @var array
-     */
-    public $fielddata;
-
-    /**
-     * Object name to map.
-     *
-     * @var string
-     */
     public $objectName;
 
     /**
-     * OneToOne or OneToMany.
-     *
      * @var bool
      */
     public $multiple;
@@ -95,7 +80,7 @@ final class Property
     public function filter()
     {
         return array_diff_key(
-            array_filter(get_object_vars($this)),
+            array_filter($this->settings),
             array_flip(['name', 'objectName', 'multiple'])
         );
     }
