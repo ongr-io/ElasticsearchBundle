@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 
@@ -27,19 +28,9 @@ class Manager
     private $connection;
 
     /**
-     * @var MetadataCollector
+     * @var ClassMetadataCollection
      */
-    private $metadataCollector;
-
-    /**
-     * @var array Repository structure info.
-     */
-    private $bundlesMapping = [];
-
-    /**
-     * @var array Document type map to repositories.
-     */
-    private $typesMapping = [];
+    private $classMetadataCollection;
 
     /**
      * @var Converter
@@ -47,17 +38,15 @@ class Manager
     private $converter;
 
     /**
-     * @param Connection|null        $connection
-     * @param MetadataCollector|null $metadataCollector
-     * @param array                  $typesMapping
-     * @param array                  $bundlesMapping
+     * Constructor.
+     *
+     * @param Connection              $connection
+     * @param ClassMetadataCollection $classMetadataCollection
      */
-    public function __construct($connection, $metadataCollector, $typesMapping, $bundlesMapping)
+    public function __construct($connection, $classMetadataCollection)
     {
         $this->connection = $connection;
-        $this->metadataCollector = $metadataCollector;
-        $this->typesMapping = $typesMapping;
-        $this->bundlesMapping = $bundlesMapping;
+        $this->classMetadataCollection = $classMetadataCollection;
     }
 
     /**
@@ -150,7 +139,7 @@ class Manager
      */
     public function getDocumentMapping($document)
     {
-        foreach ($this->bundlesMapping as $repository) {
+        foreach ($this->getBundlesMapping() as $repository) {
             if (in_array(get_class($document), [$repository['namespace'], $repository['proxyNamespace']])) {
                 return $repository;
             }
@@ -164,15 +153,7 @@ class Manager
      */
     public function getBundlesMapping()
     {
-        return $this->bundlesMapping;
-    }
-
-    /**
-     * @return MetadataCollector
-     */
-    public function getMetadataCollector()
-    {
-        return $this->metadataCollector;
+        return $this->classMetadataCollection->getMetadata();
     }
 
     /**
@@ -180,7 +161,7 @@ class Manager
      */
     public function getTypesMapping()
     {
-        return $this->typesMapping;
+        return $this->classMetadataCollection->getTypesMap();
     }
 
     /**
@@ -192,9 +173,9 @@ class Manager
      */
     private function checkRepositoryType($type)
     {
-        if (!array_key_exists($type, $this->bundlesMapping)) {
+        if (!array_key_exists($type, $this->getBundlesMapping())) {
             $exceptionMessage = "Undefined repository {$type}, valid repositories are: " .
-                join(', ', array_keys($this->bundlesMapping)) . '.';
+                join(', ', array_keys($this->getBundlesMapping())) . '.';
             throw new \InvalidArgumentException($exceptionMessage);
         }
     }

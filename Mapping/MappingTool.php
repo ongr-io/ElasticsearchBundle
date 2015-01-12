@@ -28,10 +28,10 @@ class MappingTool
 
     /**
      * Compares two mappings and returns true if changes detected.
-     * 
+     *
      * @param array $oldMapping
      * @param array $newMapping
-     * 
+     *
      * @return bool
      */
     public function checkMapping($oldMapping, $newMapping)
@@ -90,7 +90,7 @@ class MappingTool
 
     /**
      * Returns type names with new properties which has been updated.
-     * 
+     *
      * @return array
      */
     public function getUpdatedTypes()
