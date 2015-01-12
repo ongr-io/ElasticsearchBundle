@@ -267,7 +267,9 @@ class MetadataCollector
         $getters = [];
 
         foreach ($properties as $property => $params) {
-            if (array_key_exists($property, $this->aliases[$reflectionClass->getName()])) {
+            if (isset($this->aliases[$reflectionClass->getName()]) &&
+                array_key_exists($property, $this->aliases[$reflectionClass->getName()])
+            ) {
                 list($setters[$property], $getters[$property]) = $this
                     ->getInfoAboutProperty(
                         $params,
