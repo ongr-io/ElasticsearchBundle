@@ -26,17 +26,27 @@ class ElasticsearchDataCollector implements DataCollectorInterface
     const UNDEFINED_ROUTE = 'undefined_route';
 
     /**
-     * @var Logger[]
+     * @var Logger[] Watched loggers.
      */
     private $loggers = [];
 
     /**
-     * @var array
+     * @var array Queries array.
      */
-    private $data = [];
+    private $queries = [];
 
     /**
-     * @var array
+     * @var int Query count.
+     */
+    private $count = 0;
+
+    /**
+     * @var float Time all queries took.
+     */
+    private $time = .0;
+
+    /**
+     * @var array Registered managers.
      */
     private $managers = [];
 
@@ -73,7 +83,7 @@ class ElasticsearchDataCollector implements DataCollectorInterface
      */
     public function getTime()
     {
-        return round($this->data['time'] * 100, 2);
+        return round($this->time * 100, 2);
     }
 
     /**
@@ -83,7 +93,7 @@ class ElasticsearchDataCollector implements DataCollectorInterface
      */
     public function getQueryCount()
     {
-        return $this->data['count'];
+        return $this->count;
     }
 
     /**
@@ -99,7 +109,7 @@ class ElasticsearchDataCollector implements DataCollectorInterface
      */
     public function getQueries()
     {
-        return $this->data['queries'];
+        return $this->queries;
     }
 
     /**
@@ -140,12 +150,12 @@ class ElasticsearchDataCollector implements DataCollectorInterface
      */
     private function handleRecords($route, $records)
     {
-        $this->incQueryCount(count($records) / 2);
+        $this->count += count($records) / 2;
         $queryBody = '';
         foreach ($records as $record) {
             // First record will never have context.
             if (!empty($record['context'])) {
-                $this->addTime($record['context']['duration']);
+                $this->time += $record['context']['duration'];
                 $this->addQuery($route, $record, $queryBody);
             } else {
                 $position = strpos($record['message'], '-d');
@@ -155,22 +165,8 @@ class ElasticsearchDataCollector implements DataCollectorInterface
     }
 
     /**
-     * Adds time to total.
-     *
-     * @param float $time
-     */
-    private function addTime($time)
-    {
-        if (!isset($this->data['time'])) {
-            $this->data['time'] = .0;
-        }
-
-        $this->data['time'] += $time;
-    }
-
-    /**
      * Adds query to collected data array.
-     * 
+     *
      * @param string $route
      * @param array  $record
      * @param string $queryBody
@@ -178,7 +174,7 @@ class ElasticsearchDataCollector implements DataCollectorInterface
     private function addQuery($route, $record, $queryBody)
     {
         parse_str(parse_url($record['context']['uri'], PHP_URL_QUERY), $httpParameters);
-        $this->data['queries'][$route][] = array_merge(
+        $this->queries[$route][] = array_merge(
             [
                 'body' => JsonFormatter::prettify(trim($queryBody, "'")),
                 'method' => $record['context']['method'],
@@ -187,20 +183,6 @@ class ElasticsearchDataCollector implements DataCollectorInterface
             ],
             array_diff_key(parse_url($record['context']['uri']), array_flip(['query']))
         );
-    }
-
-    /**
-     * Increases query count.
-     *
-     * @param int $count
-     */
-    private function incQueryCount($count = 1)
-    {
-        if (!isset($this->data['count'])) {
-            $this->data['count'] = 0;
-        }
-
-        $this->data['count'] += $count;
     }
 
     /**
