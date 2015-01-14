@@ -91,6 +91,7 @@ class DocumentParser
                 $parent = null;
             }
             $type = $this->getDocumentType($reflectionClass, $class);
+            $repositoryClass = $this->getDocumentRepositoryClass($reflectionClass, $class);
             $inherit = $this->getInheritedProperties($reflectionClass);
 
             $properties = $this->getProperties(
@@ -113,6 +114,7 @@ class DocumentParser
                         '_ttl' => $class->ttl,
                     ],
                     'aliases' => $this->getAliases($reflectionClass),
+                    'repositoryClass' => $repositoryClass,
                 ],
             ];
         }
@@ -254,6 +256,25 @@ class DocumentParser
     private function getDocumentType(\ReflectionClass $reflectionClass, Document $document)
     {
         return strtolower(empty($document->type) ? $reflectionClass->getShortName() : $document->type);
+    }
+
+    /**
+     * Returns document repositoryClass
+     *
+     * @param \ReflectionClass $reflectionClass
+     * @param Document         $document
+     *
+     * @return string
+     */
+    private function getDocumentRepositoryClass(\ReflectionClass $reflectionClass, Document $document)
+    {
+        $className = $document->repositoryClass;
+
+        if ($className !== null && strpos($className, '\\') === false && strlen($reflectionClass->getNamespaceName()) > 0) {
+            return $reflectionClass->getNamespaceName() . '\\' . $className;
+        }
+
+        return $className;
     }
 
     /**

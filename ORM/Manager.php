@@ -86,6 +86,14 @@ class Manager
      */
     private function createRepository(array $types)
     {
+        foreach ($types as $type) {
+            if (array_key_exists($type, $this->getBundlesMapping())) {
+                if ($repositoryClass = $this->getBundlesMapping()[$type]['repositoryClass']) {
+                    return new $repositoryClass($this, $types);
+                }
+            }
+        }
+
         return new Repository($this, $types);
     }
 
