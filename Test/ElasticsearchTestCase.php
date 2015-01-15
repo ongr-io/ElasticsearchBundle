@@ -36,10 +36,44 @@ abstract class ElasticsearchTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
+    public function runTest()
+    {
+        if ($this->getNumberOfRetries() < 1) {
+            return parent::runTest();
+        }
+
+        foreach (range(1, $this->getNumberOfRetries()) as $try) {
+            try {
+                return parent::runTest();
+            } catch (\PHPUnit_Framework_SkippedTestError $e) {
+                throw $e;
+            } catch (\PHPUnit_Framework_IncompleteTestError $e) {
+                throw $e;
+            } catch (\Exception $e) {
+                // Try more.
+            }
+        }
+
+        throw $e;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function setUp()
     {
         $this->getContainer();
         $this->getManager();
+    }
+
+    /**
+     * Returns number of retries tests should execute.
+     *
+     * @return int
+     */
+    protected function getNumberOfRetries()
+    {
+        return 3;
     }
 
     /**
