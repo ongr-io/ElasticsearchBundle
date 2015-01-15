@@ -13,11 +13,15 @@ install:
   - "echo 'script.disable_dynamic: false' | sudo tee -a /etc/elasticsearch/elasticsearch.yml"
   - "echo 'index.warmer.enabled: true' | sudo tee -a /etc/elasticsearch/elasticsearch.yml"
   - sudo service elasticsearch restart
+  - sudo pip install -q sphinx
+  - wget -q -O conf.py https://raw.githubusercontent.com/ongr-io/docs-aggregator/master/source/conf-travis.py
 before_script:
   - composer install
 script:
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
+  - sphinx-build -nWq -b html -c . Resources/doc _build/html
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && wget --post-data="" -q -O /dev/null http://readthedocs.org/build/ongr'
