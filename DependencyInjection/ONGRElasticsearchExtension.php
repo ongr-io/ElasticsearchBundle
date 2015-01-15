@@ -43,6 +43,12 @@ class ONGRElasticsearchExtension extends Extension
         $this->addMedadataCollectorDefinition($config, $container);
         $this->addDocumentsResource($config, $container);
         $this->addDataCollectorDefinition($config, $container);
+
+        $this->addClassesToCompile(
+            [
+                'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
+            ]
+        );
     }
 
     /**

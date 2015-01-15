@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -68,6 +69,10 @@ class Converter
 
         /** @var DocumentInterface $object */
         $object = $this->assignArrayToObject($data, new $metadata['proxyNamespace'](), $metadata['aliases']);
+
+        if ($object instanceof ProxyInterface) {
+            $object->__setInitialized(true);
+        }
 
         isset($rawData['_id']) && $object->setId($rawData['_id']);
         isset($rawData['_score']) && $object->setScore($rawData['_score']);
