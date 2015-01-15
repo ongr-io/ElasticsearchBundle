@@ -8,7 +8,7 @@ Elasticsearch Bundle was created in order to serve the need for professional [el
 
 Technical goodies: 
 
-- Provides nestable and DSL query builder to be executed by type repotitory services.
+- Provides nestable and DSL query builder to be executed by type repository services.
 - Uses Doctrine-like document / entities document-object mapping using annotations.
 - Query results iterators are provided for your convenience.
 - Registers console commands for index and types management and data import / export.
@@ -24,9 +24,9 @@ Technical goodies:
 
 ## Documentation
 
-Documentation for ONGRElasticsearchBundle can be found in `Resources/doc/index.md`
+Documentation for ONGRElasticsearchBundle can be found in `Resources/doc/index.rst`
 
-[Read the documentation (master)](https://github.com/ongr-io/ElasticsearchBundle/blob/master/Resources/doc/index.md)
+[Read the documentation (master)](https://github.com/ongr-io/ElasticsearchBundle/blob/master/Resources/doc/index.rst)
 
 ## License
 
