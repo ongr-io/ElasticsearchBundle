@@ -1,5 +1,5 @@
-Getting Started With ONGRElasticsearchBundle
-============================================
+ONGR Elasticsearch Bundle
+=========================
 
 Installation
 ------------
