@@ -24,9 +24,7 @@ class ValueAggregation
     private $rawData;
 
     /**
-     * Extracted aggregation value.
-     *
-     * @var array
+     * @var array Extracted aggregation value.
      */
     private $value;
 

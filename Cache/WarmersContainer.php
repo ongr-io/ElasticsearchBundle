@@ -25,7 +25,7 @@ class WarmersContainer
 
     /**
      * Warms up the cache.
-     * 
+     *
      * @return array
      */
     public function getWarmers()
@@ -54,7 +54,7 @@ class WarmersContainer
 
     /**
      * Adds cache warmer.
-     * 
+     *
      * @param WarmerInterface $warmer
      */
     public function addWarmer(WarmerInterface $warmer)

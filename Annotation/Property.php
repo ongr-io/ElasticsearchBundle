@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Required;
+
 /**
  * Annotation used to check mapping type during the parsing process.
  *
@@ -74,16 +76,12 @@ final class Property
     public $fielddata;
 
     /**
-     * Object name to map.
-     *
-     * @var string
+     * @var string Object name to map.
      */
     public $objectName;
 
     /**
-     * OneToOne or OneToMany.
-     *
-     * @var bool
+     * @var bool OneToOne or OneToMany.
      */
     public $multiple;
 

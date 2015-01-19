@@ -28,7 +28,7 @@ final class Inherit
      * Constructor.
      *
      * @param array $values
-     * 
+     *
      * @throws \InvalidArgumentException
      */
     public function __constructor(array $values)

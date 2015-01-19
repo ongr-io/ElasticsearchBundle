@@ -22,9 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class ElasticsearchTestCase extends WebTestCase
 {
     /**
-     * Holds used managers.
-     *
-     * @var Manager[]
+     * @var Manager[] Holds used managers.
      */
     private $managers = [];
 

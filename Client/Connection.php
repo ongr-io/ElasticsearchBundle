@@ -216,7 +216,7 @@ class Connection
 
     /**
      * Creates fresh elasticsearch index.
-     * 
+     *
      * @param bool $putWarmers Determines if warmers should be loaded.
      */
     public function createIndex($putWarmers = false)
@@ -240,7 +240,7 @@ class Connection
 
     /**
      * Tries to drop and create fresh elasticsearch index.
-     * 
+     *
      * @param bool $putWarmers Determines if warmers should be loaded.
      */
     public function dropAndCreateIndex($putWarmers = false)

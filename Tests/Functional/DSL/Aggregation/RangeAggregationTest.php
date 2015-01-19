@@ -61,7 +61,7 @@ class RangeAggregationTest extends ElasticsearchTestCase
             'range' => [
                 'from' => '10',
                 'to' => 20,
-            ]
+            ],
         ];
 
         $result = [
@@ -100,8 +100,8 @@ class RangeAggregationTest extends ElasticsearchTestCase
                 'range' => [
                     'from' => 15,
                     'to' => null,
-                ]
-            ]
+                ],
+            ],
         ];
 
         $result = [

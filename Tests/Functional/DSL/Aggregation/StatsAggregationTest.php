@@ -66,7 +66,7 @@ class StatsAggregationTest extends ElasticsearchTestCase
                 'max' => 32,
                 'sum' => 57.55,
                 'avg' => 19.18,
-            ]
+            ],
         ];
 
         $this->assertArrayHasKey('aggregations', $results);

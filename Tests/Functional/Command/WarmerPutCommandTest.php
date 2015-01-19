@@ -34,10 +34,10 @@ class WarmerPutCommandTest extends ElasticsearchTestCase
 
     /**
      * Tests if warmers are being put into index if command is executed.
-     * 
+     *
      * @param string $expected
      * @param array  $arguments
-     * 
+     *
      * @dataProvider getTestExecuteData
      */
     public function testExecute($expected, $arguments = [])

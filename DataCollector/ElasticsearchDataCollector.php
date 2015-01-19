@@ -170,7 +170,7 @@ class ElasticsearchDataCollector implements DataCollectorInterface
 
     /**
      * Adds query to collected data array.
-     * 
+     *
      * @param string $route
      * @param array  $record
      * @param string $queryBody

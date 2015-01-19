@@ -141,8 +141,8 @@ class ConnectionTest extends ElasticsearchTestCase
                         'index' => 'not_analyzed',
                     ],
                     'title' => ['type' => 'string'],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 

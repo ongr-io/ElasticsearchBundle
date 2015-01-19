@@ -76,12 +76,16 @@ class IndexExportCommandTest extends ElasticsearchTestCase
             [
                 '_id' => '1',
                 '_type' => 'foocontent',
-                '_source' => ['header' => 'test_1']
+                '_source' => [
+                    'header' => 'test_1',
+                ],
             ],
             [
                 '_id' => '2',
                 '_type' => 'foocontent',
-                '_source' => ['header' => 'test_2']
+                '_source' => [
+                    'header' => 'test_2',
+                ],
             ],
             [
                 '_id' => '1',
@@ -89,7 +93,7 @@ class IndexExportCommandTest extends ElasticsearchTestCase
                 '_source' => [
                     'title' => 'foo',
                     'price' => 10.45,
-                ]
+                ],
             ],
             [
                 '_id' => '2',
@@ -97,7 +101,7 @@ class IndexExportCommandTest extends ElasticsearchTestCase
                 '_source' => [
                     'title' => 'bar',
                     'price' => 32,
-                ]
+                ],
             ],
         ];
 

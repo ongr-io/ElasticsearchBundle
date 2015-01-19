@@ -17,7 +17,7 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Data provider for testPrettify.
-     * 
+     *
      * @return array
      */
     public function getTestPrettifyData()
@@ -27,7 +27,7 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
         // Case #0: simple.
         $data0 = [
             'total' => 0,
-            'raw' => []
+            'raw' => [],
         ];
         $pretty0 = $this->getFileContents('formatted_0.json');
         $out[] = [
@@ -45,15 +45,15 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
                 ['_id' => 1],
                 ['_id' => 2],
             ],
-            [
+            0 => [
                 'level1' => [
                     'level2' => [
                         'level3' => [
-                            'level4' => []
-                        ]
-                    ]
-                ]
-            ]
+                            'level4' => [],
+                        ],
+                    ],
+                ],
+            ],
         ];
         $pretty1 = $this->getFileContents('formatted_1.json');
         $out[] = [
@@ -87,7 +87,7 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Returns file contents from fixture.
-     * 
+     *
      * @param string $filename
      *
      * @return string

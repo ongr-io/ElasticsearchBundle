@@ -117,7 +117,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
     {
         $hits = new HitsAggregationIterator(
             [
-                'hits' => [[]]
+                'hits' => [[]],
             ],
             null
         );

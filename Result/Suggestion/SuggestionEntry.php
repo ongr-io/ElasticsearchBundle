@@ -39,10 +39,10 @@ class SuggestionEntry
     /**
      * Constructor.
      *
-     * @param string          $text
-     * @param int             $offset
-     * @param int             $length
-     * @param OptionIterator  $options
+     * @param string         $text
+     * @param int            $offset
+     * @param int            $length
+     * @param OptionIterator $options
      */
     public function __construct($text, $offset, $length, OptionIterator $options)
     {
