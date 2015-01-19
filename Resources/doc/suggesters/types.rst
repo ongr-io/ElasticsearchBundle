@@ -1,7 +1,7 @@
 Suggester Types
 ===============
 
-There are four basic types of suggesters objects to be used in a query and they have different parameters:
+There are four basic types of suggester objects to be used in a query and they have different parameters:
 
 `Term`_, suggests terms based on edit distance.
 

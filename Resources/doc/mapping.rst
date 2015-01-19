@@ -6,7 +6,7 @@ Elasticsearch bundle requires mapping definition in order for it to work with in
 Mapping configuration
 ---------------------
 
-Here’s an example of configuration with tokenizer’s, filters and analyzer’s definitions:
+Here's an example of configuration containing the definitions of tokenizer, filter and analyzer:
 
 .. code:: yaml
 
@@ -54,7 +54,7 @@ Here’s an example of configuration with tokenizer’s, filters and analyzer’
 
 In the settings node user may choose a specific configuration for that connection with index settings.
 
-In managers configuration ``mappings`` is optional. If there are no mappings defined it will look up through all bundles ``Document`` folders. If ``debug`` is set to true, profiler and logging will be enabled (by default it is set to false).
+In managers configuration ``mappings`` is optional. If there are no mappings defined, it will look up through all ``Document`` folders contained in a bundle. If ``debug`` is set to true, profiler and logging will be enabled (by default it is set to false).
 
 Document mapping
 ----------------
@@ -101,12 +101,9 @@ Document mapping
 .. important:: be sure your @ES\\Document class’es implements DocumentInterface, otherwise it will not work.
 
 ``@ES\Document(type="content")`` Annotation defines that this class will represent elasticsearch type.
-``type`` parameter is for type name. This param is optional, if there will be no param set Elasticsearch bundle will create type with lowercase class name. Additional params:
+``type`` parameter is for type name. This parameter is optional, if there will be no parameter set Elasticsearch bundle will create type with lowercase class name. Additional parameters:
 
--  **TTL (time to live)** - ``_ttl={"enabled": true, "default": "1d"}``
-   param with which you can enable documents to have time to live and
-   set default time interval. After time runs out document deletes
-   itself automatically.
+-  **TTL (time to live)** - ``_ttl={"enabled": true, "default": "1d"}`` parameter with which you can enable documents to have time to live and set default time interval. After time runs out document deletes itself automatically.
 
 .. note:: You can use time units specified in `elasticsearch documentation`_. ESB parses it if needed, e.g. for type mapping update.
 

@@ -1,7 +1,7 @@
 Document Inheritance
 ====================
 
-By default annotations inherit all properties that have been defined in parent document. We have implemented ``Skip`` and ``Inherit`` annotations to make inheritance to be less of a headache. E. g.:
+By default annotations inherit all properties that have been defined in parent document. We have implemented ``Skip`` and ``Inherit`` annotations to make inheritance to be less of a headache. E.g.:
 
 .. code:: php
 

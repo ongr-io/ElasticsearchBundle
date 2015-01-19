@@ -4,7 +4,7 @@ Usage
 Manager
 -------
 
-Elasticsearch bundle to communicate with elasticsearch index, it provides managers that could handle several indexes.
+Elasticsearch bundle provides managers able to handle several indexes to communicate with elasticsearch.
 
 Once you define managers in your ``config.yml`` file, you can use them in controllers and grab them from DI container via ``es.manager`` (alias for ``es.manager.default``). If you define more than one manager, for example called customer, then it will be accessible via ``es.manager.customer``.
 

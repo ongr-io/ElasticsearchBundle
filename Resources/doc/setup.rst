@@ -69,17 +69,16 @@ Add minimal configuration for Elasticsearch bundle.
 
 .. note:: This is the basic example only, for more information about mapping, please take a look at `<mapping>`_ chapter.
 
-In this particular example, we defined connections and managers, as you noticed it could be combined together.
+In this particular example we defined connections and managers. As you noticed it could be combined together.
 
-Every connection handles Elasticsearch index and contains its client. In the configuration tree connections array defines hosts, index name and settings.
+Every connection handles Elasticsearch index and contains it's client. In the configuration tree connections array defines hosts, index name and settings.
 
-Node ``managers`` configures document managers that are responsible for working with types (executing queries, persisting documents, etc). Managers can be accessed through service tag ``es.manager`` (alias of ``es.manager.default``), ``es.manager.customer`` (as of customer manager).
+Node ``managers`` configures document managers that are responsible for working with types (executing queries, persisting documents, etc). Managers can be accessed through service tag. E.g. ``es.manager`` (alias of ``es.manager.default``), ``es.manager.customer`` (defined ``customer`` manager).
 
 Step 4: Define your types as ``Documents``
 ------------------------------------------
 
-Elasticsearch bundle to communicate with elasticsearch uses ``Document``
-objects. Now create a ``Customer`` class in the ``Document`` folder.
+Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch objects. Now create a ``Customer`` class in the ``Document`` folder.
 
 .. note:: Folder name could be changed in config settings
 
@@ -122,7 +121,7 @@ objects. Now create a ``Customer`` class in the ``Document`` folder.
 Step 6: Create index
 --------------------
 
-Elastic search bundle provides several ``CLI`` commands. One of it is for creating index, run command in your terminal:
+Elasticsearch bundle provides several ``CLI`` commands. One of them is for creating index, run command in your terminal:
 
 .. code:: bash
 
@@ -133,7 +132,6 @@ Elastic search bundle provides several ``CLI`` commands. One of it is for creati
 Step 7: Use your new bundle
 ---------------------------
 
-Usage documentation for the Elasticsearch bundle is available
-`here <usage.rst>`_.
+Usage documentation for the Elasticsearch bundle is available in `<usage.rst>`_.
 
 .. _Composer: https://getcomposer.org

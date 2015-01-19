@@ -41,8 +41,7 @@ Starting with a more simple example, completion suggester. Completion suggester 
         public $completionSuggesting;
     }
 
-As you can see we need to define an object for it, so we can store and retrieve its data objectively.
-In order to do that, we can just use a trait already prepared in ESB.
+As you can see we need to define an object for it so we can store and retrieve its' data objectively. To do that, we can just use a trait already prepared in ESB.
 
 .. code:: php
 
@@ -67,7 +66,7 @@ In order to do that, we can just use a trait already prepared in ESB.
 Context
 ~~~~~~~
 
-Context suggester does not only use the `parameters`_ used in completion suggester, but you must also set additional context mapping, into which you’ll store your data. To do this, ESB uses special annotation objects.
+Context suggester not only uses the `parameters`_ used in completion suggester, but also additional context mapping, into which you’ll store your data. To do this, ESB uses special annotation objects.
 
 Here’s an example:
 
@@ -109,7 +108,7 @@ and for category context can be found
 
 As you can see it also requires object to store data, here’s an example.
 
-.. note:: Note context parameter name must be ``context`` in order for this mapping to work!
+.. note:: Context parameter name must be context in order for this mapping to work!
 
 .. code:: php
 
@@ -138,7 +137,7 @@ As you can see it also requires object to store data, here’s an example.
         private $context;
     }
 
-And you also need to define your context object, for example.
+And you also need to define your context object, for example:
 
 .. note:: type doesn't matter here.
 
