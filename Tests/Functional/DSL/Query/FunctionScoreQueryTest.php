@@ -67,7 +67,7 @@ class FunctionScoreQueryTest extends ElasticsearchTestCase
                 'field' => 'price',
                 'factor' => 1.2,
                 'modifier' => 'sqrt',
-            ]
+            ],
         ];
 
         $functionScoreQuery = new FunctionScoreQuery(new MatchAllQuery(), $functions, ['boost' => 1]);

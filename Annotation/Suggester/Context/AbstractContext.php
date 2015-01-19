@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation\Suggester\Context;
 
+use Doctrine\Common\Annotations\Annotation\Required;
+
 /**
  * Abstract class for various context annotations.
  */

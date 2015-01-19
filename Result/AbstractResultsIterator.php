@@ -17,16 +17,12 @@ namespace ONGR\ElasticsearchBundle\Result;
 abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayAccess
 {
     /**
-     * Raw documents.
-     *
-     * @var array
+     * @var array Raw documents.
      */
     protected $documents = [];
 
     /**
-     * Documents casted to objects cache.
-     *
-     * @var array
+     * @var array Documents casted to objects cache.
      */
     protected $converted = [];
 

@@ -20,16 +20,16 @@ interface WarmerInterface
 {
     /**
      * Warms up search using warmers api.
-     * 
+     *
      * @param Search $search
-     * 
+     *
      * @link http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-warmers.html
      */
     public function warmUp(Search $search);
 
     /**
      * Returns warmer name.
-     * 
+     *
      * @return string
      */
     public function getName();

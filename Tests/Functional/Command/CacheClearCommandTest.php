@@ -39,7 +39,7 @@ class CacheClearCommandTest extends ElasticsearchTestCase
 
     /**
      * Tests if exception is thown when no connection is found.
-     * 
+     *
      * @expectedException \RuntimeException
      */
     public function testExecuteException()
@@ -58,7 +58,7 @@ class CacheClearCommandTest extends ElasticsearchTestCase
 
     /**
      * Returns cache clear command instance.
-     * 
+     *
      * @return CacheClearCommand
      */
     private function getCommand()

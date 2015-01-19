@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation\Suggester;
 
+use Doctrine\Common\Annotations\Annotation\Required;
+
 /**
  * Abstract class for various suggester annotations.
  */

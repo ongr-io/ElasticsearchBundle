@@ -95,7 +95,7 @@ class RepositoryTest extends ElasticsearchTestCase
                 'title' => [
                     'foo',
                     'bar',
-                ]
+                ],
             ],
         ];
 
@@ -106,7 +106,7 @@ class RepositoryTest extends ElasticsearchTestCase
                 'title' => [
                     'foo',
                     'bar',
-                ]
+                ],
             ],
             ['title' => 'asc'],
         ];
@@ -397,7 +397,7 @@ class RepositoryTest extends ElasticsearchTestCase
                         new TermOption('distributed', 0.0, 1),
                     ],
                 ],
-            ]
+            ],
         ];
 
         $suggesters = [new Term('description', 'distibutd')];
@@ -412,7 +412,7 @@ class RepositoryTest extends ElasticsearchTestCase
                     'length' => '9',
                     'options' => [new SimpleOption('lorem adip', 0.0)],
                 ],
-            ]
+            ],
         ];
 
         $suggesters = [new Phrase('description', 'Lorm adip')];
@@ -433,7 +433,7 @@ class RepositoryTest extends ElasticsearchTestCase
                     'length' => '4',
                     'options' => [new CompletionOption('Lorem ipsum', 0.0, ['test' => true])],
                 ],
-            ]
+            ],
         ];
 
         $out[] = ['suggesters' => $context, 'expectedResults' => $expectedResults];
@@ -448,7 +448,7 @@ class RepositoryTest extends ElasticsearchTestCase
                     'length' => '5',
                     'options' => [new SimpleOption('Lorem ipsum', 0.0, null)],
                 ],
-            ]
+            ],
         ];
 
         $out[] = ['suggesters' => $completion, 'expectedResults' => $expectedResults];
@@ -500,7 +500,7 @@ class RepositoryTest extends ElasticsearchTestCase
                     'length' => '5',
                     'options' => [new SimpleOption('Lorem ipsum', 0.0, null)],
                 ],
-            ]
+            ],
         ];
         $out[] = ['suggesters' => $suggesters, 'expectedResults' => $expectedResults];
 

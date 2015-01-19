@@ -28,7 +28,7 @@ class JsonReader implements \Countable, \Iterator
     private $filename;
 
     /**
-     * @var resource A file system pointer resource
+     * @var resource A file system pointer resource.
      */
     private $handle;
 

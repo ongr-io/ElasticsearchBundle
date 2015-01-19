@@ -26,7 +26,7 @@ use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 class SearchTest extends ElasticsearchTestCase
 {
     /**
-     * @var Repository $repository
+     * @var Repository
      */
     protected $repository;
 

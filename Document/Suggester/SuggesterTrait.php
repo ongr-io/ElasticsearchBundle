@@ -17,36 +17,28 @@ namespace ONGR\ElasticsearchBundle\Document\Suggester;
 trait SuggesterTrait
 {
     /**
-     * Input to store.
-     *
-     * @var string[]|string
+     * @var string[]|string Input to store.
      *
      * @ES\Property(type="string", name="input")
      */
     private $input;
 
     /**
-     * String to return.
-     *
-     * @var string
+     * @var string String to return.
      *
      * @ES\Property(type="string", name="output")
      */
     private $output;
 
     /**
-     * Object to be returned in the suggest option.
-     *
-     * @var object
+     * @var object Object to be returned in the suggest option.
      *
      * @ES\Property(type="object", name="payload")
      */
     private $payload;
 
     /**
-     * Weight used to rank suggestions.
-     *
-     * @var int|string
+     * @var int|string Weight used to rank suggestions.
      *
      * @ES\Property(type="string", name="weight")
      */

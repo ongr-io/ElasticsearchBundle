@@ -31,7 +31,7 @@ class JsonWriter
     private $filename;
 
     /**
-     * @var resource A file system pointer resource
+     * @var resource A file system pointer resource.
      */
     private $handle;
 
@@ -41,7 +41,7 @@ class JsonWriter
     private $metadata;
 
     /**
-     * @var int Current record number
+     * @var int Current record number.
      */
     private $currentPosition = 0;
 
