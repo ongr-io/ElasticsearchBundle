@@ -50,9 +50,9 @@ class Repository
     private $types = [];
 
     /**
-     * @var array|null
+     * @var array
      */
-    private $fieldsCache = null;
+    private $fieldsCache = [];
 
     /**
      * Constructor.
@@ -75,9 +75,9 @@ class Repository
         $types = [];
         $meta = $this->manager->getBundlesMapping();
 
-        foreach ($meta as $namespace => $repository) {
+        foreach ($meta as $namespace => $metadata) {
             if (empty($this->namespaces) || in_array($namespace, $this->namespaces)) {
-                $types[] = $repository['type'];
+                $types[] = $metadata->getType();
             }
         }
 
@@ -261,18 +261,24 @@ class Repository
         if (empty($fields)) {
             return $searchArray;
         }
+
         // Checks if cache is loaded.
-        if ($this->fieldsCache === null) {
-            $mapping = $this->manager->getBundlesMapping();
-            $this->fieldsCache = [];
-            foreach (array_intersect_key($mapping, array_flip($this->namespaces)) as $ns => $properties) {
-                $this->fieldsCache = array_unique(array_merge($this->fieldsCache, array_keys($properties['fields'])));
+        if (empty($this->fieldsCache)) {
+            foreach ($this->manager->getBundlesMapping($this->namespaces) as $ns => $properties) {
+                $this->fieldsCache = array_unique(
+                    array_merge(
+                        $this->fieldsCache,
+                        array_keys($properties->getFields())
+                    )
+                );
             }
         }
+
         // Adds cached fields to fields array.
         foreach (array_intersect($this->fieldsCache, $fields) as $field) {
             $searchArray['fields'][] = $field;
         }
+
         // Removes duplicates and checks if its needed to add _source.
         if (!empty($searchArray['fields'])) {
             $searchArray['fields'] = array_unique($searchArray['fields']);

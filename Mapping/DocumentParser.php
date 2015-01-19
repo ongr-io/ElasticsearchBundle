@@ -73,7 +73,7 @@ class DocumentParser
      *
      * @param \ReflectionClass $reflectionClass
      *
-     * @return array
+     * @return ClassMetadata|null
      */
     public function parse(\ReflectionClass $reflectionClass)
     {
@@ -113,6 +113,10 @@ class DocumentParser
                         '_ttl' => $class->ttl,
                     ],
                     'aliases' => $this->getAliases($reflectionClass),
+                    'objects' => $this->getObjects(),
+                    'proxyNamespace' => ProxyFactory::getProxyNamespace($reflectionClass, true),
+                    'namespace' => $reflectionClass->getName(),
+                    'class' => $reflectionClass->getShortName(),
                 ],
             ];
         }
@@ -135,6 +139,16 @@ class DocumentParser
         }
 
         return $type;
+    }
+
+    /**
+     * Returns objects used in document.
+     *
+     * @return array
+     */
+    private function getObjects()
+    {
+        return array_keys($this->objects);
     }
 
     /**
@@ -313,27 +327,26 @@ class DocumentParser
      */
     private function getObjectMapping($objectName)
     {
-        if (!empty($this->objects[strtolower($objectName)])) {
-            $objMap = $this->objects[strtolower($objectName)];
-        } else {
-            $objMap = $this->getRelationMapping($objectName);
-            $this->objects[strtolower($objectName)] = $objMap;
+        $namespace = $this->finder->getNamespace($objectName);
+
+        if (array_key_exists($namespace, $this->objects)) {
+            return $this->objects[$namespace];
         }
 
-        return $objMap;
+        $this->objects[$namespace] = $this->getRelationMapping(new \ReflectionClass($namespace));
+
+        return $this->objects[$namespace];
     }
 
     /**
-     * Returns relation mapping by its namespace.
+     * Returns relation mapping by its reflection.
      *
-     * @param string $namespace
+     * @param \ReflectionClass $reflectionClass
      *
      * @return array|null
      */
-    private function getRelationMapping($namespace)
+    private function getRelationMapping(\ReflectionClass $reflectionClass)
     {
-        $reflectionClass = new \ReflectionClass($this->finder->getNamespace($namespace));
-
         if ($this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Object')
             || $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Nested')
         ) {

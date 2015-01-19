@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -64,11 +65,13 @@ class Converter
             throw new \LogicException("Got document of unknown type '{$rawData['_type']}'.");
         }
 
+        /** @var ClassMetadata $metadata */
         $metadata = $this->bundlesMapping[$this->typesMapping[$rawData['_type']]];
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
 
+        $proxy = $metadata->getProxyNamespace();
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject($data, new $metadata['proxyNamespace'](), $metadata['aliases']);
+        $object = $this->assignArrayToObject($data, new $proxy(), $metadata->getAliases());
 
         if ($object instanceof ProxyInterface) {
             $object->__setInitialized(true);
@@ -91,14 +94,13 @@ class Converter
      * @param array  $aliases
      *
      * @return object
-     *
-     * @throws \LogicException
      */
     public function assignArrayToObject(array $array, $object, array $aliases)
     {
         foreach ($array as $name => $value) {
             if (!array_key_exists($name, $aliases)) {
-                throw new \LogicException("Undefined property '{$name}'.");
+                $object->{$name} = $value;
+                continue;
             }
 
             if ($aliases[$name]['type'] === 'date') {

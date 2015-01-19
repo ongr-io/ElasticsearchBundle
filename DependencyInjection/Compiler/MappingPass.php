@@ -62,17 +62,17 @@ class MappingPass implements CompilerPassInterface
             if ($managerName === 'default') {
                 $container->setAlias('es.manager', 'es.manager.default');
             }
-
-            foreach ($bundlesMetadata as $repo => $data) {
+            /** @var Definition $data */
+            foreach ($bundlesMetadata as $bundle => $data) {
                 $repository = new Definition(
                     'ONGR\ElasticsearchBundle\ORM\Repository',
                     [
                         $managerDefinition,
-                        [$repo],
+                        [$bundle],
                     ]
                 );
                 $container->setDefinition(
-                    sprintf('es.manager.%s.%s', $managerName, strtolower($data['class'])),
+                    sprintf('es.manager.%s.%s', $managerName, substr($bundle, strpos($bundle, ':') + 1)),
                     $repository
                 );
             }
@@ -94,9 +94,11 @@ class MappingPass implements CompilerPassInterface
         /** @var MetadataCollector $collector */
         $collector = $container->get('es.metadata_collector');
         foreach ($settings['mappings'] as $bundle) {
-            foreach ($collector->getBundleMapping($bundle) as $typeName => $typeParams) {
-                $typeParams['type'] = $typeName;
-                $out[$bundle . ':' . $typeParams['class']] = $typeParams;
+            foreach ($collector->getBundleMapping($bundle) as $type => $metadata) {
+                $metadataDefinition = new Definition('ONGR\ElasticsearchBundle\Mapping\ClassMetadata');
+                $metadataDefinition->addArgument([$type => $metadata]);
+
+                $out[$bundle . ':' . $metadata['class']] = $metadataDefinition;
             }
         }
 

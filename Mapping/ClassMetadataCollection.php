@@ -17,7 +17,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 class ClassMetadataCollection
 {
     /**
-     * @var array
+     * @var ClassMetadata[]
      */
     private $metadata;
 
@@ -27,9 +27,7 @@ class ClassMetadataCollection
     private $typesMap = [];
 
     /**
-     * Constructor.
-     *
-     * @param array $metadata
+     * @param ClassMetadata[] $metadata
      */
     public function __construct(array $metadata)
     {
@@ -53,10 +51,16 @@ class ClassMetadataCollection
     /**
      * Returns metadata.
      *
+     * @param array $bundles
+     *
      * @return array
      */
-    public function getMetadata()
+    public function getMetadata($bundles = [])
     {
+        if (!empty($bundles)) {
+            return array_intersect_key($this->metadata, array_flip($bundles));
+        }
+
         return $this->metadata;
     }
 
@@ -70,7 +74,7 @@ class ClassMetadataCollection
         $out = [];
 
         foreach ($this->metadata as $bundle => $data) {
-            $out[$data['type']] = $bundle;
+            $out[$data->getType()] = $bundle;
         }
 
         return $out;

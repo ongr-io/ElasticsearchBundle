@@ -149,11 +149,15 @@ class Manager
     }
 
     /**
+     * Returns bundles mapping.
+     *
+     * @param array $bundles
+     *
      * @return array
      */
-    public function getBundlesMapping()
+    public function getBundlesMapping($bundles = [])
     {
-        return $this->classMetadataCollection->getMetadata();
+        return $this->classMetadataCollection->getMetadata($bundles);
     }
 
     /**
