@@ -53,7 +53,7 @@ class ClassMetadataCollection
      *
      * @param array $bundles
      *
-     * @return array
+     * @return ClassMetadata[]
      */
     public function getMetadata($bundles = [])
     {

@@ -73,12 +73,10 @@ class Repository
     protected function getTypes()
     {
         $types = [];
-        $meta = $this->manager->getBundlesMapping();
+        $meta = $this->manager->getBundlesMapping($this->namespaces);
 
         foreach ($meta as $namespace => $metadata) {
-            if (empty($this->namespaces) || in_array($namespace, $this->namespaces)) {
-                $types[] = $metadata->getType();
-            }
+            $types[] = $metadata->getType();
         }
 
         return $types;
@@ -383,7 +381,7 @@ class Repository
             );
         }
 
-        $class = $this->manager->getBundlesMapping()[reset($this->namespaces)]['proxyNamespace'];
+        $class = $this->manager->getBundlesMapping()[reset($this->namespaces)]->getProxyNamespace();
 
         return new $class();
     }

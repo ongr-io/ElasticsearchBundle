@@ -310,6 +310,11 @@ class DocumentParser
                 $maps['fields'] = $fieldsMap;
             }
 
+            // Suggestions.
+            if ($type instanceof AbstractSuggesterProperty) {
+                $this->getObjectMapping($type->objectName);
+            }
+
             $mapping[$type->name] = $maps;
         }
 

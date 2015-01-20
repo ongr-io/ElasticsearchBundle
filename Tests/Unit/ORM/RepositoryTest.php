@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
 
 use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
@@ -25,22 +26,18 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $out = [];
 
-        $bundlesMapping = [
-            'AcmeTestBundle:Product' => [
-                'type' => 'product',
-                'fields' => [],
-            ],
-            'AcmeTestBundle:Content' => [
-                'type' => 'content',
-                'fields' => [],
-            ],
-        ];
-
         // Case #0 Single type.
         $out[] = [
             ['AcmeTestBundle:Product'],
             ['product'],
-            $bundlesMapping,
+            [
+                'AcmeTestBundle:Product' => $this->getClassMetadata(
+                    [
+                        'type' => 'product',
+                        'fields' => [],
+                    ]
+                ),
+            ],
         ];
 
         // Case #1 Multi types.
@@ -50,7 +47,20 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
                 'product',
                 'content',
             ],
-            $bundlesMapping,
+            [
+                'AcmeTestBundle:Product' => $this->getClassMetadata(
+                    [
+                        'type' => 'product',
+                        'fields' => [],
+                    ]
+                ),
+                'AcmeTestBundle:Content' => $this->getClassMetadata(
+                    [
+                        'type' => 'content',
+                        'fields' => [],
+                    ]
+                ),
+            ],
         ];
 
         return $out;
@@ -92,5 +102,28 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $results = $repository->execute($search, Repository::RESULTS_RAW);
 
         $this->assertEquals(['test'], $results);
+    }
+
+    /**
+     * Returns class metadata mock.
+     *
+     * @param array $options
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|ClassMetadata
+     */
+    private function getClassMetadata(array $options)
+    {
+        $mock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        foreach ($options as $name => $value) {
+            $mock
+                ->expects($this->any())
+                ->method('get' . ucfirst($name))
+                ->will($this->returnValue($value));
+        }
+
+        return $mock;
     }
 }

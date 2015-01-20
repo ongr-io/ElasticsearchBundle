@@ -239,8 +239,8 @@ class Converter
         $class = get_class($document);
 
         foreach ($this->bundlesMapping as $repository) {
-            if (in_array($class, [$repository['namespace'], $repository['proxyNamespace']])) {
-                return $repository['aliases'];
+            if (in_array($class, [$repository->getNamespace(), $repository->getProxyNamespace()])) {
+                return $repository->getAliases();
             }
         }
 
