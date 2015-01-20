@@ -17,25 +17,25 @@ Technical goodies:
 - Registers console commands for index and types management and data import / export.
 - Designed in an extensible way for all your custom needs.
 
-image:: https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master
+.. image:: https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master
     :target: https://travis-ci.org/ongr-io/ElasticsearchBundle
 
-image:: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/quality-score.png?b=master
+.. image:: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/quality-score.png?b=master
     :target: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master
 
-image:: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/coverage.png?b=master
+.. image:: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/coverage.png?b=master
    :target: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master
 
-image:: https://poser.pugx.org/ongr/elasticsearch-bundle/downloads.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/downloads.svg
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
-image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable.svg
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
-image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/unstable.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/unstable.svg
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
-image:: https://poser.pugx.org/ongr/elasticsearch-bundle/license.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/license.svg
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
 Documentation
