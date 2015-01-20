@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use Doctrine\Common\Util\Inflector;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface;
@@ -68,8 +67,8 @@ class Converter
         /** @var ClassMetadata $metadata */
         $metadata = $this->bundlesMapping[$this->typesMapping[$rawData['_type']]];
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
-
         $proxy = $metadata->getProxyNamespace();
+
         /** @var DocumentInterface $object */
         $object = $this->assignArrayToObject($data, new $proxy(), $metadata->getAliases());
 
@@ -77,11 +76,7 @@ class Converter
             $object->__setInitialized(true);
         }
 
-        isset($rawData['_id']) && $object->setId($rawData['_id']);
-        isset($rawData['_score']) && $object->setScore($rawData['_score']);
-        isset($rawData['highlight']) && $object->setHighlight(new DocumentHighlight($rawData['highlight']));
-        isset($rawData['fields']['_parent']) && $object->setParent($rawData['fields']['_parent']);
-        isset($rawData['fields']['_ttl']) && $object->setTtl($rawData['fields']['_ttl']);
+        $this->setObjectFields($object, $rawData, ['_id', '_score', 'highlight', 'fields _parent', 'fields _ttl']);
 
         return $object;
     }
@@ -142,17 +137,7 @@ class Converter
         $array = [];
         // Special fields.
         if ($object instanceof DocumentInterface) {
-            if ($object->getId()) {
-                $array['_id'] = $object->getId();
-            }
-
-            if ($object->hasParent()) {
-                $array['_parent'] = $object->getParent();
-            }
-
-            if ($object->getTtl()) {
-                $array['_ttl'] = $object->getTtl();
-            }
+            $this->setArrayFields($array, $object, ['_id', '_parent', '_ttl']);
         }
 
         // Variable $name defined in client.
@@ -184,6 +169,78 @@ class Converter
         }
 
         return $array;
+    }
+
+    /**
+     * Sets fields into object from raw response.
+     *
+     * @param object $object      Object to set values to.
+     * @param array  $rawResponse Array to take values from.
+     * @param array  $fields      Values to take.
+     */
+    private function setObjectFields($object, $rawResponse, $fields = [])
+    {
+        foreach ($fields as $field) {
+            $path = $this->getPropertyPathToAccess($field);
+            $value = $this->getPropertyAccessor()->getValue($rawResponse, $path);
+
+            if ($value !== null) {
+                if (strpos($path, 'highlight') !== false) {
+                    $value = new DocumentHighlight($value);
+                }
+
+                $this->getPropertyAccessor()->setValue($object, $this->getPropertyToAccess($field), $value);
+            }
+        }
+    }
+
+    /**
+     * Sets fields into array from object.
+     *
+     * @param array  $array  To set values to.
+     * @param object $object Take values from.
+     * @param array  $fields Fields to set.
+     */
+    private function setArrayFields(&$array, $object, $fields = [])
+    {
+        foreach ($fields as $field) {
+            $value = $this->getPropertyAccessor()->getValue($object, $this->getPropertyToAccess($field));
+
+            if ($value !== null) {
+                $this
+                    ->getPropertyAccessor()
+                    ->setValue($array, $this->getPropertyPathToAccess($field), $value);
+            }
+        }
+    }
+
+    /**
+     * Returns property to access for object used by property accessor.
+     *
+     * @param string $field
+     *
+     * @return string
+     */
+    private function getPropertyToAccess($field)
+    {
+        $deep = strpos($field, ' ');
+        if ($deep !== false) {
+            $field = substr($field, $deep + 1);
+        }
+
+        return $field;
+    }
+
+    /**
+     * Returns property to access for array used by property accessor.
+     *
+     * @param string $field
+     *
+     * @return string
+     */
+    private function getPropertyPathToAccess($field)
+    {
+        return '[' . str_replace(' ', '][', $field) . ']';
     }
 
     /**
