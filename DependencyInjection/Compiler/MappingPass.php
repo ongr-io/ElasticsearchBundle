@@ -188,26 +188,24 @@ class MappingPass implements CompilerPassInterface
         $mappings = [];
         /** @var MetadataCollector $metadataCollector */
         $metadataCollector = $container->get('es.metadata_collector');
+        $paths = [];
 
         if (!empty($manager['mappings'])) {
-            foreach ($manager['mappings'] as $bundle) {
-                $mappings = array_replace_recursive(
-                    $mappings,
-                    $metadataCollector->getMapping($bundle)
-                );
-            }
+            $bundles = $manager['mappings'];
         } else {
-            foreach ($container->getParameter('kernel.bundles') as $bundle => $path) {
-                $mappings = array_replace_recursive(
-                    $mappings,
-                    $metadataCollector->getMapping($bundle)
-                );
-            }
+            $bundles = array_keys($container->getParameter('kernel.bundles'));
         }
 
-        $paths = $metadataCollector->getProxyPaths();
+        foreach ($bundles as $bundle) {
+            $mappings = array_replace_recursive(
+                $mappings,
+                $metadataCollector->getMapping($bundle)
+            );
+            $paths = array_replace($paths, $metadataCollector->getProxyPaths());
+        }
+
         if ($container->hasParameter('es.proxy_paths')) {
-            $paths = array_merge($paths, $container->getParameter('es.proxy_paths'));
+            $paths = array_replace($paths, $container->getParameter('es.proxy_paths'));
         }
         $container->setParameter('es.proxy_paths', $paths);
 
