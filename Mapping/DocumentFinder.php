@@ -49,7 +49,7 @@ class DocumentFinder
             list($bundle, $document) = explode(':', $namespace);
             $bundle = $this->getBundle($bundle);
             $namespace = substr($bundle, 0, strrpos($bundle, '\\')) . '\\' .
-                $this->getDocumentDir() . '\\' . $document;
+                str_replace('/', '\\', $this->getDocumentDir()) . '\\' . $document;
         }
 
         return $namespace;
