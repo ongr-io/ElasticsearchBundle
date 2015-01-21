@@ -47,7 +47,7 @@ class DocumentFinder
     {
         if (strpos($namespace, ':') !== false) {
             list($bundle, $document) = explode(':', $namespace);
-            $bundle = $this->getBundle($bundle);
+            $bundle = $this->getBundleClass($bundle);
             $namespace = substr($bundle, 0, strrpos($bundle, '\\')) . '\\' .
                 $this->getDocumentDir() . '\\' . $document;
         }
@@ -56,7 +56,7 @@ class DocumentFinder
     }
 
     /**
-     * Returns bundle namesapce else throws an exception.
+     * Returns bundle class namesapce else throws an exception.
      *
      * @param string $name
      *
@@ -64,7 +64,7 @@ class DocumentFinder
      *
      * @throws \LogicException
      */
-    public function getBundle($name)
+    public function getBundleClass($name)
     {
         if (array_key_exists($name, $this->bundles)) {
             return $this->bundles[$name];
@@ -102,7 +102,7 @@ class DocumentFinder
      */
     public function getBundleDocumentPaths($bundle)
     {
-        $bundleReflection = new \ReflectionClass($this->getBundle($bundle));
+        $bundleReflection = new \ReflectionClass($this->getBundleClass($bundle));
 
         return glob(
             dirname($bundleReflection->getFileName()) .

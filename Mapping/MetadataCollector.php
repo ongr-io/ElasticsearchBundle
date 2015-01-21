@@ -53,8 +53,6 @@ class MetadataCollector
     private $documents = [];
 
     /**
-     * Constructor.
-     *
      * @param DocumentFinder $finder      For finding documents.
      * @param DocumentParser $parser      For reading document annotations.
      * @param ProxyLoader    $proxyLoader For creating proxy documents.
@@ -99,7 +97,7 @@ class MetadataCollector
      *
      * @param string $namespace Document namespace.
      *
-     * @return array|null
+     * @return ClassMetadata|null
      */
     public function getMappingByNamespace($namespace)
     {
@@ -111,7 +109,7 @@ class MetadataCollector
      *
      * @param DocumentInterface $document
      *
-     * @return array|null
+     * @return ClassMetadata|null
      */
     public function getDocumentMapping(DocumentInterface $document)
     {
@@ -125,13 +123,13 @@ class MetadataCollector
      *
      * @param string $bundle
      *
-     * @return array
+     * @return ClassMetadata[]
      */
     public function getBundleMapping($bundle)
     {
         $mappings = [];
         $this->proxyPaths = [];
-        $bundleNamespace = $this->finder->getBundle($bundle);
+        $bundleNamespace = $this->finder->getBundleClass($bundle);
         $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
         $documentDir = str_replace('/', '\\', $this->finder->getDocumentDir());
 
@@ -172,27 +170,19 @@ class MetadataCollector
     private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
     {
         $mapping = $this->parser->parse($reflectionClass);
-        $proxy = null;
-
-        if (!$reflectionClass->isAbstract()
-            && !$reflectionClass->isInterface()
-            && !$reflectionClass->isFinal()
-            && !$reflectionClass->isTrait()
-        ) {
-            $proxy = ProxyFactory::getProxyNamespace($reflectionClass);
-            $this->proxyPaths[$proxy] = $this->proxyLoader->load($reflectionClass);
-        }
 
         if ($mapping !== null) {
-            $key = key($mapping);
-            $mapping[$key] = array_merge(
-                $mapping[$key],
-                [
-                    'proxyNamespace' => $proxy,
-                    'namespace' => $reflectionClass->getNamespaceName() . '\\' . $reflectionClass->getShortName(),
-                    'class' => $reflectionClass->getShortName(),
-                ]
-            );
+            $type = key($mapping);
+            $this->proxyPaths[$mapping[$type]['proxyNamespace']] = $this->proxyLoader->load($reflectionClass);
+
+            foreach ($mapping[$type]['objects'] as $namespace) {
+                $objectReflection = new \ReflectionClass($namespace);
+                $proxyObject = ProxyFactory::getProxyNamespace($objectReflection);
+
+                if (!array_key_exists($proxyObject, $this->proxyPaths)) {
+                    $this->proxyPaths[$proxyObject] = $this->proxyLoader->load($objectReflection);
+                }
+            }
         }
 
         return $mapping;

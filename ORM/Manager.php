@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
@@ -38,8 +39,6 @@ class Manager
     private $converter;
 
     /**
-     * Constructor.
-     *
      * @param Connection              $connection
      * @param ClassMetadataCollection $classMetadataCollection
      */
@@ -101,7 +100,7 @@ class Manager
 
         $this->getConnection()->bulk(
             'index',
-            $mapping['type'],
+            $mapping->getType(),
             $document
         );
     }
@@ -135,12 +134,12 @@ class Manager
      *
      * @param object $document
      *
-     * @return array|null
+     * @return ClassMetadata|null
      */
     public function getDocumentMapping($document)
     {
         foreach ($this->getBundlesMapping() as $repository) {
-            if (in_array(get_class($document), [$repository['namespace'], $repository['proxyNamespace']])) {
+            if (in_array(get_class($document), [$repository->getNamespace(), $repository->getProxyNamespace()])) {
                 return $repository;
             }
         }
@@ -149,11 +148,15 @@ class Manager
     }
 
     /**
-     * @return array
+     * Returns bundles mapping.
+     *
+     * @param array $repositories
+     *
+     * @return ClassMetadata[]
      */
-    public function getBundlesMapping()
+    public function getBundlesMapping($repositories = [])
     {
-        return $this->classMetadataCollection->getMetadata();
+        return $this->classMetadataCollection->getMetadata($repositories);
     }
 
     /**

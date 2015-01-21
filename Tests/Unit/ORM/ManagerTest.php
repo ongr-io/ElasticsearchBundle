@@ -34,9 +34,22 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRepositories()
     {
+        $classMetadataMock = $this
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $classMetadataMock
+            ->expects($this->any())
+            ->method('getType');
+
         $manager = new Manager(
             null,
-            $this->getClassMetadataCollectionMock(['rep1' => ['type' => ''], 'rep2' => ['type' => '']])
+            $this->getClassMetadataCollectionMock(
+                [
+                    'rep1' => $classMetadataMock,
+                    'rep2' => clone $classMetadataMock,
+                ]
+            )
         );
         $types = [
             'rep1',
