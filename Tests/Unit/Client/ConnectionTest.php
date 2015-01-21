@@ -210,6 +210,124 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Data provider for testing setting multiple mapping.
+     *
+     * @return array
+     */
+    public function getTestSetMultipleMappingData()
+    {
+        return [
+            // Case #0: no cleanup.
+            [
+                [
+                    'type1' => [
+                        'properties' => [],
+                    ],
+                    'type2' => [
+                        'properties' => [],
+                    ],
+                ],
+                ['type1', 'type2', 'oldType1'],
+                false,
+            ],
+            // Case #1: with cleanup.
+            [
+                [
+                    'type1' => [
+                        'properties' => [],
+                    ],
+                ],
+                ['type1'],
+                true,
+            ],
+        ];
+    }
+
+    /**
+     * Tests setting multiple mapping.
+     *
+     * @param array $mapping
+     * @param array $expectedTypes
+     * @param bool  $cleanUp
+     *
+     * @dataProvider getTestSetMultipleMappingData
+     */
+    public function testSetMultipleMapping($mapping, $expectedTypes, $cleanUp)
+    {
+        $connection = new Connection(
+            $this->getClient(),
+            [
+                'body' => [
+                    'mappings' => [
+                        'oldType1' => [
+                            'properties' => [],
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $connection->setMultipleMapping($mapping, $cleanUp);
+
+        foreach ($expectedTypes as $expectedType) {
+            $map = $connection->getMapping($expectedType);
+            $this->assertArrayHasKey('properties', $map);
+        }
+    }
+
+    /**
+     * Tests getMappingFromIndex method when returns empty array.
+     */
+    public function testGetMappingFromIndex()
+    {
+        $indices = $this
+            ->getMockBuilder('Elasticsearch\Namespaces\IndicesNamespace')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $indices
+            ->expects($this->once())
+            ->method('getMapping')
+            ->with(['index' => 'foo'])
+            ->will($this->returnValue(['baz' => []]));
+
+        $client = $this
+            ->getMockBuilder('Elasticsearch\Client')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('indices')
+            ->will($this->returnValue($indices));
+
+        $connection = new Connection($client, ['index' => 'foo']);
+        $this->assertEmpty($connection->getMappingFromIndex());
+    }
+
+    /**
+     * Tests if exception is thrown with undefined action.
+     *
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Unknown warmers action
+     */
+    public function testWarmersActionException()
+    {
+        $warmerMock = $this->getMock('ONGR\ElasticsearchBundle\Cache\WarmerInterface');
+        $warmerMock
+            ->expects($this->once())
+            ->method('warmUp');
+        $warmerMock
+            ->expects($this->once())
+            ->method('getName');
+
+        $connection = new Connection($this->getClient(), []);
+        $connection->addWarmer($warmerMock);
+
+        $object = new \ReflectionObject($connection);
+        $method = $object->getMethod('warmersAction');
+        $method->setAccessible(true);
+        $method->invokeArgs($connection, ['undefined']);
+    }
+
+    /**
      * Returns client instance with indices namespace set.
      *
      * @param array $options
