@@ -39,8 +39,6 @@ class Manager
     private $converter;
 
     /**
-     * Constructor.
-     *
      * @param Connection              $connection
      * @param ClassMetadataCollection $classMetadataCollection
      */
@@ -152,13 +150,13 @@ class Manager
     /**
      * Returns bundles mapping.
      *
-     * @param array $bundles
+     * @param array $repositories
      *
      * @return ClassMetadata[]
      */
-    public function getBundlesMapping($bundles = [])
+    public function getBundlesMapping($repositories = [])
     {
-        return $this->classMetadataCollection->getMetadata($bundles);
+        return $this->classMetadataCollection->getMetadata($repositories);
     }
 
     /**

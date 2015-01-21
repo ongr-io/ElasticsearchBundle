@@ -51,14 +51,14 @@ class ClassMetadataCollection
     /**
      * Returns metadata.
      *
-     * @param array $bundles
+     * @param array $repositories
      *
      * @return ClassMetadata[]
      */
-    public function getMetadata($bundles = [])
+    public function getMetadata($repositories = [])
     {
-        if (!empty($bundles)) {
-            return array_intersect_key($this->metadata, array_flip($bundles));
+        if (!empty($repositories)) {
+            return array_intersect_key($this->metadata, array_flip($repositories));
         }
 
         return $this->metadata;
@@ -73,8 +73,8 @@ class ClassMetadataCollection
     {
         $out = [];
 
-        foreach ($this->metadata as $bundle => $data) {
-            $out[$data->getType()] = $bundle;
+        foreach ($this->metadata as $repository => $data) {
+            $out[$data->getType()] = $repository;
         }
 
         return $out;
