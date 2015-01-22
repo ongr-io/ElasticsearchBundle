@@ -65,7 +65,7 @@ class HighlightTest extends ElasticsearchTestCase
         $highlight = new Highlight();
         $highlight->setTag('tag')
             ->setOrder('score')
-            ->addField((new Field('title'))->setForceSource(true));
+            ->add((new Field('title'))->setForceSource(true));
 
         $results = $this->executeHighlight($repository, $termQuery, $highlight);
 
@@ -96,7 +96,7 @@ class HighlightTest extends ElasticsearchTestCase
         $highlight->setTag('tag', 'class')
             ->setFragmentSize(12)
             ->setNumberOfFragments(1)
-            ->addField((new Field('title'))->setForceSource(true));
+            ->add((new Field('title'))->setForceSource(true));
 
         $results = $this->executeHighlight($repository, $termQuery, $highlight);
 
@@ -132,11 +132,12 @@ class HighlightTest extends ElasticsearchTestCase
 
         $highlight = new Highlight();
         $highlight->setTagsSchema('styled')
-            ->addField((new Field('title'))->setForceSource(true))
-            ->addField(new Field('title'))
-            ->addField(new Field('description'))
-            ->removeField('description')
-            ->setHighlighterType(Highlight::TYPE_PLAIN);
+            ->add((new Field('title'))->setForceSource(true))
+            ->add(new Field('title'))
+            ->add(new Field('description'));
+
+        $highlight->remove('description');
+        $highlight->setHighlighterType(Highlight::TYPE_PLAIN);
 
         $results = $this->executeHighlight($repository, $termQuery, $highlight);
         $product = $results['hits']['hits'][0];
@@ -162,7 +163,7 @@ class HighlightTest extends ElasticsearchTestCase
         $highlight = new Highlight();
         $highlight->setTag('tag')
             ->setOrder('score')
-            ->addField((new Field('title'))->setForceSource(true));
+            ->add((new Field('title'))->setForceSource(true));
 
         $result = $this->executeHighlight($repository, $termQuery, $highlight, Repository::RESULTS_OBJECT)[0];
         $this->assertStringStartsWith('<tag>foo</tag>', $result->getHighLight()['title']);
