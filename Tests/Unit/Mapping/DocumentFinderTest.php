@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 class DocumentFinderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Data provider for getNamespace tests.
+     * Data provider for testDocumentDir tests.
      *
      * @return array $out
      */
@@ -27,19 +27,39 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
         // Case #0 one level directory.
         $out[] = [
             'Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product'
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
+            'AcmeTestBundle:Product',
+            true,
         ];
 
         // Case #1 two levels directory, `\` directory separator.
         $out[] = [
             'Document\Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product'
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
+            'AcmeTestBundle:Product',
         ];
 
         // Case #2 two levels directory, `/` directory separator.
         $out[] = [
             'Document/Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product'
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
+            'AcmeTestBundle:Product',
+        ];
+
+        // Case #3 two levels directory, `/` directory separator.
+        $out[] = [
+            'Document/Test',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
+            'AcmeTestBundle:Item',
+            true,
+        ];
+
+        // Case #4 two levels directory, `\` directory separator.
+        $out[] = [
+            'Document\Test',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
+            'AcmeTestBundle:Item',
+            true,
         ];
 
         return $out;
@@ -48,17 +68,22 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     /**
      * Tests if correct namespace is returned.
      *
-     * @param $documentDir
-     * @param $expectedNamespace
+     * @param string  $documentDir
+     * @param string  $expectedNamespace
+     * @param string  $document
+     * @param boolean $testPath
      *
      * @dataProvider getTestData
      */
-    public function testGetNamespace($documentDir, $expectedNamespace)
+    public function testDocumentDir($documentDir, $expectedNamespace, $document, $testPath = false)
     {
         $finder = new DocumentFinder($this->getBundles());
         $finder->setDocumentDir($documentDir);
 
-        $this->assertEquals($expectedNamespace, $finder->getNamespace('AcmeTestBundle:Product'));
+        $this->assertEquals($expectedNamespace, $finder->getNamespace($document));
+        if ($testPath) {
+            $this->assertGreaterThan(0, count($finder->getBundleDocumentPaths('AcmeTestBundle')));
+        }
     }
 
     /**

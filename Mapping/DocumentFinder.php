@@ -106,7 +106,7 @@ class DocumentFinder
 
         return glob(
             dirname($bundleReflection->getFileName()) .
-            DIRECTORY_SEPARATOR . $this->getDocumentDir() .
+            DIRECTORY_SEPARATOR . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $this->getDocumentDir()) .
             DIRECTORY_SEPARATOR . '*.php'
         );
     }
