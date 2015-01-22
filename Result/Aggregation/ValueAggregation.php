@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\Aggregations;
+use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
 
 /**
  * This is the class for plain aggregation result with nested aggregations support.
@@ -57,7 +57,7 @@ class ValueAggregation
         $this->value = [];
 
         foreach ($this->rawData as $key => $value) {
-            if (strpos($key, Aggregations::PREFIX) !== 0) {
+            if (strpos($key, AbstractAggregation::PREFIX) !== 0) {
                 $this->value[$key] = $value;
                 // Clear memory.
                 unset($this->rawData[$key]);
@@ -81,8 +81,8 @@ class ValueAggregation
         $data = [];
 
         foreach ($this->rawData as $key => $value) {
-            if (strpos($key, Aggregations::PREFIX) === 0) {
-                $realKey = substr($key, strlen(Aggregations::PREFIX));
+            if (strpos($key, AbstractAggregation::PREFIX) === 0) {
+                $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
                 $data[$realKey] = $value;
                 // Clear memory.
                 unset($this->rawData[$key]);
