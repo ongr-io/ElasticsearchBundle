@@ -12,6 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DataCollector;
 
 use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
+use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
+use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,6 +108,40 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
     }
 
     /**
+     * Tests if term query is correct.
+     */
+    public function testGetTermQuery()
+    {
+        $manager = $this->getManager();
+
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $search = $repository
+            ->createSearch()
+            ->addQuery(new TermQuery('title', 'pizza'));
+        $result = $repository->execute($search, Repository::RESULTS_OBJECT);
+
+        $queries = $this->getCollector()->getQueries();
+        $lastQuery = end($queries[ElasticsearchDataCollector::UNDEFINED_ROUTE]);
+        $time = $lastQuery['time'];
+        unset($lastQuery['time']);
+
+        $this->assertGreaterThan(0.0, $time, 'Time should be greater than 0');
+        $this->assertEquals(
+            [
+                'body' => $this->getFileContents('collector_body_0.json'),
+                'method' => 'POST',
+                'path' => '/ongr-elasticsearch-bundle-test/product/_search',
+                'host' => '127.0.0.1',
+                'httpParameters' => [],
+                'scheme' => 'http',
+                'port' => 9200,
+            ],
+            $lastQuery,
+            'Logged data did not match expected data.'
+        );
+    }
+
+    /**
      * @return ElasticsearchDataCollector
      */
     private function getCollector()
@@ -114,5 +150,23 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
         $collector->collect(new Request(), new Response());
 
         return $collector;
+    }
+
+    /**
+     * Returns file contents from fixture.
+     *
+     * @param string $filename
+     *
+     * @return string
+     */
+    private function getFileContents($filename)
+    {
+        $contents = file_get_contents(__DIR__ . '/../../app/fixture/Json/' . $filename);
+        // Checks for new line at the end of file.
+        if (substr($contents, -1) == "\n") {
+            $contents = substr($contents, 0, -1);
+        }
+
+        return $contents;
     }
 }

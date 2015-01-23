@@ -19,7 +19,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Property
+final class Property extends AbstractProperty
 {
     /**
      * @var string
@@ -48,12 +48,12 @@ final class Property
     /**
      * @var string
      */
-    public $index_analyzer;
+    public $indexAnalyzer;
 
     /**
      * @var string
      */
-    public $search_analyzer;
+    public $searchAnalyzer;
 
     /**
      * @var float
@@ -84,17 +84,4 @@ final class Property
      * @var bool OneToOne or OneToMany.
      */
     public $multiple;
-
-    /**
-     * Filters object null values and name.
-     *
-     * @return array
-     */
-    public function filter()
-    {
-        return array_diff_key(
-            array_filter(get_object_vars($this)),
-            array_flip(['name', 'objectName', 'multiple'])
-        );
-    }
 }

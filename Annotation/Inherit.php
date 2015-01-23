@@ -31,7 +31,7 @@ final class Inherit
      *
      * @throws \InvalidArgumentException
      */
-    public function __constructor(array $values)
+    public function __construct(array $values)
     {
         if (is_string($values['value'])) {
             $this->value = [$values['value']];

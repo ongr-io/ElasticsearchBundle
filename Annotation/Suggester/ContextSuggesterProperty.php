@@ -20,13 +20,13 @@ class ContextSuggesterProperty extends AbstractSuggesterProperty
     /**
      * {@inheritdoc}
      */
-    public function filter($extraExclude = [])
+    public function dump(array $exclude = [])
     {
-        $data = parent::filter(['context']);
+        $data = parent::dump(['context']);
 
         /** @var AbstractContext $singleContext */
         foreach ($this->context as $singleContext) {
-            $data['context'][$singleContext->name] = $singleContext->filter();
+            $data['context'][$singleContext->name] = $singleContext->dump();
         }
 
         return $data;

@@ -1,0 +1,20 @@
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "title": {
+                            "value": "pizza"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "fields": [
+        "_parent",
+        "_ttl",
+        "_source"
+    ]
+}
