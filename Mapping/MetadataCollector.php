@@ -80,12 +80,14 @@ class MetadataCollector
 
         $mappings = [];
         foreach ($this->getBundleMapping($bundle) as $type => $mapping) {
-            $mappings[$type] = array_filter(
-                array_merge(
-                    ['properties' => $mapping['properties']],
-                    $mapping['fields']
-                )
-            );
+            if (!empty($mapping['properties'])) {
+                $mappings[$type] = array_filter(
+                    array_merge(
+                        ['properties' => $mapping['properties']],
+                        $mapping['fields']
+                    )
+                );
+            }
         }
         $this->documents[$bundle] = $mappings;
 
@@ -142,7 +144,7 @@ class MetadataCollector
             );
 
             $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-            if ($documentMapping !== null && !empty(reset($documentMapping)['properties'])) {
+            if ($documentMapping !== null) {
                 $mappings = array_replace_recursive($mappings, $documentMapping);
             }
         }

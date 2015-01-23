@@ -34,7 +34,20 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $metadataCollectorMock->expects($this->any())->method('getMapping')->willReturn(['connection' => 'bar']);
+        $metadataCollectorMock->expects($this->any())->method('getMapping')->willReturn(
+            [
+                'AcmeTestBundle:Bar' => [
+                    'properties' => [],
+                ],
+                'AcmeTestBundle:Product' => [
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                        ],
+                    ],
+                ],
+            ]
+        );
         $metadataCollectorMock->expects($this->any())->method('getBundleMapping')->willReturn([$bundleMappingData]);
         $metadataCollectorMock->expects($this->any())->method('getProxyPaths')->willReturn([]);
 
