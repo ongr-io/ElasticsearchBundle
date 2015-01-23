@@ -293,7 +293,7 @@ class DocumentParser
                 continue;
             }
 
-            $maps = $type->filter();
+            $maps = $type->dump();
 
             // Object.
             if (in_array($type->type, ['object', 'nested']) && !empty($type->objectName)) {
@@ -305,7 +305,7 @@ class DocumentParser
                 $fieldsMap = [];
                 /** @var MultiField $field */
                 foreach ($maps['fields'] as $field) {
-                    $fieldsMap[$field->name] = $field->filter();
+                    $fieldsMap[$field->name] = $field->dump();
                 }
                 $maps['fields'] = $fieldsMap;
             }

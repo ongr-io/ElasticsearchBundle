@@ -12,11 +12,12 @@
 namespace ONGR\ElasticsearchBundle\Annotation\Suggester;
 
 use Doctrine\Common\Annotations\Annotation\Required;
+use ONGR\ElasticsearchBundle\Annotation\AbstractProperty;
 
 /**
  * Abstract class for various suggester annotations.
  */
-abstract class AbstractSuggesterProperty
+abstract class AbstractSuggesterProperty extends AbstractProperty
 {
     /**
      * @var string
@@ -40,45 +41,30 @@ abstract class AbstractSuggesterProperty
     /**
      * @var string
      */
-    public $index_analyzer;
+    public $indexAnalyzer;
 
     /**
      * @var string
      */
-    public $search_analyzer;
+    public $searchAnalyzer;
 
     /**
      * @var int
      */
-    public $preserve_separators;
+    public $preserveSeparators;
 
     /**
      * @var bool
      */
-    public $preserve_position_increments;
+    public $preservePositionIncrements;
 
     /**
      * @var int
      */
-    public $max_input_length;
+    public $maxInputLength;
 
     /**
      * @var bool
      */
     public $payloads;
-
-    /**
-     * Returns required properties.
-     *
-     * @param array $extraExclude Extra object variables to exclude.
-     *
-     * @return array
-     */
-    public function filter($extraExclude = [])
-    {
-        return array_diff_key(
-            array_filter(get_object_vars($this)),
-            array_flip(array_merge(['name', 'objectName', 'classObjectName'], $extraExclude))
-        );
-    }
 }

@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\DataCollector;
 
 use Monolog\Logger;
+use ONGR\ElasticsearchBundle\Common\JsonFormatter;
 use ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler;
-use ONGR\ElasticsearchBundle\Service\JsonFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
@@ -174,9 +174,10 @@ class ElasticsearchDataCollector implements DataCollectorInterface
     private function addQuery($route, $record, $queryBody)
     {
         parse_str(parse_url($record['context']['uri'], PHP_URL_QUERY), $httpParameters);
+        $body = json_decode(trim($queryBody, "'"), true);
         $this->queries[$route][] = array_merge(
             [
-                'body' => JsonFormatter::prettify(trim($queryBody, "'")),
+                'body' => $body !== null ? json_encode($body, JSON_PRETTY_PRINT) : '',
                 'method' => $record['context']['method'],
                 'httpParameters' => $httpParameters,
                 'time' => $record['context']['duration'] * 100,
