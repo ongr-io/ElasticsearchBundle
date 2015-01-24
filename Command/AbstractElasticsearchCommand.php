@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Command;
 
+use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
@@ -29,7 +30,7 @@ abstract class AbstractElasticsearchCommand extends ContainerAwareCommand
             'manager',
             null,
             InputOption::VALUE_REQUIRED,
-            'Set connection to work with.',
+            'Manager name',
             'default'
         );
     }
@@ -44,40 +45,6 @@ abstract class AbstractElasticsearchCommand extends ContainerAwareCommand
     protected function getManager($name)
     {
         return $this->getContainer()->get($this->getManagerId($name));
-    }
-
-    /**
-     * Returns elasticsearch connection by name.
-     *
-     * @param string $name
-     *
-     * @return \ONGR\ElasticsearchBundle\Client\Connection
-     */
-    protected function getConnection($name)
-    {
-        return $this->getManager($this->getManagerNameByConnection($name))->getConnection();
-    }
-
-    /**
-     * Returns manager name which is using passed connection.
-     *
-     * @param string $name Connection name.
-     *
-     * @return string
-     *
-     * @throws \RuntimeException
-     */
-    private function getManagerNameByConnection($name)
-    {
-        foreach ($this->getContainer()->getParameter('es.managers') as $managerName => $params) {
-            if ($params['connection'] === $name) {
-                return $managerName;
-            }
-        }
-
-        throw new \RuntimeException(
-            sprintf('Connection named %s is not used by any manager. Check your configuration.', $name)
-        );
     }
 
     /**

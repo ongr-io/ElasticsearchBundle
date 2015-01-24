@@ -18,22 +18,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Symfony command for clearing elasticsearch cache.
  */
-class CacheClearCommand extends AbstractElasticsearchCommand
+class CacheClearCommand extends AbstractConnectionAwareCommand
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('es:cache:clear')
-            ->addOption(
-                'connection',
-                'c',
-                InputOption::VALUE_REQUIRED,
-                'Connection name to which clear cache.',
-                'default'
-            );
+            ->setDescription('Clears elasticsearch client cache.');
     }
 
     /**
@@ -44,7 +40,7 @@ class CacheClearCommand extends AbstractElasticsearchCommand
         $this->getConnection($input->getOption('connection'))->clearCache();
         $output->writeln(
             sprintf(
-                'Elasticsearch cache has been cleared for <info>%s</info> index.',
+                '<info>Elasticsearch index cache has been cleared for connection named</info> </comment>`%s`</comment>',
                 $input->getOption('connection')
             )
         );

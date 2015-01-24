@@ -33,7 +33,10 @@ class CacheClearCommandTest extends ElasticsearchTestCase
             ]
         );
 
-        $this->assertContains('Elasticsearch cache has been cleared for default index.', $tester->getDisplay());
+        $this->assertContains(
+            'Elasticsearch index cache has been cleared for connection named `default`',
+            $tester->getDisplay()
+        );
         $this->assertEquals(0, $tester->getStatusCode(), 'Status code should be zero.');
     }
 

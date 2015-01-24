@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * This command removes warmers from elasticsearch index.
  */
-class WarmerDeleteCommand extends AbstractWarmerCommand
+class WarmerDeleteCommand extends AbstractConnectionAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -27,7 +27,16 @@ class WarmerDeleteCommand extends AbstractWarmerCommand
     protected function configure()
     {
         parent::configure();
-        $this->setName('es:warmer:delete');
+
+        $this
+            ->setName('es:warmer:delete')
+            ->setDescription('Removes warmers from elasticsearch index.')
+            ->addArgument(
+                'names',
+                InputArgument::IS_ARRAY | InputArgument::OPTIONAL,
+                'Warmer names',
+                []
+            );
     }
 
     /**
@@ -36,16 +45,18 @@ class WarmerDeleteCommand extends AbstractWarmerCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $names = $input->getArgument('names');
-        $this->getConnection($input->getOption('connection'))->deleteWarmers($names);
+        $status = $this->getConnection($input->getOption('connection'))->deleteWarmers($names);
 
-        if (empty($names)) {
-            $message = 'All warmers have been deleted from <info>%s</info> index.';
+        if ($status === false) {
+            $message = '<info>There are no warmers registered for connection named<info> <comment>`%s`</comment>!';
+        } elseif (empty($names)) {
+            $message = '<info>All warmers have been deleted from connection named<info> <comment>`%s`</comment>';
         } else {
             $callback = function ($val) {
-                return '<info>' . $val . '</info>';
+                return '`' . $val . '`';
             };
-            $message = implode(', ', array_map($callback, $names))
-                . ' warmer(s) have been deleted from <info>%s</info> index.';
+            $message = '<comment>' . implode(', ', array_map($callback, $names)) . '</comment>'
+                . '<info> warmer(s) have been deleted from connection named</info> <comment>`%s`</comment>';
         }
 
         $output->writeln(sprintf($message, $input->getOption('connection')));
