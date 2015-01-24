@@ -1,5 +1,5 @@
-Elasticsearch Bundle
-====================
+ONGR Elasticsearch Bundle
+=========================
 
 Elasticsearch Bundle was created in order to serve the need for
 professional `elasticsearch <http://www.elasticsearch.org>`_ integration with enterprise level Symfony
@@ -41,10 +41,12 @@ Technical goodies:
 Documentation
 -------------
 
-Documentation for ONGRElasticsearchBundle can be found in
-``Resources/doc/index.rst``
+The online documentation of the bundle is in `ongr.readthedocs.org <http://ongr.readthedocs.org/en/latest/components/ElasticsearchBundle/Resources/doc/index.html>`_
 
-`Read the documentation (master) <https://github.com/ongr-io/ElasticsearchBundle/blob/master/Resources/doc/index.rst>`_
+For contribution to the documentation you can find it on `Resources/doc <https://github.com/ongr-io/ElasticsearchBundle/tree/master/Resources/doc>`_.
+
+**Warning**: documentation files are not rendering correctly in Github (rst format)
+and some content might be broken or hidden, make sure to read raw files.
 
 License
 -------

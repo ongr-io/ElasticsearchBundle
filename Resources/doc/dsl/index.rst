@@ -96,3 +96,16 @@ It will create query:
         }
       }
     }
+
+Available API's
+---------------
+
+.. toctree::
+            :maxdepth: 10
+            :titlesonly:
+
+            queries/index
+            filters/index
+            aggregations/index
+            highlights/index
+            suggesters/index
