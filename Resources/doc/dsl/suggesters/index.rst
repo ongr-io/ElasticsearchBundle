@@ -1,13 +1,21 @@
-Suggesters Usage
-================
+Suggesters
+==========
+
+.. toctree::
+    :maxdepth: 1
+    :titlesonly:
+    :hidden:
+
+    types
+    indexed_suggesters
 
 `Suggesters`_ are used to find a similar looking term using the provided text.
 
 You can use suggesters (in any query, as you would normally) or `suggester api`_.
 
-There are basically four types of suggesters: terms, phrase, completion and context. To find out available parameters for these suggesters check out `<types.rst>`_ section.
+There are basically four types of suggesters: terms, phrase, completion and context. To find out available parameters for these suggesters check out `types <types.html>`_ section.
 
-.. note:: Completion and context suggesters need indexed data in order to work. To find out how to setup indexing and mapping, check `<indexed_suggesters.rst>`_ section.
+.. note:: Completion and context suggesters need indexed data in order to work. To find out how to setup indexing and mapping, check `indexed suggesters <indexed_suggesters.html>`_ section.
 
 Using Suggesters in Any Query
 -----------------------------

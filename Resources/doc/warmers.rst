@@ -41,16 +41,16 @@ Then register as a service (in this example yaml):
         vendor_bundle.foo.warmer:
             class: Vendor\Bundle\Warmer\FooWarmer
             tags:
-                - { name: es.warmer, connection: "default,bar" }
+                - { name: es.warmer, manager: "default,bar" }
 
-As you notice we can define multiple connections to load warmers to,
+As you notice we can define multiple managers to load warmers to,
 just be sure they are separated by commas and all surrounded by
 quotations marks.
 
 Putting warmers into index.
 ---------------------------
 
-The easiet way to load warmers are through `<commands.rst>`_.
+The easiet way to load warmers are through `commands <commands.html#warmer-put>`_.
 
 Also we can load them manually. f.e.
 

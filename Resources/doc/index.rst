@@ -1,5 +1,5 @@
-ONGR Elasticsearch Bundle
-=========================
+Elasticsearch Bundle
+====================
 
 Installation
 ------------
@@ -24,7 +24,7 @@ Main things you should know while working with this bundle.
     commands
     mapping
     usage
-    searching
+    dsl/index
 
 Cookbook
 --------
@@ -33,9 +33,7 @@ More specific features and usages that you might need.
 
 .. toctree::
     :maxdepth: 1
-    :glob:
     :titlesonly:
     
     inheritance
-    suggesters/*
     warmers

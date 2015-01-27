@@ -12,7 +12,7 @@ Once you define managers in your ``config.yml`` file, you can use them in contro
 
     $manager = $this->get('es.manager');
 
-.. note:: More about how to setup managers can be found in `<mapping.rst>`_ chapter.
+.. note:: More about how to setup managers can be found in `mapping <mapping.html>`_ chapter.
 
 Create new document
 ~~~~~~~~~~~~~~~~~~~
@@ -90,4 +90,4 @@ There is also a findBy function which searches using Terms query:
     $repository = $manager->getRepository('AcmeTestBundle:Customer');
     $documents = $repository->findBy(['title' => 'Acme']);
 
-To perform a more complex queries there is a Search DSL API. Read more about it in `<searching.rst>`_ chapter.
+To perform a more complex queries there is a Search DSL API. Read more about it in `Searching via DSL <dsl/index.html>`_ chapter.
