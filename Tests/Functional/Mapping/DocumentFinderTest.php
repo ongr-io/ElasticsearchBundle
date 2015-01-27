@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
 
-
 use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

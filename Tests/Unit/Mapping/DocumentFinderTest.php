@@ -68,10 +68,10 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     /**
      * Tests if correct namespace is returned.
      *
-     * @param string  $documentDir
-     * @param string  $expectedNamespace
-     * @param string  $document
-     * @param boolean $testPath
+     * @param string $documentDir
+     * @param string $expectedNamespace
+     * @param string $document
+     * @param bool   $testPath
      *
      * @dataProvider getTestData
      */
