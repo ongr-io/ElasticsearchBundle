@@ -169,7 +169,7 @@ class NestedAggregationTest extends ElasticsearchTestCase
         $nestedAggregation = new NestedAggregation('test_nested_agg');
         $nestedAggregation->setPath('sub_products');
 
-        $nestedAggregation->aggregations->addAggregation($aggregation);
+        $nestedAggregation->aggregations->add($aggregation);
 
         $search = $repo->createSearch()->addAggregation($nestedAggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);

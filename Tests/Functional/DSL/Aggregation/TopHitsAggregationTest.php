@@ -189,7 +189,7 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
         $topAggregation = new TopHitsAggregation('test-top_hits');
         $termAggregation = new TermsAggregation('test_term');
         $termAggregation->setField('description');
-        $termAggregation->aggregations->addAggregation($topAggregation);
+        $termAggregation->aggregations->add($topAggregation);
 
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');

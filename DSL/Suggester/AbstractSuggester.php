@@ -11,12 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\DSL\Suggester;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use ONGR\ElasticsearchBundle\DSL\NamedBuilderInterface;
 
 /**
  * AbstractSuggester class.
  */
-abstract class AbstractSuggester implements BuilderInterface
+abstract class AbstractSuggester implements NamedBuilderInterface
 {
     /**
      * @var string
@@ -96,7 +96,7 @@ abstract class AbstractSuggester implements BuilderInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {

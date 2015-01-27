@@ -63,7 +63,7 @@ class FieldTest extends ElasticsearchTestCase
 
         $highlight = new Highlight();
         $highlight->setTag('tag')
-            ->addField(
+            ->add(
                 (new Field('title'))
                     ->setForceSource(true)
                     ->setHighlighterType(Field::TYPE_PLAIN)
@@ -102,7 +102,7 @@ class FieldTest extends ElasticsearchTestCase
 
         $highlight = new Highlight();
         $highlight
-            ->addField(
+            ->add(
                 (new Field('title'))
                     ->setForceSource(true)
                     ->setHighlightQuery($termQuery)
@@ -129,7 +129,7 @@ class FieldTest extends ElasticsearchTestCase
 
         $highlight = new Highlight();
         $highlight
-            ->addField(
+            ->add(
                 (new Field('title'))
                     ->setForceSource(true)
                     ->setNoMatchSize(10)
