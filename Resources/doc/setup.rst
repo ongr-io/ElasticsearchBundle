@@ -4,7 +4,7 @@ Setup
 Step 1: Install Elasticsearch bundle
 ------------------------------------
 
-Elasticsearch bundle is installed using `Composer`_.
+Elasticsearch bundle is installed using `Composer <https://getcomposer.org>`_.
 
 .. code:: bash
 
@@ -67,7 +67,7 @@ Add minimal configuration for Elasticsearch bundle.
                 mappings:
                     - AcmeStoreBundle
 
-.. note:: This is the basic example only, for more information about mapping, please take a look at `<mapping>`_ chapter.
+.. note:: This is the basic example only, for more information about mapping, please take a look at `mapping <mapping.html>`_ chapter.
 
 In this particular example we defined connections and managers. As you noticed it could be combined together.
 
@@ -116,7 +116,7 @@ Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch
         // ...
     }
 
-.. note:: This is the basic example only, for more information about mapping, please take a look at `<mapping>`_ chapter.
+.. note:: This is the basic example only, for more information about mapping, please take a look at `mapping <mapping.html>`_ chapter.
 
 Step 6: Create index
 --------------------
@@ -127,11 +127,10 @@ Elasticsearch bundle provides several ``CLI`` commands. One of them is for creat
 
     app/console es:index:create
 
-.. note:: More about the rest of the commands can be found in `<commands>`_ chapter.
+.. note:: More about the rest of the commands can be found in `commands <commands.html>`_ chapter.
 
 Step 7: Use your new bundle
 ---------------------------
 
-Usage documentation for the Elasticsearch bundle is available in `<usage.rst>`_.
+Usage documentation for the Elasticsearch bundle is available `here <usage.html>`_.
 
-.. _Composer: https://getcomposer.org
