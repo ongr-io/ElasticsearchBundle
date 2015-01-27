@@ -33,6 +33,14 @@ class ElasticsearchExtensionTest extends WebTestCase
                 'es.manager.bar',
                 'ONGR\ElasticsearchBundle\ORM\Manager',
             ],
+            [
+                'es.manager.default.product',
+                'ONGR\ElasticsearchBundle\ORM\Repository',
+            ],
+            [
+                'es.manager.default.bar',
+                'ONGR\ElasticsearchBundle\ORM\Repository',
+            ],
         ];
     }
 
