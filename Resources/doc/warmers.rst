@@ -50,7 +50,7 @@ quotations marks.
 Putting warmers into index.
 ---------------------------
 
-The easiet way to load warmers are through `commands <commands.html>`_.
+The easiet way to load warmers are through `commands <commands.html#warmer-put>`_.
 
 Also we can load them manually. f.e.
 
