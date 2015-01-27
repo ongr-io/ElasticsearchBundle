@@ -28,11 +28,11 @@ class WarmerDeleteCommandTest extends ElasticsearchTestCase
     {
         return [
             [
-                "All warmers have been deleted from connection named `default`\n",
+                "All warmers have been deleted from manager named `default`\n",
                 [],
             ],
             [
-                "`test_foo_warmer` warmer(s) have been deleted from connection named `default`\n",
+                "`test_foo_warmer` warmer(s) have been deleted from manager named `default`\n",
                 [
                     'names' => ['test_foo_warmer'],
                 ],

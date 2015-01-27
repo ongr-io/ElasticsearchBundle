@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to update mapping.
  */
-class TypeUpdateCommand extends AbstractElasticsearchCommand
+class TypeUpdateCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}

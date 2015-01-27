@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command for creating elasticsearch index.
  */
-class IndexCreateCommand extends AbstractConnectionAwareCommand
+class IndexCreateCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -40,7 +40,7 @@ class IndexCreateCommand extends AbstractConnectionAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $connection = $this->getConnection($input->getOption('connection'));
+        $connection = $this->getManager($input->getOption('manager'))->getConnection();
 
         if ($input->getOption('time')) {
             /** @var IndexSuffixFinder $finder */
@@ -52,8 +52,8 @@ class IndexCreateCommand extends AbstractConnectionAwareCommand
 
         $output->writeln(
             sprintf(
-                '<info>Created index for connection named `</info><comment>%s</comment><info>`</info>',
-                $input->getOption('connection')
+                '<info>Created index for manager named `</info><comment>%s</comment><info>`</info>',
+                $input->getOption('manager')
             )
         );
     }

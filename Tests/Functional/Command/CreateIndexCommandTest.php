@@ -67,7 +67,7 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $commandTester = new CommandTester($command);
         $arguments = [
             'command' => $command->getName(),
-            '--connection' => $argument,
+            '--manager' => $argument,
         ];
         if ($options['timestamp']) {
             $arguments['--time'] = null;

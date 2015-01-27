@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command for dropping Elasticsearch index.
  */
-class IndexDropCommand extends AbstractConnectionAwareCommand
+class IndexDropCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -45,12 +45,12 @@ class IndexDropCommand extends AbstractConnectionAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
-            $this->getConnection($input->getOption('connection'))->dropIndex();
+            $this->getManager($input->getOption('manager'))->getConnection()->dropIndex();
 
             $output->writeln(
                 sprintf(
-                    '<info>Dropped index for connection named</info> <comment>`%s`</comment>',
-                    $input->getOption('connection')
+                    '<info>Dropped index for manager named</info> <comment>`%s`</comment>',
+                    $input->getOption('manager')
                 )
             );
         } else {

@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * IndexExportCommand class.
  */
-class IndexExportCommand extends AbstractElasticsearchCommand
+class IndexExportCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}

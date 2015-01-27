@@ -84,11 +84,12 @@ class UpdateTypeCommandTest extends \PHPUnit_Framework_TestCase
     {
         /** @var Container|\PHPUnit_Framework_MockObject_MockObject $containerMock */
         $containerMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\Container')
-            ->setMethods(['getParameter', 'get'])
+            ->setMethods(['getParameter', 'get', 'has'])
             ->disableOriginalConstructor()
             ->getMock();
         $containerMock->expects($this->any())->method('getParameter')->willReturn([]);
         $containerMock->expects($this->any())->method('get')->willReturnSelf();
+        $containerMock->expects($this->any())->method('has')->will($this->returnValue(true));
         $command = new TypeUpdateCommand();
         $command->setContainer($containerMock);
 

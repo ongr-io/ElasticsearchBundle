@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 /**
  * AbstractElasticsearchCommand class.
  */
-abstract class AbstractElasticsearchCommand extends ContainerAwareCommand
+abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -41,10 +41,20 @@ abstract class AbstractElasticsearchCommand extends ContainerAwareCommand
      * @param string $name
      *
      * @return Manager
+     *
+     * @throws \RuntimeException
      */
     protected function getManager($name)
     {
-        return $this->getContainer()->get($this->getManagerId($name));
+        $id = $this->getManagerId($name);
+
+        if ($this->getContainer()->has($id)) {
+            return $this->getContainer()->get($id);
+        }
+
+        throw new \RuntimeException(
+            sprintf('Manager named `%s` not found. Check your configuration.', $name)
+        );
     }
 
     /**

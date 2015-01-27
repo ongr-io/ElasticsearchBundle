@@ -178,7 +178,7 @@ class TypeUpdateCommandTest extends WebTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--connection' => $connection,
+                '--manager' => $connection,
             ]
         );
     }

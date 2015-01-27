@@ -28,11 +28,11 @@ class WarmerPutCommandTest extends ElasticsearchTestCase
     {
         return [
             [
-                "All warmers have been put into connection named `default`\n",
+                "All warmers have been put into manager named `default`\n",
                 [],
             ],
             [
-                "`test_foo_warmer` warmer(s) have been put into connection named `default`\n",
+                "`test_foo_warmer` warmer(s) have been put into manager named `default`\n",
                 [
                     'names' => ['test_foo_warmer'],
                 ],

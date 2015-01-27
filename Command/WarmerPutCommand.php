@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * This command puts warmers into elasticsearch index.
  */
-class WarmerPutCommand extends AbstractConnectionAwareCommand
+class WarmerPutCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -45,21 +45,21 @@ class WarmerPutCommand extends AbstractConnectionAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $names = $input->getArgument('names');
-        $status = $this->getConnection($input->getOption('connection'))->putWarmers($names);
+        $status = $this->getManager($input->getOption('manager'))->getConnection()->putWarmers($names);
 
         if ($status === false) {
-            $message = '<info>There are no warmers registered for connection named<info> <comment>`%s`</comment>!';
+            $message = '<info>There are no warmers registered for manager named<info> <comment>`%s`</comment>!';
         } elseif (empty($names)) {
-            $message = '<info>All warmers have been put into connection named<info> <comment>`%s`</comment>';
+            $message = '<info>All warmers have been put into manager named<info> <comment>`%s`</comment>';
         } else {
             $callback = function ($val) {
                 return '`' . $val . '`';
             };
             $message = '<comment>' . implode(', ', array_map($callback, $names)) . '</comment>'
-                . '<info> warmer(s) have been put into connection named</info> <comment>`%s`</comment>';
+                . '<info> warmer(s) have been put into manager named</info> <comment>`%s`</comment>';
         }
 
-        $output->writeln(sprintf($message, $input->getOption('connection')));
+        $output->writeln(sprintf($message, $input->getOption('manager')));
 
         return 0;
     }

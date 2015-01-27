@@ -51,7 +51,7 @@ class DropIndexCommandTest extends AbstractCommandTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--connection' => $argument,
+                '--manager' => $argument,
             ]
         );
         $this->assertTrue(
@@ -65,7 +65,7 @@ class DropIndexCommandTest extends AbstractCommandTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--connection' => $argument,
+                '--manager' => $argument,
                 '--force' => true,
             ]
         );
