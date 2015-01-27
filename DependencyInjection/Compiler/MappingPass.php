@@ -232,13 +232,13 @@ class MappingPass implements CompilerPassInterface
     {
         $warmers = [];
         foreach ($container->findTaggedServiceIds('es.warmer') as $id => $tags) {
-            if (array_key_exists('connection', $tags[0])) {
+            if (array_key_exists('manager', $tags[0])) {
                 $connections = [];
-                if (strpos($tags[0]['connection'], ',')) {
-                    $connections = explode(',', $tags[0]['connection']);
+                if (strpos($tags[0]['manager'], ',')) {
+                    $connections = explode(',', $tags[0]['manager']);
                 }
 
-                if (in_array($connection, $connections) || $tags[0]['connection'] === $connection) {
+                if (in_array($connection, $connections) || $tags[0]['manager'] === $connection) {
                     $connectionDefinition->addMethodCall('addWarmer', [new Reference($id)]);
                 }
             }

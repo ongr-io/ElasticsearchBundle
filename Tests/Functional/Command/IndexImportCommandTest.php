@@ -34,7 +34,7 @@ class IndexImportCommandTest extends ElasticsearchTestCase
             [
                 'command' => $command->getName(),
                 '--raw' => true,
-                'filename' => vfsStream::url('tmp/test.json'),
+                'filename' => __DIR__ . '/../../app/fixture/Json/command_import_0.json',
             ]
         );
 
@@ -65,25 +65,5 @@ class IndexImportCommandTest extends ElasticsearchTestCase
         $command->setContainer($this->getContainer());
 
         return $command;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $contents = <<<OUT
-[
-{"count":2},
-{"_type":"product","_id":"doc1","_source":{"title":"Document 1"}},
-{"_type":"product","_id":"doc2","_source":{"title":"Document 2"}}
-]
-
-OUT;
-        vfsStream::setup('tmp');
-        $filename = vfsStream::url('tmp/test.json');
-        file_put_contents($filename, $contents);
     }
 }

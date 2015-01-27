@@ -306,7 +306,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      * Tests if exception is thrown with undefined action.
      *
      * @expectedException \LogicException
-     * @expectedExceptionMessage Unknown warmers action
+     * @expectedExceptionMessage Unknown warmer action
      */
     public function testWarmersActionException()
     {

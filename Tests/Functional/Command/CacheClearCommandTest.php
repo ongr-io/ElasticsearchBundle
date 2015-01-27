@@ -33,12 +33,15 @@ class CacheClearCommandTest extends ElasticsearchTestCase
             ]
         );
 
-        $this->assertContains('Elasticsearch cache has been cleared for default index.', $tester->getDisplay());
+        $this->assertContains(
+            'Elasticsearch index cache has been cleared for manager named `default`',
+            $tester->getDisplay()
+        );
         $this->assertEquals(0, $tester->getStatusCode(), 'Status code should be zero.');
     }
 
     /**
-     * Tests if exception is thown when no connection is found.
+     * Tests if exception is thown when no manager is found.
      *
      * @expectedException \RuntimeException
      */
@@ -51,7 +54,7 @@ class CacheClearCommandTest extends ElasticsearchTestCase
         $tester->execute(
             [
                 'command' => $command->getName(),
-                '--connection' => 'foo',
+                '--manager' => 'foo',
             ]
         );
     }

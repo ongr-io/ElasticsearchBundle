@@ -486,20 +486,24 @@ class Connection
      * Loads warmers into elasticseach.
      *
      * @param array $names Warmers names to put.
+     *
+     * @return bool
      */
     public function putWarmers(array $names = [])
     {
-        $this->warmersAction('put', $names);
+        return $this->warmersAction('put', $names);
     }
 
     /**
      * Deletes warmers from elasticsearch index.
      *
      * @param array $names Warmers names to delete.
+     *
+     * @return bool
      */
     public function deleteWarmers(array $names = [])
     {
-        $this->warmersAction('delete', $names);
+        return $this->warmersAction('delete', $names);
     }
 
     /**
@@ -508,11 +512,17 @@ class Connection
      * @param string $action Action name.
      * @param array  $names  Warmers names.
      *
+     * @return bool
+     *
      * @throws \LogicException
      */
     private function warmersAction($action, $names = [])
     {
-        foreach ($this->warmers->getWarmers() as $name => $body) {
+        $status = false;
+        $warmers = $this->warmers->getWarmers();
+        $this->validateWarmers($names, array_keys($warmers));
+
+        foreach ($warmers as $name => $body) {
             if (empty($names) || in_array($name, $names)) {
                 switch($action)
                 {
@@ -534,9 +544,37 @@ class Connection
                         );
                         break;
                     default:
-                        throw new \LogicException('Unknown warmers action');
+                        throw new \LogicException('Unknown warmer action');
                 }
             }
+
+            $status = true;
+        }
+
+        return $status;
+    }
+
+    /**
+     * Warmer names validation.
+     *
+     * @param array $names       Names to check.
+     * @param array $warmerNames Warmer names loaded.
+     *
+     * @throws \RuntimeException
+     */
+    private function validateWarmers($names, $warmerNames = [])
+    {
+        if (empty($warmerNames)) {
+            $warmerNames = array_keys($this->warmers->getWarmers());
+        }
+
+        $unknown = array_diff($names, $warmerNames);
+
+        if (!empty($unknown)) {
+            throw new \RuntimeException(
+                'Warmer(s) named ' . implode(', ', $unknown)
+                . ' do not exist. Available: ' . implode(', ', $warmerNames)
+            );
         }
     }
 }

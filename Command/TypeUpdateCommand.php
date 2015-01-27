@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to update mapping.
  */
-class TypeUpdateCommand extends AbstractElasticsearchCommand
+class TypeUpdateCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -31,12 +31,12 @@ class TypeUpdateCommand extends AbstractElasticsearchCommand
 
         $this
             ->setName('es:type:update')
-            ->setDescription('Creates mapping for elasticsearch')
+            ->setDescription('Updates elasticsearch index mappings.')
             ->addOption(
                 'force',
                 null,
                 InputOption::VALUE_NONE,
-                'Set this parameter to execute this command.'
+                'Set this parameter to execute this command'
             )
             ->addOption(
                 'type',
@@ -52,7 +52,7 @@ class TypeUpdateCommand extends AbstractElasticsearchCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getOption('force')) {
-            $output->writeln('Option --force has to be used to update mapping.');
+            $output->writeln('<info>Option --force has to be used to update mapping.</info>');
 
             return 1;
         }

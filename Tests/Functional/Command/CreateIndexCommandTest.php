@@ -39,13 +39,6 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
                     'warm' => true,
                 ],
             ],
-            [
-                'default',
-                [
-                    'timestamp' => true,
-                    'warm' => false,
-                ],
-            ],
         ];
     }
 
@@ -85,9 +78,6 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
 
         $commandTester->execute($arguments);
 
-        $indexName = $this->extractIndexName($commandTester);
-        $connection->setIndexName($indexName);
-
         $this->assertTrue($connection->indexExists(), 'Index should exist.');
         $connection->dropIndex();
     }
@@ -103,21 +93,5 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $command->setContainer($this->getContainer());
 
         return $command;
-    }
-
-    /**
-     * Retrieves index name.
-     *
-     * @param CommandTester $commandTester
-     *
-     * @return string
-     */
-    protected function extractIndexName(CommandTester $commandTester)
-    {
-        $matches = [];
-        preg_match('/Index (\S+) created./', $commandTester->getDisplay(), $matches);
-        $indexName = $matches[1];
-
-        return $indexName;
     }
 }

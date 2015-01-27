@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * IndexExportCommand class.
  */
-class IndexExportCommand extends AbstractElasticsearchCommand
+class IndexExportCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -31,7 +31,7 @@ class IndexExportCommand extends AbstractElasticsearchCommand
 
         $this
             ->setName('es:index:export')
-            ->setDescription('Exports elasticsearch index')
+            ->setDescription('Exports data from elasticsearch index.')
             ->addArgument(
                 'filename',
                 InputArgument::REQUIRED,
@@ -55,5 +55,7 @@ class IndexExportCommand extends AbstractElasticsearchCommand
         /* @var ExportService $exportService */
         $exportService = $this->getContainer()->get('es.export');
         $exportService->exportIndex($manager, $input->getArgument('filename'), $input->getOption('chunk'), $output);
+
+        $output->writeln('<info>Data export completed!</info>');
     }
 }

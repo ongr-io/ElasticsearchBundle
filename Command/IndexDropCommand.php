@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command for dropping Elasticsearch index.
  */
-class IndexDropCommand extends AbstractElasticsearchCommand
+class IndexDropCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -30,12 +30,12 @@ class IndexDropCommand extends AbstractElasticsearchCommand
 
         $this
             ->setName('es:index:drop')
-            ->setDescription('Drops elasticsearch index')
+            ->setDescription('Drops elasticsearch index.')
             ->addOption(
                 'force',
                 null,
                 InputOption::VALUE_NONE,
-                'Set this parameter to execute this command.'
+                'Set this parameter to execute this command'
             );
     }
 
@@ -45,18 +45,16 @@ class IndexDropCommand extends AbstractElasticsearchCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
-            /** @var Manager $manager */
-            $manager = $this->getManager($input->getOption('manager'));
-            $manager->getConnection()->dropIndex();
+            $this->getManager($input->getOption('manager'))->getConnection()->dropIndex();
 
             $output->writeln(
                 sprintf(
-                    '<info>Index %s has been dropped.</info>',
-                    $manager->getConnection()->getIndexName()
+                    '<info>Dropped index for manager named</info> <comment>`%s`</comment>',
+                    $input->getOption('manager')
                 )
             );
         } else {
-            $output->writeln('Parameter --force has to be used to drop the index.');
+            $output->writeln('<info>Parameter --force has to be used to drop the index.</info>');
         }
     }
 }

@@ -27,8 +27,16 @@ class WarmerPutCommandTest extends ElasticsearchTestCase
     public function getTestExecuteData()
     {
         return [
-            ["All warmers have been put into default index.\n", []],
-            ["test_foo_warmer warmer(s) have been put into default index.\n", ['names' => ['test_foo_warmer']]],
+            [
+                "All warmers have been put into manager named `default`\n",
+                [],
+            ],
+            [
+                "`test_foo_warmer` warmer(s) have been put into manager named `default`\n",
+                [
+                    'names' => ['test_foo_warmer'],
+                ],
+            ],
         ];
     }
 

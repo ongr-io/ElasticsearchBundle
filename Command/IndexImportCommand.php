@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * IndexImportCommand class.
  */
-class IndexImportCommand extends AbstractElasticsearchCommand
+class IndexImportCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -31,7 +31,7 @@ class IndexImportCommand extends AbstractElasticsearchCommand
 
         $this
             ->setName('es:index:import')
-            ->setDescription('Imports data to Elasticsearch index')
+            ->setDescription('Imports data to elasticsearch index.')
             ->addArgument(
                 'filename',
                 InputArgument::REQUIRED,
@@ -50,5 +50,7 @@ class IndexImportCommand extends AbstractElasticsearchCommand
         /* @var ImportService $importService */
         $importService = $this->getContainer()->get('es.import');
         $importService->importIndex($manager, $input->getArgument('filename'), $input->getOption('raw'), $output);
+
+        $output->writeln('<info>Data import completed!</info>');
     }
 }

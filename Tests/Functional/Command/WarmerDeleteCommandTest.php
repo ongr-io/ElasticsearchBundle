@@ -27,8 +27,16 @@ class WarmerDeleteCommandTest extends ElasticsearchTestCase
     public function getTestExecuteData()
     {
         return [
-            ["All warmers have been deleted from default index.\n", []],
-            ["test_foo_warmer warmer(s) have been deleted from default index.\n", ['names' => ['test_foo_warmer']]],
+            [
+                "All warmers have been deleted from manager named `default`\n",
+                [],
+            ],
+            [
+                "`test_foo_warmer` warmer(s) have been deleted from manager named `default`\n",
+                [
+                    'names' => ['test_foo_warmer'],
+                ],
+            ],
         ];
     }
 
