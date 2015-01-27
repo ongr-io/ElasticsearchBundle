@@ -27,11 +27,6 @@ use Symfony\Component\DependencyInjection\Reference;
 class MappingPass implements CompilerPassInterface
 {
     /**
-     * @var MetadataCollector
-     */
-    private $metadataCollector;
-
-    /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
@@ -97,7 +92,7 @@ class MappingPass implements CompilerPassInterface
         $out = [];
 
         /** @var MetadataCollector $collector */
-        $collector = $this->getMetadataCollector($container);
+        $collector = $container->get('es.metadata_collector');
         foreach ($settings['mappings'] as $bundle) {
             foreach ($collector->getBundleMapping($bundle) as $repository => $metadata) {
                 $metadataDefinition = new Definition('ONGR\ElasticsearchBundle\Mapping\ClassMetadata');
@@ -194,7 +189,7 @@ class MappingPass implements CompilerPassInterface
 
         $mappings = [];
         /** @var MetadataCollector $metadataCollector */
-        $metadataCollector = $this->getMetadataCollector($container);
+        $metadataCollector = $container->get('es.metadata_collector');
         $paths = [];
 
         if (!empty($manager['mappings'])) {
@@ -250,21 +245,5 @@ class MappingPass implements CompilerPassInterface
         }
 
         return $warmers;
-    }
-
-    /**
-     * Returns metadata collector.
-     *
-     * @param ContainerBuilder $containerBuilder
-     *
-     * @return MetadataCollector
-     */
-    private function getMetadataCollector(ContainerBuilder $containerBuilder)
-    {
-        if (!$this->metadataCollector) {
-            $this->metadataCollector = $containerBuilder->get('es.metadata_collector');
-        }
-
-        return $this->metadataCollector;
     }
 }
