@@ -165,9 +165,9 @@ class TypeUpdateCommandTest extends WebTestCase
     /**
      * Creates index for testing.
      *
-     * @param string $connection
+     * @param string $manager
      */
-    protected function createIndexCommand($connection = 'default')
+    protected function createIndexCommand($manager = 'default')
     {
         $command = new IndexCreateCommand();
         $command->setContainer($this->container);
@@ -178,7 +178,7 @@ class TypeUpdateCommandTest extends WebTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--manager' => $connection,
+                '--manager' => $manager,
             ]
         );
     }

@@ -557,8 +557,8 @@ class Connection
     /**
      * Warmer names validation.
      *
-     * @param string $names       Names to check.
-     * @param array  $warmerNames Warmer names loaded.
+     * @param array $names       Names to check.
+     * @param array $warmerNames Warmer names loaded.
      *
      * @throws \RuntimeException
      */
