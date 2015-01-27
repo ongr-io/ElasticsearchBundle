@@ -1,0 +1,5 @@
+[
+  {"count":2},
+  {"_type":"product","_id":"doc1","_source":{"title":"Document 1"}},
+  {"_type":"product","_id":"doc2","_source":{"title":"Document 2"}}
+]
