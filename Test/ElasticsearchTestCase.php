@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
+use Elasticsearch\Common\Exceptions\ElasticsearchException;
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -43,12 +44,15 @@ abstract class ElasticsearchTestCase extends WebTestCase
         foreach (range(1, $this->getNumberOfRetries()) as $try) {
             try {
                 return parent::runTest();
-            } catch (\PHPUnit_Framework_SkippedTestError $e) {
-                throw $e;
-            } catch (\PHPUnit_Framework_IncompleteTestError $e) {
-                throw $e;
             } catch (\Exception $e) {
-                // Try more.
+                if (!($e instanceof ElasticsearchException)) {
+                    throw $e;
+                }
+                // If error was from elasticsearch re-setup tests and retry.
+                if ($try !== $this->getNumberOfRetries()) {
+                    $this->tearDown();
+                    $this->setUp();
+                }
             }
         }
 
