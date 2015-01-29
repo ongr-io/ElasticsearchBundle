@@ -79,7 +79,7 @@ class GlobalAggregationTest extends ElasticsearchTestCase
         $aggregation2->setField('price');
         $aggregation2->addRange(null, 40);
 
-        $aggregation->aggregations->add($aggregation2);
+        $aggregation->addAggregation($aggregation2);
 
         // Case #0 global aggregation without query.
         $out[] = [

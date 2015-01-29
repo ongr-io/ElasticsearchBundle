@@ -159,7 +159,7 @@ class RangeAggregationTest extends ElasticsearchTestCase
             $aggregation2->setKeyed($childAgg['keyed']);
             $aggregation2->addRange($childAgg['range']['from'], $childAgg['range']['to'], $childAgg['key']);
 
-            $rangeAggregation->aggregations->add($aggregation2);
+            $rangeAggregation->addAggregation($aggregation2);
         }
 
         $search = $repo->createSearch()->addAggregation($rangeAggregation);

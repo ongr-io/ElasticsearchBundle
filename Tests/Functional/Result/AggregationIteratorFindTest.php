@@ -139,7 +139,7 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
         $aggregation->setField('description');
         $aggregation2 = new StatsAggregation('test_agg_2');
         $aggregation2->setField('price');
-        $aggregation->aggregations->add($aggregation2);
+        $aggregation->addAggregation($aggregation2);
 
         return $aggregation;
     }
