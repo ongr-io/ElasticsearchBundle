@@ -137,7 +137,7 @@ EOF;
 
         $parent = $reflectionClass->getParentClass();
         if ($parent !== false) {
-            $out += self::getProperties($parent);
+            $out = array_unique(array_merge($out, self::getProperties($parent)));
         }
 
         return $out;
