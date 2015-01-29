@@ -71,10 +71,18 @@ class MappingPass implements CompilerPassInterface
                         [$repository],
                     ]
                 );
-                $container->setDefinition(
-                    sprintf('es.manager.%s.%s', $managerName, substr($repository, strpos($repository, ':') + 1)),
-                    $repositoryDefinition
-                );
+
+                $repository = substr($repository, strpos($repository, ':') + 1);
+                $repositoryId = sprintf('es.manager.%s.%s', $managerName, $repository);
+
+                if (strtolower(substr($repository, -8)) === 'document') {
+                    $container->setAlias(
+                        sprintf('es.manager.%s.%s', $managerName, substr($repository, 0, strlen($repository) - 8)),
+                        $repositoryId
+                    );
+                }
+
+                $container->setDefinition($repositoryId, $repositoryDefinition);
             }
         }
     }

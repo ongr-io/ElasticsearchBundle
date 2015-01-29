@@ -41,6 +41,18 @@ class ElasticsearchExtensionTest extends WebTestCase
                 'es.manager.default.bar',
                 'ONGR\ElasticsearchBundle\ORM\Repository',
             ],
+            [
+                'es.manager.default.color',
+                'ONGR\ElasticsearchBundle\ORM\Repository',
+            ],
+            [
+                'es.manager.default.colordocument',
+                'ONGR\ElasticsearchBundle\ORM\Repository',
+            ],
+            [
+                'es.metadata_collector',
+                'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
+            ],
         ];
     }
 
