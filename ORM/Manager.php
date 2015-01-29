@@ -69,7 +69,7 @@ class Manager
     {
         $type = is_array($type) ? $type : [$type];
 
-        foreach ($type as $selectedType) {
+        foreach ($type as &$selectedType) {
             $this->checkRepositoryType($selectedType);
         }
 
@@ -174,13 +174,23 @@ class Manager
      *
      * @throws \InvalidArgumentException
      */
-    private function checkRepositoryType($type)
+    private function checkRepositoryType(&$type)
     {
-        if (!array_key_exists($type, $this->getBundlesMapping())) {
-            $exceptionMessage = "Undefined repository {$type}, valid repositories are: " .
-                join(', ', array_keys($this->getBundlesMapping())) . '.';
-            throw new \InvalidArgumentException($exceptionMessage);
+        $mapping = $this->getBundlesMapping();
+
+        if (array_key_exists($type, $mapping)) {
+            return;
         }
+
+        if (array_key_exists($type . 'Document', $mapping)) {
+            $type .= 'Document';
+
+            return;
+        }
+
+        $exceptionMessage = "Undefined repository `{$type}`, valid repositories are: `" .
+            join('`, `', array_keys($this->getBundlesMapping())) . '`.';
+        throw new \InvalidArgumentException($exceptionMessage);
     }
 
     /**

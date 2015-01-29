@@ -64,7 +64,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      * Check if an exception is thrown when an undefined repository is specified.
      *
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Undefined repository rep1, valid repositories are: rep2, rep3.
+     * @expectedExceptionMessage Undefined repository `rep1`, valid repositories are: `rep2`, `rep3`.
      */
     public function testGetRepositoriesException()
     {
@@ -83,7 +83,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      * Check if an exception is thrown when an undefined repository is specified and only a single rep is specified.
      *
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Undefined repository rep1, valid repositories are: rep2, rep3.
+     * @expectedExceptionMessage Undefined repository `rep1`, valid repositories are: `rep2`, `rep3`.
      */
     public function testGetRepositoriesExceptionSingle()
     {
