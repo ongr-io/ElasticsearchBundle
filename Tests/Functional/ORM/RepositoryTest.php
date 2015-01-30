@@ -535,6 +535,20 @@ class RepositoryTest extends ElasticsearchTestCase
     }
 
     /**
+     * Tests if repository is fetched without suffix.
+     */
+    public function testGetRepositoryWithDoucmentSuffix()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Color');
+
+        $this->assertInstanceOf(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument',
+            $repository->createDocument()
+        );
+    }
+
+    /**
      * Assert suggestion score is set.
      *
      * @param SuggestionIterator $suggestions
