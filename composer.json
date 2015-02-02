@@ -20,9 +20,23 @@
         "mikey179/vfsStream": "~1.4",
         "phpunit/phpunit": "~4.1",
         "squizlabs/php_codesniffer": "~1.5",
-        "ongr/ongr-strict-standard": "~1.0"
+        "ongr/ongr-strict-standard": "~1.0",
+        "incenteev/composer-parameter-handler": "~2.0"
     },
     "autoload": {
         "psr-4": { "ONGR\\ElasticsearchBundle\\": "" }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ],
+        "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ]
+    },
+    "extra": {
+        "incenteev-parameters": {
+            "file": "Tests/app/config/parameters_test.yml"
+        }
     }
 }

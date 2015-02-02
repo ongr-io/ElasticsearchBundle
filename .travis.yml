@@ -26,7 +26,7 @@ install:
   - wget -q -O conf.py https://raw.githubusercontent.com/ongr-io/docs-aggregator/master/source/conf-travis.py
 
 before_script:
-  - composer install
+  - composer install --no-interaction
 
 script:
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
