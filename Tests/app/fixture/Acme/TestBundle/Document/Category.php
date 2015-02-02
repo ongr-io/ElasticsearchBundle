@@ -20,6 +20,5 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
  */
 class Category
 {
-
     public $hiddenField;
 }

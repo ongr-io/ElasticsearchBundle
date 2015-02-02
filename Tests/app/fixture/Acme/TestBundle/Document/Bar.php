@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
@@ -20,7 +21,6 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  * 
  * @ES\Document(type="bar")
  */
-class Bar implements DocumentInterface
+class Bar extends AbstractDocument
 {
-    use DocumentTrait;
 }

@@ -14,11 +14,9 @@ namespace ONGR\ElasticsearchBundle\Document;
 use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
 
 /**
- * Trait with common document fields and methods.
- *
- * @deprecated Use AbstractDocument instead, will remove in 1.0
+ * Document abstraction which introduces mandatory fields for the document.
  */
-trait DocumentTrait
+class AbstractDocument implements DocumentInterface
 {
     /**
      * @var string
