@@ -158,7 +158,7 @@ class ElasticsearchDataCollector implements DataCollectorInterface
                 $this->time += $record['context']['duration'];
                 $this->addQuery($route, $record, $queryBody);
             } else {
-                $position = strpos($record['message'], '-d');
+                $position = strpos($record['message'], ' -d');
                 $queryBody = $position !== false ? substr($record['message'], $position + 3) : '';
             }
         }
@@ -174,7 +174,7 @@ class ElasticsearchDataCollector implements DataCollectorInterface
     private function addQuery($route, $record, $queryBody)
     {
         parse_str(parse_url($record['context']['uri'], PHP_URL_QUERY), $httpParameters);
-        $body = json_decode(trim($queryBody, "'"), true);
+        $body = json_decode(trim($queryBody, " '\r\t\n"), true);
         $this->queries[$route][] = array_merge(
             [
                 'body' => $body !== null ? json_encode($body, JSON_PRETTY_PRINT) : '',
