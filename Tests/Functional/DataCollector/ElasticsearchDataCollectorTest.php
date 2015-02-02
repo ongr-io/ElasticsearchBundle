@@ -88,16 +88,12 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
         $queries = $this->getCollector()->getQueries();
 
         $lastQuery = end($queries[ElasticsearchDataCollector::UNDEFINED_ROUTE]);
-        $time = $lastQuery['time'];
-        unset($lastQuery['time']);
+        $this->checkQueryParameters($lastQuery);
 
-        $this->assertGreaterThan(0.0, $time, 'Time should be greater than 0');
         $this->assertEquals(
             [
                 'body' => '',
                 'method' => 'GET',
-                'path' => '/ongr-elasticsearch-bundle-test/product/2',
-                'host' => '127.0.0.1',
                 'httpParameters' => [],
                 'scheme' => 'http',
                 'port' => 9200,
@@ -122,16 +118,12 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
 
         $queries = $this->getCollector()->getQueries();
         $lastQuery = end($queries[ElasticsearchDataCollector::UNDEFINED_ROUTE]);
-        $time = $lastQuery['time'];
-        unset($lastQuery['time']);
+        $this->checkQueryParameters($lastQuery);
 
-        $this->assertGreaterThan(0.0, $time, 'Time should be greater than 0');
         $this->assertEquals(
             [
                 'body' => $this->getFileContents('collector_body_0.json'),
                 'method' => 'POST',
-                'path' => '/ongr-elasticsearch-bundle-test/product/_search',
-                'host' => '127.0.0.1',
                 'httpParameters' => [],
                 'scheme' => 'http',
                 'port' => 9200,
@@ -139,6 +131,26 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
             $lastQuery,
             'Logged data did not match expected data.'
         );
+    }
+
+    /**
+     * Checks query parameters that are not static.
+     *
+     * @param array $query
+     */
+    public function checkQueryParameters(&$query)
+    {
+        $this->assertArrayHasKey('time', $query, 'Query should have time set.');
+        $this->assertGreaterThan(0.0, $query['time'], 'Time should be greater than 0');
+        unset($query['time']);
+
+        $this->assertArrayHasKey('host', $query, 'Query should have host set.');
+        $this->assertNotEmpty($query['host'], 'Host should not be empty');
+        unset($query['host']);
+
+        $this->assertArrayHasKey('path', $query, 'Query should have host path set.');
+        $this->assertNotEmpty($query['path'], 'Path should not be empty.');
+        unset($query['path']);
     }
 
     /**

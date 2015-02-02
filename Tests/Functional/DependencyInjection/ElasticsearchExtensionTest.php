@@ -11,10 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection;
 
+use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ElasticsearchExtensionTest extends WebTestCase
 {
+    use TestHelperTrait;
+
     /**
      * @return array
      */
@@ -81,16 +84,12 @@ class ElasticsearchExtensionTest extends WebTestCase
 
         $expectedConnections = [
             'default' => [
-                'hosts' => ['127.0.0.1:9200'],
-                'index_name' => 'ongr-elasticsearch-bundle-test',
                 'settings' => [
                     'refresh_interval' => -1,
                     'number_of_replicas' => 0,
                 ],
             ],
             'bar' => [
-                'hosts' => ['127.0.0.1:9200'],
-                'index_name' => 'ongr-elasticsearch-bundle-bar-test',
                 'settings' => [
                     'refresh_interval' => -1,
                     'number_of_replicas' => 1,
@@ -113,7 +112,7 @@ class ElasticsearchExtensionTest extends WebTestCase
         ];
         $actualManagers = $container->getParameter('es.managers');
 
-        $this->assertEquals($expectedConnections, $actualConnections);
+        $this->assertArrayContainsArray($expectedConnections, $actualConnections);
         $this->assertEquals($expectedManagers, $actualManagers);
     }
 }
