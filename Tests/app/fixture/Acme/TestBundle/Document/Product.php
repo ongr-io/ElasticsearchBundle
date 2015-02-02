@@ -12,8 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * Product document for testing.
@@ -22,7 +20,7 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  * @ES\Skip({"name"})
  * @ES\Inherit({"price"})
  */
-class Product extends Item implements DocumentInterface
+class Product extends Item
 {
     /**
      * @var string
