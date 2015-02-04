@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
+use ONGR\ElasticsearchBundle\DSL\Query\TermsQuery;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
@@ -546,6 +547,22 @@ class RepositoryTest extends ElasticsearchTestCase
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument',
             $repository->createDocument()
         );
+    }
+
+    /**
+     * Tests if RESULT_FIRST flag works on execute.
+     */
+    public function testExecuteFirstResult()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $search = $repository
+            ->createSearch()
+            ->addQuery(new TermsQuery('title', ['gar', 'bar']));
+        $document = $repository->execute($search, Repository::RESULTS_FIRST);
+
+        $this->assertNotInstanceOf('Traversable', $document, 'Result should not be traversable.');
+        $this->assertEquals('2', $document->getId(), 'Result should be a document with an id.');
     }
 
     /**
