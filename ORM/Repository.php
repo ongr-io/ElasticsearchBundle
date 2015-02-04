@@ -33,6 +33,7 @@ class Repository
     const RESULTS_OBJECT = 'object';
     const RESULTS_RAW = 'raw';
     const RESULTS_RAW_ITERATOR = 'raw_iterator';
+    const RESULTS_FIRST = 'first';
 
     /**
      * @var Manager
@@ -302,6 +303,12 @@ class Repository
     private function parseResult($raw, $resultsType, $scrollDuration)
     {
         switch ($resultsType) {
+            case self::RESULTS_FIRST:
+                return (new DocumentIterator(
+                    $raw,
+                    $this->manager->getTypesMapping(),
+                    $this->manager->getBundlesMapping()
+                ))->current();
             case self::RESULTS_OBJECT:
                 if (isset($raw['_scroll_id'])) {
                     $iterator = new DocumentScanIterator(
