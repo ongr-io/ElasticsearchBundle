@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\ORM;
 
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Query\TermsQuery;
 use ONGR\ElasticsearchBundle\DSL\Search;
@@ -33,6 +34,9 @@ class Repository
     const RESULTS_OBJECT = 'object';
     const RESULTS_RAW = 'raw';
     const RESULTS_RAW_ITERATOR = 'raw_iterator';
+
+    const RETURN_NULL = 'null';
+    const RETURN_EXCEPTION = 'null_exception';
 
     /**
      * @var Manager
@@ -85,31 +89,41 @@ class Repository
     /**
      * Returns a single document data by ID.
      *
-     * @param string $id
+     * @param string $id       Requested document id.
+     * @param string $notFound Sets behaviour when no documents are found.
      *
-     * @return DocumentInterface
+     * @return DocumentInterface|null
+     *
      * @throws \LogicException
      */
-    public function find($id)
+    public function find($id, $notFound = self::RETURN_EXCEPTION)
     {
-        if (count($this->types) == 1) {
-            $params = [
-                'index' => $this->manager->getConnection()->getIndexName(),
-                'type' => $this->types[0],
-                'id' => $id,
-            ];
-
-            $result = $this->manager->getConnection()->getClient()->get($params);
-
-            $converter = new Converter(
-                $this->manager->getTypesMapping(),
-                $this->manager->getBundlesMapping()
-            );
-
-            return $converter->convertToDocument($result);
-        } else {
+        if (count($this->types) !== 1) {
             throw new \LogicException('Only one type must be specified for the find() method');
         }
+
+        $params = [
+            'index' => $this->manager->getConnection()->getIndexName(),
+            'type' => $this->types[0],
+            'id' => $id,
+        ];
+
+        try {
+            $result = $this->manager->getConnection()->getClient()->get($params);
+        } catch (Missing404Exception $e) {
+            if ($notFound === self::RETURN_NULL) {
+                return null;
+            }
+
+            throw $e;
+        }
+
+        $converter = new Converter(
+            $this->manager->getTypesMapping(),
+            $this->manager->getBundlesMapping()
+        );
+
+        return $converter->convertToDocument($result);
     }
 
     /**
