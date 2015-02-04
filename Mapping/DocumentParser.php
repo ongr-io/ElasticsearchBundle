@@ -36,12 +36,12 @@ class DocumentParser
     const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
 
     /**
-     * @var Reader
+     * @var Reader Used to read document annotations.
      */
     private $reader;
 
     /**
-     * @var DocumentFinder
+     * @var DocumentFinder Used to find documents.
      */
     private $finder;
 
@@ -51,13 +51,16 @@ class DocumentParser
     private $objects = [];
 
     /**
-     * @var array
+     * @var array Document properties aliases.
      */
     private $aliases = [];
 
     /**
-     * Constructor.
-     *
+     * @var array Local cache for document properties.
+     */
+    private $properties = [];
+
+    /**
      * @param Reader         $reader Used for reading annotations.
      * @param DocumentFinder $finder Used for resolving namespaces.
      */
@@ -69,11 +72,11 @@ class DocumentParser
     }
 
     /**
-     * Reads document annotations.
+     * Parses documents by used annotations and returns mapping for elasticsearch with some extra metadata.
      *
      * @param \ReflectionClass $reflectionClass
      *
-     * @return ClassMetadata|null
+     * @return array|null
      */
     public function parse(\ReflectionClass $reflectionClass)
     {
@@ -125,7 +128,7 @@ class DocumentParser
     }
 
     /**
-     * Returns property annotation data.
+     * Returns property annotation data from reader.
      *
      * @param \ReflectionProperty $property
      *
@@ -152,6 +155,8 @@ class DocumentParser
     }
 
     /**
+     * Finds aliases for every property used in document inluding parent classes.
+     *
      * @param \ReflectionClass $reflectionClass
      *
      * @return array
@@ -165,11 +170,11 @@ class DocumentParser
 
         $alias = [];
         /** @var \ReflectionProperty $property */
-        foreach ($reflectionClass->getProperties() as $property) {
+        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
             if ($type !== null) {
                 $alias[$type->name] = [
-                    'propertyName' => $property->getName(),
+                    'propertyName' => $name,
                     'type' => $type->type,
                 ];
                 if ($type->objectName) {
@@ -271,6 +276,40 @@ class DocumentParser
     }
 
     /**
+     * Returns all defined properties including private from parents.
+     *
+     * @param \ReflectionClass $reflectionClass
+     *
+     * @return array
+     */
+    private function getDocumentPropertiesReflection(\ReflectionClass $reflectionClass)
+    {
+        if (in_array($reflectionClass->getName(), $this->properties)) {
+            return $this->properties[$reflectionClass->getName()];
+        }
+
+        $properties = [];
+
+        foreach ($reflectionClass->getProperties() as $property) {
+            if (!in_array($property->getName(), $properties)) {
+                $properties[$property->getName()] = $property;
+            }
+        }
+
+        $parentReflection = $reflectionClass->getParentClass();
+        if ($parentReflection !== false) {
+            $properties = array_merge(
+                $properties,
+                array_diff_key($this->getDocumentPropertiesReflection($parentReflection), $properties)
+            );
+        }
+
+        $this->properties[$reflectionClass->getName()] = $properties;
+
+        return $properties;
+    }
+
+    /**
      * Returns properties of reflection class.
      *
      * @param \ReflectionClass $reflectionClass Class to read properties from.
@@ -283,11 +322,11 @@ class DocumentParser
     {
         $mapping = [];
         /** @var \ReflectionProperty $property */
-        foreach ($reflectionClass->getProperties() as $property) {
+        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
 
-            if ((in_array($property->getName(), $properties) && !$flag)
-                || (!in_array($property->getName(), $properties) && $flag)
+            if ((in_array($name, $properties) && !$flag)
+                || (!in_array($name, $properties) && $flag)
                 || empty($type)
             ) {
                 continue;
