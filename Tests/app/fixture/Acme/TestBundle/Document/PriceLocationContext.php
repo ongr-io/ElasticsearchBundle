@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 /**
  * SuggestingContext document for testing.
  *
- * @ES\Object
+ * @ES\Object()
  */
 class PriceLocationContext
 {

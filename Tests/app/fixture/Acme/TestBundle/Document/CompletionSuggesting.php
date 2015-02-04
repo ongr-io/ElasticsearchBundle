@@ -12,15 +12,14 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester;
 use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesterInterface;
-use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesterTrait;
 
 /**
  * Suggesting document for testing.
  *
- * @ES\Object
+ * @ES\Object()
  */
-class CompletionSuggesting implements CompletionSuggesterInterface
+class CompletionSuggesting extends AbstractSuggester implements CompletionSuggesterInterface
 {
-    use CompletionSuggesterTrait;
 }
