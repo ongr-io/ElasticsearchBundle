@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
  * Trait to be used for completion suggestion objects.
+ *
+ * @deprecated use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester
+ * and implement CompletionSuggesterInterface, will be removed in 1.0.
  */
 trait CompletionSuggesterTrait
 {

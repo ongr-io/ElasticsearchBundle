@@ -11,12 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Document\Suggester;
 
+use ONGR\ElasticsearchBundle\Annotation as ES;
+
 /**
  * Abstract record document for various suggesters.
- * 
- * @deprecated use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester, will be removed in 1.0.
  */
-trait SuggesterTrait
+abstract class AbstractSuggester implements SuggesterInterface
 {
     /**
      * @var string[]|string Input to store.
