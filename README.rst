@@ -41,7 +41,7 @@ Technical goodies:
 Documentation
 -------------
 
-The online documentation of the bundle is in `ongr.readthedocs.org <http://ongr.readthedocs.org/en/latest/components/ElasticsearchBundle/Resources/doc/index.html>`_
+The online documentation of the bundle is in `ongr.readthedocs.org <http://ongr.readthedocs.org/en/latest/components/ElasticsearchBundle/index.html>`_
 
 For contribution to the documentation you can find it on `Resources/doc <https://github.com/ongr-io/ElasticsearchBundle/tree/master/Resources/doc>`_.
 
