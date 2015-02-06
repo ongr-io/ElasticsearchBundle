@@ -328,6 +328,17 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests Connection#setIndexName method.
+     */
+    public function testSetIndexName()
+    {
+        $connection = new Connection($this->getClient(), ['index' => 'foo']);
+        $this->assertEquals('foo', $connection->getIndexName(), 'Index name should not be changed.');
+        $connection->setIndexName('bar');
+        $this->assertEquals('bar', $connection->getIndexName(), 'Index name should be changed');
+    }
+
+    /**
      * Returns client instance with indices namespace set.
      *
      * @param array $options
