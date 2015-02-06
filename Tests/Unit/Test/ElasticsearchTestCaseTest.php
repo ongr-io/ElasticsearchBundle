@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Test;
 
-use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\ORM\Manager;

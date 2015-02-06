@@ -168,4 +168,102 @@ class RangeAggregationTest extends ElasticsearchTestCase
         $this->assertArrayHasKey('aggregations', $results);
         $this->assertEquals($expectedResult, $results['aggregations']);
     }
+
+    /**
+     * Tests if RangeAggregation#removeRange works as expected.
+     */
+    public function testRemoveRangeAggregaion()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+
+        $range = new RangeAggregation('foo');
+        $range->setField('price');
+        $range
+            ->addRange(null, 20)
+            ->addRange(20, null);
+
+        $range->removeRange(20, null);
+        $search = $repository
+            ->createSearch()
+            ->addAggregation($range);
+        $result = $repository->execute($search)->getAggregations()->find('foo');
+
+        $out = [];
+
+        foreach ($result as $value) {
+            $out[] = $value->getValue();
+        }
+
+        $this->assertEquals(
+            [
+                [
+                    'key' => '*-20.0',
+                    'to' => 20,
+                    'to_as_string' => '20.0',
+                    'doc_count' => 2,
+                ],
+            ],
+            $out
+        );
+    }
+
+    /**
+     * Tests if RangeAggregation#removeRangeByKey method works as expected.
+     */
+    public function testRemoveRangeAggregtionByKey()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+
+        $range = new RangeAggregation('foo');
+        $range->setField('price');
+        $range
+            ->setKeyed(true)
+            ->addRange(null, 20, 'cheap')
+            ->addRange(20, null, 'expensive');
+
+        $range->removeRangeByKey('cheap');
+
+        $search = $repository
+            ->createSearch()
+            ->addAggregation($range);
+        $result = $repository->execute($search)->getAggregations()->find('foo');
+
+        $out = [];
+
+        foreach ($result as $key => $value) {
+            $out[$key] = $value->getValue();
+        }
+
+        $this->assertEquals(
+            [
+                'expensive' => [
+                    'from' => 20,
+                    'from_as_string' => '20.0',
+                    'doc_count' => 1,
+                ],
+            ],
+            $out
+        );
+    }
+
+    /**
+     * Tests removing ranges from aggregation.
+     */
+    public function testRemoveAggregationWithFalse()
+    {
+        $range = new RangeAggregation('bar');
+        $this->assertFalse($range->removeRange(10, 20), 'Range does not exist');
+
+        $range->addRange(10, 20);
+        $range->addRange(25, 30, 'test_key');
+        $this->assertTrue($range->removeRange(10, 20), 'Range removed.');
+        $this->assertFalse($range->removeRangeByKey('test_key'), 'Keyed ranges are not enabled yet!');
+
+        $range->setKeyed(true);
+        $range->addRange(15, 20, 'foo');
+        $this->assertFalse($range->removeRangeByKey('key'), 'Keyed range does not exist.');
+        $this->assertTrue($range->removeRangeByKey('foo'), 'Keyed range should be removed.');
+    }
 }
