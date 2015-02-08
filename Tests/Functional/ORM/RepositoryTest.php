@@ -549,6 +549,19 @@ class RepositoryTest extends ElasticsearchTestCase
     }
 
     /**
+     * Tests if exception is not thrown when document does not exist.
+     */
+    public function testFindWithNullFlag()
+    {
+        $manager = $this->getManager();
+        $result = $manager
+            ->getRepository('AcmeTestBundle:Product')
+            ->find('1234', Repository::RETURN_NULL);
+
+        $this->assertNull($result, 'Document should not be found and returned null.');
+    }
+
+    /**
      * Assert suggestion score is set.
      *
      * @param SuggestionIterator $suggestions
