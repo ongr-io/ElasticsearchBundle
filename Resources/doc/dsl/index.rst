@@ -106,6 +106,7 @@ Available API's
 
             queries/index
             filters/index
+            sorting/index
             aggregations/index
             highlights/index
             suggesters/index
