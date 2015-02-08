@@ -13,6 +13,9 @@ namespace ONGR\ElasticsearchBundle\Document\Suggester;
 
 /**
  * Class to be used for context suggestion objects.
+ *
+ * @deprecated use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester
+ * and implement ContextSuggesterInterface, will be removed in 1.0.
  */
 trait ContextSuggesterTrait
 {

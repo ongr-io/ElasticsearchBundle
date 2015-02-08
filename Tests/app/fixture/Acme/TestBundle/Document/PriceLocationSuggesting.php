@@ -12,22 +12,40 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester;
 use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggesterInterface;
-use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggesterTrait;
 
 /**
  * Suggesting document for testing.
  *
- * @ES\Object
+ * @ES\Object()
  */
-class PriceLocationSuggesting implements ContextSuggesterInterface
+class PriceLocationSuggesting extends AbstractSuggester implements ContextSuggesterInterface
 {
-    use ContextSuggesterTrait;
-
     /**
      * @var object
      *
      * @ES\Property(type="object", objectName="AcmeTestBundle:PriceLocationContext", name="context")
      */
     private $context;
+
+    /**
+     * Returns context to be used for completion.
+     *
+     * @return object
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * Sets context to be used for completion.
+     *
+     * @param object $context
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+    }
 }
