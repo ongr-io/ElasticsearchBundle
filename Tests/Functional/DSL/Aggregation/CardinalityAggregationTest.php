@@ -93,4 +93,20 @@ class CardinalityAggregationTest extends ElasticsearchTestCase
         $result = $results->getAggregations()['test_agg'];
         $this->assertEquals($expectedResults, $result->getValue()['value']);
     }
+
+    /**
+     * Tests cardinality aggregation using script instead of field.
+     */
+    public function testCardinalityWithScript()
+    {
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
+
+        $aggregation = new CardinalityAggregation('foo');
+        $aggregation->setScript("doc['product.price'].value + ' ' + doc['product.title'].value");
+        $search = $repository
+            ->createSearch()
+            ->addAggregation($aggregation);
+        $result = $repository->execute($search)->getAggregations()->find('foo');
+        $this->assertEquals(2, $result->getValue()['value']);
+    }
 }

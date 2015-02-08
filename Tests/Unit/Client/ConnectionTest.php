@@ -328,6 +328,43 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if exception is thrown while validating warmers.
+     *
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Warmer(s) named bar do not exist. Available: foo
+     */
+    public function testValidateWarmersException()
+    {
+        $warmerMock = $this->getMock('ONGR\ElasticsearchBundle\Cache\WarmerInterface');
+        $warmerMock
+            ->expects($this->once())
+            ->method('warmUp');
+        $warmerMock
+            ->expects($this->once())
+            ->method('getName')
+            ->will($this->returnValue('foo'));
+
+        $connection = new Connection($this->getClient(), []);
+        $connection->addWarmer($warmerMock);
+
+        $object = new \ReflectionObject($connection);
+        $method = $object->getMethod('validateWarmers');
+        $method->setAccessible(true);
+        $method->invokeArgs($connection, [['bar']]);
+    }
+
+    /**
+     * Tests Connection#setIndexName method.
+     */
+    public function testSetIndexName()
+    {
+        $connection = new Connection($this->getClient(), ['index' => 'foo']);
+        $this->assertEquals('foo', $connection->getIndexName(), 'Index name should not be changed.');
+        $connection->setIndexName('bar');
+        $this->assertEquals('bar', $connection->getIndexName(), 'Index name should be changed');
+    }
+
+    /**
      * Returns client instance with indices namespace set.
      *
      * @param array $options

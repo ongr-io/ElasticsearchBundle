@@ -29,11 +29,20 @@ class IndexSuffixFinderTest extends \PHPUnit_Framework_TestCase
             'foo-index',
             false,
             'foo-index-2001.01.30',
+            new \DateTime('2001-01-30'),
         ];
         $cases[] = [
             'foo-index',
             true,
-            'foo-index-2001.01.30-2',
+            'foo-index-2011.11.21-2',
+            new \DateTime('2011-11-21'),
+        ];
+
+        $time = new \DateTime();
+        $cases[] = [
+            'bar-index',
+            false,
+            'bar-index-' . $time->format('Y.m.d'),
         ];
 
         return $cases;
@@ -42,13 +51,14 @@ class IndexSuffixFinderTest extends \PHPUnit_Framework_TestCase
     /**
      * Test findNextFreeIndex method.
      *
-     * @param string $indexName
-     * @param bool   $isOccupied
-     * @param string $expectedName
+     * @param string    $indexName
+     * @param bool      $isOccupied
+     * @param string    $expectedName
+     * @param \DateTime $time
      *
      * @dataProvider getFindNextFreeIndexCases
      */
-    public function testFindNextFreeIndex($indexName, $isOccupied, $expectedName)
+    public function testFindNextFreeIndex($indexName, $isOccupied, $expectedName, $time = null)
     {
         /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
         $connection = $this->getMock('\ONGR\ElasticsearchBundle\Client\Connection', [], [], '', false);
@@ -61,7 +71,7 @@ class IndexSuffixFinderTest extends \PHPUnit_Framework_TestCase
         }
 
         $finder = new IndexSuffixFinder();
-        $actualName = $finder->setNextFreeIndex($connection, new \DateTime('2001-01-30'));
+        $actualName = $finder->setNextFreeIndex($connection, $time);
         $this->assertEquals($expectedName, $actualName);
     }
 }

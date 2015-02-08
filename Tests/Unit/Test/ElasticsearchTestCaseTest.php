@@ -62,7 +62,8 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->containerMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')
+        $this->containerMock = $this
+            ->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
