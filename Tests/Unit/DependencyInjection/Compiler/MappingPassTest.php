@@ -170,7 +170,6 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
     /**
      * Check when Manager Mapping is empty.
      */
-
     public function testWhenManagerMappingIsEmpty()
     {
         $expectedConnections = [
