@@ -70,12 +70,15 @@ class ImportService
 
             if (($key + 1) % $bulkSize == 0) {
                 $manager->commit();
-                $progress->advance($bulkSize);
             }
+
+            $progress->advance();
         }
 
-        $manager->commit();
-        $progress->advance($reader->count() % $bulkSize);
+        if (($key + 1) % $bulkSize != 0) {
+            $manager->commit();
+        }
+
         $progress->finish();
         $output->writeln('');
     }

@@ -14,16 +14,36 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 use ONGR\ElasticsearchBundle\Command\IndexImportCommand;
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class IndexImportCommandTest extends ElasticsearchTestCase
 {
     /**
-     * Test for index import command.
+     * Data provider for testIndexImport.
+     *
+     * @return array
      */
-    public function testIndexImport()
+    public function bulkSizeProvider()
+    {
+        return [
+            [10, 9, 'command_import_9.json'],
+            [10, 10, 'command_import_10.json'],
+            [10, 11, 'command_import_11.json'],
+            [5, 20, 'command_import_20.json'],
+        ];
+    }
+
+    /**
+     * Test for index import command.
+     *
+     * @param int    $bulkSize
+     * @param int    $realSize
+     * @param string $filename
+     *
+     * @dataProvider bulkSizeProvider
+     */
+    public function testIndexImport($bulkSize, $realSize, $filename)
     {
         $app = new Application();
         $app->add($this->getImportCommand());
@@ -34,7 +54,8 @@ class IndexImportCommandTest extends ElasticsearchTestCase
             [
                 'command' => $command->getName(),
                 '--raw' => true,
-                'filename' => __DIR__ . '/../../app/fixture/Json/command_import_0.json',
+                'filename' => __DIR__ . '/../../app/fixture/Json/' . $filename,
+                '--bulk-size' => $bulkSize,
             ]
         );
 
@@ -42,16 +63,17 @@ class IndexImportCommandTest extends ElasticsearchTestCase
         $repo = $manager->getRepository('AcmeTestBundle:Product');
         $search = $repo
             ->createSearch()
-            ->addQuery(new MatchAllQuery());
+            ->addQuery(new MatchAllQuery())
+            ->setSize($realSize);
         $results = $repo->execute($search);
 
         $ids = [];
         foreach ($results as $doc) {
-            $ids[] = $doc->_id;
+            $ids[] = substr($doc->_id, 3);
         }
         sort($ids);
-
-        $this->assertEquals(['doc1', 'doc2'], $ids);
+        $data = range(1, $realSize);
+        $this->assertEquals($data, $ids);
     }
 
     /**
