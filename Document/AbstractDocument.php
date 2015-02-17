@@ -21,27 +21,27 @@ class AbstractDocument implements DocumentInterface
     /**
      * @var string
      */
-    public $id;
+    private $id;
 
     /**
      * @var string
      */
-    public $score;
+    private $score;
 
     /**
      * @var string
      */
-    public $parent;
+    private $parent;
 
     /**
      * @var string
      */
-    public $ttl;
+    private $ttl;
 
     /**
      * @var DocumentHighlight
      */
-    public $highlight;
+    private $highlight;
 
     /**
      * Legacy property support.

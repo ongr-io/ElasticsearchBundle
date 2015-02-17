@@ -355,7 +355,10 @@ class RepositoryTest extends ElasticsearchTestCase
                 'id' => '5',
                 'title' => 'awesome',
             ],
-            array_filter(get_object_vars($document)),
+            [
+                'id' => $document->getId(),
+                'title' => $document->title,
+            ],
             'Document should be created.'
         );
 
@@ -371,7 +374,10 @@ class RepositoryTest extends ElasticsearchTestCase
                 'id' => '5',
                 'title' => 'more awesome',
             ],
-            array_filter(get_object_vars($document)),
+            [
+                'id' => $document->getId(),
+                'title' => $document->title,
+            ],
             'Document should be updated.'
         );
     }
