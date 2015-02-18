@@ -1,0 +1,13 @@
+[
+  {"count":10},
+  {"_type":"product","_id":"doc1","_source":{"title":"Document 1"}},
+  {"_type":"product","_id":"doc2","_source":{"title":"Document 2"}},
+  {"_type":"product","_id":"doc3","_source":{"title":"Document 3"}},
+  {"_type":"product","_id":"doc4","_source":{"title":"Document 4"}},
+  {"_type":"product","_id":"doc5","_source":{"title":"Document 5"}},
+  {"_type":"product","_id":"doc6","_source":{"title":"Document 6"}},
+  {"_type":"product","_id":"doc7","_source":{"title":"Document 7"}},
+  {"_type":"product","_id":"doc8","_source":{"title":"Document 8"}},
+  {"_type":"product","_id":"doc9","_source":{"title":"Document 9"}},
+  {"_type":"product","_id":"doc10","_source":{"title":"Document 10"}}
+]
