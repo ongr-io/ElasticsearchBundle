@@ -112,7 +112,7 @@ class HasParentQueryTest extends ElasticsearchTestCase
      *
      * @dataProvider getTestHasParentQueryData
      */
-    public function testHasParentQueryQuery($query, $expected, $mapping)
+    public function testHasParentQuery($query, $expected, $mapping)
     {
         /** @var Repository $repo */
         $repo = $this->getManager('default', true, $mapping)->getRepository('AcmeTestBundle:Comment');

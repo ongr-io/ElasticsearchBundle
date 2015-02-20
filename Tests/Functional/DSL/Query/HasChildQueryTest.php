@@ -112,7 +112,7 @@ class HasChildQueryTest extends ElasticsearchTestCase
      *
      * @dataProvider getTestHasChildQueryData
      */
-    public function testHasChildQueryQuery($query, $expected, $mapping)
+    public function testHasChildQuery($query, $expected, $mapping)
     {
         /** @var Repository $repo */
         $repo = $this->getManager('default', true, $mapping)->getRepository('AcmeTestBundle:Product');
