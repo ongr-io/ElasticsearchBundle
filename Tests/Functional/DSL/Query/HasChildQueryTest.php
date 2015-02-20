@@ -22,7 +22,6 @@ use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
  */
 class HasChildQueryTest extends ElasticsearchTestCase
 {
-
     /**
      * {@inheritdoc}
      */
