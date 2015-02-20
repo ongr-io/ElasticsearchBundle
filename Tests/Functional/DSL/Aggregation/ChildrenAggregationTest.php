@@ -24,6 +24,16 @@ class ChildrenAggregationTest extends ElasticsearchTestCase
     /**
      * {@inheritdoc}
      */
+    protected function getIgnoredVersions()
+    {
+        return [
+            ['1.4.0', '<'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDataArray()
     {
         return [
