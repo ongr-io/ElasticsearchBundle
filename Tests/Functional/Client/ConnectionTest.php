@@ -26,29 +26,17 @@ class ConnectionTest extends ElasticsearchTestCase
         $manager = $this->getManager('bar');
         $connection = $manager->getConnection();
 
-        // Using phpunit setExpectedException does not continue after exception is thrown.
-        $thrown = false;
-        try {
-            $connection->updateMapping();
-        } catch (\LogicException $e) {
-            $thrown = true;
-            // Continue.
-        }
-        $this->assertTrue($thrown, '\LogicException should be thrown');
+        $this->assertEquals(-1, $connection->updateMapping(), 'Connection does not have any mapping loaded.');
 
         $connection = $this->getManager(
             'bar',
             false,
             $this->getTestMapping()
         )->getConnection();
-
-        $status = $connection->updateMapping();
-        $this->assertTrue($status, 'Mapping should be updated');
+        $this->assertEquals(1, $connection->updateMapping(), 'Mapping should be updated');
 
         $connection->forceMapping($this->getTestLessMapping());
-
-        $status = $connection->updateMapping();
-        $this->assertTrue($status, 'Mapping should be updated');
+        $this->assertEquals(1, $connection->updateMapping(), 'Mapping should be updated');
 
         $clientMapping = $connection->getClient()->indices()->getMapping(
             [
