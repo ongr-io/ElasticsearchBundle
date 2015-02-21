@@ -174,6 +174,8 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      */
     protected function tearDown()
     {
+        parent::tearDown();
+
         foreach ($this->managers as $name => $manager) {
             try {
                 $manager->getConnection()->dropIndex();
@@ -184,15 +186,19 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     }
 
     /**
+     * Returns service container.
+     *
+     * @param bool  $reinitialize  Force kernel reinitialization.
+     * @param array $kernelOptions Options used passed to kernel if it needs to be initialized.
+     *
      * @return ContainerInterface
      */
-    protected function getContainer()
+    protected function getContainer($reinitialize = false, $kernelOptions = [])
     {
-        if ($this->container) {
-            return $this->container;
+        if (!$this->container || $reinitialize) {
+            static::bootKernel($kernelOptions);
+            $this->container = static::$kernel->getContainer();
         }
-
-        $this->container = self::createClient()->getContainer();
 
         return $this->container;
     }
@@ -236,7 +242,10 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         }
 
         // Drops and creates index.
-        $createIndex && $connection->dropAndCreateIndex();
+        if ($createIndex) {
+            $connection->dropAndCreateIndex();
+            $connection->createTypes();
+        }
 
         // Populates elasticsearch index with data.
         $data = $this->getDataArray();

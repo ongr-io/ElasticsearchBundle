@@ -21,8 +21,8 @@ class ElasticsearchTestCaseDummy extends ElasticsearchTestCase
     /**
      * {@inheritdoc}
      */
-    public function getContainer()
+    protected function getContainer($rebuild = false, $kernelOptions = [])
     {
-        return parent::getContainer();
+        return parent::getContainer($rebuild, $kernelOptions);
     }
 }
