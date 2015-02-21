@@ -255,12 +255,12 @@ class Connection
             return 0;
         }
 
-        $newTypes = array_keys(array_diff_key($mapping, $this->getMappingFromIndex($types)));
-        if (empty($newTypes)) {
+        $mapping = array_diff_key($mapping, $this->getMappingFromIndex($types));
+        if (empty($mapping)) {
             return -1;
         }
 
-        $this->loadMappingArray(array_intersect_key($mapping, array_flip($newTypes)));
+        $this->loadMappingArray($mapping);
 
         return 1;
     }
@@ -486,7 +486,7 @@ class Connection
             return $this->filterMapping($types, $mapping[$this->getIndexName()]['mappings']);
         }
 
-        return null;
+        return [];
     }
 
     /**
@@ -671,7 +671,7 @@ class Connection
      * @param string|array $type    Types to filter from mapping.
      * @param array        $mapping Mapping array.
      *
-     * @return array|null
+     * @return array
      */
     private function filterMapping($type, $mapping)
     {
@@ -683,6 +683,6 @@ class Connection
             return array_intersect_key($mapping, array_flip($type));
         }
 
-        return null;
+        return [];
     }
 }
