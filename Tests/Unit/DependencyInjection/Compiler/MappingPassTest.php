@@ -34,7 +34,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $metadataCollectorMock->expects($this->any())->method('getMapping')->willReturn(
+        $metadataCollectorMock->expects($this->any())->method('getClientMapping')->willReturn(
             [
                 'AcmeTestBundle:Bar' => [
                     'properties' => [],
@@ -48,7 +48,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         );
-        $metadataCollectorMock->expects($this->any())->method('getBundleMapping')->willReturn([$bundleMappingData]);
+        $metadataCollectorMock->expects($this->any())->method('getMapping')->willReturn([$bundleMappingData]);
         $metadataCollectorMock->expects($this->any())->method('getProxyPaths')->willReturn([]);
 
         $this->container = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerBuilder')

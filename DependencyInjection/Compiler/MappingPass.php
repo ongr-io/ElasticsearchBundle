@@ -102,11 +102,12 @@ class MappingPass implements CompilerPassInterface
         /** @var MetadataCollector $collector */
         $collector = $container->get('es.metadata_collector');
         foreach ($settings['mappings'] as $bundle) {
-            foreach ($collector->getBundleMapping($bundle) as $repository => $metadata) {
+            foreach ($collector->getMapping($bundle) as $repository => $metadata) {
                 $metadataDefinition = new Definition('ONGR\ElasticsearchBundle\Mapping\ClassMetadata');
                 $metadataDefinition->addArgument([$repository => $metadata]);
 
-                $out[$bundle . ':' . $metadata['class']] = $metadataDefinition;
+                $out[strpos($bundle, ':') === false ? $bundle
+                    . ':' . $metadata['class'] : $bundle] = $metadataDefinition;
             }
         }
 
@@ -209,7 +210,7 @@ class MappingPass implements CompilerPassInterface
         foreach ($bundles as $bundle) {
             $mappings = array_replace_recursive(
                 $mappings,
-                $metadataCollector->getMapping($bundle)
+                $metadataCollector->getClientMapping($bundle)
             );
             $paths = array_replace($paths, $metadataCollector->getProxyPaths());
         }

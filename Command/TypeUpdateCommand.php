@@ -99,7 +99,7 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
                 foreach ($setting['mappings'] as $bundle) {
                     $mappings = array_replace_recursive(
                         $mappings,
-                        $collector->getMapping($bundle, true)
+                        $collector->getClientMapping($bundle, true)
                     );
                 }
             }

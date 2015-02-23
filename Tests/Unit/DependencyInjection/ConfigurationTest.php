@@ -126,29 +126,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'Host must be configured under hosts configuration tree.',
         ];
 
-        // Case #4: invalid bundle name.
-        $out[] = [
-            [
-                'connections' => [
-                    'acme' => [
-                        'hosts' => [
-                            ['host' => '127.0.0.1'],
-                        ],
-                        'index_name' => 'acme',
-                    ],
-                ],
-                'managers' => [
-                    'acme' => [
-                        'connection' => 'acme',
-                        'mappings' => ['foo'],
-                    ],
-                ],
-            ],
-            $expectedConfiguration,
-            true,
-            '"foo" is not a bundle.',
-        ];
-
         // Case #4: using auth.
         $out[] = [
             [
