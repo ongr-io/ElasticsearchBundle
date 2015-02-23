@@ -104,7 +104,7 @@ class HasParentFilterTest extends ElasticsearchTestCase
     }
 
     /**
-     * Test Ids filter for expected search results.
+     * Test has_parent filter for expected search results.
      *
      * @param BuilderInterface $filter
      * @param array            $expected
@@ -121,12 +121,6 @@ class HasParentFilterTest extends ElasticsearchTestCase
 
         sort($results);
         sort($expected);
-        $this->assertEquals($expected, $results);
-
-        $search = $repo->createSearch()->addFilter($filter);
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
-
-        sort($results);
         $this->assertEquals($expected, $results);
     }
 }

@@ -104,7 +104,7 @@ class HasChildQueryTest extends ElasticsearchTestCase
     }
 
     /**
-     * Test Ids query for expected search results.
+     * Test has_child query for expected search results.
      *
      * @param BuilderInterface $query
      * @param array            $expected
@@ -121,12 +121,6 @@ class HasChildQueryTest extends ElasticsearchTestCase
 
         sort($results);
         sort($expected);
-        $this->assertEquals($expected, $results);
-
-        $search = $repo->createSearch()->addQuery($query);
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
-
-        sort($results);
         $this->assertEquals($expected, $results);
     }
 }
