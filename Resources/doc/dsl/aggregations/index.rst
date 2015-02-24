@@ -39,7 +39,7 @@ To nest aggregations it's fairly easy. Just add aggregation to another. f.e.
     $terms->addAggregation($range);
     
     
-Currently we support 8 different aggregation types:
+Currently we support 9 different aggregation types:
 
 - `Cardinality aggregation <index.html#id2>`_
 - `Filter aggregation <index.html#id3>`_
@@ -49,6 +49,7 @@ Currently we support 8 different aggregation types:
 - `Stats aggregation <index.html#id7>`_
 - `Terms aggregation <index.html#id8>`_
 - `TopHits aggregation <index.html#id9>`_
+- `Children aggregation <index.html#id10>`_
 
 
 Cardinality aggregation
@@ -69,7 +70,7 @@ Usage sample:
     $search = $repo
         ->createSearch()
         ->addAggregation($aggregation);
-    
+
     $results = $repo->execute($search);
 
 
@@ -247,4 +248,22 @@ Tophits aggregation
 
 It also accepts these options: ``size``, ``from``, ``sort``. All of them can be set through constructor or setters.
 
+Children aggregation
+--------------------
 
+`children aggregations <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-aggregations-bucket-children-aggregation.html>`_ - A special single bucket aggregation that enables aggregating from buckets on parent document types to buckets on child documents.
+
+.. code:: php
+
+    ...
+
+    $childrenAggregation = new ChildrenAggregation('test_children_agg');
+    $childrenAggregation->setChildren('comment');
+
+    $aggregation = new TermsAggregation('test_terms_agg');
+    $aggregation->setField('comment.title');
+
+    $childrenAggregation->addAggregation($aggregation);
+
+    $search = $repository->createSearch()->addAggregation($childrenAggregation);
+    $results = $repository->execute($search);
