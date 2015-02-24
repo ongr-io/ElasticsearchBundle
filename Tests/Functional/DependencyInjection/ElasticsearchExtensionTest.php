@@ -53,6 +53,10 @@ class ElasticsearchExtensionTest extends WebTestCase
                 'ONGR\ElasticsearchBundle\ORM\Repository',
             ],
             [
+                'es.manager.default.media',
+                'ONGR\ElasticsearchBundle\ORM\Repository',
+            ],
+            [
                 'es.metadata_collector',
                 'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
             ],
@@ -102,7 +106,10 @@ class ElasticsearchExtensionTest extends WebTestCase
             'default' => [
                 'connection' => 'default',
                 'debug' => true,
-                'mappings' => ['AcmeTestBundle'],
+                'mappings' => [
+                    'AcmeTestBundle',
+                    'AcmeFooBundle:Media',
+                ],
             ],
             'bar' => [
                 'connection' => 'bar',

@@ -28,6 +28,7 @@ ongr_elasticsearch:
             debug: true
             mappings:
                 - AcmeTestBundle
+                - AcmeFooBundle:Media
         bar:
             connection: bar
             mappings:

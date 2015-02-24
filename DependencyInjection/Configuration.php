@@ -137,16 +137,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->arrayNode('mappings')
                         ->info('Maps manager to bundles. f.e. AcmeDemoBundle')
-                        ->prototype('scalar')
-                            ->validate()
-                                ->ifTrue(
-                                    function ($v) {
-                                        return substr(strtolower($v), -strlen('bundle')) !== 'bundle';
-                                    }
-                                )
-                                ->thenInvalid('%s is not a bundle.')
-                            ->end()
-                        ->end()
+                        ->prototype('scalar')->end()
                     ->end()
                 ->end()
             ->end();
