@@ -174,6 +174,25 @@ class Connection
     }
 
     /**
+     * Removes a single document.
+     *
+     * @param array $params Parameters.
+     *
+     * $params = [
+     *   'index' => 'index_name',
+     *   'type' => 'document_type',
+     *   'id' => 'id',
+     *   ];.
+     *
+     * @return array
+     */
+
+    public function delete($params)
+    {
+        return $this->client->delete($params);
+    }
+
+    /**
      * Executes search query in the index.
      *
      * @param array $types             List of types to search in.

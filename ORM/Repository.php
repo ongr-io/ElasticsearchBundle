@@ -238,7 +238,7 @@ class Repository
                 'id' => $id,
             ];
 
-            $response = $this->manager->getConnection()->getClient()->delete($params);
+            $response = $this->manager->getConnection()->delete($params);
 
             return $response;
         } else {
