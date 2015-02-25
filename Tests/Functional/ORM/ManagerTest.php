@@ -79,6 +79,40 @@ class ManagerTest extends ElasticsearchTestCase
         $this->assertEquals($url2->url, $actualUrl[1]->url);
 
         $this->assertEquals($cdn->cdn_url, $actualUrl[0]->cdn->cdn_url);
+
+        // Update links, as object.
+        $url3 = new UrlObject();
+        $url3->url = 'test_url3';
+        $actualProduct->links[] = $url3;
+        $manager->persist($actualProduct);
+        $manager->commit();
+
+        $actualProduct = $repository->execute($repository->createSearch())[0];
+        $this->assertEquals(3, count($actualProduct->links));
+        $this->assertEquals('test_url3', $actualProduct->links[2]->url);
+
+        // Update links, as array.
+        $actualProduct->links[] = ['url' => 'test_url4'];
+        $manager->persist($actualProduct);
+        $manager->commit();
+
+        $actualProduct = $repository->execute($repository->createSearch())[0];
+        $this->assertEquals(4, count($actualProduct->links));
+        $this->assertEquals('test_url4', $actualProduct->links[3]->url);
+
+        // Update links, existing using foreach.
+        foreach ($actualProduct->links as $link) {
+            if ($link->url === 'test_url2') {
+                $link->url = 'updated_test_url2';
+            }
+        }
+
+        $manager->persist($actualProduct);
+        $manager->commit();
+
+        $actualProduct = $repository->execute($repository->createSearch())[0];
+        $this->assertEquals(4, count($actualProduct->links));
+        $this->assertEquals('updated_test_url2', $actualProduct->links[1]->url);
     }
 
     /**
