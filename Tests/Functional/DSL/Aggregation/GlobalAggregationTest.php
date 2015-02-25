@@ -90,7 +90,7 @@ class GlobalAggregationTest extends ElasticsearchTestCase
         ];
 
         // Case #1 global aggregation with query.
-        $query = new MatchQuery('bar', 'title');
+        $query = new MatchQuery('title', 'bar');
 
         $out[] = [
             $aggregation,
