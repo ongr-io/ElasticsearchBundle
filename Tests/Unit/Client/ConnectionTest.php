@@ -23,13 +23,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $config = [
             'index' => 'index_name',
-            'body' => [
-                'mappings' => [
-                    'test_mapping' => [
-                        'properties' => [],
-                    ],
-                ],
-            ],
         ];
 
         $connection = new Connection($this->getClient(), $config);
@@ -39,12 +32,20 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $connection->getIndexName(),
             'Recieved wrong index name'
         );
+
         $this->assertNull(
-            $connection->getMapping('product'),
-            'should not contain product mapping'
+            $connection->getMapping(),
+            'should return null because no mapping is loaded into connection'
         );
-        $this->assertArrayHasKey(
-            'properties',
+
+        $connection->setMapping('test_mapping', ['properties' => []]);
+
+        $this->assertEmpty(
+            $connection->getMapping('product'),
+            'should not contain product mapping and return empty array'
+        );
+
+        $this->assertNotEmpty(
             $connection->getMapping('test_mapping'),
             'should contain test mapping'
         );

@@ -20,8 +20,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
 {
-    const START_QUERY_COUNT = 8;
-
     /**
      * {@inheritdoc}
      */
@@ -62,7 +60,7 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
         $manager->commit();
 
         // Four queries executed while index was being created.
-        $this->assertEquals(4, $this->getCollector()->getQueryCount() - self::START_QUERY_COUNT);
+        $this->greaterThanOrEqual(4, $this->getCollector()->getQueryCount());
     }
 
     /**

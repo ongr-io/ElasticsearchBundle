@@ -221,7 +221,10 @@ class Connection
      */
     public function createIndex($putWarmers = false)
     {
-        $this->client->indices()->create($this->settings);
+        $settings = $this->settings;
+        unset($settings['body']['mappings']);
+
+        $this->client->indices()->create($settings);
 
         if ($putWarmers) {
             // Sometimes Elasticsearch gives service unavailable.
@@ -236,6 +239,85 @@ class Connection
     public function dropIndex()
     {
         $this->client->indices()->delete(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Puts mapping into elasticsearch client.
+     *
+     * @param array $types Specific types to put.
+     *
+     * @return int
+     */
+    public function createTypes(array $types = [])
+    {
+        $mapping = $this->getMapping($types);
+        if (empty($mapping)) {
+            return 0;
+        }
+
+        $mapping = array_diff_key($mapping, $this->getMappingFromIndex($types));
+        if (empty($mapping)) {
+            return -1;
+        }
+
+        $this->loadMappingArray($mapping);
+
+        return 1;
+    }
+
+    /**
+     * Drops mapping from elasticsearch client.
+     *
+     * @param array $types Specific types to drop.
+     *
+     * @return int
+     */
+    public function dropTypes(array $types = [])
+    {
+        $mapping = $this->getMapping($types);
+
+        if (empty($mapping)) {
+            return 0;
+        }
+
+        $this->unloadMappingArray(array_keys($mapping));
+
+        return 1;
+    }
+
+    /**
+     * Updates elasticsearch client mapping.
+     *
+     * @param array $types Specific types to update.
+     *
+     * @return int
+     */
+    public function updateTypes(array $types = [])
+    {
+        if (!$this->getMapping($types)) {
+            return -1;
+        }
+
+        $tempSettings = $this->settings;
+        $tempSettings['index'] = uniqid('mapping_check_');
+        $mappingCheckConnection = new Connection($this->client, $tempSettings);
+        $mappingCheckConnection->createIndex();
+        $mappingCheckConnection->createTypes($types);
+
+        $newMapping = $mappingCheckConnection->getMappingFromIndex($types);
+        $oldMapping = $this->getMappingFromIndex($types);
+
+        $mappingCheckConnection->dropIndex();
+
+        $tool = new MappingTool();
+        $updated = (int)$tool->checkMapping($oldMapping, $newMapping);
+
+        if ($updated) {
+            $this->unloadMappingArray($tool->getRemovedTypes());
+            $this->loadMappingArray($tool->getUpdatedTypes());
+        }
+
+        return $updated;
     }
 
     /**
@@ -285,18 +367,16 @@ class Connection
     }
 
     /**
-     * Returns mapping by type.
+     * Returns mapping by type if defined.
      *
-     * @param string $type Type name.
+     * @param string|array $type Type names.
      *
      * @return array|null
      */
-    public function getMapping($type)
+    public function getMapping($type = [])
     {
-        if (isset($this->settings['body']['mappings'])
-            && array_key_exists($type, $this->settings['body']['mappings'])
-        ) {
-            return $this->settings['body']['mappings'][$type];
+        if (isset($this->settings['body']['mappings'])) {
+            return $this->filterMapping($type, $this->settings['body']['mappings']);
         }
 
         return null;
@@ -343,49 +423,17 @@ class Connection
     /**
      * Mapping is compared with loaded, if needed updates it and returns true.
      *
+     * @param array $types Types to update.
+     *
      * @return bool
+     *
      * @throws \LogicException
+     *
+     * @deprecated Will be removed in 1.0. Please now use Connection#updateTypes()
      */
-    public function updateMapping()
+    public function updateMapping(array $types = [])
     {
-        if (!isset($this->settings['body']['mappings']) || empty($this->settings['body']['mappings'])) {
-            throw new \LogicException('Connection does not have any mapping loaded.');
-        }
-
-        $tempSettings = $this->settings;
-        $tempSettings['index'] = uniqid('mapping_check_');
-        $mappingCheckConnection = new Connection($this->client, $tempSettings);
-        $mappingCheckConnection->createIndex();
-
-        $newMapping = $mappingCheckConnection->getMappingFromIndex();
-        $oldMapping = $this->getMappingFromIndex();
-
-        $mappingCheckConnection->dropIndex();
-
-        $tool = new MappingTool();
-        $updated = $tool->checkMapping($oldMapping, $newMapping);
-
-        if ($updated) {
-            foreach ($tool->getRemovedTypes() as $type) {
-                $this->client->indices()->deleteMapping(
-                    [
-                        'index' => $this->getIndexName(),
-                        'type' => $type,
-                    ]
-                );
-            }
-            foreach ($tool->getUpdatedTypes() as $type => $properties) {
-                $this->client->indices()->putMapping(
-                    [
-                        'index' => $this->getIndexName(),
-                        'type' => $type,
-                        'body' => [$type => $properties],
-                    ]
-                );
-            }
-        }
-
-        return $updated;
+        return $this->updateTypes($types);
     }
 
     /**
@@ -423,9 +471,11 @@ class Connection
     /**
      * Returns mapping from index.
      *
+     * @param array|string $types Returns only certain set of types if set.
+     *
      * @return array
      */
-    public function getMappingFromIndex()
+    public function getMappingFromIndex($types = [])
     {
         $mapping = $this
             ->client
@@ -433,7 +483,7 @@ class Connection
             ->getMapping(['index' => $this->getIndexName()]);
 
         if (array_key_exists($this->getIndexName(), $mapping)) {
-            return $mapping[$this->getIndexName()]['mappings'];
+            return $this->filterMapping($types, $mapping[$this->getIndexName()]['mappings']);
         }
 
         return [];
@@ -465,7 +515,7 @@ class Connection
     }
 
     /**
-     * Clears elasticsearch cache.
+     * Clears elasticsearch client cache.
      */
     public function clearCache()
     {
@@ -576,5 +626,63 @@ class Connection
                 . ' do not exist. Available: ' . implode(', ', $warmerNames)
             );
         }
+    }
+
+    /**
+     * Puts mapping into elasticsearch.
+     *
+     * @param array $mapping Mapping to put into client.
+     */
+    private function loadMappingArray(array $mapping)
+    {
+        foreach ($mapping as $type => $properties) {
+            $this->client->indices()->putMapping(
+                [
+                    'index' => $this->getIndexName(),
+                    'type' => $type,
+                    'body' => [
+                        $type => $properties,
+                    ],
+                ]
+            );
+        }
+    }
+
+    /**
+     * Drops mapping from elasticsearch client.
+     *
+     * @param array $mapping Mapping to drop from client.
+     */
+    private function unloadMappingArray(array $mapping)
+    {
+        foreach ($mapping as $type) {
+            $this->client->indices()->deleteMapping(
+                [
+                    'index' => $this->getIndexName(),
+                    'type' => $type,
+                ]
+            );
+        }
+    }
+
+    /**
+     * Filters out mapping from given type.
+     *
+     * @param string|array $type    Types to filter from mapping.
+     * @param array        $mapping Mapping array.
+     *
+     * @return array
+     */
+    private function filterMapping($type, $mapping)
+    {
+        if (empty($type)) {
+            return $mapping;
+        } elseif (is_string($type) && array_key_exists($type, $mapping)) {
+            return $mapping[$type];
+        } elseif (is_array($type)) {
+            return array_intersect_key($mapping, array_flip($type));
+        }
+
+        return [];
     }
 }
