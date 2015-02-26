@@ -16,12 +16,12 @@ use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
 use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\DSL\Filter\HasParentFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * HasParent filter functional test.
  */
-class HasParentFilterTest extends ElasticsearchTestCase
+class HasParentFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -93,7 +93,8 @@ class HasParentFilterTest extends ElasticsearchTestCase
         ];
 
         // Case #1: Test with no data.
-        $filter = new HasParentFilter('product', new TermQuery('title', 'nofoo'), [], HasParentFilter::USE_QUERY);
+        $filter = new HasParentFilter('product', new TermQuery('title', 'nofoo'));
+        $filter->setDslType('query');
 
         $out[] = [
             $filter,
