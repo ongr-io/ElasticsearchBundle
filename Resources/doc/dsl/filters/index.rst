@@ -36,8 +36,9 @@ The ``has_child`` filter with query:
 
     ...
 
-    $hasChild = new HasChildFilter('comment', new TermQuery('userName', 'foo'), [], HasChildFilter::INNER_QUERY);
-    $search->addFilter($hasParent);
+    $hasChild = new HasChildFilter('comment', new TermQuery('userName', 'foo'));
+    $hasChild->setDslType('query');
+    $search->addFilter($hasChild);
     $search->addQuery(new MatchAllQuery());
     $results = $repository->execute($search);
 
@@ -66,6 +67,7 @@ The ``has_parent`` filter with query:
 
     ...
 
-    $hasParent = new HasParentFilter('content', new TermQuery('title', 'nested'), [], HasParentFilter::INNER_QUERY);
+    $hasParent = new HasParentFilter('content', new TermQuery('title', 'nested'), []);
+    $hasParent->setDslType('query');
     $search->addFilter($hasParent);
     $results = $repository->execute($search);
