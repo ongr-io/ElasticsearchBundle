@@ -19,23 +19,23 @@ use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
 class MultiMatchQuery implements BuilderInterface
 {
     /**
-     * @var string
-     */
-    private $query;
-
-    /**
      * @var array
      */
     private $fields = [];
 
     /**
-     * @param string $query
-     * @param array  $fields
+     * @var string
      */
-    public function __construct($query, array $fields)
+    private $query;
+
+    /**
+     * @param array  $fields
+     * @param string $query
+     */
+    public function __construct(array $fields, $query)
     {
-        $this->query = $query;
         $this->fields = $fields;
+        $this->query = $query;
     }
 
     /**
@@ -52,8 +52,8 @@ class MultiMatchQuery implements BuilderInterface
     public function toArray()
     {
         return [
-            'query' => $this->query,
             'fields' => $this->fields,
+            'query' => $this->query,
         ];
     }
 }

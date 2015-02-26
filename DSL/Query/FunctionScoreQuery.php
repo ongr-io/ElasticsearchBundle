@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\DSL\Query;
 
 use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use ONGR\ElasticsearchBundle\DSL\DslTypeAwareTrait;
 use ONGR\ElasticsearchBundle\DSL\ParametersTrait;
 
 /**
@@ -20,16 +21,12 @@ use ONGR\ElasticsearchBundle\DSL\ParametersTrait;
 class FunctionScoreQuery implements BuilderInterface
 {
     use ParametersTrait;
-
-    /**
-     * @var string
-     */
-    private $dslType;
+    use DslTypeAwareTrait;
 
     /**
      * @var BuilderInterface
      */
-    private $filterOrQuery;
+    private $query;
 
     /**
      * @var array[]
@@ -37,16 +34,16 @@ class FunctionScoreQuery implements BuilderInterface
     private $functions;
 
     /**
-     * @param BuilderInterface $filterOrQuery
+     * @param BuilderInterface $query
      * @param array            $functions
      * @param array            $parameters
      */
-    public function __construct(BuilderInterface $filterOrQuery, array $functions, array $parameters = [])
+    public function __construct(BuilderInterface $query, array $functions, array $parameters = [])
     {
-        $this->dslType = array_slice(explode('\\', get_class($filterOrQuery)), -2, 1)[0];
-        $this->filterOrQuery = $filterOrQuery;
+        $this->query = $query;
         $this->functions = $functions;
         $this->setParameters($parameters);
+        $this->setDslType('query');
     }
 
     /**
@@ -63,8 +60,8 @@ class FunctionScoreQuery implements BuilderInterface
     public function toArray()
     {
         $query = [
-            strtolower($this->dslType) => [
-                $this->filterOrQuery->getType() => $this->filterOrQuery->toArray(),
+            strtolower($this->getDslType()) => [
+                $this->query->getType() => $this->query->toArray(),
             ],
             'functions' => [$this->functions],
         ];

@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\DSL\Filter;
 
 use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use ONGR\ElasticsearchBundle\DSL\DslTypeAwareTrait;
 use ONGR\ElasticsearchBundle\DSL\ParametersTrait;
 
 /**
@@ -20,9 +21,7 @@ use ONGR\ElasticsearchBundle\DSL\ParametersTrait;
 class HasChildFilter implements BuilderInterface
 {
     use ParametersTrait;
-
-    const INNER_QUERY = 'query';
-    const INNER_FILTER = 'filter';
+    use DslTypeAwareTrait;
 
     /**
      * @var string
@@ -32,37 +31,21 @@ class HasChildFilter implements BuilderInterface
     /**
      * @var BuilderInterface
      */
-    private $filter;
-
-    /**
-     * @var BuilderInterface
-     */
     private $query;
 
     /**
      * @param string           $type
-     * @param BuilderInterface $block
+     * @param BuilderInterface $query
      * @param array            $parameters
-     * @param string           $inner
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct($type, BuilderInterface $block, array $parameters = [], $inner = self::INNER_FILTER)
+    public function __construct($type, BuilderInterface $query, array $parameters = [])
     {
         $this->type = $type;
-
-        switch ($inner) {
-            case 'filter':
-                $this->filter = $block;
-                break;
-            case 'query':
-                $this->query = $block;
-                break;
-            default:
-                throw new \InvalidArgumentException('Not supported argument type');
-        }
-
+        $this->query = $query;
         $this->setParameters($parameters);
+        $this->setDslType('filter');
     }
 
     /**
@@ -78,17 +61,10 @@ class HasChildFilter implements BuilderInterface
      */
     public function toArray()
     {
-        $query = [ 'type' => $this->type ];
-
-        $queries = ['filter', 'query'];
-
-        foreach ($queries as $type) {
-            if ($this->{$type}) {
-                $query[$type] = [
-                    $this->{$type}->getType() => $this->{$type}->toArray(),
-                ];
-            }
-        }
+        $query = [
+            'type' => $this->type,
+            $this->getDslType() => [$this->query->getType() => $this->query->toArray()],
+        ];
 
         $output = $this->processArray($query);
 

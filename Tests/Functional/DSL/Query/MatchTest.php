@@ -86,7 +86,7 @@ class MatchTest extends ElasticsearchTestCase
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $matchQuery = new MatchQuery($query, 'description', $parameters);
+        $matchQuery = new MatchQuery('description', $query, $parameters);
 
         $search = $repo->createSearch()->addQuery($matchQuery);
 
