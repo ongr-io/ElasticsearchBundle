@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -287,12 +288,40 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->commit();
 
         $repository = $manager->getRepository('AcmeTestBundle:Comment');
-        $search = $repository->createSearch();
-        $results = $repository->execute($search);
+        $results = $repository->execute($repository->createSearch());
         /** @var DocumentInterface $actualProduct */
         $actualProduct = $results[0];
 
         $this->assertGreaterThan(time(), $actualProduct->getCreatedAt()->getTimestamp());
+    }
+
+    /**
+     * Tests cloning documents.
+     */
+    public function testCloningDocuments()
+    {
+        $manager = $this->getManager();
+
+        $document = new Product();
+        $document->setId('tuna_id');
+        $document->title = 'tuna';
+
+        $manager->persist($document);
+        $manager->commit();
+
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $document = $repository->find('tuna_id');
+        $clone = clone $document;
+
+        $this->assertNull($clone->getId(), 'Id should be null\'ed.');
+        $manager->persist($clone);
+        $manager->commit();
+
+        $search = $repository
+            ->createSearch()
+            ->addQuery(new TermQuery('title', 'tuna'));
+
+        $this->assertCount(2, $repository->execute($search), '2 Results should be found.');
     }
 
     /**
