@@ -33,6 +33,12 @@ ongr_elasticsearch:
             connection: bar
             mappings:
                 - ONGRElasticsearchBundle
+        readonly:
+            connection: default
+            debug: true
+            readonly: true
+            mappings:
+                - AcmeTestBundle
 
 services:
     es_test.foo.warmer:

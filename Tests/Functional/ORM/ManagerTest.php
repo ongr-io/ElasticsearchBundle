@@ -11,10 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 
+use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
@@ -26,7 +27,7 @@ use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObjec
 /**
  * Functional tests for orm manager.
  */
-class ManagerTest extends ElasticsearchTestCase
+class ManagerTest extends AbstractElasticsearchTestCase
 {
     /**
      * @var Converter
@@ -113,6 +114,23 @@ class ManagerTest extends ElasticsearchTestCase
         $actualProduct = $repository->execute($repository->createSearch())[0];
         $this->assertEquals(4, count($actualProduct->links));
         $this->assertEquals('updated_test_url2', $actualProduct->links[1]->url);
+    }
+
+    /**
+     * Test if exception is thrown on read only manager.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Bulk operation not permitted.
+     */
+    public function testPersistReadOnlyManager()
+    {
+        $manager = $this->getContainer()->get('es.manager.readonly');
+
+        $product = new Product();
+        $product->title = 'test';
+
+        $manager->persist($product);
+        $manager->commit();
     }
 
     /**

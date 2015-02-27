@@ -38,6 +38,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'acme' => [
                     'connection' => 'acme',
                     'debug' => false,
+                    'readonly' => false,
                     'mappings' => ['AcmeTestBundle'],
                 ],
             ],
