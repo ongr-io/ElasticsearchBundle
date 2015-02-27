@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
@@ -67,6 +68,11 @@ class RepositoryTest extends ElasticsearchTestCase
                         'title' => 'gar',
                         'price' => 100,
                         'description' => 'foo bar Loremo',
+                    ],
+                    [
+                        '_id' => 4,
+                        'title' => 'tuna',
+                        'description' => 'tuna bar Loremo Batman',
                     ],
                 ],
             ],
@@ -552,6 +558,21 @@ class RepositoryTest extends ElasticsearchTestCase
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument',
             $repository->createDocument()
         );
+    }
+
+    /**
+     * Tests if search does not add queries if these was none after execution.
+     */
+    public function testSameSearchExecution()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $search = $repository
+            ->createSearch()
+            ->addFilter(new MissingFilter('price'));
+
+        $result = $repository->execute($search);
+        $this->assertEmpty($search->getQueries());
     }
 
     /**
