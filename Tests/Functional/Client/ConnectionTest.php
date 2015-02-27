@@ -103,8 +103,7 @@ class ConnectionTest extends ElasticsearchTestCase
         $connection->bulk('delete', 'product', ['_id' => 'baz']);
         $connection->commit();
 
-        $this->setExpectedException('Elasticsearch\Common\Exceptions\Missing404Exception');
-        $product = $repository->find('baz');
+        $this->assertNull($repository->find('baz'), 'Document should not be found.');
     }
 
     /**
