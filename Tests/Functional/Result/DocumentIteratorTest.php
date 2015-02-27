@@ -98,4 +98,18 @@ class DocumentIteratorTest extends ElasticsearchTestCase
 
         $this->assertNull($result->current());
     }
+
+    /**
+     * Tests AbstractResultsIterator#first method.
+     */
+    public function testIteratorFirst()
+    {
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $search = $repo
+            ->createSearch()
+            ->addQuery(new MatchAllQuery());
+        $document = $repo->execute($search)->first();
+
+        $this->assertEquals('Foo Product', $document->title);
+    }
 }
