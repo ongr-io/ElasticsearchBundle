@@ -48,7 +48,7 @@ class IndexImportCommandTest extends ElasticsearchTestCase
         $app = new Application();
         $app->add($this->getImportCommand());
 
-        $command = $app->find('es:index:import');
+        $command = $app->find('ongr:es:index:import');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [

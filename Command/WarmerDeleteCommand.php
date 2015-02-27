@@ -29,7 +29,7 @@ class WarmerDeleteCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:warmer:delete')
+            ->setName('ongr:es:warmer:delete')
             ->setDescription('Removes warmers from elasticsearch index.')
             ->addArgument(
                 'names',

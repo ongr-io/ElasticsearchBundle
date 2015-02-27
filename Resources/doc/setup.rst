@@ -125,7 +125,7 @@ Elasticsearch bundle provides several ``CLI`` commands. One of them is for creat
 
 .. code:: bash
 
-    app/console es:index:create
+    app/console ongr:es:index:create
 
 .. note:: More about the rest of the commands can be found in `commands <commands.html>`_ chapter.
 

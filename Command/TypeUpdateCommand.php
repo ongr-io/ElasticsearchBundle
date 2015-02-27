@@ -30,7 +30,7 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:type:update')
+            ->setName('ongr:es:type:update')
             ->setDescription('Updates elasticsearch index mappings.')
             ->addOption(
                 'force',

@@ -46,7 +46,7 @@ class DropIndexCommandTest extends AbstractCommandTestCase
         $app->add($this->getDropCommand());
 
         // Does not drop index.
-        $command = $app->find('es:index:drop');
+        $command = $app->find('ongr:es:index:drop');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
