@@ -106,6 +106,7 @@ class ElasticsearchExtensionTest extends WebTestCase
             'default' => [
                 'connection' => 'default',
                 'debug' => true,
+                'readonly' => false,
                 'mappings' => [
                     'AcmeTestBundle',
                     'AcmeFooBundle:Media',
@@ -114,7 +115,14 @@ class ElasticsearchExtensionTest extends WebTestCase
             'bar' => [
                 'connection' => 'bar',
                 'debug' => false,
+                'readonly' => false,
                 'mappings' => ['ONGRElasticsearchBundle'],
+            ],
+            'readonly' => [
+                'connection' => 'default',
+                'debug' => true,
+                'readonly' => true,
+                'mappings' => ['AcmeTestBundle'],
             ],
         ];
         $actualManagers = $container->getParameter('es.managers');

@@ -103,11 +103,13 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             'default' => [
                 'connection' => 'default',
                 'debug' => true,
+                'readonly' => false,
                 'mappings' => ['AcmeTestBundle'],
             ],
             'bar' => [
                 'connection' => 'bar',
                 'debug' => false,
+                'readonly' => false,
                 'mappings' => ['ONGRElasticsearchBundle'],
             ],
         ];
@@ -145,6 +147,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             'default' => [
                 'connection' => 'foo',
                 'debug' => true,
+                'readonly' => false,
                 'mappings' => ['AcmeTestBundle'],
             ],
         ];
@@ -186,6 +189,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             'default' => [
                 'connection' => 'default',
                 'debug' => true,
+                'readonly' => false,
                 'mappings' => [],
             ],
         ];

@@ -51,10 +51,18 @@ Here's an example of configuration containing the definitions of tokenizer, filt
             default:
                 connection: default
                 debug: true
+            foo:
+                connection: default
+                debug: true
+                readonly: true
 
 In the settings node user may choose a specific configuration for that connection with index settings.
 
 In managers configuration ``mappings`` is optional. If there are no mappings defined, it will look up through all ``Document`` folders contained in a bundle. If ``debug`` is set to true, profiler and logging will be enabled (by default it is set to false).
+
+.. note::
+
+    To make manager ``readonly`` set ``readonly: true`` - manager will be able to execute only readonly queries.
 
 Document mapping
 ----------------

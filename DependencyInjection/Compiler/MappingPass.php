@@ -145,6 +145,8 @@ class MappingPass implements CompilerPassInterface
             ]
         );
 
+        $connection->addMethodCall('setReadOnly', [$settings['readonly']]);
+
         $this->setWarmers($connection, $settings['connection'], $container);
 
         return $connection;

@@ -62,6 +62,11 @@ class Connection
     private $warmers;
 
     /**
+     * @var bool
+     */
+    private $readOnly;
+
+    /**
      * Construct.
      *
      * @param Client $client   Elasticsearch client.
@@ -95,6 +100,8 @@ class Connection
      */
     public function bulk($operation, $type, array $query)
     {
+        $this->isReadOnly('Bulk');
+
         if (!in_array($operation, ['index', 'create', 'update', 'delete'])) {
             throw new \InvalidArgumentException('Wrong bulk operation selected');
         }
@@ -121,7 +128,7 @@ class Connection
                 $this->bulkQueries['body'][] = ['doc' => $query];
                 break;
             case 'delete':
-                // Body for delete opertation is not needed to apply.
+                // Body for delete operation is not needed to apply.
             default:
                 // Do nothing.
                 break;
@@ -174,6 +181,27 @@ class Connection
     }
 
     /**
+     * Removes a single document.
+     *
+     * @param array $params Parameters.
+     *
+     * $params = [
+     *   'index' => 'index_name',
+     *   'type' => 'document_type',
+     *   'id' => 'id',
+     *   ];.
+     *
+     * @return array
+     */
+
+    public function delete($params)
+    {
+        $this->isReadOnly('Delete');
+
+        return $this->client->delete($params);
+    }
+
+    /**
      * Executes search query in the index.
      *
      * @param array $types             List of types to search in.
@@ -221,6 +249,8 @@ class Connection
      */
     public function createIndex($putWarmers = false)
     {
+        $this->isReadOnly('Create index');
+
         $settings = $this->settings;
         unset($settings['body']['mappings']);
 
@@ -238,6 +268,8 @@ class Connection
      */
     public function dropIndex()
     {
+        $this->isReadOnly('Drop index');
+
         $this->client->indices()->delete(['index' => $this->getIndexName()]);
     }
 
@@ -250,6 +282,8 @@ class Connection
      */
     public function createTypes(array $types = [])
     {
+        $this->isReadOnly('Create types');
+
         $mapping = $this->getMapping($types);
         if (empty($mapping)) {
             return 0;
@@ -274,6 +308,8 @@ class Connection
      */
     public function dropTypes(array $types = [])
     {
+        $this->isReadOnly('Drop types');
+
         $mapping = $this->getMapping($types);
 
         if (empty($mapping)) {
@@ -294,6 +330,8 @@ class Connection
      */
     public function updateTypes(array $types = [])
     {
+        $this->isReadOnly('Update types');
+
         if (!$this->getMapping($types)) {
             return -1;
         }
@@ -441,6 +479,8 @@ class Connection
      */
     public function close()
     {
+        $this->isReadOnly('Close index');
+
         $this->getClient()->indices()->close(['index' => $this->getIndexName()]);
     }
 
@@ -465,6 +505,8 @@ class Connection
      */
     public function open()
     {
+        $this->isReadOnly('Open index');
+
         $this->getClient()->indices()->open(['index' => $this->getIndexName()]);
     }
 
@@ -519,6 +561,8 @@ class Connection
      */
     public function clearCache()
     {
+        $this->isReadOnly('Clear cache');
+
         $this->client->indices()->clearCache(['index' => $this->getIndexName()]);
     }
 
@@ -557,6 +601,30 @@ class Connection
     }
 
     /**
+     * Set connection to read only state.
+     *
+     * @param bool $readOnly
+     */
+    public function setReadOnly($readOnly)
+    {
+        $this->readOnly = $readOnly;
+    }
+
+    /**
+     * Checks if connection is read only.
+     *
+     * @param string $message Error message.
+     *
+     * @throws Forbidden403Exception
+     */
+    public function isReadOnly($message = '')
+    {
+        if ($this->readOnly) {
+            throw new Forbidden403Exception("Manager is readonly! {$message} operation not permitted.");
+        }
+    }
+
+    /**
      * Executes warmers actions.
      *
      * @param string $action Action name.
@@ -568,6 +636,8 @@ class Connection
      */
     private function warmersAction($action, $names = [])
     {
+        $this->isReadOnly('Warmer edit');
+
         $status = false;
         $warmers = $this->warmers->getWarmers();
         $this->validateWarmers($names, array_keys($warmers));
