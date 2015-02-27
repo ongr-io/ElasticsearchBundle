@@ -138,6 +138,18 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
     }
 
     /**
+     * Rewind's the iteration and returns first result.
+     *
+     * @return mixed|null
+     */
+    public function first()
+    {
+        $this->rewind();
+
+        return $this->current();
+    }
+
+    /**
      * Return an integer key to be used for a new element in array.
      *
      * @return int
