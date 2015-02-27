@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
-use ONGR\ElasticsearchBundle\Document\Warmer\WarmerInterface;
-use ONGR\ElasticsearchBundle\DSL\Search;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
