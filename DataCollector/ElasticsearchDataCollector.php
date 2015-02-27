@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\DataCollector;
 
 use Monolog\Logger;
-use ONGR\ElasticsearchBundle\Common\JsonFormatter;
 use ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
