@@ -226,14 +226,12 @@ class RepositoryTest extends ElasticsearchTestCase
 
     /**
      * Test repository find on non-existent document.
-     *
-     * @expectedException \Elasticsearch\Common\Exceptions\Missing404Exception
      */
-    public function testFindException()
+    public function testFindNull()
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $repo->find(123);
+        $this->assertNull($repo->find(123));
     }
 
     /**
