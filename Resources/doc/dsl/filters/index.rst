@@ -10,6 +10,9 @@ Currently documented are these filter types:
 
 - `has child filter <index.html#id2>`_
 - `has parent filter <index.html#id3>`_
+- `geo distance filter <index.html#id4>`_
+- `geo distance range filter <index.html#id5>`_
+- `geo polygon filter <index.html#id6>`_
 
 
 has child filter
@@ -70,4 +73,62 @@ The ``has_parent`` filter with query:
     $hasParent = new HasParentFilter('content', new TermQuery('title', 'nested'), []);
     $hasParent->setDslType('query');
     $search->addFilter($hasParent);
+    $results = $repository->execute($search);
+
+
+geo distance filter
+-------------------
+
+The `geo distance <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-filter.html>`_ filters documents that include only hits that exists within a specific distance from a geo point.
+
+.. note:: The filter requires the geo_point type to be set on the relevant field.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $geoDistanceFilter = new GeoDistanceFilter('location', '200km', ['lat' => 40, 'lon' => -70]);
+    $search->addFilter($geoDistanceFilter);
+    $results = $repository->execute($search);
+
+
+geo distance range filter
+-------------------------
+
+The `geo distance range <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-range-filter.html>`_ filters documents that exists within a range from a specific point.
+
+.. note:: The filter requires the geo_point type to be set on the relevant field.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $geoDistanceRangeFilter = new GeoDistanceRangeFilter('location', ['from' => '200km', 'to'=>'400km'], ['lat' => 40, 'lon' => -70]);
+    $search->addFilter($geoDistanceRangeFilter);
+    $results = $repository->execute($search);
+
+
+geo polygon filter
+------------------
+
+The `geo polygon <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-geo-polygon-filter.html>`_ filter allows to include hits that only fall within a polygon of points.
+
+.. note:: The filter requires the geo_point type to be set on the relevant field.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $geoPolygonFilter = new GeoPolygonFilter('location', [
+        ['lat' => 20, 'lon' => -80],
+        ['lat' => 30, 'lon' => -40],
+        ['lat' => 70, 'lon' => -90],
+    ]);
+    $search->addFilter($geoPolygonFilter);
     $results = $repository->execute($search);
