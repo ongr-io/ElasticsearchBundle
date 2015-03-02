@@ -58,10 +58,6 @@ class ProxyLoader
     {
         $cacheBundleDir = $this->getCacheDir($reflectionClass->getName());
 
-        if (!$this->getFilesystem()->exists($cacheBundleDir)) {
-            $this->getFilesystem()->mkdir($cacheBundleDir, 0700);
-        }
-
         $cache = new ConfigCache(
             $cacheBundleDir . DIRECTORY_SEPARATOR . md5(strtolower($reflectionClass->getShortName())) . '.php',
             $this->debug
