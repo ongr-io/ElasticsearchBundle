@@ -79,25 +79,25 @@ class GeoDistanceFilterTest extends AbstractElasticsearchTestCase
         $out = [];
         // Case #0 lat lon as properties.
         $out[] = [
-            new GeoDistanceFilter('200km', 'location', ['lat' => 40, 'lon' => -70]),
+            new GeoDistanceFilter('location', '200km', ['lat' => 40, 'lon' => -70]),
             2,
         ];
 
         // Case #1 lat lon as array and distance_type = plane.
         $out[] = [
-            new GeoDistanceFilter('200km', 'location', [ - 70, 40], ['distance_type' => 'plane']),
+            new GeoDistanceFilter('location', '200km', [ - 70, 40], ['distance_type' => 'plane']),
             2,
         ];
 
         // Case #2 lat lon as string.
         $out[] = [
-            new GeoDistanceFilter('2000km', 'location', '40,-70', ['distance_type' => 'plane']),
+            new GeoDistanceFilter('location', '2000km', '40,-70', ['distance_type' => 'plane']),
             4,
         ];
 
         // Case #3 geohash.
         $out[] = [
-            new GeoDistanceFilter('20km', 'location', 'drn5x1g8c', ['distance_type' => 'plane']),
+            new GeoDistanceFilter('location', '20km', 'drn5x1g8c', ['distance_type' => 'plane']),
             1,
         ];
 
