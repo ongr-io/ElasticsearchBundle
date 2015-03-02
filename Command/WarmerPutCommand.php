@@ -29,7 +29,7 @@ class WarmerPutCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:warmer:put')
+            ->setName('ongr:es:warmer:put')
             ->setDescription('Puts warmers into elasticsearch index.')
             ->addArgument(
                 'names',

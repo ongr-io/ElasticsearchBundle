@@ -28,7 +28,7 @@ class TypeCreateCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:type:create')
+            ->setName('ongr:es:type:create')
             ->setDescription('Puts mappings into elasticsearch client for specific manager.')
             ->addOption(
                 'type',

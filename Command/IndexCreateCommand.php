@@ -29,7 +29,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:index:create')
+            ->setName('ongr:es:index:create')
             ->setDescription('Creates elasticsearch index.')
             ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to new index name')
             ->addOption('with-warmers', 'w', InputOption::VALUE_NONE, 'Puts warmers into index');

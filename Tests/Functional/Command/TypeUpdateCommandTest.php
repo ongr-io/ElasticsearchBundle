@@ -184,7 +184,7 @@ class TypeUpdateCommandTest extends AbstractElasticsearchTestCase
         $app = new Application();
         $app->add($command);
 
-        $commandToTest = $app->find('es:type:update');
+        $commandToTest = $app->find('ongr:es:type:update');
         $commandTester = new CommandTester($commandToTest);
 
         $result = $commandTester->execute(

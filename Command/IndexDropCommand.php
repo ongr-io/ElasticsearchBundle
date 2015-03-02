@@ -29,7 +29,7 @@ class IndexDropCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:index:drop')
+            ->setName('ongr:es:index:drop')
             ->setDescription('Drops elasticsearch index.')
             ->addOption(
                 'force',

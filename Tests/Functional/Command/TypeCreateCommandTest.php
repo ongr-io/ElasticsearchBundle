@@ -169,7 +169,7 @@ class TypeCreateCommandTest extends AbstractElasticsearchTestCase
         $command = new TypeCreateCommand();
         $command->setContainer($this->getContainer());
         $app->add($command);
-        $cmd = $app->find('es:type:create');
+        $cmd = $app->find('ongr:es:type:create');
         $tester = new CommandTester($cmd);
         $tester->execute(
             array_filter(

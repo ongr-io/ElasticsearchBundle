@@ -28,7 +28,7 @@ class TypeDropCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:type:drop')
+            ->setName('ongr:es:type:drop')
             ->setDescription('Updates elasticsearch index mappings.')
             ->addOption(
                 'type',

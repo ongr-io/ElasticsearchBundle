@@ -30,7 +30,7 @@ class IndexExportCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:index:export')
+            ->setName('ongr:es:index:export')
             ->setDescription('Exports data from elasticsearch index.')
             ->addArgument(
                 'filename',

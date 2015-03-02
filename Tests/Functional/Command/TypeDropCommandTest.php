@@ -104,7 +104,7 @@ class TypeDropCommandTest extends AbstractElasticsearchTestCase
         $command = new TypeDropCommand();
         $command->setContainer($this->getContainer());
         $app->add($command);
-        $cmd = $app->find('es:type:drop');
+        $cmd = $app->find('ongr:es:type:drop');
         $tester = new CommandTester($cmd);
         $tester->execute(
             array_filter(

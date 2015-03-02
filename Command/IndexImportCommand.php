@@ -30,7 +30,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:index:import')
+            ->setName('ongr:es:index:import')
             ->setDescription('Imports data to elasticsearch index.')
             ->addArgument(
                 'filename',

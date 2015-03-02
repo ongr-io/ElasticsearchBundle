@@ -25,7 +25,7 @@ class CacheClearCommandTest extends ElasticsearchTestCase
     {
         $app = new Application();
         $app->add($this->getCommand());
-        $command = $app->find('es:cache:clear');
+        $command = $app->find('ongr:es:cache:clear');
         $tester = new CommandTester($command);
         $tester->execute(
             [
@@ -49,7 +49,7 @@ class CacheClearCommandTest extends ElasticsearchTestCase
     {
         $app = new Application();
         $app->add($this->getCommand());
-        $command = $app->find('es:cache:clear');
+        $command = $app->find('ongr:es:cache:clear');
         $tester = new CommandTester($command);
         $tester->execute(
             [

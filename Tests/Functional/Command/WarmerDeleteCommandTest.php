@@ -52,7 +52,7 @@ class WarmerDeleteCommandTest extends ElasticsearchTestCase
     {
         $app = new Application();
         $app->add($this->getCommand());
-        $command = $app->find('es:warmer:delete');
+        $command = $app->find('ongr:es:warmer:delete');
         $commandTester = new CommandTester($command);
         $connection = $this->getManager()->getConnection();
         $connection->putWarmers();

@@ -52,7 +52,7 @@ class WarmerPutCommandTest extends ElasticsearchTestCase
     {
         $app = new Application();
         $app->add($this->getCommand());
-        $command = $app->find('es:warmer:put');
+        $command = $app->find('ongr:es:warmer:put');
         $commandTester = new CommandTester($command);
         $connection = $this->getManager()->getConnection();
 

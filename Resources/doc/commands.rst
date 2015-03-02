@@ -9,7 +9,7 @@ To use it simply type
 Create index
 ------------
 
--  Command name: ``es:index:create``.
+-  Command name: ``ongr:es:index:create``.
 -  Description: Creates a new index in Elasticsearch for the specified *manager* (see: :ref:`esb-manager`).
 -  Options:
 
@@ -25,18 +25,18 @@ Create index
 
 -  Examples:
 
-   +---------------------------------------------+--------------------------------------------------------------------------------------+
-   | Input                                       | What it does                                                                         |
-   +=============================================+======================================================================================+
-   | ``es:index:create``                         | Creates an index in Elasticsearch for the default *manager*.                         |
-   +---------------------------------------------+--------------------------------------------------------------------------------------+
-   | ``es:index:create --manager shop --time``   | Creates an index for manager ``shop`` with current timestamp appended to its name.   |
-   +---------------------------------------------+--------------------------------------------------------------------------------------+
+   +------------------------------------------------+--------------------------------------------------------------------------------------+
+   | Input                                          | What it does                                                                         |
+   +================================================+======================================================================================+
+   | ``ongr:es:index:create``                       | Creates an index in Elasticsearch for the default *manager*.                         |
+   +------------------------------------------------+--------------------------------------------------------------------------------------+
+   | ``ongr:es:index:create --manager shop --time`` | Creates an index for manager ``shop`` with current timestamp appended to its name.   |
+   +------------------------------------------------+--------------------------------------------------------------------------------------+
 
 Drop index
 ----------
 
--  Command name: ``es:index:drop``.
+-  Command name: ``ongr:es:index:drop``.
 -  Description: Drops the index for the specified
    *manager*.
 -  Options:
@@ -44,27 +44,27 @@ Drop index
    +-----------------+---------------+------------------+----------------------------------------------------------------------------------------------------------+
    | Full name       | Short name    | Value            | What it does                                                                                             |
    +=================+===============+==================+==========================================================================================================+
-   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to create index for. If not specified, default manager is used.                 |
+   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to drop index for. If not specified, default manager is used.                   |
    +-----------------+---------------+------------------+----------------------------------------------------------------------------------------------------------+
    | ``--force``     | *undefined*   | *not required*   | This flag is required for the command to work.                                                           |
    +-----------------+---------------+------------------+----------------------------------------------------------------------------------------------------------+
 
 -  Examples:
 
-   +--------------------------------------+--------------------------------------------------------------------------------------------------+
-   | Input                                | What it does                                                                                     |
-   +======================================+==================================================================================================+
-   | ``es:index:drop --force``            | Drops an index in Elasticsearch of the default *manager*.                                        |
-   +--------------------------------------+--------------------------------------------------------------------------------------------------+
-   | ``es:index:create --manager shop``   | Drop an index of *manager* ``shop`` with current timestamp appended to its name.                 |
-   +--------------------------------------+--------------------------------------------------------------------------------------------------+
+   +-------------------------------------------------+--------------------------------------------------------------------------------------------------+
+   | Input                                           | What it does                                                                                     |
+   +=================================================+==================================================================================================+
+   | ``ongr:es:index:drop --force``                  | Drops an index in Elasticsearch of the default *manager*.                                        |
+   +-------------------------------------------------+--------------------------------------------------------------------------------------------------+
+   | ``ongr:es:index:drop --manager shop --force``   | Drop an index of *manager* ``shop``.                                                             |
+   +-------------------------------------------------+--------------------------------------------------------------------------------------------------+
    
 Import index
 ------------
 
 .. important:: Currently this command only works with ``--raw`` flag.
 
--  Command name: ``es:index:import``.
+-  Command name: ``ongr:es:index:import``.
 -  Description: Imports data to your index.
 -  Arguments:
 
@@ -86,18 +86,18 @@ Import index
 
 -  Examples:
 
-   +------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
-   | Input                                                | What it does                                                                                                          |
-   +======================================================+=======================================================================================================================+
-   | ``es:index:import test.json --raw``                  | Imports data to the default *manager* index from the ``test.json`` file in current working directory.                 |
-   +------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
-   | ``es:index:import test.json --manager shop --raw``   | Imports data to ``shop`` *manager* index.                                                                             |
-   +------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
+   +-----------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
+   | Input                                                     | What it does                                                                                                          |
+   +===========================================================+=======================================================================================================================+
+   | ``ongr:es:index:import test.json --raw``                  | Imports data to the default *manager* index from the ``test.json`` file in current working directory.                 |
+   +-----------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
+   | ``ongr:es:index:import test.json --manager shop --raw``   | Imports data to ``shop`` *manager* index.                                                                             |
+   +-----------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
     
 Export index
 ------------
 
--  Command name: ``es:index:export``.
+-  Command name: ``ongr:es:index:export``.
 -  Description: Exports data from Elasticsearch index in a json format.
 -  Arguments:
 
@@ -121,18 +121,18 @@ Export index
 
 -  Examples:
 
-   +-----------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
-   | Input                                                     | What it does                                                                                                          |
-   +===========================================================+=======================================================================================================================+
-   | ``es:index:export test.json``                             | Exports data from the default *manager* index to the ``test.json`` file in current working directory.                 |
-   +-----------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
-   | ``es:index:export test.json --manager shop --chunk 10``   | Exports data from ``shop`` *manager* index with a chunk size of ``10``.                                               |
-   +-----------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
+   +----------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
+   | Input                                                          | What it does                                                                                                          |
+   +================================================================+=======================================================================================================================+
+   | ``ongr:es:index:export test.json``                             | Exports data from the default *manager* index to the ``test.json`` file in current working directory.                 |
+   +----------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
+   | ``ongr:es:index:export test.json --manager shop --chunk 10``   | Exports data from ``shop`` *manager* index with a chunk size of ``10``.                                               |
+   +----------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
 
 Type update
 -----------
 
-- Command name: ``es:type:update``.
+- Command name: ``ongr:es:type:update``.
 - Description: Updates mapping of the specified *manager*.
 - Options:
 
@@ -148,25 +148,25 @@ Type update
 
 -  Examples:
 
-   +------------------------------------------------------------+---------------------------------------------------------------+
-   | Input                                                      | What it does                                                  |
-   +============================================================+===============================================================+
-   | ``es:type:update --force``                                 | Updates mapping for the default *manager*.                    |
-   +------------------------------------------------------------+---------------------------------------------------------------+
-   | ``es:type:update --manager shop --type article --force``   | Updates mapping for ``shop`` *manager* type ``article``.      |
-   +------------------------------------------------------------+---------------------------------------------------------------+
+   +-----------------------------------------------------------------+---------------------------------------------------------------+
+   | Input                                                           | What it does                                                  |
+   +=================================================================+===============================================================+
+   | ``ongr:es:type:update --force``                                 | Updates mapping for the default *manager*.                    |
+   +-----------------------------------------------------------------+---------------------------------------------------------------+
+   | ``ongr:es:type:update --manager shop --type article --force``   | Updates mapping for ``shop`` *manager* type ``article``.      |
+   +-----------------------------------------------------------------+---------------------------------------------------------------+
 
 Cache clear
 -----------
 
-- Command name: ``es:cache:clear``.
+- Command name: ``ongr:es:cache:clear``.
 - Description: Clears elasticsearch client cache.
 - Options:
 
    +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
    | Full name       | Short name    | Value            | What it does                                                                                  |
    +=================+===============+==================+===============================================================================================+
-   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to update types for. If not specified, default manager is used.      |
+   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to clear cache for. If not specified, default manager is used.       |
    +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
 
 -  Examples:
@@ -174,15 +174,15 @@ Cache clear
    +------------------------------------------------------------+---------------------------------------------------------------+
    | Input                                                      | What it does                                                  |
    +============================================================+===============================================================+
-   | ``es:cache:clear``                                         | Clears client which *manager* is using cache.                 |
+   | ``ongr:es:cache:clear``                                    | Clears client which *manager* is using cache.                 |
    +------------------------------------------------------------+---------------------------------------------------------------+
-   | ``es:type:update --manager shop``                          | Clears client which ``shop`` *manager* is using cache.        |
+   | ``ongr:es:type:update --manager shop``                     | Clears client which ``shop`` *manager* is using cache.        |
    +------------------------------------------------------------+---------------------------------------------------------------+
 
 Warmer put
 ----------
 
-- Command name: ``es:warmer:put``.
+- Command name: ``ongr:es:warmer:put``.
 - Description: Puts warmers into elasticsearch.
 - Arguments:
 
@@ -197,7 +197,7 @@ Warmer put
    +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
    | Full name       | Short name    | Value            | What it does                                                                                  |
    +=================+===============+==================+===============================================================================================+
-   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to update types for. If not specified, default manager is used.      |
+   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to put warmers for. If not specified, default manager is used.       |
    +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
 
 -  Examples:
@@ -205,17 +205,17 @@ Warmer put
    +------------------------------------------------------------+------------------------------------------------------------------------------------+
    | Input                                                      | What it does                                                                       |
    +============================================================+====================================================================================+
-   | ``es:warmer:put``                                          | Puts all warmers into client which *default* manager is using.                     |
+   | ``ongr:es:warmer:put``                                     | Puts all warmers into client which *default* manager is using.                     |
    +------------------------------------------------------------+------------------------------------------------------------------------------------+
-   | ``es:warmer:put --manager shop``                           | Puts all warmers into client which ``shop`` manager is using.                      |
+   | ``ongr:es:warmer:put --manager shop``                      | Puts all warmers into client which ``shop`` manager is using.                      |
    +------------------------------------------------------------+------------------------------------------------------------------------------------+
-   | ``es:warmer:put foo baz --manager tuna``                   | Puts ``foo`` and ``baz`` named warmers into client which ``tuna`` manager is using |
+   | ``ongr:es:warmer:put foo baz --manager tuna``              | Puts ``foo`` and ``baz`` named warmers into client which ``tuna`` manager is using |
    +------------------------------------------------------------+------------------------------------------------------------------------------------+
 
 Warmer delete
 -------------
 
-- Command name: ``es:warmer:delete``.
+- Command name: ``ongr:es:warmer:delete``.
 - Description: Removes warmers from elasticsearch.
 - Arguments:
 
@@ -230,7 +230,7 @@ Warmer delete
    +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
    | Full name       | Short name    | Value            | What it does                                                                                  |
    +=================+===============+==================+===============================================================================================+
-   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to update types for. If not specified, default manager is used.      |
+   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to delete warmers for. If not specified, default manager is used.    |
    +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
 
 -  Examples:
@@ -238,11 +238,11 @@ Warmer delete
    +------------------------------------------------------------+----------------------------------------------------------------------------------------+
    | Input                                                      | What it does                                                                           |
    +============================================================+========================================================================================+
-   | ``es:warmer:delete``                                       | Deletes all warmers from client which *default* manager is using.                      |
+   | ``ongr:es:warmer:delete``                                  | Deletes all warmers from client which *default* manager is using.                      |
    +------------------------------------------------------------+----------------------------------------------------------------------------------------+
-   | ``es:warmer:delete --manager shop``                        | Deletes all warmers from client which ``shop`` manager is using.                       |
+   | ``ongr:es:warmer:delete --manager shop``                   | Deletes all warmers from client which ``shop`` manager is using.                       |
    +------------------------------------------------------------+----------------------------------------------------------------------------------------+
-   | ``es:warmer:delete foo baz --manager tuna``                | Deletes ``foo`` and ``baz`` named warmers from client which ``tuna`` manager is using. |
+   | ``ongr:es:warmer:delete foo baz --manager tuna``           | Deletes ``foo`` and ``baz`` named warmers from client which ``tuna`` manager is using. |
    +------------------------------------------------------------+----------------------------------------------------------------------------------------+
 
 .. _manager: setup.html
