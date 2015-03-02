@@ -72,41 +72,24 @@ Document mapping
     <?php
     //AcmeTestBundle:Content
     use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-    use ONGR\ElasticsearchBundle\Document\DocumentTrait;
+    use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
 
     /**
      * Holds content page data.
      *
      * @ES\Document(type="content")
      */
-    class content implements DocumentInterface
+    class Content extends AbstractContentDocument
     {
-        use DocumentTrait;
-
         /**
          * @var string
          *
-         * @ES\Property(name="slug", type="string", index="not_analyzed")
+         * @ES\Property(type="string", name="header")
          */
-        public $slug;
-
-        /**
-         * @var string
-         *
-         * @ES\Property(name="title", type="string", search_analyzer="standard")
-         */
-        public $title;
-
-        /**
-         * @var string
-         *
-         * @ES\Property(name="content", type="string")
-         */
-        public $content;
+        public $header;
     }
 
-.. important:: be sure your @ES\\Document class’es implements DocumentInterface, otherwise it will not work.
+.. important:: be sure your @ES\\Document class’es directly implements DocumentInterface or extends AbstractDocument, otherwise it will not work.
 
 ``@ES\Document(type="content")`` Annotation defines that this class will represent elasticsearch type.
 ``type`` parameter is for type name. This parameter is optional, if there will be no parameter set Elasticsearch bundle will create type with lowercase class name. Additional parameters:
@@ -115,7 +98,7 @@ Document mapping
 
 .. note:: You can use time units specified in `elasticsearch documentation`_. ESB parses it if needed, e.g. for type mapping update.
 
-``DocumentTrait`` includes support with all special fields in elasticsearch document such as ``_id``, ``_source``, ``_ttl``, ``_parent`` handling. ``DocumentTrait`` has all parameters and setters already defined for you. Once there will be \_ttl set Elasticsearch bundle will handle it automatically.
+``AbstractDocument`` implements ``DocumentInterface`` and gives support with all special fields in elasticsearch document such as ``_id``, ``_source``, ``_ttl``, ``_parent`` handling. ``AbstractDocument`` has all parameters and setters already defined for you. Once there will be \_ttl set Elasticsearch bundle will handle it automatically.
 
 To define type properties there is ``@ES\Property`` annotation. You can define different name than a property name and it will be handled automatically by bundle. Property also supports the type where you need to define what kind of information will be indexed. Additionally its also available to set ``index``, ``index_analyzer``, ``search_analyzer``. Analyzers names is the same that was defined in ``config.yml`` before.
 
@@ -127,18 +110,15 @@ It is little different to define nested and object types. For this user will nee
     //AcmeTestBundle:Content
 
     use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-    use ONGR\ElasticsearchBundle\Document\DocumentTrait;
+    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Holds content page data.
      *
      * @ES\Document(type="content")
      */
-    class Content implements DocumentInterface
+    class Content extends AbstractDocument
     {
-        use DocumentTrait;
-
         /**
          * @var string
          *
@@ -169,13 +149,14 @@ To define an object:
     //AcmeTestBundle:ContentMetaObject
 
     use ONGR\ElasticsearchBundle\Annotation as ES;
+    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Holds contents meta object data.
      *
      * @ES\Object
      */
-    class ContentMetaObject implements DocumentInterface
+    class ContentMetaObject extends AbstractDocument
     {
         /**
          * @var string
