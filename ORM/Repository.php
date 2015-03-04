@@ -75,7 +75,7 @@ class Repository
     public function getTypes()
     {
         $types = [];
-        $meta = $this->manager->getBundlesMapping($this->namespaces);
+        $meta = $this->getManager()->getBundlesMapping($this->namespaces);
 
         foreach ($meta as $namespace => $metadata) {
             $types[] = $metadata->getType();
@@ -101,21 +101,21 @@ class Repository
         }
 
         $params = [
-            'index' => $this->manager->getConnection()->getIndexName(),
+            'index' => $this->getManager()->getConnection()->getIndexName(),
             'type' => $this->types[0],
             'id' => $id,
         ];
 
         try {
-            $result = $this->manager->getConnection()->getClient()->get($params);
+            $result = $this->getManager()->getConnection()->getClient()->get($params);
         } catch (Missing404Exception $e) {
             return null;
         }
 
         if ($resultType === self::RESULTS_OBJECT) {
             return (new Converter(
-                $this->manager->getTypesMapping(),
-                $this->manager->getBundlesMapping()
+                $this->getManager()->getTypesMapping(),
+                $this->getManager()->getBundlesMapping()
             ))->convertToDocument($result);
         }
 
@@ -183,7 +183,7 @@ class Repository
     public function execute(Search $search, $resultsType = self::RESULTS_OBJECT)
     {
         $results = $this
-            ->manager
+            ->getManager()
             ->getConnection()
             ->search($this->types, $this->checkFields($search->toArray()), $search->getQueryParams());
 
@@ -200,7 +200,7 @@ class Repository
     public function deleteByQuery(Search $search)
     {
         $results = $this
-            ->manager
+            ->getManager()
             ->getConnection()
             ->deleteByQuery($this->types, $search->toArray());
 
@@ -223,7 +223,7 @@ class Repository
         $scrollDuration = Search::SCROLL_DURATION,
         $resultsType = self::RESULTS_OBJECT
     ) {
-        $results = $this->manager->getConnection()->scroll($scrollId, $scrollDuration);
+        $results = $this->getManager()->getConnection()->scroll($scrollId, $scrollDuration);
 
         return $this->parseResult($results, $resultsType, $scrollDuration);
     }
@@ -246,7 +246,7 @@ class Repository
         foreach ($suggesters as $suggester) {
             $body = array_merge($suggester->toArray(), $body);
         }
-        $results = $this->manager->getConnection()->getClient()->suggest(['body' => $body]);
+        $results = $this->getManager()->getConnection()->getClient()->suggest(['body' => $body]);
         unset($results['_shards']);
 
         return new SuggestionIterator($results);
@@ -265,12 +265,12 @@ class Repository
     {
         if (count($this->types) == 1) {
             $params = [
-                'index' => $this->manager->getConnection()->getIndexName(),
+                'index' => $this->getManager()->getConnection()->getIndexName(),
                 'type' => $this->types[0],
                 'id' => $id,
             ];
 
-            $response = $this->manager->getConnection()->delete($params);
+            $response = $this->getManager()->getConnection()->delete($params);
 
             return $response;
         } else {
@@ -294,7 +294,7 @@ class Repository
 
         // Checks if cache is loaded.
         if (empty($this->fieldsCache)) {
-            foreach ($this->manager->getBundlesMapping($this->namespaces) as $ns => $properties) {
+            foreach ($this->getManager()->getBundlesMapping($this->namespaces) as $ns => $properties) {
                 $this->fieldsCache = array_unique(
                     array_merge(
                         $this->fieldsCache,
@@ -338,8 +338,8 @@ class Repository
                 if (isset($raw['_scroll_id'])) {
                     $iterator = new DocumentScanIterator(
                         $raw,
-                        $this->manager->getTypesMapping(),
-                        $this->manager->getBundlesMapping()
+                        $this->getManager()->getTypesMapping(),
+                        $this->getManager()->getBundlesMapping()
                     );
                     $iterator
                         ->setRepository($this)
@@ -351,8 +351,8 @@ class Repository
 
                 return new DocumentIterator(
                     $raw,
-                    $this->manager->getTypesMapping(),
-                    $this->manager->getBundlesMapping()
+                    $this->getManager()->getTypesMapping(),
+                    $this->getManager()->getBundlesMapping()
                 );
             case self::RESULTS_ARRAY:
                 return $this->convertToNormalizedArray($raw);
@@ -418,8 +418,18 @@ class Repository
             );
         }
 
-        $class = $this->manager->getBundlesMapping()[reset($this->namespaces)]->getProxyNamespace();
+        $class = $this->getManager()->getBundlesMapping()[reset($this->namespaces)]->getProxyNamespace();
 
         return new $class();
+    }
+
+    /**
+     * Returns elasticsearch manager used in this repository for getting/setting documents.
+     *
+     * @return Manager
+     */
+    public function getManager()
+    {
+        return $this->manager;
     }
 }
