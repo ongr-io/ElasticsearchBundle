@@ -555,6 +555,16 @@ class RepositoryTest extends ElasticsearchTestCase
     }
 
     /**
+     * Tests if repository returns same manager as it was original.
+     */
+    public function testGetManager()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Color');
+        $this->assertEquals($manager, $repository->getManager());
+    }
+
+    /**
      * Assert suggestion score is set.
      *
      * @param SuggestionIterator $suggestions
