@@ -39,7 +39,7 @@ class DateRangeAggregationTest extends AbstractElasticsearchTestCase
                     [
                         '_parent' => 2,
                         'sub_title' => 'foo bar',
-                        'createdAt' => '2015',
+                        'createdAt' => '2013',
                     ],
                     [
                         '_parent' => 2,
@@ -52,78 +52,132 @@ class DateRangeAggregationTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Data provider for testDateRangeAggregation.
+     * Data provider for testIfExceptionsAreThrown.
      *
      * @return array
      */
-    public function dateRangeAggregationData()
+    public function exceptionsData()
     {
         $out = [];
 
-        // Case #0 ranges from, to.
+        // Case #0 setField not set.
+        $aggregation = new DateRangeAggregation('date_range');
+        $aggregation->setFormat('Y');
+        $aggregation->addRange('2011', '2015');
+        $aggregation->addRange('2014', null);
+        $out[] = [$aggregation];
+
+        // Case #1 setFormat not set.
+        $aggregation = new DateRangeAggregation('date_range');
+        $aggregation->setField('createdAt');
+        $aggregation->addRange('2011', '2015');
+        $aggregation->addRange('2014', null);
+        $out[] = [$aggregation];
+
+        // Case #2 no range added.
         $aggregation = new DateRangeAggregation('date_range');
         $aggregation->setField('createdAt');
         $aggregation->setFormat('Y');
-        $aggregation->addRange('2015', '2011');
-
-        $result = [
-            'agg_date_range' => [
-                'buckets' => [
-                    [
-                        'key' => '*-2011',
-                        'to' => '1293840000000',
-                        'to_as_string' => '2011',
-                        'doc_count' => 1,
-                    ],
-                    [
-                        'key' => '2015-*',
-                        'from' => '1420070400000',
-                        'from_as_string' => '2015',
-                        'doc_count' => 2,
-                    ],
-                ],
-            ],
-        ];
-
-        $out[] = [$aggregation, $result];
-
-        // Case #0 range 'to' set.
-        $aggregation = new DateRangeAggregation('date_range');
-        $aggregation->setField('createdAt');
-        $aggregation->setFormat('Y');
-        $aggregation->addRange(null, '2011');
-
-        $result = [
-            'agg_date_range' => [
-                'buckets' => [
-                    [
-                        'key' => '*-2011',
-                        'to' => '1293840000000',
-                        'to_as_string' => '2011',
-                        'doc_count' => 1,
-                    ],
-                ],
-            ],
-        ];
-        $out[] = [$aggregation, $result];
+        $out[] = [$aggregation];
 
         return $out;
     }
 
     /**
-     * Date range aggregation test.
+     * Test if exception is thrown.
+     *
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Either from or to must be set. Both cannot be null.
+     */
+    public function testIfExceptionIsThrownWhenBothRangesAreNull()
+    {
+        $aggregation = new DateRangeAggregation('date_range');
+        $aggregation->setField('createdAt');
+        $aggregation->setFormat('Y');
+        $aggregation->addRange(null, null);
+    }
+
+    /**
+     * Test if exceptions are thrown when missing field, format or range.
      *
      * @param BuilderInterface $aggregation
-     * @param array            $expectedResults
      *
-     * @dataProvider dateRangeAggregationData
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Date range aggregation must have field, format set and range added.
+     *
+     * @dataProvider exceptionsData
      */
-    public function testDateRangeAggregation($aggregation, $expectedResults)
+    public function testIfExceptionsAreThrown($aggregation)
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Comment');
+        $search = $repo->createSearch()->addAggregation($aggregation);
+        $results = $repo->execute($search, $repo::RESULTS_ARRAY);
+    }
+
+    /**
+     * Test when one range is set and from is null.
+     */
+    public function testDateRangeWhenFromIsNull()
+    {
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Comment');
+        $aggregation = new DateRangeAggregation('date_range');
+        $aggregation->setField('createdAt');
+        $aggregation->setFormat('Y');
+        $aggregation->addRange(null, '2011');
+
+        $expectedResults = [
+            'agg_date_range' => [
+                'buckets' => [
+                    [
+                        'key' => '*-2011',
+                        'to' => '1293840000000',
+                        'to_as_string' => '2011',
+                        'doc_count' => 1,
+                    ],
+                ],
+            ],
+        ];
 
         $search = $repo->createSearch()->addAggregation($aggregation);
+        $results = $repo->execute($search, Repository::RESULTS_RAW);
+        $this->assertArrayHasKey('aggregations', $results);
+        $this->assertEquals($expectedResults, $results['aggregations']);
+    }
 
+    /**
+     * Test when multiple ranges are set and to is null.
+     */
+    public function testDateRangeWhenToIsNull()
+    {
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Comment');
+        $aggregation = new DateRangeAggregation('date_range');
+        $aggregation->setField('createdAt');
+        $aggregation->setFormat('Y');
+        $aggregation->addRange('2011', '2015');
+        $aggregation->addRange('2014', null);
+
+        $expectedResults = [
+            'agg_date_range' => [
+                'buckets' => [
+                    [
+                        'key' => '2011-2015',
+                        'from' => '1293840000000',
+                        'from_as_string' => '2011',
+                        'to' => '1420070400000',
+                        'to_as_string' => '2015',
+                        'doc_count' => 2,
+                    ],
+                    [
+                        'key' => '2014-*',
+                        'from' => '1388534400000',
+                        'from_as_string' => '2014',
+                        'doc_count' => 1,
+                    ],
+                ],
+            ],
+        ];
+
+        $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
         $this->assertArrayHasKey('aggregations', $results);
         $this->assertEquals($expectedResults, $results['aggregations']);
