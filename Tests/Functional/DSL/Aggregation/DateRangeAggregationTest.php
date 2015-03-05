@@ -52,69 +52,6 @@ class DateRangeAggregationTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Data provider for testIfExceptionsAreThrown.
-     *
-     * @return array
-     */
-    public function exceptionsData()
-    {
-        $out = [];
-
-        // Case #0 setField not set.
-        $aggregation = new DateRangeAggregation('date_range');
-        $aggregation->setFormat('Y');
-        $aggregation->addRange('2011', '2015');
-        $aggregation->addRange('2014', null);
-        $out[] = [$aggregation];
-
-        // Case #1 setFormat not set.
-        $aggregation = new DateRangeAggregation('date_range');
-        $aggregation->setField('createdAt');
-        $aggregation->addRange('2011', '2015');
-        $aggregation->addRange('2014', null);
-        $out[] = [$aggregation];
-
-        // Case #2 no range added.
-        $aggregation = new DateRangeAggregation('date_range');
-        $aggregation->setField('createdAt');
-        $aggregation->setFormat('Y');
-        $out[] = [$aggregation];
-
-        return $out;
-    }
-
-    /**
-     * Test if exception is thrown.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Either from or to must be set. Both cannot be null.
-     */
-    public function testIfExceptionIsThrownWhenBothRangesAreNull()
-    {
-        $aggregation = new DateRangeAggregation('date_range');
-        $aggregation->setField('createdAt');
-        $aggregation->setFormat('Y');
-        $aggregation->addRange(null, null);
-    }
-
-    /**
-     * Test if exceptions are thrown when missing field, format or range.
-     *
-     * @param BuilderInterface $aggregation
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Date range aggregation must have field, format set and range added.
-     *
-     * @dataProvider exceptionsData
-     */
-    public function testIfExceptionsAreThrown($aggregation)
-    {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Comment');
-        $search = $repo->createSearch()->addAggregation($aggregation);
-        $results = $repo->execute($search, $repo::RESULTS_ARRAY);
-    }
-
-    /**
      * Test when one range is set and from is null.
      */
     public function testDateRangeWhenFromIsNull()

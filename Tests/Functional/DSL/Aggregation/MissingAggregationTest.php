@@ -63,18 +63,4 @@ class MissingAggregationTest extends AbstractElasticsearchTestCase
         $this->assertArrayHasKey('aggregations', $results);
         $this->assertEquals($expectedResult, $results['aggregations']);
     }
-
-    /**
-     * Test if exception is thrown when field is not set.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Missing aggregation must have a field set.
-     */
-    public function testIfExceptionIsThrownWhenFieldIsNotSet()
-    {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $agg = new MissingAggregation('missing_prices');
-        $search = $repo->createSearch()->addAggregation($agg);
-        $results = $repo->execute($search);
-    }
 }
