@@ -119,7 +119,7 @@ trait EncapsulationTestAwareTrait
 
         $stub = $this->getStub();
 
-        if (!isset($stub)) {
+        if ($stub === null) {
             $stub = $this->getMockForAbstractClass($objectClass);
         }
 
