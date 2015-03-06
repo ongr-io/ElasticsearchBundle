@@ -128,7 +128,7 @@ class ContextTest extends ElasticsearchTestCase
         $context->addContext($categoryContext);
 
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $search = $repository   ->createSearch()->addSuggester($context);
+        $search = $repository->createSearch()->addSuggester($context);
         $result = $repository->execute($search, Repository::RESULTS_RAW);
 
         $this->assertEmpty($result['suggest']['suggestions-completion'][0]['options']);
