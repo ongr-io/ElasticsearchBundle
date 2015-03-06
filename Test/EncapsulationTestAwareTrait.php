@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture;
-
-use PHPUnit_Framework_MockObject_MockObject;
+namespace ONGR\ElasticsearchBundle\Test;
 
 /**
- * Abstract entity test for setters and getters.
+ * A helper for testing setters/getters.
+ *
+ * Trait EncapsulationTestAwareTrait
  */
-abstract class AbstractEntityTest extends \PHPUnit_Framework_TestCase
+trait EncapsulationTestAwareTrait
 {
     /**
      * @var string[] List of fields that should not be checked for tests.
@@ -106,6 +106,8 @@ abstract class AbstractEntityTest extends \PHPUnit_Framework_TestCase
         $removeMethod = null,
         $additionalSetter = null
     ) {
+        /** @var \PHPUnit_Framework_TestCase|EncapsulationTestAwareTrait $this */
+
         $objectClass = $this->getClassName();
 
         $setter = 'set' . ucfirst($field);
@@ -166,6 +168,8 @@ abstract class AbstractEntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testAllEntityFieldsRegistered()
     {
+        /** @var \PHPUnit_Framework_TestCase|EncapsulationTestAwareTrait $this */
+
         $reflect = new \ReflectionClass($this->getClassName());
         $properties = $reflect->getProperties();
 
@@ -223,6 +227,8 @@ abstract class AbstractEntityTest extends \PHPUnit_Framework_TestCase
      */
     protected function getExpectedVariable($type)
     {
+        /** @var \PHPUnit_Framework_TestCase|EncapsulationTestAwareTrait $this */
+
         if ($type === null || $type == 'boolean') {
             return rand(0, 9999);
         } elseif ($type == 'string') {
@@ -241,15 +247,17 @@ abstract class AbstractEntityTest extends \PHPUnit_Framework_TestCase
     /**
      * Validate class before test.
      *
-     * @param PHPUnit_Framework_MockObject_MockObject $stub
-     * @param null|string                             $getter
-     * @param null|string                             $setter
-     * @param null|string                             $addMethod
-     * @param null|string                             $removeMethod
-     * @param null|string[]                           $additionalSetter
+     * @param \PHPUnit_Framework_MockObject_MockObject $stub
+     * @param null|string                              $getter
+     * @param null|string                              $setter
+     * @param null|string                              $addMethod
+     * @param null|string                              $removeMethod
+     * @param null|string[]                            $additionalSetter
      */
     protected function validate($stub, $getter, $setter, $addMethod, $removeMethod, $additionalSetter)
     {
+        /** @var \PHPUnit_Framework_TestCase|EncapsulationTestAwareTrait $this */
+
         $this->assertTrue(method_exists($stub, $setter), "Method ${setter}() not found!");
         $this->assertTrue(method_exists($stub, $getter), "Method ${getter}() not found!");
 
