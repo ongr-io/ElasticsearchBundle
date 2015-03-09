@@ -37,8 +37,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             'managers' => [
                 'acme' => [
                     'connection' => 'acme',
-                    'debug' => false,
                     'mappings' => ['AcmeTestBundle'],
+                    'debug' => false,
                 ],
             ],
             'document_dir' => 'Document',
@@ -157,6 +157,43 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                                 'username' => 'user',
                                 'password' => 'pass',
                                 'option' => 'Basic',
+                            ],
+                        ],
+                    ],
+                ]
+            ),
+        ];
+
+        // Case #5: hosts and ports are separated.
+        $out[] = [
+            [
+                'connections' => [
+                    'acme' => [
+                        'index_name' => 'acme',
+                        'hosts' => [
+                            ['host' => '192.168.0.1', 'port' => '9200'],
+                            ['host' => '192.168.0.2:9200'],
+                            ['host' => '192.168.0.3:9200', 'port' => '9201'],
+                        ],
+                    ],
+                ],
+                'managers' => [
+                    'acme' => [
+                        'connection' => 'acme',
+                        'mappings' => ['AcmeTestBundle'],
+                    ],
+                ],
+            ],
+            array_replace_recursive(
+                $expectedConfiguration,
+                [
+                    'connections' => [
+                        'acme' => [
+                            'index_name' => 'acme',
+                            'hosts' => [
+                                '192.168.0.1:9200',
+                                '192.168.0.2:9200',
+                                '192.168.0.3:9200',
                             ],
                         ],
                     ],
