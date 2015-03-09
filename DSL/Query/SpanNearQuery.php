@@ -28,16 +28,14 @@ class SpanNearQuery implements BuilderInterface
     private $queries = [];
 
     /**
-     * @param array $queries
-     * @param array $parameters
+     * @param BuilderInterface[] $queries
+     * @param array              $parameters
      *
      * @throws \LogicException
      */
     public function __construct(array $queries = [], array $parameters = [])
     {
-        foreach ($queries as $query) {
-            $this->queries[] = $query;
-        }
+        $this->queries = $queries;
         $this->setParameters($parameters);
         if (!$this->hasParameter('slop')) {
             throw new \LogicException('Span near query must have a slop parameter set for it.');
