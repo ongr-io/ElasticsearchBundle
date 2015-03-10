@@ -117,4 +117,30 @@ class TermTest extends ElasticsearchTestCase
         $this->assertCount(1, $results);
         $this->assertEquals($results->current()['_id'], 1);
     }
+
+    /**
+     * Test when min_score parameter is set to 0.5.
+     */
+    public function testTermQueryWithMinScoreSet()
+    {
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $termQuery = new TermQuery('price', '10');
+        $search = $repo->createSearch()->addQuery($termQuery);
+        $search->setMinScore(0.5);
+        $results = $repo->execute($search, Repository::RESULTS_RAW)['hits']['total'];
+        $this->assertEquals(1, $results);
+    }
+
+    /**
+     * Test when min_score parameter is set to 100.
+     */
+    public function testTermQueryWhenLargeMinScoreIsSet()
+    {
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $termQuery = new TermQuery('price', '10');
+        $search = $repo->createSearch()->addQuery($termQuery);
+        $search->setMinScore(100);
+        $results = $repo->execute($search, Repository::RESULTS_RAW)['hits']['total'];
+        $this->assertEquals(0, $results);
+    }
 }

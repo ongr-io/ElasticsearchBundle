@@ -193,7 +193,6 @@ class Connection
      *
      * @return array
      */
-
     public function delete($params)
     {
         $this->isReadOnly('Delete');
