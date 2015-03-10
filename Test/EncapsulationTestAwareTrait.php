@@ -237,7 +237,7 @@ trait EncapsulationTestAwareTrait
             return [rand(0, 9999)];
         } elseif ($type == '\DateTime') {
             return new \DateTime();
-        } elseif (class_exists($type)) {
+        } elseif (class_exists($type) || interface_exists($type)) {
             return $this->getMockForAbstractClass($type);
         }
 
