@@ -15,9 +15,6 @@ use ONGR\ElasticsearchBundle\DSL\Query\FilteredQuery;
 use ONGR\ElasticsearchBundle\DSL\Query\IndicesQuery;
 use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
-/**
- * Test for FilteredQueryTest.
- */
 class IndicesQueryTest extends \PHPUnit_Framework_TestCase
 {
     /**
