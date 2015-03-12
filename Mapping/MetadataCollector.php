@@ -67,19 +67,19 @@ class MetadataCollector
     /**
      * Retrieves mapping from local cache otherwise runs through bundle files.
      *
-     * @param string $bundle Bundle name to retrieve mappings from.
-     * @param bool   $force  Forces to rescan bundles and skip local cache.
+     * @param string $namespace Bundle name to retrieve mappings from.
+     * @param bool   $force     Forces to rescan bundles and skip local cache.
      *
      * @return array
      */
-    public function getMapping($bundle, $force = false)
+    public function getClientMapping($namespace, $force = false)
     {
-        if (!$force && array_key_exists($bundle, $this->documents)) {
-            return $this->documents[$bundle];
+        if (!$force && array_key_exists($namespace, $this->documents)) {
+            return $this->documents[$namespace];
         }
 
         $mappings = [];
-        foreach ($this->getBundleMapping($bundle) as $type => $mapping) {
+        foreach ($this->getMapping($namespace) as $type => $mapping) {
             if (!empty($mapping['properties'])) {
                 $mappings[$type] = array_filter(
                     array_merge(
@@ -89,9 +89,10 @@ class MetadataCollector
                 );
             }
         }
-        $this->documents[$bundle] = $mappings;
 
-        return $this->documents[$bundle];
+        $this->documents[$namespace] = $mappings;
+
+        return $this->documents[$namespace];
     }
 
     /**
@@ -99,7 +100,7 @@ class MetadataCollector
      *
      * @param string $namespace Document namespace.
      *
-     * @return ClassMetadata|null
+     * @return array|null
      */
     public function getMappingByNamespace($namespace)
     {
@@ -111,7 +112,7 @@ class MetadataCollector
      *
      * @param DocumentInterface $document
      *
-     * @return ClassMetadata|null
+     * @return array|null
      */
     public function getDocumentMapping(DocumentInterface $document)
     {
@@ -119,13 +120,28 @@ class MetadataCollector
     }
 
     /**
-     * Searches for documents in bundle and tries to read them.
+     * Returns mapping with metadata.
      *
-     * Returns empty array on containing zero documents
+     * @param string $namespace Bundle or document namespace.
+     *
+     * @return array
+     */
+    public function getMapping($namespace)
+    {
+        if (strpos($namespace, ':') === false) {
+            return $this->getBundleMapping($namespace);
+        }
+        $mapping = $this->getMappingByNamespace($namespace);
+
+        return $mapping === null ? [] : $mapping;
+    }
+
+    /**
+     * Searches for documents in bundle and tries to read them.
      *
      * @param string $bundle
      *
-     * @return ClassMetadata[]
+     * @return array Empty array on containing zero documents.
      */
     public function getBundleMapping($bundle)
     {

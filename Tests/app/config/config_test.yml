@@ -28,10 +28,17 @@ ongr_elasticsearch:
             debug: true
             mappings:
                 - AcmeTestBundle
+                - AcmeFooBundle:Media
         bar:
             connection: bar
             mappings:
                 - ONGRElasticsearchBundle
+        readonly:
+            connection: default
+            debug: true
+            readonly: true
+            mappings:
+                - AcmeTestBundle
 
 services:
     es_test.foo.warmer:

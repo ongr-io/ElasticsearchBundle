@@ -28,7 +28,7 @@ class CacheClearCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:cache:clear')
+            ->setName('ongr:es:cache:clear')
             ->setDescription('Clears elasticsearch client cache.');
     }
 

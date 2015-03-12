@@ -11,12 +11,14 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Client;
 
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Elasticsearch\Common\Exceptions\Forbidden403Exception;
+use ONGR\ElasticsearchBundle\Client\Connection;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Functional tests for connection service.
  */
-class ConnectionTest extends ElasticsearchTestCase
+class ConnectionTest extends AbstractElasticsearchTestCase
 {
     /**
      * Tests updateMapping with real data.
@@ -26,29 +28,17 @@ class ConnectionTest extends ElasticsearchTestCase
         $manager = $this->getManager('bar');
         $connection = $manager->getConnection();
 
-        // Using phpunit setExpectedException does not continue after exception is thrown.
-        $thrown = false;
-        try {
-            $connection->updateMapping();
-        } catch (\LogicException $e) {
-            $thrown = true;
-            // Continue.
-        }
-        $this->assertTrue($thrown, '\LogicException should be thrown');
+        $this->assertEquals(-1, $connection->updateMapping(), 'Connection does not have any mapping loaded.');
 
         $connection = $this->getManager(
             'bar',
             false,
             $this->getTestMapping()
         )->getConnection();
-
-        $status = $connection->updateMapping();
-        $this->assertTrue($status, 'Mapping should be updated');
+        $this->assertEquals(1, $connection->updateMapping(), 'Mapping should be updated');
 
         $connection->forceMapping($this->getTestLessMapping());
-
-        $status = $connection->updateMapping();
-        $this->assertTrue($status, 'Mapping should be updated');
+        $this->assertEquals(1, $connection->updateMapping(), 'Mapping should be updated');
 
         $clientMapping = $connection->getClient()->indices()->getMapping(
             [
@@ -58,6 +48,19 @@ class ConnectionTest extends ElasticsearchTestCase
         );
 
         $this->assertArrayNotHasKey('category', $clientMapping[$connection->getIndexName()]['mappings']);
+    }
+
+    /**
+     * Tests if update mapping throws exception for read only manager.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Update types operation not permitted.
+     */
+    public function testReadOnlyManagerUpdateMapping()
+    {
+        $connection = $this->getReadOnlyManager()->getConnection();
+
+        $connection->updateTypes([]);
     }
 
     /**
@@ -78,6 +81,37 @@ class ConnectionTest extends ElasticsearchTestCase
         $connection->close();
         $this->assertFalse($connection->isOpen());
         $connection->open();
+        $this->assertTrue($connection->isOpen());
+    }
+
+    /**
+     * Tests if open index throws exception for read only manager.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Open index operation not permitted.
+     */
+    public function testReadOnlyManagerOpenIndex()
+    {
+        $manager = $this->getManager();
+        $manager->getConnection()->close();
+        $connection = $this->getReadOnlyManager()->getConnection();
+
+        $this->assertFalse($connection->isOpen());
+        $connection->open();
+    }
+
+    /**
+     * Tests if close index throws exception for read only manager.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Close index operation not permitted.
+     */
+    public function testReadOnlyManagerCloseIndex()
+    {
+        $connection = $this->getReadOnlyManager()->getConnection();
+
+        $this->assertTrue($connection->isOpen());
+        $connection->close();
         $this->assertTrue($connection->isOpen());
     }
 
@@ -115,8 +149,7 @@ class ConnectionTest extends ElasticsearchTestCase
         $connection->bulk('delete', 'product', ['_id' => 'baz']);
         $connection->commit();
 
-        $this->setExpectedException('Elasticsearch\Common\Exceptions\Missing404Exception');
-        $product = $repository->find('baz');
+        $this->assertNull($repository->find('baz'), 'Document should not be found.');
     }
 
     /**
@@ -181,5 +214,75 @@ class ConnectionTest extends ElasticsearchTestCase
         );
 
         $this->assertArrayHasKey('test_foo_warmer', $warmers[$connection->getIndexName()]['warmers']);
+    }
+
+    /**
+     * Tests if delete warmer throws exception for read only manager.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Warmer edit operation not permitted.
+     */
+    public function testReadOnlyManagerWarmerAction()
+    {
+        $this->getManager();
+
+        /** @var Connection $connection */
+        $connection = $this->getReadOnlyManager()->getConnection();
+
+        $connection->deleteWarmers(['test_foo_warmer']);
+    }
+
+    /**
+     * Tests if cache clear throws exception for read only manager.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Clear cache operation not permitted.
+     */
+    public function testReadOnlyManagerCacheClear()
+    {
+        $this->getManager();
+
+        /** @var Connection $connection */
+        $connection = $this->getReadOnlyManager()->getConnection();
+        $connection->clearCache();
+    }
+
+    /**
+     * Tests if drop index throws exception for read only manager.
+     */
+    public function testReadOnlyManagerDropIndex()
+    {
+        $this->getManager();
+
+        /** @var Connection $connection */
+        $connection = $this->getReadOnlyManager()->getConnection();
+        try {
+            $connection->dropIndex();
+        } catch (\Exception $e) {
+            $this->assertInstanceOf('\Elasticsearch\Common\Exceptions\Forbidden403Exception', $e);
+            $this->assertEquals('Manager is readonly! Drop index operation not permitted.', $e->getMessage());
+        }
+        $this->assertTrue($connection->indexExists($connection->getIndexName()));
+    }
+
+    /**
+     * Tests if create index throws exception for read only manager.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Create index operation not permitted.
+     */
+    public function testReadOnlyManagerCreateIndex()
+    {
+        $this->getManager('readonly');
+    }
+
+    /**
+     * @return object
+     */
+    public function getReadOnlyManager()
+    {
+        $manager = $this->getContainer()->get('es.manager.readonly');
+
+        return $manager;
     }
 }

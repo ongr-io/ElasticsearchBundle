@@ -28,6 +28,7 @@ class AppKernel extends Kernel
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
             new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle(),
+            new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\AcmeFooBundle(),
         ];
     }
 
@@ -39,5 +40,39 @@ class AppKernel extends Kernel
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.yml');
+    }
+
+    /**
+     * Only check configuration difference on first test case. The rest test cases might be the same ;).
+     *
+     * @throws Exception
+     */
+    protected function initializeContainer()
+    {
+        static $first = true;
+
+        if ('test' !== $this->getEnvironment()) {
+            parent::initializeContainer();
+            return;
+        }
+
+        $debug = $this->debug;
+
+        if (!$first) {
+            // disable debug mode on all but the first initialization
+            $this->debug = false;
+        }
+
+        // will not work with --process-isolation
+        $first = false;
+
+        try {
+            parent::initializeContainer();
+        } catch (\Exception $e) {
+            $this->debug = $debug;
+            throw $e;
+        }
+
+        $this->debug = $debug;
     }
 }

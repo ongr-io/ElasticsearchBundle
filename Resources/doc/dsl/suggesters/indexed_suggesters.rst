@@ -19,13 +19,14 @@ Starting with a more simple example, completion suggester. Completion suggester 
     namespace Acme\DemoBundle\Document;
 
     use ONGR\ElasticsearchBundle\Annotation as ES;
+    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Product document.
      *
      * @ES\Document(type="product")
      */
-    class Product implements DocumentInterface
+    class Product extends AbstractDocument
     {
         /**
          * @var CompletionSuggesting
@@ -77,13 +78,14 @@ Here’s an example:
     namespace Acme\DemoBundle\Document;
 
     use ONGR\ElasticsearchBundle\Annotation as ES;
+    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Product document.
      *
      * @ES\Document(type="product")
      */
-    class Product implements DocumentInterface
+    class Product extends AbstractDocument
     {
         /**
          * @var PriceLocationSuggesting

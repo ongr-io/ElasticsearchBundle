@@ -10,10 +10,8 @@ By default annotations inherit all properties that have been defined in parent d
      *
      * @ES\Document(create=false)
      */
-    class Item implements DocumentInterface
+    class Item extends AbstractDocument
     {
-        use DocumentTrait;
-
         /**
          * @var string
          *
@@ -43,10 +41,8 @@ By default annotations inherit all properties that have been defined in parent d
      * @ES\Skip({"name"})
      * @ES\Inherit({"price"})
      */
-    class Product extends Item implements DocumentInterface
+    class Product extends Item
     {
-        use DocumentTrait;
-
         /**
          * @var string
          *

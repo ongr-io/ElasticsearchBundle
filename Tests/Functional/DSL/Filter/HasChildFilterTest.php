@@ -12,15 +12,16 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
 use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
 use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\DSL\Filter\HasChildFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * HasChild filter functional test.
  */
-class HasChildFilterTest extends ElasticsearchTestCase
+class HasChildFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -81,7 +82,7 @@ class HasChildFilterTest extends ElasticsearchTestCase
         unset($testData['default']['product'][0]['_id']);
 
         // Case #0: Test with data.
-        $filter = new HasChildFilter('comment', new TermQuery('sub_title', 'bar'));
+        $filter = new HasChildFilter('comment', new TermFilter('sub_title', 'bar'));
 
         $out[] = [
             $filter,
@@ -93,7 +94,7 @@ class HasChildFilterTest extends ElasticsearchTestCase
 
         // Case #1: Test with no data.
         $filter = new HasChildFilter('comment', new TermQuery('sub_title', 'nobar'));
-
+        $filter->setDslType('query');
         $out[] = [
             $filter,
             [],

@@ -63,7 +63,7 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $app->add($this->getCreateCommand());
 
         // Creates index.
-        $command = $app->find('es:index:create');
+        $command = $app->find('ongr:es:index:create');
         $commandTester = new CommandTester($command);
         $arguments = [
             'command' => $command->getName(),

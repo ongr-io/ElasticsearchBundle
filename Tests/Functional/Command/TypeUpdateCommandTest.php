@@ -11,19 +11,15 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
-use ONGR\ElasticsearchBundle\Command\IndexCreateCommand;
 use ONGR\ElasticsearchBundle\Command\TypeUpdateCommand;
-use ONGR\ElasticsearchBundle\ORM\Manager;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Functional tests for type update command.
  */
-class TypeUpdateCommandTest extends WebTestCase
+class TypeUpdateCommandTest extends AbstractElasticsearchTestCase
 {
     /**
      * @var string
@@ -31,41 +27,20 @@ class TypeUpdateCommandTest extends WebTestCase
     private $documentDir;
 
     /**
-     * @var Manager
-     */
-    private $manager;
-
-    /**
-     * @var Application
-     */
-    private $app;
-
-    /**
      * @var string
      */
     private $file;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
 
     /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-        // Only a single instance of container should be used on all commands and throughout the test.
-        $this->container = self::createClient()->getContainer();
-        $this->manager = $this->container->get('es.manager');
+        parent::setUp();
 
         // Set up custom document to test mapping with.
-        $this->documentDir = $this->container->get('kernel')->locateResource('@AcmeTestBundle/Document/');
+        $this->documentDir = $this->getContainer()->get('kernel')->locateResource('@AcmeTestBundle/Document/');
         $this->file = $this->documentDir . 'Article.php';
-
-        // Create index for testing.
-        $this->app = new Application();
-        $this->createIndexCommand();
     }
 
     /**
@@ -74,10 +49,15 @@ class TypeUpdateCommandTest extends WebTestCase
     public function testExecute()
     {
         $this->assertMappingNotSet("Article mapping shouldn't be defined yet.");
-
         copy($this->documentDir . 'documentSample.txt', $this->file);
 
-        $this->runUpdateCommand();
+        // Reinitialize container.
+        $this->getContainer(true, ['environment' => 'test2']);
+
+        $this->assertEquals(
+            $this->runUpdateCommand(),
+            "`all` type(s) have been updated for manager named `default`.\n"
+        );
         $this->assertMappingSet('Article mapping should be defined after update.');
     }
 
@@ -87,13 +67,21 @@ class TypeUpdateCommandTest extends WebTestCase
     public function testExecuteType()
     {
         $this->assertMappingNotSet("Article mapping shouldn't be defined yet.");
-
         copy($this->documentDir . 'documentSample.txt', $this->file);
 
-        $this->runUpdateCommand('product');
+        // Reinitialize container.
+        $this->getContainer(true, ['environment' => 'test2']);
+
+        $this->assertEquals(
+            $this->runUpdateCommand(['--type' => ['product']]),
+            "`product` type(s) are already up to date for manager named `default`.\n"
+        );
         $this->assertMappingNotSet("Article mapping shouldn't be defined, type selected was `product`.");
 
-        $this->runUpdateCommand('article');
+        $this->assertEquals(
+            $this->runUpdateCommand(['--type' => ['article']]),
+            "`article` type(s) have been updated for manager named `default`.\n"
+        );
         $this->assertMappingSet('Article mapping should be defined after update, type selected was `article`.');
     }
 
@@ -102,8 +90,48 @@ class TypeUpdateCommandTest extends WebTestCase
      */
     public function testExecuteUpdated()
     {
-        $this->assertStringStartsWith('Types are already up to date.', $this->runUpdateCommand());
+        $this->assertEquals(
+            "`all` type(s) are already up to date for manager named `default`.\n",
+            $this->runUpdateCommand()
+        );
         $this->assertMappingNotSet("Article was never added, type shouldn't be added.");
+    }
+
+    /**
+     * Data provider for testing update command with manager w/o mapping.
+     *
+     * @return array
+     */
+    public function getTestUpdateCommandMessagesData()
+    {
+        return [
+            [
+                ['--manager' => 'bar'],
+                "No mapping was found in `bar` manager.\n",
+            ],
+            [
+                ['--manager' => 'bar', '--type' => ['product']],
+                "No mapping was found for `product` types in `bar` manager.\n",
+            ],
+            [
+                ['--force' => false],
+                'ATTENTION: This action should not be used in production environment.'
+                . "\n\nOption --force has to be used to drop type(s).\n",
+            ],
+        ];
+    }
+
+    /**
+     * Tests update command output.
+     *
+     * @param array  $arguments Arguments to pass to command.
+     * @param string $message   Output message.
+     *
+     * @dataProvider getTestUpdateCommandMessagesData
+     */
+    public function testUpdateCommandMessages($arguments, $message)
+    {
+        $this->assertEquals($this->runUpdateCommand($arguments), $message);
     }
 
     /**
@@ -111,10 +139,15 @@ class TypeUpdateCommandTest extends WebTestCase
      *
      * @param string $message
      */
-    protected function assertMappingSet($message)
+    private function assertMappingSet($message)
     {
-        $mapping = $this->manager->getConnection()->getMapping('article');
-        $this->assertNotNull($mapping, $message);
+        $mapping = $this
+            ->getContainer()
+            ->get('es.manager.default')
+            ->getConnection()
+            ->getMappingFromIndex('article');
+
+        $this->assertNotEmpty($mapping, $message);
         $expectedMapping = [
             'properties' => [
                 'title' => ['type' => 'string'],
@@ -126,61 +159,47 @@ class TypeUpdateCommandTest extends WebTestCase
     /**
      * Asserts mapping isn't set.
      *
-     * @param string $message
+     * @param string $message Assert message.
      */
-    protected function assertMappingNotSet($message)
+    private function assertMappingNotSet($message)
     {
-        $this->assertNull($this->manager->getConnection()->getMapping('article'), $message);
+        $this->assertEmpty(
+            $this->getContainer()->get('es.manager.default')->getConnection()->getMappingFromIndex('article'),
+            $message
+        );
     }
 
     /**
      * Runs update command.
      *
-     * @param string $type
+     * @param array $arguments Arguments/options to pass to command.
      *
-     * @return string
+     * @return string Command display.
      */
-    protected function runUpdateCommand($type = '')
+    private function runUpdateCommand($arguments = [])
     {
         $command = new TypeUpdateCommand();
-        $command->setContainer($this->container);
+        $command->setContainer($this->getContainer());
 
-        $this->app->add($command);
-        $commandToTest = $this->app->find('es:type:update');
+        $app = new Application();
+        $app->add($command);
+
+        $commandToTest = $app->find('ongr:es:type:update');
         $commandTester = new CommandTester($commandToTest);
 
         $result = $commandTester->execute(
-            [
-                'command' => $commandToTest->getName(),
-                '--force' => true,
-                '--type' => $type,
-            ]
+            array_filter(
+                array_replace(
+                    [
+                        'command' => $commandToTest->getName(),
+                        '--force' => true,
+                    ],
+                    $arguments
+                )
+            )
         );
-
-        $this->assertEquals(0, $result, "Mapping update wasn't executed successfully.");
 
         return $commandTester->getDisplay();
-    }
-
-    /**
-     * Creates index for testing.
-     *
-     * @param string $manager
-     */
-    protected function createIndexCommand($manager = 'default')
-    {
-        $command = new IndexCreateCommand();
-        $command->setContainer($this->container);
-
-        $this->app->add($command);
-        $command = $this->app->find('es:index:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(
-            [
-                'command' => $command->getName(),
-                '--manager' => $manager,
-            ]
-        );
     }
 
     /**
@@ -188,11 +207,7 @@ class TypeUpdateCommandTest extends WebTestCase
      */
     public function tearDown()
     {
-        try {
-            $this->manager->getConnection()->dropIndex();
-        } catch (Exception $ex) {
-            // Index wasn't actually created.
-        }
+        parent::tearDown();
         @unlink($this->file);
     }
 }

@@ -29,11 +29,11 @@ class IndexDropCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('es:index:drop')
+            ->setName('ongr:es:index:drop')
             ->setDescription('Drops elasticsearch index.')
             ->addOption(
                 'force',
-                null,
+                'f',
                 InputOption::VALUE_NONE,
                 'Set this parameter to execute this command'
             );
@@ -54,7 +54,14 @@ class IndexDropCommand extends AbstractManagerAwareCommand
                 )
             );
         } else {
-            $output->writeln('<info>Parameter --force has to be used to drop the index.</info>');
+            $output->writeln(
+                '<error>ATTENTION:</error> This action should not be used in production environment.'
+                . "\n\nOption --force has to be used to drop type(s)."
+            );
+
+            return 1;
         }
+
+        return 0;
     }
 }

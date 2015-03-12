@@ -40,6 +40,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                         'test' => [
                             'connection' => 'test2',
                             'debug' => false,
+                            'readonly' => false,
                             'mappings' => ['testBundle'],
                         ],
                     ],
@@ -59,6 +60,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
             'test' => [
                 'connection' => 'test2',
                 'debug' => false,
+                'readonly' => false,
                 'mappings' => ['testBundle'],
             ],
         ];

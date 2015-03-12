@@ -110,10 +110,15 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
         if ($offset === null) {
             $offset = $this->getKey();
         }
-        $this->documents[$offset] = $value;
 
-        // Also invalidate converted document.
-        unset($this->converted[$offset]);
+        if (is_object($value)) {
+            $this->converted[$offset] = $value;
+            $this->documents[$offset] = null;
+        } elseif (is_array($value)) {
+            $this->documents[$offset] = $value;
+            // Also invalidate converted document.
+            unset($this->converted[$offset]);
+        }
     }
 
     /**
@@ -130,6 +135,18 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
     public function count()
     {
         return count($this->documents);
+    }
+
+    /**
+     * Rewind's the iteration and returns first result.
+     *
+     * @return mixed|null
+     */
+    public function first()
+    {
+        $this->rewind();
+
+        return $this->current();
     }
 
     /**

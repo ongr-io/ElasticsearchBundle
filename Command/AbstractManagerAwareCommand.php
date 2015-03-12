@@ -36,13 +36,13 @@ abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
     }
 
     /**
-     * Returns elasticsearch manager by name with latest mappings.
+     * Returns elasticsearch manager by name from service container.
      *
-     * @param string $name
+     * @param string $name Manager name defined in configuration.
      *
      * @return Manager
      *
-     * @throws \RuntimeException
+     * @throws \RuntimeException If manager was not found.
      */
     protected function getManager($name)
     {
@@ -53,21 +53,23 @@ abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
         }
 
         throw new \RuntimeException(
-            sprintf('Manager named `%s` not found. Check your configuration.', $name)
+            sprintf(
+                'Manager named `%s` not found. Available: `%s`.',
+                $name,
+                implode('`, `', array_keys($this->getContainer()->getParameter('es.managers')))
+            )
         );
     }
 
     /**
-     * Returns connection service id.
+     * Formats manager service id from its name.
      *
-     * @param string $name
+     * @param string $name Manager name.
      *
-     * @return string
+     * @return string Service id.
      */
     private function getManagerId($name)
     {
-        $manager = $name == 'default' || empty($name) ? 'es.manager' : sprintf('es.manager.%s', $name);
-
-        return $manager;
+        return sprintf('es.manager.%s', $name);
     }
 }

@@ -62,7 +62,7 @@ class IndexExportCommandTest extends ElasticsearchTestCase
 
         vfsStream::setup('tmp');
 
-        $command = $app->find('es:index:export');
+        $command = $app->find('ongr:es:index:export');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
