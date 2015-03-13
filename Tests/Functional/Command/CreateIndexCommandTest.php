@@ -15,6 +15,13 @@ use ONGR\ElasticsearchBundle\Command\IndexCreateCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * Tests for IndexCreateCommand class.
+ *
+ * Class CreateIndexCommandTest
+ *
+ * @package ONGR\ElasticsearchBundle\Tests\Functional\Command
+ */
 class CreateIndexCommandTest extends AbstractCommandTestCase
 {
     /**
@@ -35,7 +42,7 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
             [
                 'default',
                 [
-                    'timestamp' => false,
+                    'timestamp' => true,
                     'warm' => true,
                 ],
             ],
@@ -77,6 +84,11 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         }
 
         $commandTester->execute($arguments);
+
+        if ($options['timestamp']) {
+            $now = new \DateTime();
+            $connection->setIndexName($connection->getIndexName() . '-' . $now->format('Y.m.d'));
+        }
 
         $this->assertTrue($connection->indexExists(), 'Index should exist.');
         $connection->dropIndex();
