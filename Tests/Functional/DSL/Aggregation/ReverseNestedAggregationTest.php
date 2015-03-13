@@ -18,10 +18,10 @@ use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\FilterAggregation;
 use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
-class ReverseNestedAggregationTest extends ElasticsearchTestCase
+class ReverseNestedAggregationTest extends AbstractElasticsearchTestCase
 {
     use TestHelperTrait;
 
