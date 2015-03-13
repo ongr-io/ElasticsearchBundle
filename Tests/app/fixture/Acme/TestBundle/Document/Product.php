@@ -74,7 +74,7 @@ class Product extends Item
     /**
      * @var string
      *
-     * @ES\Property(type="geo_point", name="location")
+     * @ES\Property(type="geo_point", name="location", geohash="true", geohash_prefix="true", geohash_precision="1km")
      */
     public $location;
 
