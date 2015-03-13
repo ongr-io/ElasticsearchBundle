@@ -14,6 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Query;
 use ONGR\ElasticsearchBundle\DSL\Query\FilteredQuery;
 use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
+/**
+ * Test for FilteredQueryParametersTraitTest.php.
+ */
 class FilteredQueryTest extends \PHPUnit_Framework_TestCase
 {
     use EncapsulationTestAwareTrait;
