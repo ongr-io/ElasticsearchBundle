@@ -48,7 +48,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             $finder = $this->getContainer()->get('es.client.index_suffix_finder');
             $finder->setNextFreeIndex($connection);
         }
-        $connection->createIndex($input->getOption('with-warmers'), $input->getOption('no-mapping') ? false : true);
+        $connection->createIndex($input->getOption('with-warmers'), $input->getOption('no-mapping') ? true : false);
         $output->writeln(
             sprintf(
                 '<info>Created index for manager named `</info><comment>%s</comment><info>`</info>',
