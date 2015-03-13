@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
+use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
@@ -565,12 +566,14 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
         $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $matchAllQuery = new MatchAllQuery();
         $search = $repository
             ->createSearch()
-            ->addFilter(new MissingFilter('price'));
+            ->addQuery($matchAllQuery);
 
-        $result = $repository->execute($search);
-        $this->assertEmpty($search->getQueries());
+        $repository->execute($search);
+        $this->assertArrayHasKey($matchAllQuery->getType(), $search->getQueries());
+        $this->assertEquals(1, count($search->getQueries()));
     }
 
     /**
