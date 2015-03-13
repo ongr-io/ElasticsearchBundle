@@ -80,13 +80,13 @@ class SearchTest extends \PHPUnit_Framework_TestCase
         $search = new Search();
         $queryMock = $this->getMock('ONGR\ElasticsearchBundle\DSL\Query\Query');
 
-        $this->assertNull($search->getQueries());
+        $this->assertEmpty($search->getQueries());
         $search->addQuery($queryMock);
         $this->assertNotNull($search->getQueries());
 
         $search->destroyQuery();
 
-        $this->assertNull($search->getQueries());
+        $this->assertEmpty($search->getQueries());
     }
 
     /**
