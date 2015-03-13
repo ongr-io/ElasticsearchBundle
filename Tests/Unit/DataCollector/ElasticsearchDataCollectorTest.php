@@ -23,4 +23,25 @@ class ElasticsearchDataCollectorTest extends \PHPUnit_Framework_TestCase
         $collector = new ElasticsearchDataCollector();
         $this->assertEquals('es', $collector->getName());
     }
+
+    /**
+     * Tests getManagers method.
+     */
+    public function testGetManagers()
+    {
+        $collector = new ElasticsearchDataCollector();
+        $collector->setManagers(
+            [
+                'test_name1' => ['test_manager1'],
+                'default' => ['test_manager2'],
+            ]
+        );
+
+        $result = [
+            'test_name1' => 'es.manager.test_name1',
+            'default' => 'es.manager',
+        ];
+
+        $this->assertEquals($result, $collector->getManagers());
+    }
 }
