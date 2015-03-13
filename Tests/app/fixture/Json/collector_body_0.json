@@ -1,15 +1,9 @@
 {
     "query": {
-        "bool": {
-            "must": [
-                {
-                    "term": {
-                        "title": {
-                            "value": "pizza"
-                        }
-                    }
-                }
-            ]
+        "term": {
+            "title": {
+                "value": "pizza"
+            }
         }
     },
     "fields": [
