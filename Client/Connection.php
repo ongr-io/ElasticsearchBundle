@@ -244,16 +244,16 @@ class Connection
     /**
      * Creates fresh elasticsearch index.
      *
-     * @param bool $putWarmers     Determines if warmers should be loaded.
-     * @param bool $includeMapping Determines if mapping should be created.
+     * @param bool $putWarmers Determines if warmers should be loaded.
+     * @param bool $noMapping  Determines if mapping should be included.
      */
-    public function createIndex($putWarmers = false, $includeMapping = false)
+    public function createIndex($putWarmers = false, $noMapping = true)
     {
         $this->isReadOnly('Create index');
 
         $settings = $this->settings;
 
-        if (!$includeMapping) {
+        if ($noMapping) {
             unset($settings['body']['mappings']);
         }
         $this->client->indices()->create($settings);

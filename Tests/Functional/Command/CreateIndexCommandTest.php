@@ -30,6 +30,7 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
                 [
                     'timestamp' => false,
                     'warm' => false,
+                    'no_mapping' => true,
                 ],
             ],
             [
@@ -37,6 +38,15 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
                 [
                     'timestamp' => false,
                     'warm' => true,
+                    'no_mapping' => true,
+                ],
+            ],
+            [
+                'default',
+                [
+                    'timestamp' => false,
+                    'warm' => true,
+                    'no_mapping' => false,
                 ],
             ],
         ];
@@ -75,9 +85,12 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         if ($options['warm']) {
             $arguments['--with-warmers'] = null;
         }
-
+        if ($options['no_mapping']) {
+            $arguments['--no-mapping'] = null;
+        }
         $commandTester->execute($arguments);
-
+        $mapping = $connection->getMappingFromIndex();
+        $this->assertEquals($options['no_mapping'], empty($mapping));
         $this->assertTrue($connection->indexExists(), 'Index should exist.');
         $connection->dropIndex();
     }
