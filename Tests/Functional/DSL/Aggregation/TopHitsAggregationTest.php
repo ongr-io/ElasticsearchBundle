@@ -19,12 +19,12 @@ use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\DSL\Sort\Sorts;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Function test for top hits aggregation.
  */
-class TopHitsAggregationTest extends ElasticsearchTestCase
+class TopHitsAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -125,13 +125,8 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $functions = [
-            'script_score' =>
-                [
-                    'script' => "doc['price'].value",
-                ],
-        ];
-        $functionScore = new FunctionScoreQuery(new MatchAllQuery(), $functions);
+        $functionScore = new FunctionScoreQuery(new MatchAllQuery());
+        $functionScore->addScriptScoreFunction("doc['price'].value");
         $search = $repo->createSearch()->addAggregation($aggregation)->addQuery($functionScore);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
@@ -157,13 +152,8 @@ class TopHitsAggregationTest extends ElasticsearchTestCase
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $functions = [
-            'script_score' =>
-                [
-                    'script' => "doc['price'].value",
-                ],
-        ];
-        $functionScore = new FunctionScoreQuery(new MatchAllQuery(), $functions);
+        $functionScore = new FunctionScoreQuery(new MatchAllQuery());
+        $functionScore->addScriptScoreFunction("doc['price'].value");
         $search = $repo->createSearch()->addAggregation($aggregation)->addQuery($functionScore);
         $results = $repo->execute($search);
 

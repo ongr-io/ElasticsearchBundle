@@ -11,16 +11,27 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
+use ONGR\ElasticsearchBundle\DSL\Filter\RangeFilter;
 use ONGR\ElasticsearchBundle\DSL\Query\FunctionScoreQuery;
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Function_score query functional test.
  */
-class FunctionScoreQueryTest extends ElasticsearchTestCase
+class FunctionScoreQueryTest extends AbstractElasticsearchTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getIgnoredVersions()
+    {
+        return [
+            [ '1.4.0', '<=' ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -57,20 +68,13 @@ class FunctionScoreQueryTest extends ElasticsearchTestCase
     /**
      * Test function_score query for expected search result.
      */
-    public function testFunctionScoreQuery()
+    public function testFieldValueFactorFunction()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $functions = [
-            'field_value_factor' => [
-                'field' => 'price',
-                'factor' => 1.2,
-                'modifier' => 'sqrt',
-            ],
-        ];
-
-        $functionScoreQuery = new FunctionScoreQuery(new MatchAllQuery(), $functions, ['boost' => 1]);
+        $functionScoreQuery = new FunctionScoreQuery(new MatchAllQuery(), ['boost' => 1]);
+        $functionScoreQuery->addFieldValueFactorFunction('price', 1.2, 'sqrt');
 
         $search = $repo->createSearch()->addQuery($functionScoreQuery);
 
@@ -84,5 +88,35 @@ class FunctionScoreQueryTest extends ElasticsearchTestCase
         $expected = array_reverse($testProducts);
 
         $this->assertEquals($expected, $results);
+    }
+
+    /**
+     * Tests functions score function with included filter.
+     */
+    public function testWeightFunctionWithFilter()
+    {
+        $weight = 5;
+
+        $condition = 100;
+
+        /** @var Repository $repo */
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+
+        $filter = new RangeFilter('price', ['lte' => $condition]);
+        $functionScoreQuery = new FunctionScoreQuery(new MatchAllQuery(), ['boost' => 1]);
+        $functionScoreQuery->setDslType('filter');
+
+        $functionScoreQuery->addWeightFunction($weight, $filter);
+        $search = $repo->createSearch()->addQuery($functionScoreQuery);
+
+        $results = $repo->execute($search, Repository::RESULTS_RAW_ITERATOR);
+
+        foreach ($results as $result) {
+            if ($weight == $result['_score']) {
+                $this->assertLessThanOrEqual($condition, $result['_source']['price']);
+            } else {
+                $this->assertGreaterThanOrEqual($condition, $result['_source']['price']);
+            }
+        }
     }
 }
