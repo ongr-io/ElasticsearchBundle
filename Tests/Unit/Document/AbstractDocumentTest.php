@@ -27,20 +27,21 @@ class AbstractDocumentTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetGet()
     {
-        $document = new AbstractDocument();
-        $document->__set('_id', '123');
-        $document->__set('_score', '123');
-        $document->__set('_ttl', '123');
-        $document->__set('_parent', '123');
-        $document->__set('foo', '123');
+        /** @var \ONGR\ElasticsearchBundle\Document\AbstractDocument $stub */
+        $stub = $this->getMockForAbstractClass('\ONGR\ElasticsearchBundle\Document\AbstractDocument');
+        $stub->__set('_id', '123');
+        $stub->__set('_score', '123');
+        $stub->__set('_ttl', '123');
+        $stub->__set('_parent', '123');
+        $stub->__set('foo', '123');
 
-        $this->assertEquals('123', $document->__get('_id'));
-        $this->assertEquals('123', $document->__get('_score'));
-        $this->assertEquals('123', $document->__get('_ttl'));
-        $this->assertEquals('123', $document->__get('_parent'));
-        $this->assertEquals(null, $document->__get('foo'));
-        $this->assertEquals('123', $document->getScore());
-        $this->assertTrue($document->hasParent());
+        $this->assertEquals('123', $stub->__get('_id'));
+        $this->assertEquals('123', $stub->__get('_score'));
+        $this->assertEquals('123', $stub->__get('_ttl'));
+        $this->assertEquals('123', $stub->__get('_parent'));
+        $this->assertEquals(null, $stub->__get('foo'));
+        $this->assertEquals('123', $stub->getScore());
+        $this->assertTrue($stub->hasParent());
     }
 
     /**
@@ -51,8 +52,9 @@ class AbstractDocumentTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHighlightException()
     {
-        $document = new AbstractDocument();
-        $document->__set('highlight', null);
-        $document->getHighLight();
+        /** @var \ONGR\ElasticsearchBundle\Document\AbstractDocument $stub */
+        $stub = $this->getMockForAbstractClass('\ONGR\ElasticsearchBundle\Document\AbstractDocument');
+        $stub->__set('highlight', null);
+        $stub->getHighLight();
     }
 }
