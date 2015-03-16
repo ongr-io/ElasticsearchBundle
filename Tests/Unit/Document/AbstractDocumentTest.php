@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Document;
 
-use ONGR\ElasticsearchBundle\Document\AbstractDocument;
-
 /**
  * Tests AbstractDocument.
  *
