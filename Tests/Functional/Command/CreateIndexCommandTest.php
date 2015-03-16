@@ -46,6 +46,13 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
                     'warm' => true,
                 ],
             ],
+            [
+                'default',
+                [
+                    'timestamp' => true,
+                    'warm' => true,
+                ],
+            ],
         ];
     }
 
