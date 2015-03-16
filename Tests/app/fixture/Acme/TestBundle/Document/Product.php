@@ -79,6 +79,13 @@ class Product extends Item
     public $location;
 
     /**
+     * @var string
+     *
+     * @ES\Property(type="geo_shape", name="shape")
+     */
+    public $shape;
+
+    /**
      * @var UrlObject[]|\Iterator
      *
      * @ES\Property(type="object", objectName="AcmeTestBundle:UrlObject", multiple=true, name="url")
