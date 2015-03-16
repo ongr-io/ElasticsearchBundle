@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
+namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
 
-use ONGR\ElasticsearchBundle\DSL\Query\SpanTermQuery;
+use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanTermQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * SpanTerm query functional test.
  */
-class SpanTermTest extends ElasticsearchTestCase
+class SpanTermTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
