@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
 use ONGR\ElasticsearchBundle\Result\Converter;
+use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
 
 /**
  * Tests result converter.
@@ -39,10 +40,50 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function testAssignArrayToObject()
     {
-        $stub = $this->getMockBuilder('\ONGR\ElasticsearchBundle\Document\DocumentInterface')->getMock();
+        $stub = $this
+            ->getMockBuilder('\ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Item')
+            ->getMock();
+
+        $documentHighlight = new DocumentHighlight([]);
+
+        $stub
+            ->expects($this->once())
+            ->method('setHighlight')
+            ->with($this->identicalTo($documentHighlight));
+        $stub
+            ->expects($this->once())
+            ->method('__set')
+            ->with(
+                $this->equalTo('foo'),
+                $this->equalTo('bar')
+            );
+        $stub
+            ->expects($this->once())
+            ->method('setPrice')
+            ->with($this->equalTo(123));
+
         $converter = new Converter([], []);
-        $object = $converter->assignArrayToObject(['foo' => 'bar'], $stub, []);
-        $this->assertEquals('bar', $object->foo);
+
+        $converter->assignArrayToObject(
+            [
+                'foo' => 'bar',
+                'price' => (float)123,
+                'highlight' => $documentHighlight,
+            ],
+            $stub,
+            [
+                'price' =>
+                    [
+                        'propertyName' => 'price',
+                        'type' => 'float',
+                    ],
+                'highlight' =>
+                    [
+                        'propertyName' => 'highlight',
+                        'type' => 'DocumentHighlight',
+                    ],
+            ]
+        );
     }
 
     /**
