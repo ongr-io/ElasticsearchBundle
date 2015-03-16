@@ -39,7 +39,7 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function testAssignArrayToObject()
     {
-        $stub = new \StdClass();
+        $stub = $this->getMockBuilder('\ONGR\ElasticsearchBundle\Document\DocumentInterface')->getMock();
         $converter = new Converter([], []);
         $object = $converter->assignArrayToObject(['foo' => 'bar'], $stub, []);
         $this->assertEquals('bar', $object->foo);
