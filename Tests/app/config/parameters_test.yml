@@ -1,0 +1,4 @@
+parameters:
+    elasticsearch_test_connection.host: '127.0.0.1:9200'
+    elasticsearch_test_connection.default.index_name: ongr-esb-test
+    elasticsearch_test_connection.bar.index_name: ongr-esb-bar-test

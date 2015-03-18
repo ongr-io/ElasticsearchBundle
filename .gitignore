@@ -1,8 +1,5 @@
 /vendor/
 /Tests/app/cache/
 /Tests/app/logs/
-/Tests/app/build/
-/Tests/app/data/
 /phpunit.xml
 /composer.lock
-/Tests/app/config/parameters_test.yml
