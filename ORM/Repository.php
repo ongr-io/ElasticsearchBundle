@@ -71,7 +71,7 @@ class Repository
     /**
      * @return array
      */
-    protected function getTypes()
+    public function getTypes()
     {
         $types = [];
         $meta = $this->manager->getBundlesMapping($this->namespaces);
