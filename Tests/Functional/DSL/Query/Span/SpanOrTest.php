@@ -57,21 +57,15 @@ class SpanOrTest extends AbstractElasticsearchTestCase
     public function testSpanOrQuery()
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $spanOr = new SpanOrQuery(
-            [
-                new SpanFirstQuery(new SpanTermQuery('description', 'ipsum'), 2),
-                new SpanNearQuery(
-                    1,
-                    [
-                        new SpanTermQuery('description', 'ipsum'),
-                        new SpanTermQuery('description', 'sit'),
-                    ],
-                    [
-                        'in_order' => true,
-                    ]
-                ),
-            ]
-        );
+        $spanNear = new SpanNearQuery(['in_order' => true]);
+        $spanNear->setSlop(1);
+        $spanNear
+            ->addQuery(new SpanTermQuery('description', 'ipsum'))
+            ->addQuery(new SpanTermQuery('description', 'sit'));
+
+        $spanOr = new SpanOrQuery();
+        $spanOr->addQuery(new SpanFirstQuery(new SpanTermQuery('description', 'ipsum'), 2))
+            ->addQuery($spanNear);
 
         $search = $repo->createSearch()->addQuery($spanOr);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);

@@ -45,17 +45,12 @@ class SpanNearTest extends AbstractElasticsearchTestCase
     public function testSpanNearQueryWhenSlopIsLow()
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $spanNear = new SpanNearQuery(
-            12,
-            [
-                new SpanTermQuery('description', 'one'),
-                new SpanTermQuery('description', 'two'),
-                new SpanTermQuery('description', 'six'),
-            ],
-            [
-                'in_order' => true,
-            ]
-        );
+        $spanNear = new SpanNearQuery(['in_order' => true]);
+        $spanNear->setSlop(12);
+        $spanNear
+            ->addQuery(new SpanTermQuery('description', 'one'))
+            ->addQuery(new SpanTermQuery('description', 'two'))
+            ->addQuery(new SpanTermQuery('description', 'six'));
 
         $search = $repo->createSearch()->addQuery($spanNear);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
@@ -68,17 +63,12 @@ class SpanNearTest extends AbstractElasticsearchTestCase
     public function testSpanNearQueryWhenSlopIsLarge()
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $spanNear = new SpanNearQuery(
-            40,
-            [
-                new SpanTermQuery('description', 'one'),
-                new SpanTermQuery('description', 'two'),
-                new SpanTermQuery('description', 'six'),
-            ],
-            [
-                'in_order' => true,
-            ]
-        );
+        $spanNear = new SpanNearQuery(['in_order' => true]);
+        $spanNear->setSlop(40);
+        $spanNear
+            ->addQuery(new SpanTermQuery('description', 'one'))
+            ->addQuery(new SpanTermQuery('description', 'two'))
+            ->addQuery(new SpanTermQuery('description', 'six'));
 
         $search = $repo->createSearch()->addQuery($spanNear);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
