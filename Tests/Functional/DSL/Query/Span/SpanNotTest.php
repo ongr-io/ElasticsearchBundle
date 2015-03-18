@@ -62,16 +62,14 @@ class SpanNotTest extends AbstractElasticsearchTestCase
     public function testSpanNotTest()
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $spanNot = new SpanNotQuery(
-            new SpanTermQuery('description', 'Lorem ipsum'),
-            new SpanNearQuery(
-                1,
-                [
-                    new SpanTermQuery('description', 'consectetur'),
-                    new SpanTermQuery('description', 'foo'),
-                ]
-            )
-        );
+
+        $spanNear = new SpanNearQuery();
+        $spanNear
+            ->addQuery(new SpanTermQuery('description', 'consectetur'))
+            ->addQuery(new SpanTermQuery('description', 'foo'));
+        $spanNear->setSlop(1);
+
+        $spanNot = new SpanNotQuery(new SpanTermQuery('description', 'Lorem ipsum'), $spanNear);
         $search = $repo->createSearch()->addQuery($spanNot);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
         $this->assertEquals(0, count($results));
@@ -83,15 +81,9 @@ class SpanNotTest extends AbstractElasticsearchTestCase
     public function testSpanNotTestSimpleSpanQueries()
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $spanNot = new SpanNotQuery(
-            new SpanTermQuery('description', 'foo'),
-            new SpanNearQuery(
-                1,
-                [
-                    new SpanTermQuery('description', 'consectetur'),
-                ]
-            )
-        );
+        $spanNear = new SpanNearQuery();
+        $spanNear->addQuery(new SpanTermQuery('description', 'consectetur'))->setSlop(1);
+        $spanNot = new SpanNotQuery(new SpanTermQuery('description', 'foo'), $spanNear);
         $search = $repo->createSearch()->addQuery($spanNot);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
         $this->assertEquals(1, count($results));
