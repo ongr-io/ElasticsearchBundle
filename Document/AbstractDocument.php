@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
 /**
  * Document abstraction which introduces mandatory fields for the document.
  */
-class AbstractDocument implements DocumentInterface
+abstract class AbstractDocument implements DocumentInterface
 {
     /**
      * @var string
