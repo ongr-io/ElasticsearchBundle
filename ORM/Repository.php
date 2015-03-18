@@ -183,6 +183,23 @@ class Repository
     }
 
     /**
+     * Delete by query.
+     *
+     * @param Search $search
+     *
+     * @return array
+     */
+    public function deleteByQuery(Search $search)
+    {
+        $results = $this
+            ->manager
+            ->getConnection()
+            ->deleteByQuery($this->types, $search->toArray());
+
+        return $this->parseResult($results, self::RESULTS_RAW, null);
+    }
+
+    /**
      * Fetches next set of results.
      *
      * @param string $scrollId

@@ -201,6 +201,24 @@ class Connection
     }
 
     /**
+     * Delete by query.
+     *
+     * @param array $types List of types to search in.
+     * @param array $query Query to execute.
+     *
+     * @return array
+     */
+    public function deleteByQuery(array $types, array $query)
+    {
+        $params = [];
+        $params['index'] = $this->getIndexName();
+        $params['type'] = implode(',', $types);
+        $params['body'] = $query;
+
+        return $this->client->deleteByQuery($params);
+    }
+
+    /**
      * Executes search query in the index.
      *
      * @param array $types             List of types to search in.

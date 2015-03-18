@@ -15,10 +15,12 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
+use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
@@ -591,5 +593,28 @@ class RepositoryTest extends ElasticsearchTestCase
                 }
             }
         }
+    }
+
+    /**
+     * Tests if documents are deleted by query.
+     */
+    public function testDeleteByQueryWorks()
+    {
+        /** @var Manager $manager */
+        $all = new MatchAllQuery();
+        $manager = $this->getContainer()->get('es.manager');
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $search = $repository->createSearch()->addQuery($all);
+        $results = $repository->execute($search)->count();
+        $this->assertEquals(4, $results);
+
+        $query = $repository->createSearch();
+        $term = new RangeQuery('price', ['gt' => 1, 'lt' => 200]);
+        $query->addQuery($term);
+        $repository->deleteByQuery($query);
+
+        $search = $repository->createSearch()->addQuery($all);
+        $results = $repository->execute($search)->count();
+        $this->assertEquals(2, $results);
     }
 }
