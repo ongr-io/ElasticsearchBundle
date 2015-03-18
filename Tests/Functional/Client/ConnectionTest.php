@@ -204,7 +204,7 @@ class ConnectionTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager('default', false);
         $connection = $manager->getConnection();
-        $connection->dropAndCreateIndex(true);
+        $connection->dropAndCreateIndex(true, false);
 
         $warmers = $connection->getClient()->indices()->getWarmer(
             [
