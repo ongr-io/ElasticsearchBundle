@@ -100,9 +100,11 @@ class GeoShapeFilterTest extends AbstractElasticsearchTestCase
      */
     public function testGeoShapePreIndexed()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $manager = $this->getManager();
+        $index = $manager->getConnection()->getIndexName();
+        $repo = $manager->getRepository('AcmeTestBundle:Product');
         $filter = new GeoShapeFilter();
-        $filter->addPreIndexedShape('shape', 1, 'product', 'ongr-elasticsearch-bundle-default-test', 'shape');
+        $filter->addPreIndexedShape('shape', 1, 'product', $index, 'shape');
         $search = $repo->createSearch()->addFilter($filter);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
         $expected = [
