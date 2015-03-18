@@ -74,7 +74,7 @@ class TypeCreateCommandTest extends AbstractElasticsearchTestCase
             ->getContainer()
             ->get('es.manager.' . $manager)
             ->getConnection();
-        $connection->dropAndCreateIndex();
+        $connection->dropAndCreateIndex(false, true);
 
         $this->assertEquals($message, $this->runCreateCommand($arguments));
 
@@ -134,7 +134,7 @@ class TypeCreateCommandTest extends AbstractElasticsearchTestCase
             ->getContainer()
             ->get('es.manager.' . $manager)
             ->getConnection();
-        $connection->dropAndCreateIndex();
+        $connection->dropAndCreateIndex(false, true);
         $connection->createTypes($createTypes);
 
         $this->assertEquals($message, $this->runCreateCommand($arguments));

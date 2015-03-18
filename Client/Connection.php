@@ -265,7 +265,7 @@ class Connection
      * @param bool $putWarmers Determines if warmers should be loaded.
      * @param bool $noMapping  Determines if mapping should be included.
      */
-    public function createIndex($putWarmers = false, $noMapping = true)
+    public function createIndex($putWarmers = false, $noMapping = false)
     {
         $this->isReadOnly('Create index');
 
@@ -382,8 +382,9 @@ class Connection
      * Tries to drop and create fresh elasticsearch index.
      *
      * @param bool $putWarmers Determines if warmers should be loaded.
+     * @param bool $noMapping  Determines if mapping should be included.
      */
-    public function dropAndCreateIndex($putWarmers = false)
+    public function dropAndCreateIndex($putWarmers = false, $noMapping = false)
     {
         try {
             $this->dropIndex();
@@ -391,7 +392,7 @@ class Connection
             // Do nothing because I'm only trying.
         }
 
-        $this->createIndex($putWarmers);
+        $this->createIndex($putWarmers, $noMapping);
     }
 
     /**
