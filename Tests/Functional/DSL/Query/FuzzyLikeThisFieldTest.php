@@ -11,14 +11,14 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
-use ONGR\ElasticsearchBundle\DSL\Query\FuzzyLikeThisField;
+use ONGR\ElasticsearchBundle\DSL\Query\FuzzyLikeThisFieldQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * FuzzyLikeThisField query functional test.
  */
-class FuzzyLikeThisFieldTest extends ElasticsearchTestCase
+class FuzzyLikeThisFieldTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -103,7 +103,7 @@ class FuzzyLikeThisFieldTest extends ElasticsearchTestCase
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $fuzzyLikeThisFieldQuery = new FuzzyLikeThisField($field, $likeText, $parameters);
+        $fuzzyLikeThisFieldQuery = new FuzzyLikeThisFieldQuery($field, $likeText, $parameters);
         $search = $repo->createSearch()->addQuery($fuzzyLikeThisFieldQuery);
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
         foreach ($expected as &$document) {
