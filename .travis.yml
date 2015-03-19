@@ -8,8 +8,8 @@ php:
   - hhvm
 
 env:
-  - ELASTICSEARCH="1.3.7"
-  - ELASTICSEARCH="1.4.2"
+  - ELASTICSEARCH="1.3.9"
+  - ELASTICSEARCH="1.4.4"
 
 matrix:
   allow_failures:
