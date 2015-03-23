@@ -37,12 +37,7 @@ class RawResultIterator extends AbstractResultsIterator
     }
 
     /**
-     * Just passes array as final document.
-     *
-     * @param array $rawData
-     *
-     * @return array
-     * @throws \LogicException
+     * {@inheritdoc}
      */
     protected function convertDocument($rawData)
     {
