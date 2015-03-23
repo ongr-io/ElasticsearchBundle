@@ -22,6 +22,7 @@ use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Result\IndicesResult;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
@@ -602,7 +603,8 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         /** @var Manager $manager */
         $all = new MatchAllQuery();
-        $manager = $this->getContainer()->get('es.manager');
+        $manager = $this->getManager();
+        $index = $manager->getConnection()->getIndexName();
         $repository = $manager->getRepository('AcmeTestBundle:Product');
         $search = $repository->createSearch()->addQuery($all);
         $results = $repository->execute($search)->count();
@@ -611,7 +613,18 @@ class RepositoryTest extends ElasticsearchTestCase
         $query = $repository->createSearch();
         $term = new RangeQuery('price', ['gt' => 1, 'lt' => 200]);
         $query->addQuery($term);
-        $repository->deleteByQuery($query);
+
+        $expectedResults = [
+            'failed' => [$index => 0],
+            'successful' => [$index => 5],
+            'total' => [$index => 5],
+        ];
+        /** @var IndicesResult $result */
+        $result = $repository->deleteByQuery($query);
+
+        $this->assertEquals($expectedResults['failed'], $result->getFailed());
+        $this->assertEquals($expectedResults['successful'], $result->getSuccessful());
+        $this->assertEquals($expectedResults['total'], $result->getTotal());
 
         $search = $repository->createSearch()->addQuery($all);
         $results = $repository->execute($search)->count();
