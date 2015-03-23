@@ -139,8 +139,12 @@ class Repository
     ) {
         $search = new Search();
 
-        $limit && $search->setSize($limit);
-        $offset && $search->setFrom($offset);
+        if ($limit) {
+            $search->setSize($limit);
+        }
+        if ($offset) {
+            $search->setFrom($offset);
+        }
 
         foreach ($criteria as $field => $value) {
             $search->addQuery(new TermsQuery($field, is_array($value) ? $value : [$value]), 'must');
