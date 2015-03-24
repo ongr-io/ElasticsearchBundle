@@ -20,6 +20,16 @@ class ExtendedStatsAggregationTest extends AbstractElasticsearchTestCase
     /**
      * {@inheritdoc}
      */
+    protected function getIgnoredVersions()
+    {
+        return [
+            ['1.4.3', '<'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDataArray()
     {
         return [
