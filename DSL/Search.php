@@ -34,7 +34,7 @@ class Search
     /**
      * @var array
      */
-    private $boolQueryParams;
+    private $boolQueryParameters;
 
     /**
      * @var BuilderInterface
@@ -49,7 +49,7 @@ class Search
     /**
      * @var array
      */
-    private $boolFilterParams;
+    private $boolFilterParameters;
 
     /**
      * @var int
@@ -69,7 +69,7 @@ class Search
     /**
      * @var string|null
      */
-    private $scrollDuration;
+    private $scroll;
 
     /**
      * @var array|bool|string
@@ -223,6 +223,62 @@ class Search
     }
 
     /**
+     * Set filters.
+     *
+     * @param BuilderInterface[] $filters
+     *
+     * @return $this
+     */
+    public function setFilters($filters)
+    {
+        $this->filters = $filters;
+
+        return $this;
+    }
+
+    /**
+     * Set post filters.
+     *
+     * @param BuilderInterface $filters
+     *
+     * @return $this
+     */
+    public function setPostFilters($filters)
+    {
+        $this->postFilters = $filters;
+
+        return $this;
+    }
+
+    /**
+     * Set sorts.
+     *
+     * @param Sorts $sorts
+     *
+     * @return $this
+     */
+    public function setSorts($sorts)
+    {
+        $this->sorts = $sorts;
+
+        return $this;
+    }
+
+    /**
+     * Set suggesters.
+     *
+     * @param NamedBuilderBag $suggesters
+     *
+     * @return $this
+     */
+    public function setSuggesters($suggesters)
+    {
+        $this->suggesters = $suggesters;
+
+        return $this;
+    }
+
+    /**
      * Set script fields.
      *
      * @param array $scriptFields
@@ -313,6 +369,20 @@ class Search
     }
 
     /**
+     * Set aggregations.
+     *
+     * @param NamedBuilderBag $aggregations
+     *
+     * @return $this
+     */
+    public function setAggregations($aggregations)
+    {
+        $this->aggregations = $aggregations;
+
+        return $this;
+    }
+
+    /**
      * Setter for scroll duration, effectively setting if search is scrolled or not.
      *
      * @param string|null $duration
@@ -321,7 +391,7 @@ class Search
      */
     public function setScroll($duration = self::SCROLL_DURATION)
     {
-        $this->scrollDuration = $duration;
+        $this->scroll = $duration;
 
         return $this;
     }
@@ -373,7 +443,7 @@ class Search
      */
     public function getScroll()
     {
-        return $this->scrollDuration;
+        return $this->scroll;
     }
 
     /**
@@ -418,7 +488,7 @@ class Search
      */
     public function setBoolFilterParameters($params)
     {
-        $this->boolFilterParams = $params;
+        $this->boolFilterParameters = $params;
     }
 
     /**
@@ -445,8 +515,8 @@ class Search
     {
         $array = [];
 
-        if ($this->scrollDuration !== null) {
-            $array['scroll'] = $this->scrollDuration;
+        if ($this->scroll !== null) {
+            $array['scroll'] = $this->scroll;
         }
 
         if ($this->searchType !== null) {
@@ -473,7 +543,7 @@ class Search
      */
     public function getBoolFilterParameters()
     {
-        return $this->boolFilterParams;
+        return $this->boolFilterParameters;
     }
 
     /**
@@ -481,7 +551,7 @@ class Search
      */
     public function getBoolQueryParameters()
     {
-        return $this->boolQueryParams;
+        return $this->boolQueryParameters;
     }
 
     /**
@@ -545,7 +615,7 @@ class Search
      */
     public function getScrollDuration()
     {
-        return $this->scrollDuration;
+        return $this->scroll;
     }
 
     /**
