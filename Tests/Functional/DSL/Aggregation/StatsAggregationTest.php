@@ -13,9 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
 use ONGR\ElasticsearchBundle\DSL\Aggregation\StatsAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class StatsAggregationTest extends ElasticsearchTestCase
+class StatsAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -69,6 +69,33 @@ class StatsAggregationTest extends ElasticsearchTestCase
             ],
         ];
 
+        $this->assertArrayHasKey('aggregations', $results);
+        $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
+    }
+
+    /**
+     * Test for stats aggregation when script is set.
+     */
+    public function testStatsAggregationWithScriptSet()
+    {
+        /** @var Repository $repo */
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+
+        $aggregation = new StatsAggregation('test_agg');
+        $aggregation->setField('price');
+        $aggregation->setScript('_value * 1.2');
+
+        $search = $repo->createSearch()->addAggregation($aggregation);
+        $results = $repo->execute($search, Repository::RESULTS_RAW);
+        $expectedResult = [
+            'agg_test_agg' => [
+                'count' => 3,
+                'min' => 12.54,
+                'max' => 38.4,
+                'sum' => 69.06,
+                'avg' => 23.02,
+            ],
+        ];
         $this->assertArrayHasKey('aggregations', $results);
         $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
     }
