@@ -23,7 +23,6 @@ class HasChildQueryTest extends \PHPUnit_Framework_TestCase
         $missingFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
             ->setConstructorArgs(['test_field'])
             ->getMock();
-
         $query = new HasChildQuery('test_type', $missingFilter, ['test_parameter1']);
         $this->assertEquals(['test_parameter1'], $query->getParameters());
     }

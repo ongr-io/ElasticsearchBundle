@@ -42,7 +42,6 @@ class PostFilterTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['addToBool'])
             ->disableOriginalConstructor()
             ->getMock();
-
         $filterMock->expects($this->once())
             ->method('addToBool')
             ->withAnyParameters();
@@ -61,7 +60,6 @@ class PostFilterTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['setParameters'])
             ->disableOriginalConstructor()
             ->getMock();
-
         $filterMock->expects($this->once())
             ->method('setParameters')
             ->withAnyParameters();
