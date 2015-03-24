@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\GeoBoundsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchQuery;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\GeoBoundsAggregation;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchQuery;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Geo bounds aggregation test.

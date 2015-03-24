@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TopHitsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Query\FunctionScoreQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sorts;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\TopHitsAggregation;
+use Ongr\ElasticsearchBundle\DSL\Query\FunctionScoreQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\DSL\Sort\Sort;
+use Ongr\ElasticsearchBundle\DSL\Sort\Sorts;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Function test for top hits aggregation.

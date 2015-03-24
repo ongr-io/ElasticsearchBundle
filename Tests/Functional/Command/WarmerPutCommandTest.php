@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Command;
 
-use ONGR\ElasticsearchBundle\Command\WarmerPutCommand;
-use ONGR\ElasticsearchBundle\Test\DelayedObjectWrapper;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\Command\WarmerPutCommand;
+use Ongr\ElasticsearchBundle\Test\DelayedObjectWrapper;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 

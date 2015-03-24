@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Result;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
-use ONGR\ElasticsearchBundle\Result\DocumentIterator;
-use ONGR\ElasticsearchBundle\Result\Suggestion\OptionIterator;
-use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
+use Ongr\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
+use Ongr\ElasticsearchBundle\Result\DocumentIterator;
+use Ongr\ElasticsearchBundle\Result\Suggestion\OptionIterator;
+use Ongr\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
 
 class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -242,7 +242,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
         $iterator = new DocumentIterator($rawData, [], []);
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator',
+            'Ongr\ElasticsearchBundle\Result\Aggregation\AggregationIterator',
             $iterator->getAggregations()
         );
         $this->assertEquals(new ValueAggregation(['doc_count' => 1]), $iterator->getAggregations()['foo']);
@@ -280,7 +280,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
         $suggestions = $iterator->getSuggestions();
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator',
+            'Ongr\ElasticsearchBundle\Result\Suggestion\SuggestionIterator',
             $iterator->getSuggestions()
         );
 
@@ -304,7 +304,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
     {
         foreach ($iterator as $key => $item) {
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
+                'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
                 $item
             );
             $this->assertEquals($expectedHeaders[$key], $item->header);
@@ -333,8 +333,8 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                         'header' => ['type' => 'string'],
                     ],
                     // Should be generated but in this example will be using original.
-                    'proxyNamespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
-                    'namespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
+                    'proxyNamespace' => 'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
+                    'namespace' => 'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
                 ]
             ),
         ];
@@ -359,7 +359,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
      */
     private function getClassMetadata(array $options)
     {
-        $mock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadata')
+        $mock = $this->getMockBuilder('Ongr\ElasticsearchBundle\Mapping\ClassMetadata')
             ->disableOriginalConstructor()
             ->getMock();
 

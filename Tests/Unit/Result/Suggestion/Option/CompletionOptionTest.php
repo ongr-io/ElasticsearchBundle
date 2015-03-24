@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Result\Suggestion;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Result\Suggestion;
 
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
 
 /**
  * Unit tests for completion option.

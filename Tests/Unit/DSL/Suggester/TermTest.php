@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Suggester;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Suggester;
 
-use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
-use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Term;
+use Ongr\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
 class TermTest extends \PHPUnit_Framework_TestCase
 {
@@ -151,6 +151,6 @@ class TermTest extends \PHPUnit_Framework_TestCase
         $this->addIgnoredField('sort');
         $this->addIgnoredField('suggestMode');
 
-        return 'ONGR\ElasticsearchBundle\DSL\Suggester\Term';
+        return 'Ongr\ElasticsearchBundle\DSL\Suggester\Term';
     }
 }

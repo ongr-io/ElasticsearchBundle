@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\ORM;
 
-use ONGR\ElasticsearchBundle\DSL\Search;
-use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\DSL\Search;
+use Ongr\ElasticsearchBundle\Mapping\ClassMetadata;
+use Ongr\ElasticsearchBundle\ORM\Repository;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -77,14 +77,14 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTypes($types, $expectedTypes, $bundlesMapping)
     {
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+        $manager = $this->getMockBuilder('Ongr\ElasticsearchBundle\ORM\Manager')
             ->disableOriginalConstructor()
             ->getMock();
         $manager->expects($this->exactly(2))
             ->method('getBundlesMapping')
             ->willReturn($bundlesMapping);
 
-        $connection = $this->getMockBuilder('ONGR\ElasticsearchBundle\Client\Connection')
+        $connection = $this->getMockBuilder('Ongr\ElasticsearchBundle\Client\Connection')
             ->disableOriginalConstructor()
             ->getMock();
         $connection->expects($this->once())
@@ -113,7 +113,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      */
     private function getClassMetadata(array $options)
     {
-        $mock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadata')
+        $mock = $this->getMockBuilder('Ongr\ElasticsearchBundle\Mapping\ClassMetadata')
             ->disableOriginalConstructor()
             ->getMock();
 

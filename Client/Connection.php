@@ -1,7 +1,7 @@
 <?php
 
  /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Client;
+namespace Ongr\ElasticsearchBundle\Client;
 
 use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
-use ONGR\ElasticsearchBundle\Cache\WarmerInterface;
-use ONGR\ElasticsearchBundle\Cache\WarmersContainer;
-use ONGR\ElasticsearchBundle\Mapping\MappingTool;
+use Ongr\ElasticsearchBundle\Cache\WarmerInterface;
+use Ongr\ElasticsearchBundle\Cache\WarmersContainer;
+use Ongr\ElasticsearchBundle\Mapping\MappingTool;
 
 /**
  * This class interacts with elasticsearch using injected client.

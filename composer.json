@@ -23,6 +23,6 @@
         "ongr/ongr-strict-standard": "~1.0"
     },
     "autoload": {
-        "psr-4": { "ONGR\\ElasticsearchBundle\\": "" }
+        "psr-4": { "Ongr\\ElasticsearchBundle\\": "" }
     }
 }

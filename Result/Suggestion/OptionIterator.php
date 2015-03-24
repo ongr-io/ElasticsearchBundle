@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Result\Suggestion;
+namespace Ongr\ElasticsearchBundle\Result\Suggestion;
 
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\PhraseOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\PhraseOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
 
 /**
  * Suggestions results holder.

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Annotation\Suggester;
+namespace Ongr\ElasticsearchBundle\Annotation\Suggester;
 
-use ONGR\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext;
+use Ongr\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext;
 
 /**
  * Class for context suggester annotations.
@@ -22,7 +22,7 @@ use ONGR\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext;
 class ContextSuggesterProperty extends AbstractSuggesterProperty
 {
     /**
-     * @var array<\ONGR\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext>
+     * @var array<\Ongr\ElasticsearchBundle\Annotation\Suggester\Context\AbstractContext>
      */
     public $context;
 

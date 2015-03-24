@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection\Compiler;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DependencyInjection\Compiler;
 
-use ONGR\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
+use Ongr\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -30,7 +30,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $bundleMappingData = ['class' => 'Comment', 'type' => 'comment'];
-        $metadataCollectorMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
+        $metadataCollectorMock = $this->getMockBuilder('Ongr\ElasticsearchBundle\Mapping\MetadataCollector')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -110,7 +110,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                 'connection' => 'bar',
                 'debug' => false,
                 'readonly' => false,
-                'mappings' => ['ONGRElasticsearchBundle'],
+                'mappings' => ['OngrElasticsearchBundle'],
             ],
         ];
 

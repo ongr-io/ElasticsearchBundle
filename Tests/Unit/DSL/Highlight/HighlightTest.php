@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Highlight;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Highlight;
 
-use ONGR\ElasticsearchBundle\DSL\Highlight\Field;
-use ONGR\ElasticsearchBundle\DSL\Highlight\Highlight;
+use Ongr\ElasticsearchBundle\DSL\Highlight\Field;
+use Ongr\ElasticsearchBundle\DSL\Highlight\Highlight;
 
 /**
  * Unit test for Highlight.

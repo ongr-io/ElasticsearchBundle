@@ -18,8 +18,8 @@ Starting with a more simple example, completion suggester. Completion suggester 
 
     namespace Acme\DemoBundle\Document;
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Product document.
@@ -50,9 +50,9 @@ As you can see we need to define an object for it so we can store and retrieve i
 
     namespace Acme\DemoBundle\Document;
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesterInterface;
-    use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesterTrait;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\Suggester\CompletionSuggesterInterface;
+    use Ongr\ElasticsearchBundle\Document\Suggester\CompletionSuggesterTrait;
 
     /**
      * Suggesting document for testing.
@@ -77,8 +77,8 @@ Here’s an example:
 
     namespace Acme\DemoBundle\Document;
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Product document.
@@ -118,9 +118,9 @@ As you can see it also requires object to store data, here’s an example.
 
     namespace Acme\DemoBundle\Document;
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggesterInterface;
-    use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggesterTrait;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\Suggester\ContextSuggesterInterface;
+    use Ongr\ElasticsearchBundle\Document\Suggester\ContextSuggesterTrait;
 
     /**
      * Suggesting document.
@@ -149,7 +149,7 @@ And you also need to define your context object, for example:
 
     namespace Acme\DemoBundle\Document;
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
 
     /**
      * SuggestingContext document.

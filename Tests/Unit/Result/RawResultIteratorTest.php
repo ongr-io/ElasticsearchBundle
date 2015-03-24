@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Result;
 
-use ONGR\ElasticsearchBundle\Result\RawResultIterator;
+use Ongr\ElasticsearchBundle\Result\RawResultIterator;
 
 class RawResultIteratorTest extends \PHPUnit_Framework_TestCase
 {

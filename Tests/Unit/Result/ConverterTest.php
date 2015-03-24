@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Result;
 
-use ONGR\ElasticsearchBundle\Result\Converter;
-use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
+use Ongr\ElasticsearchBundle\Result\Converter;
+use Ongr\ElasticsearchBundle\Result\DocumentHighlight;
 
 /**
  * Tests result converter.
  *
  * Class ConverterTest
  *
- * @package ONGR\ElasticsearchBundle\Tests\Unit\Result
+ * @package Ongr\ElasticsearchBundle\Tests\Unit\Result
  */
 class ConverterTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,7 +41,7 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
     public function testAssignArrayToObject()
     {
         $stub = $this
-            ->getMockBuilder('\ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Item')
+            ->getMockBuilder('\Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Item')
             ->getMock();
 
         $documentHighlight = new DocumentHighlight([]);
@@ -93,8 +93,8 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAliasException()
     {
-        /** @var \ONGR\ElasticsearchBundle\Document\DocumentInterface $stub */
-        $stub = $this->getMockBuilder('\ONGR\ElasticsearchBundle\Document\DocumentInterface')->getMock();
+        /** @var \Ongr\ElasticsearchBundle\Document\DocumentInterface $stub */
+        $stub = $this->getMockBuilder('\Ongr\ElasticsearchBundle\Document\DocumentInterface')->getMock();
         $converter = new Converter([], []);
         $converter->convertToArray($stub);
     }

@@ -8,7 +8,7 @@ Registering a warmer
 --------------------
 
 Warmers should implement
-``ONGR\ElasticsearchBundle\Cache\WarmerInterface`` and loaded as a
+``Ongr\ElasticsearchBundle\Cache\WarmerInterface`` and loaded as a
 service with ``es.warmer`` tag. f.e.
 
 .. code:: php

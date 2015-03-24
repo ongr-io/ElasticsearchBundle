@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\Document;
+namespace Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\Document;
 
-use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+use Ongr\ElasticsearchBundle\Annotation as ES;
+use Ongr\ElasticsearchBundle\Document\AbstractDocument;
 
 /**
  * Testing document for representing media.

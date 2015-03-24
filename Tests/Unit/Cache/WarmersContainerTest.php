@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Cache;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Cache;
 
-use ONGR\ElasticsearchBundle\Cache\WarmersContainer;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
+use Ongr\ElasticsearchBundle\Cache\WarmersContainer;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\DSL\Search;
 
 class WarmersContainerTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,7 +40,7 @@ class WarmersContainerTest extends \PHPUnit_Framework_TestCase
      */
     private function getWarmers()
     {
-        $warmer1 = $this->getMock('ONGR\ElasticsearchBundle\Cache\WarmerInterface');
+        $warmer1 = $this->getMock('Ongr\ElasticsearchBundle\Cache\WarmerInterface');
         $warmer1
             ->expects($this->once())
             ->method('warmUp')
@@ -50,7 +50,7 @@ class WarmersContainerTest extends \PHPUnit_Framework_TestCase
             ->method('getName')
             ->will($this->returnValue('warmer1'));
 
-        $warmer2 = $this->getMock('ONGR\ElasticsearchBundle\Cache\WarmerInterface');
+        $warmer2 = $this->getMock('Ongr\ElasticsearchBundle\Cache\WarmerInterface');
         $warmer2
             ->expects($this->once())
             ->method('warmUp')

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit;
+namespace Ongr\ElasticsearchBundle\Tests\Unit;
 
-use ONGR\ElasticsearchBundle\ONGRElasticsearchBundle;
+use Ongr\ElasticsearchBundle\OngrElasticsearchBundle;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Unit test for ONGR\ElasticsearchBundle.
+ * Unit test for Ongr\ElasticsearchBundle.
  */
 class ElasticsearchBundleTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,7 +33,7 @@ class ElasticsearchBundleTest extends \PHPUnit_Framework_TestCase
     public function testPassesRegistered()
     {
         $container = new ContainerBuilder();
-        $bundle = new ONGRElasticsearchBundle();
+        $bundle = new OngrElasticsearchBundle();
         $bundle->build($container);
 
         /** @var array $loadedPasses Array of class names of loaded passes */

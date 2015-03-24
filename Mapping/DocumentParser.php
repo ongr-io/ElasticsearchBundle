@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Mapping;
+namespace Ongr\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
-use ONGR\ElasticsearchBundle\Annotation\Document;
-use ONGR\ElasticsearchBundle\Annotation\MultiField;
-use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Annotation\Skip;
-use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
+use Ongr\ElasticsearchBundle\Annotation\Document;
+use Ongr\ElasticsearchBundle\Annotation\MultiField;
+use Ongr\ElasticsearchBundle\Annotation\Property;
+use Ongr\ElasticsearchBundle\Annotation\Skip;
+use Ongr\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
+use Ongr\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 
 /**
  * Document parser used for reading document annotations.
@@ -28,12 +28,12 @@ class DocumentParser
     /**
      * @const string
      */
-    const SUGGESTER_PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty';
+    const SUGGESTER_PROPERTY_ANNOTATION = 'Ongr\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty';
 
     /**
      * @const string
      */
-    const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
+    const PROPERTY_ANNOTATION = 'Ongr\ElasticsearchBundle\Annotation\Property';
 
     /**
      * @var Reader Used to read document annotations.
@@ -83,7 +83,7 @@ class DocumentParser
         /** @var Document $class */
         $class = $this
             ->reader
-            ->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
+            ->getClassAnnotation($reflectionClass, 'Ongr\ElasticsearchBundle\Annotation\Document');
 
         if ($class !== null && $class->create) {
             if ($class->parent !== null) {
@@ -232,7 +232,7 @@ class DocumentParser
     private function getDocumentParentType(\ReflectionClass $reflectionClass)
     {
         /** @var Document $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
+        $class = $this->reader->getClassAnnotation($reflectionClass, 'Ongr\ElasticsearchBundle\Annotation\Document');
 
         return $class ? $this->getDocumentType($reflectionClass, $class) : null;
     }
@@ -245,7 +245,7 @@ class DocumentParser
     private function getSkippedProperties(\ReflectionClass $reflectionClass)
     {
         /** @var Skip $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Skip');
+        $class = $this->reader->getClassAnnotation($reflectionClass, 'Ongr\ElasticsearchBundle\Annotation\Skip');
 
         return $class === null ? [] : $class->value;
     }
@@ -258,7 +258,7 @@ class DocumentParser
     private function getInheritedProperties(\ReflectionClass $reflectionClass)
     {
         /** @var Inherit $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Inherit');
+        $class = $this->reader->getClassAnnotation($reflectionClass, 'Ongr\ElasticsearchBundle\Annotation\Inherit');
 
         return $class === null ? [] : $class->value;
     }
@@ -392,8 +392,8 @@ class DocumentParser
      */
     private function getRelationMapping(\ReflectionClass $reflectionClass)
     {
-        if ($this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Object')
-            || $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Nested')
+        if ($this->reader->getClassAnnotation($reflectionClass, 'Ongr\ElasticsearchBundle\Annotation\Object')
+            || $this->reader->getClassAnnotation($reflectionClass, 'Ongr\ElasticsearchBundle\Annotation\Nested')
         ) {
             return ['properties' => $this->getProperties($reflectionClass)];
         }

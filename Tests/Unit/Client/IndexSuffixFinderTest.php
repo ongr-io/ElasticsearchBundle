@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Client;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Client;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
-use ONGR\ElasticsearchBundle\Client\IndexSuffixFinder;
+use Ongr\ElasticsearchBundle\Client\Connection;
+use Ongr\ElasticsearchBundle\Client\IndexSuffixFinder;
 
 class IndexSuffixFinderTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,7 +61,7 @@ class IndexSuffixFinderTest extends \PHPUnit_Framework_TestCase
     public function testFindNextFreeIndex($indexName, $isOccupied, $expectedName, $time = null)
     {
         /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
-        $connection = $this->getMock('\ONGR\ElasticsearchBundle\Client\Connection', [], [], '', false);
+        $connection = $this->getMock('\Ongr\ElasticsearchBundle\Client\Connection', [], [], '', false);
         $connection->expects($this->any())->method('getIndexName')->willReturn($indexName);
         $connection->expects($this->any())->method('setIndexName');
         if ($isOccupied) {

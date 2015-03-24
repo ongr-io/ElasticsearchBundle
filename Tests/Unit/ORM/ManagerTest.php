@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\ORM;
 
-use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
-use ONGR\ElasticsearchBundle\ORM\Manager;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Mapping\ClassMetadataCollection;
+use Ongr\ElasticsearchBundle\ORM\Manager;
+use Ongr\ElasticsearchBundle\ORM\Repository;
 
 /**
  * Unit tests for Manager.
@@ -35,7 +35,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     public function testGetRepositories()
     {
         $classMetadataMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadata')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Mapping\ClassMetadata')
             ->disableOriginalConstructor()
             ->getMock();
         $classMetadataMock
@@ -104,7 +104,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     private function getClassMetadataCollectionMock($metadata = [], $typeMap = [])
     {
-        $mock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection')
+        $mock = $this->getMockBuilder('Ongr\ElasticsearchBundle\Mapping\ClassMetadataCollection')
             ->disableOriginalConstructor()
             ->getMock();
 

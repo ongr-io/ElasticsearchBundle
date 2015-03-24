@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DSL\Query;
+namespace Ongr\ElasticsearchBundle\DSL\Query;
 
-use ONGR\ElasticsearchBundle\DSL\Bool\Bool;
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use Ongr\ElasticsearchBundle\DSL\Bool\Bool;
+use Ongr\ElasticsearchBundle\DSL\BuilderInterface;
 
 /**
  * Provides query container functionality to any class.
@@ -25,7 +25,7 @@ trait QueryAwareTrait
     private $queries = [];
 
     /**
-     * @var \ONGR\ElasticsearchBundle\DSL\Bool\Bool
+     * @var \Ongr\ElasticsearchBundle\DSL\Bool\Bool
      */
     private $boolQuery;
 
@@ -49,7 +49,7 @@ trait QueryAwareTrait
     /**
      * Returns Bool query. Creates new instance if there is not initiated.
      *
-     * @return \ONGR\ElasticsearchBundle\DSL\Bool\Bool
+     * @return \Ongr\ElasticsearchBundle\DSL\Bool\Bool
      */
     public function getBoolQuery()
     {

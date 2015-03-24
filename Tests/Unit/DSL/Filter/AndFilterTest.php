@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\AndFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\AndFilter;
 
 class AndFilterTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +32,7 @@ class AndFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function getArrayDataProvider()
     {
-        $mockBuildeFfirstFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\BuilderInterface')
+        $mockBuildeFfirstFilter = $this->getMockBuilder('Ongr\ElasticsearchBundle\DSL\BuilderInterface')
             ->getMock();
         $mockBuildeFfirstFilter->expects($this->any())
             ->method('getType')
@@ -41,7 +41,7 @@ class AndFilterTest extends \PHPUnit_Framework_TestCase
             ->method('toArray')
             ->willReturn(['test_field' => ['test_value' => 'test']]);
 
-        $mockBuilderSecondFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\BuilderInterface')
+        $mockBuilderSecondFilter = $this->getMockBuilder('Ongr\ElasticsearchBundle\DSL\BuilderInterface')
             ->getMock();
         $mockBuilderSecondFilter->expects($this->any())
             ->method('getType')

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\DSL\Search;
+use Ongr\ElasticsearchBundle\DSL\Sort\Sort;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Result\DocumentScanIterator;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\Test\TestHelperTrait;
 
 class DocumentScanIteratorTest extends ElasticsearchTestCase
 {
@@ -95,7 +95,7 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
 
         $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentScanIterator', $iterator);
+        $this->assertInstanceOf('Ongr\ElasticsearchBundle\Result\DocumentScanIterator', $iterator);
         $this->assertCount(4, $iterator);
 
         $expectedHeaders = [

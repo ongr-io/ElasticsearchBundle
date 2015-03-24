@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Document\Suggester;
+namespace Ongr\ElasticsearchBundle\Document\Suggester;
 
-use ONGR\ElasticsearchBundle\Annotation as ES;
+use Ongr\ElasticsearchBundle\Annotation as ES;
 
 /**
  * Trait to be used for completion suggestion objects.
  *
- * @deprecated use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester
+ * @deprecated use Ongr\ElasticsearchBundle\Document\Suggester\AbstractSuggester
  * and implement CompletionSuggesterInterface, will be removed in 1.0.
  */
 trait CompletionSuggesterTrait

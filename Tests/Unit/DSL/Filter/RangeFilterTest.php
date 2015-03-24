@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\RangeFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\RangeFilter;
 
 class RangeFilterTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Mapping;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Mapping;
 
-use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
+use Ongr\ElasticsearchBundle\Mapping\DocumentFinder;
 
 class DocumentFinderTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +27,7 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
         // Case #0 one level directory.
         $out[] = [
             'Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             'AcmeTestBundle:Product',
             true,
         ];
@@ -35,21 +35,21 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
         // Case #1 two levels directory, `\` directory separator.
         $out[] = [
             'Document\Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
             'AcmeTestBundle:Product',
         ];
 
         // Case #2 two levels directory, `/` directory separator.
         $out[] = [
             'Document/Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
             'AcmeTestBundle:Product',
         ];
 
         // Case #3 two levels directory, `/` directory separator.
         $out[] = [
             'Document/Test',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
             'AcmeTestBundle:Item',
             true,
         ];
@@ -57,7 +57,7 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
         // Case #4 two levels directory, `\` directory separator.
         $out[] = [
             'Document\Test',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
             'AcmeTestBundle:Item',
             true,
         ];
@@ -91,6 +91,6 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
      */
     public function getBundles()
     {
-        return ['AcmeTestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle'];
+        return ['AcmeTestBundle' => 'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle'];
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use Ongr\ElasticsearchBundle\DSL\BuilderInterface;
 
 /**
  * Represents Elasticsearch "indices" filter.
@@ -67,7 +67,7 @@ class IndicesFilter implements BuilderInterface
         $output['filter'] = [$this->filter->getType() => $this->filter->toArray()];
 
         if ($this->noMatchFilter !== null) {
-            if (is_a($this->noMatchFilter, 'ONGR\ElasticsearchBundle\DSL\BuilderInterface')) {
+            if (is_a($this->noMatchFilter, 'Ongr\ElasticsearchBundle\DSL\BuilderInterface')) {
                 $output['no_match_filter'] = [$this->noMatchFilter->getType() => $this->noMatchFilter->toArray()];
             } else {
                 $output['no_match_filter'] = $this->noMatchFilter;

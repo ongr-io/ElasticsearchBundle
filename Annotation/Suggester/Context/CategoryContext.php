@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Annotation\Suggester\Context;
+namespace Ongr\ElasticsearchBundle\Annotation\Suggester\Context;
 
 /**
  * Class for geo category context annotations used in context suggester.

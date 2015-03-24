@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\NotFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\NotFilter;
 
 class NotFilterTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,7 +31,7 @@ class NotFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function getArrayDataProvider()
     {
-        $mockBuilder = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\BuilderInterface')
+        $mockBuilder = $this->getMockBuilder('Ongr\ElasticsearchBundle\DSL\BuilderInterface')
             ->getMock();
         $mockBuilder->expects($this->any())
             ->method('getType')

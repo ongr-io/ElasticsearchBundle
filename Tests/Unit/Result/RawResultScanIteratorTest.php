@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Result;
 
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Result\RawResultScanIterator;
 
 class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,7 +30,7 @@ class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $repository = $this->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Repository')
+        $repository = $this->getMockBuilder('Ongr\ElasticsearchBundle\ORM\Repository')
             ->disableOriginalConstructor()
             ->getMock();
 

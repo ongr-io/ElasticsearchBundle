@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Document;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Document;
 
 /**
  * Test for DocumentTrait.
@@ -23,7 +23,7 @@ class DocumentTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHighlight()
     {
-        $documentTraitMock = $this->getMockForTrait('ONGR\ElasticsearchBundle\Document\DocumentTrait');
+        $documentTraitMock = $this->getMockForTrait('Ongr\ElasticsearchBundle\Document\DocumentTrait');
         $documentTraitMock->getHighlight();
     }
 }

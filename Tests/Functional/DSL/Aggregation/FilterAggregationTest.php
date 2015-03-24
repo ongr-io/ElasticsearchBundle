@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\FilterAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\StatsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Filter\RegexpFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\FilterAggregation;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\StatsAggregation;
+use Ongr\ElasticsearchBundle\DSL\Filter\RegexpFilter;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class FilterAggregationTest extends ElasticsearchTestCase
 {

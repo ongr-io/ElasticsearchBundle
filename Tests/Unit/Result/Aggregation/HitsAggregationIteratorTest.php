@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Result\Aggregation;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Result\Aggregation;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\HitsAggregationIterator;
+use Ongr\ElasticsearchBundle\Result\Aggregation\HitsAggregationIterator;
 
 class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -155,7 +155,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
     private function getConverterMock()
     {
         $converterMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Result\Converter')
             ->disableOriginalConstructor()
             ->setMethods(['convertToDocument'])
             ->getMock();

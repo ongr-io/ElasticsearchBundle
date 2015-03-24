@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DSL;
+namespace Ongr\ElasticsearchBundle\DSL;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
-use ONGR\ElasticsearchBundle\DSL\Bool\Bool;
-use ONGR\ElasticsearchBundle\DSL\Filter\PostFilter;
-use ONGR\ElasticsearchBundle\DSL\Highlight\Highlight;
-use ONGR\ElasticsearchBundle\DSL\Query\FilteredQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Query;
-use ONGR\ElasticsearchBundle\DSL\Query\QueryAwareTrait;
-use ONGR\ElasticsearchBundle\DSL\Sort\AbstractSort;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sorts;
-use ONGR\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
+use Ongr\ElasticsearchBundle\DSL\Bool\Bool;
+use Ongr\ElasticsearchBundle\DSL\Filter\PostFilter;
+use Ongr\ElasticsearchBundle\DSL\Highlight\Highlight;
+use Ongr\ElasticsearchBundle\DSL\Query\FilteredQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\Query;
+use Ongr\ElasticsearchBundle\DSL\Query\QueryAwareTrait;
+use Ongr\ElasticsearchBundle\DSL\Sort\AbstractSort;
+use Ongr\ElasticsearchBundle\DSL\Sort\Sorts;
+use Ongr\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
 
 /**
  * Search object that can be executed by a manager.

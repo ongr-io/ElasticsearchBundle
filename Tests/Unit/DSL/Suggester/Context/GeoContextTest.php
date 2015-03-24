@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Suggester\Context;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Suggester\Context;
 
-use ONGR\ElasticsearchBundle\DSL\Suggester\Context\CategoryContext;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Context\GeoContext;
-use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Context\CategoryContext;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Context\GeoContext;
+use Ongr\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
 class GeoContextTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +26,7 @@ class GeoContextTest extends \PHPUnit_Framework_TestCase
     {
         $this->setStub(new GeoContext('foo', 'bar'));
 
-        return 'ONGR\ElasticsearchBundle\DSL\Suggester\Context\GeoContext';
+        return 'Ongr\ElasticsearchBundle\DSL\Suggester\Context\GeoContext';
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Aggregation;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Bool\Bool;
-use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
+use Ongr\ElasticsearchBundle\DSL\Bool\Bool;
+use Ongr\ElasticsearchBundle\DSL\Filter\MissingFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\TermFilter;
 
 /**
  * Unit test for Bool.

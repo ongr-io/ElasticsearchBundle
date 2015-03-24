@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class DocumentIteratorTest extends ElasticsearchTestCase
 {
@@ -65,20 +65,20 @@ class DocumentIteratorTest extends ElasticsearchTestCase
         $search = $repo->createSearch()->addQuery($match);
         $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
+        $this->assertInstanceOf('Ongr\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
         foreach ($iterator as $document) {
             $urls = $document->links;
 
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
+                'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
                 $document
             );
-            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $urls);
+            $this->assertInstanceOf('Ongr\ElasticsearchBundle\Result\ObjectIterator', $urls);
 
             foreach ($urls as $url) {
                 $this->assertInstanceOf(
-                    'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject',
+                    'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject',
                     $url
                 );
             }

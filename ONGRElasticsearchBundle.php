@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle;
+namespace Ongr\ElasticsearchBundle;
 
-use ONGR\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
+use Ongr\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
 use Symfony\Component\ClassLoader\MapClassLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * ONGR Elasticsearch bundle system file required by kernel.
+ * Ongr Elasticsearch bundle system file required by kernel.
  */
-class ONGRElasticsearchBundle extends Bundle
+class OngrElasticsearchBundle extends Bundle
 {
     /**
      * {@inheritdoc}

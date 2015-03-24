@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
-use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
+use Ongr\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class DocumentIteratorNestedAggregationTest extends ElasticsearchTestCase
 {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -26,9 +26,9 @@ class AppKernel extends Kernel
     {
         return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
-            new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle(),
-            new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\AcmeFooBundle(),
+            new Ongr\ElasticsearchBundle\OngrElasticsearchBundle(),
+            new Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle(),
+            new Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\AcmeFooBundle(),
         ];
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,21 +9,21 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\ORM;
 
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\ORM\Manager;
-use ONGR\ElasticsearchBundle\Result\Converter;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationSuggesting;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationContext;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject;
+use Ongr\ElasticsearchBundle\Document\DocumentInterface;
+use Ongr\ElasticsearchBundle\DSL\Query\TermQuery;
+use Ongr\ElasticsearchBundle\ORM\Manager;
+use Ongr\ElasticsearchBundle\Result\Converter;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationSuggesting;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationContext;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject;
 
 /**
  * Functional tests for orm manager.
@@ -204,8 +204,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $product->links = new \ArrayIterator([new UrlObject(), new CdnObject()]);
         $out[] = [
             $product,
-            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject, ' .
-            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject.',
+            'Expected object of type Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject, ' .
+            'got Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject.',
         ];
 
         // Case #3: invalid type of object is set in single field.
@@ -216,8 +216,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $product->links = [$url];
         $out[] = [
             $product,
-            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject, ' .
-            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject.',
+            'Expected object of type Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject, ' .
+            'got Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject.',
         ];
 
         return $out;
