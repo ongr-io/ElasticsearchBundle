@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Client;
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\DelayedObjectWrapper;
 
 /**
  * Functional tests for connection service.
@@ -76,7 +77,8 @@ class ConnectionTest extends AbstractElasticsearchTestCase
      */
     public function testOpenClose()
     {
-        $connection = $this->getManager()->getConnection();
+        $connection = DelayedObjectWrapper::wrap($this->getManager()->getConnection());
+
         $this->assertTrue($connection->isOpen());
         $connection->close();
         $this->assertFalse($connection->isOpen());
@@ -92,10 +94,10 @@ class ConnectionTest extends AbstractElasticsearchTestCase
      */
     public function testReadOnlyManagerOpenIndex()
     {
-        $manager = $this->getManager();
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
         $manager->getConnection()->close();
-        $connection = $this->getReadOnlyManager()->getConnection();
 
+        $connection = DelayedObjectWrapper::wrap($this->getReadOnlyManager()->getConnection());
         $this->assertFalse($connection->isOpen());
         $connection->open();
     }
@@ -108,7 +110,7 @@ class ConnectionTest extends AbstractElasticsearchTestCase
      */
     public function testReadOnlyManagerCloseIndex()
     {
-        $connection = $this->getReadOnlyManager()->getConnection();
+        $connection = DelayedObjectWrapper::wrap($this->getReadOnlyManager()->getConnection());
 
         $this->assertTrue($connection->isOpen());
         $connection->close();
@@ -277,12 +279,12 @@ class ConnectionTest extends AbstractElasticsearchTestCase
     }
 
     /**
+     * Returns default manager with read-only enabled.
+     *
      * @return object
      */
     public function getReadOnlyManager()
     {
-        $manager = $this->getContainer()->get('es.manager.readonly');
-
-        return $manager;
+        return $this->getContainer()->get('es.manager.readonly');
     }
 }

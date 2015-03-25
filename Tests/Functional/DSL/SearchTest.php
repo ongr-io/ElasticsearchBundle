@@ -98,8 +98,6 @@ class SearchTest extends ElasticsearchTestCase
      */
     public function setUp()
     {
-        parent::setUp();
-
         $this->repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
     }
 
@@ -312,8 +310,7 @@ class SearchTest extends ElasticsearchTestCase
 
         $search->addFilter(new PrefixFilter('title', 'foo'));
         $search->addFilter(new IdsFilter(['1', '2']), 'should');
-
-        $search->setBoolFilterParameters(['_cache' => false]);
+        $search->setBoolFilterParameters(['_cache' => true]);
 
         $expected = [$this->getProductsArray()[0]];
 
@@ -329,7 +326,7 @@ class SearchTest extends ElasticsearchTestCase
 
         $search->addFilter(new PrefixFilter('title', 'foo'));
         $search->addFilter(new IdsFilter(['1', '2']), 'must');
-        $search->setBoolFilterParameters(['_cache' => true]);
+        $search->setBoolFilterParameters(['_cache' => false]);
 
         $expected = [$this->getProductsArray()[0]];
 
