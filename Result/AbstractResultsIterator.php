@@ -31,7 +31,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
      *
      * @param array $rawData
      *
-     * @return object
+     * @return object|array
      */
     abstract protected function convertDocument($rawData);
 
