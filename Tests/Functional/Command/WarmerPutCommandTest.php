@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\WarmerPutCommand;
+use ONGR\ElasticsearchBundle\Test\DelayedObjectWrapper;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -54,7 +55,7 @@ class WarmerPutCommandTest extends ElasticsearchTestCase
         $app->add($this->getCommand());
         $command = $app->find('ongr:es:warmer:put');
         $commandTester = new CommandTester($command);
-        $connection = $this->getManager()->getConnection();
+        $connection = DelayedObjectWrapper::wrap($this->getManager()->getConnection());
 
         $warmers = $connection->getClient()->indices()->getWarmer(
             [
