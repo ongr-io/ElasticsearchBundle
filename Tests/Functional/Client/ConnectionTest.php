@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Client;
 
-use Elasticsearch\Common\Exceptions\Forbidden403Exception;
+use Elasticsearch\Common\Exceptions\ElasticsearchException;
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
@@ -76,12 +76,16 @@ class ConnectionTest extends AbstractElasticsearchTestCase
      */
     public function testOpenClose()
     {
-        $connection = $this->getManager()->getConnection();
-        $this->assertTrue($connection->isOpen());
-        $connection->close();
-        $this->assertFalse($connection->isOpen());
-        $connection->open();
-        $this->assertTrue($connection->isOpen());
+        try {
+            $connection = $this->getManager()->getConnection();
+            $this->assertTrue($connection->isOpen());
+            $connection->close();
+            $this->assertFalse($connection->isOpen());
+            $connection->open();
+            $this->assertTrue($connection->isOpen());
+        } catch (ElasticsearchException $e) {
+            $this->testOpenClose();
+        }
     }
 
     /**
@@ -92,12 +96,20 @@ class ConnectionTest extends AbstractElasticsearchTestCase
      */
     public function testReadOnlyManagerOpenIndex()
     {
-        $manager = $this->getManager();
-        $manager->getConnection()->close();
-        $connection = $this->getReadOnlyManager()->getConnection();
+        $connection = null;
 
-        $this->assertFalse($connection->isOpen());
-        $connection->open();
+        try {
+            $manager = $this->getManager();
+            $manager->getConnection()->close();
+            $connection = $this->getReadOnlyManager()->getConnection();
+            $this->assertFalse($connection->isOpen());
+        } catch (ElasticsearchException $e) {
+            $this->testReadOnlyManagerOpenIndex();
+        }
+
+        if ($connection) {
+            $connection->open();
+        }
     }
 
     /**
