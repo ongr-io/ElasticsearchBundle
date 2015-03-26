@@ -105,4 +105,11 @@ class Product extends Item
      * @ES\Property(type="object", objectName="AcmeTestBundle:Category", multiple=true, name="categories")
      */
     public $categories;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="ip", name="ip")
+     */
+    public $ip;
 }
