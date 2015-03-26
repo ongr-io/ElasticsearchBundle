@@ -62,6 +62,8 @@ class HistogramAggregation extends AbstractAggregation
     }
 
     /**
+     * Get response as a hash instead keyed by the buckets keys.
+     *
      * @param bool $keyed
      */
     public function setKeyed($keyed)
@@ -70,6 +72,8 @@ class HistogramAggregation extends AbstractAggregation
     }
 
     /**
+     * Sets buckets ordering.
+     *
      * @param string $mode
      * @param string $direction
      */
@@ -77,6 +81,14 @@ class HistogramAggregation extends AbstractAggregation
     {
         $this->orderMode = $mode;
         $this->orderDirection = $direction;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrder()
+    {
+        return [$this->orderMode => $this->orderDirection];
     }
 
     /**
@@ -104,6 +116,8 @@ class HistogramAggregation extends AbstractAggregation
     }
 
     /**
+     * Set limit for document count buckets should have.
+     *
      * @param int $minDocCount
      */
     public function setMinDocCount($minDocCount)
@@ -149,29 +163,32 @@ class HistogramAggregation extends AbstractAggregation
     {
         $out = array_filter(
             [
-                'min_doc_count' => $this->getMinDocCount(),
+                'field' => $this->getField(),
                 'interval' => $this->getInterval(),
+                'min_doc_count' => $this->getMinDocCount(),
                 'extended_bounds' => $this->getExtendedBounds(),
+                'keyed' => $this->isKeyed(),
+                'order' => $this->getOrder(),
             ]
         );
-
-        if ($this->getField() && $this->getInterval()) {
-            $out['field'] = $this->getField();
-            $out['interval'] = $this->getInterval();
-        } else {
-            throw new \LogicException('Histogram aggregation must have field and interval set.');
-        }
-
-        if ($this->orderMode && $this->orderDirection) {
-            $out['order'] = [
-                $this->orderMode => $this->orderDirection,
-            ];
-        }
-
-        if ($this->isKeyed()) {
-            $out['keyed'] = $this->isKeyed();
-        }
+        $required = ['field', 'interval'];
+        $this->checkRequired($out, $required);
 
         return $out;
+    }
+
+    /**
+     * Checks if all required parameters are set.
+     *
+     * @param array $out
+     * @param array $required
+     *
+     * @throws \LogicException
+     */
+    protected function checkRequired($out, $required)
+    {
+        if (count(array_intersect_key(array_flip($required), $out)) !== count($required)) {
+            throw new \LogicException('Histogram aggregation must have field and interval set.');
+        }
     }
 }
