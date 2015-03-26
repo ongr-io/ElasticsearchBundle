@@ -19,7 +19,7 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 /**
  * Content document for testing.
  *
- * @ES\Document(type="fooContent")
+ * @ES\Document(type="fooContent", enabled=false)
  */
 class Content extends AbstractDocument
 {

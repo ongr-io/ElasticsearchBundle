@@ -114,6 +114,7 @@ class DocumentParser
                     'fields' => [
                         '_parent' => $parent === null ? null : ['type' => $parent],
                         '_ttl' => $class->ttl,
+                        'enabled' => $class->enabled,
                     ],
                     'aliases' => $this->getAliases($reflectionClass),
                     'objects' => $this->getObjects(),
