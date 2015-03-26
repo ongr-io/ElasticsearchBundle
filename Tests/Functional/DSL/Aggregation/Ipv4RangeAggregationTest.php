@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Aggregation\Ipv4RangeAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
+/**
+ * Function tests for ipv4 aggregation.
+ */
 class Ipv4RangeAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
