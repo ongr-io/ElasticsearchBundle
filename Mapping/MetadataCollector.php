@@ -85,7 +85,10 @@ class MetadataCollector
                     array_merge(
                         ['properties' => $mapping['properties']],
                         $mapping['fields']
-                    )
+                    ),
+                    function ($value) {
+                        return (bool)$value || is_bool($value);
+                    }
                 );
             }
         }
