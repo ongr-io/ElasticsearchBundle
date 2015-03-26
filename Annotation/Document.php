@@ -40,6 +40,11 @@ final class Document
     public $ttl;
 
     /**
+     * @var bool
+     */
+    public $enabled;
+
+    /**
      * Constructor.
      */
     public function __construct()
