@@ -599,7 +599,7 @@ class RepositoryTest extends ElasticsearchTestCase
     /**
      * Tests if documents are deleted by query.
      */
-    public function testDeleteByQueryWorks()
+    public function testDeleteByQuery()
     {
         /** @var Manager $manager */
         $all = new MatchAllQuery();
