@@ -54,30 +54,6 @@ class IndicesResult
     }
 
     /**
-     * Extracts data from response.
-     *
-     * @param mixed  $indices
-     * @param string $name
-     *
-     * @return array
-     */
-    private function extract($indices, $name)
-    {
-        $results = [];
-        if ($indices) {
-            foreach ($indices as $index) {
-                $results[$index] = $this->rawData['_indices'][$index]['_shards'][$name];
-            }
-        } else {
-            foreach ($this->rawData['_indices'] as $index => $value) {
-                $results[$index] = $value['_shards'][$name];
-            }
-        }
-
-        return $results;
-    }
-
-    /**
      * Returns full response.
      *
      * @return array
@@ -85,5 +61,58 @@ class IndicesResult
     public function getRaw()
     {
         return $this->rawData;
+    }
+
+    /**
+     * Extracts data from response.
+     *
+     * @param array  $indices
+     * @param string $name
+     *
+     * @return array
+     */
+    private function extract($indices, $name)
+    {
+        if (!empty($indices)) {
+            return $this->getSelectedIndices($indices, $name);
+        } else {
+            return $this->getAllIndices($name);
+        }
+    }
+
+    /**
+     * Extracts response from given indices.
+     *
+     * @param array  $indices
+     * @param string $name
+     *
+     * @return array
+     */
+    private function getSelectedIndices($indices, $name)
+    {
+        $results = [];
+        $existIndexes = array_intersect_key($this->rawData['_indices'], array_flip($indices));
+        foreach ($existIndexes as $index => $value) {
+            $results[$index] = $this->getRaw()['_indices'][$index]['_shards'][$name];
+        }
+
+        return $results;
+    }
+
+    /**
+     * Extract response from all indices.
+     *
+     * @param string $name
+     *
+     * @return array
+     */
+    private function getAllIndices($name)
+    {
+        $results = [];
+        foreach ($this->getRaw()['_indices'] as $index => $value) {
+            $results[$index] = $value['_shards'][$name];
+        }
+
+        return $results;
     }
 }
