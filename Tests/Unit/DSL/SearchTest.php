@@ -30,23 +30,18 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     public function getFieldsData()
     {
         return [
-            ['filters'],
-            ['postFilters'],
             ['boolFilterParameters'],
             ['size'],
             ['from'],
-            ['sorts'],
             ['minScore'],
             ['fields', 'array'],
             ['scroll'],
             ['source'],
             ['scriptFields'],
-            ['suggesters'],
             ['highlight'],
             ['searchType'],
             ['explain', 'boolean'],
             ['stats'],
-            ['aggregations'],
         ];
     }
 
@@ -66,6 +61,11 @@ class SearchTest extends \PHPUnit_Framework_TestCase
                 'fields',
                 'preference',
                 'boolQueryParameters',
+                'filters',
+                'postFilters',
+                'sorts',
+                'aggregations',
+                'suggesters',
             ]
         );
 
@@ -95,5 +95,20 @@ class SearchTest extends \PHPUnit_Framework_TestCase
         $search = new Search();
         $search->setScroll('10');
         $this->assertEquals(10, $search->getScrollDuration());
+    }
+
+    /**
+     * Test addSort and getSorts methods.
+     */
+    public function testAddGetSorts()
+    {
+        $geoSortMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Sort\GeoSort')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $search = new Search();
+        $this->assertNull($search->getSorts());
+        $search->addSort($geoSortMock);
+        $this->assertArrayHasKey('_geo_distance', $search->getSorts()->toArray());
     }
 }

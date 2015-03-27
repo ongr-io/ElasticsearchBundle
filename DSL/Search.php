@@ -223,62 +223,6 @@ class Search
     }
 
     /**
-     * Set filters.
-     *
-     * @param BuilderInterface[] $filters
-     *
-     * @return $this
-     */
-    public function setFilters($filters)
-    {
-        $this->filters = $filters;
-
-        return $this;
-    }
-
-    /**
-     * Set post filters.
-     *
-     * @param BuilderInterface $filters
-     *
-     * @return $this
-     */
-    public function setPostFilters($filters)
-    {
-        $this->postFilters = $filters;
-
-        return $this;
-    }
-
-    /**
-     * Set sorts.
-     *
-     * @param Sorts $sorts
-     *
-     * @return $this
-     */
-    public function setSorts($sorts)
-    {
-        $this->sorts = $sorts;
-
-        return $this;
-    }
-
-    /**
-     * Set suggesters.
-     *
-     * @param NamedBuilderBag $suggesters
-     *
-     * @return $this
-     */
-    public function setSuggesters($suggesters)
-    {
-        $this->suggesters = $suggesters;
-
-        return $this;
-    }
-
-    /**
      * Set script fields.
      *
      * @param array $scriptFields
@@ -364,20 +308,6 @@ class Search
     public function setStats($stats)
     {
         $this->stats = $stats;
-
-        return $this;
-    }
-
-    /**
-     * Set aggregations.
-     *
-     * @param NamedBuilderBag $aggregations
-     *
-     * @return $this
-     */
-    public function setAggregations($aggregations)
-    {
-        $this->aggregations = $aggregations;
 
         return $this;
     }
@@ -571,7 +501,7 @@ class Search
     }
 
     /**
-     * @return BuilderInterface[]
+     * @return BuilderInterface
      */
     public function getFilters()
     {
