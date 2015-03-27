@@ -55,15 +55,10 @@ class DisMaxQueryTest extends AbstractElasticsearchTestCase
     public function testDixMaxQuery()
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $disMaxQuery = new DisMaxQuery(
-            [
-                new TermQuery('title', 'foo'),
-                new TermQuery('title', 'bar'),
-            ],
-            [
-                'tie_breaker' => 0.7,
-            ]
-        );
+        $disMaxQuery = new DisMaxQuery(['tie_breaker' => 0.7]);
+        $disMaxQuery->addQuery(new TermQuery('title', 'foo'));
+        $disMaxQuery->addQuery(new TermQuery('title', 'bar'));
+
         $search = $repo->createSearch()->addQuery($disMaxQuery);
 
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
@@ -73,15 +68,5 @@ class DisMaxQueryTest extends AbstractElasticsearchTestCase
         ];
 
         $this->assertEquals($expected, $results);
-    }
-
-    /**
-     * Tests if exception is thrown.
-     *
-     * @expectedException \InvalidArgumentException
-     */
-    public function testDixMaxQueryIfExceptionIsThrown()
-    {
-        new DisMaxQuery([new TermQuery('title', 'foo'), new \stdClass()]);
     }
 }
