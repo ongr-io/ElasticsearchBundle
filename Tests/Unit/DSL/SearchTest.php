@@ -50,10 +50,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     public function testAddSort()
     {
         $search = new Search();
-        $this->assertEmpty($search->getSorts());
+        $this->assertEmpty($search->getSorts(), 'Sort array should be empty.');
 
         $search->addSort($this->getAbstractSortMock());
-        $this->assertNotEmpty($search->getSorts());
+        $this->assertNotEmpty($search->getSorts(), 'Sort array should contain one added sort.');
     }
 
     /**
@@ -62,10 +62,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     public function testAddPostFilter()
     {
         $search = new Search();
-        $this->assertEmpty($search->getPostFilters());
+        $this->assertEmpty($search->getPostFilters(), 'Post filters array should be empty.');
 
         $search->addPostFilter($this->getMock('ONGR\ElasticsearchBundle\DSL\BuilderInterface'));
-        $this->assertNotEmpty($search->getPostFilters());
+        $this->assertNotEmpty($search->getPostFilters(), 'Post filters array should contain one added filter.');
     }
 
     /**
@@ -74,10 +74,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     public function testAddAggregation()
     {
         $search = new Search();
-        $this->assertEmpty($search->getAggregations());
+        $this->assertEmpty($search->getAggregations(), 'Aggregations array should be empty.');
 
         $search->addAggregation($this->getMock('ONGR\ElasticsearchBundle\DSL\NamedBuilderInterface'));
-        $this->assertNotEmpty($search->getAggregations());
+        $this->assertNotEmpty($search->getAggregations(), 'Aggregations array should contain one added aggregation.');
     }
 
     /**
@@ -86,10 +86,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     public function testAddFilter()
     {
         $search = new Search();
-        $this->assertEmpty($search->getFilters());
+        $this->assertEmpty($search->getFilters(), 'Filters array should be empty.');
 
         $search->addFilter($this->getMock('ONGR\ElasticsearchBundle\DSL\BuilderInterface'));
-        $this->assertNotEmpty($search->getFilters());
+        $this->assertNotEmpty($search->getFilters(), 'Filters array should contain one added filter.');
     }
 
     /**
@@ -98,10 +98,10 @@ class SearchTest extends \PHPUnit_Framework_TestCase
     public function testAddSuggester()
     {
         $search = new Search();
-        $this->assertEmpty($search->getSuggesters());
+        $this->assertEmpty($search->getSuggesters(), 'Suggesters array should be empty.');
 
         $search->addSuggester($this->getAbstractSuggesterMock());
-        $this->assertNotEmpty($search->getSuggesters());
+        $this->assertNotEmpty($search->getSuggesters(), 'Suggesters array should contain one added suggester.');
     }
 
     /**
