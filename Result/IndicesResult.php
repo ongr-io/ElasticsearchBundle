@@ -75,9 +75,9 @@ class IndicesResult
     {
         if (!empty($indices)) {
             return $this->getSelectedIndices($indices, $name);
-        } else {
-            return $this->getAllIndices($name);
         }
+
+        return $this->getAllIndices($name);
     }
 
     /**
