@@ -16,6 +16,9 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
+/**
+ * Function tests for percentiles aggregation.
+ */
 class PercentilesAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
@@ -73,8 +76,17 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
         ];
         $out[] = [$aggregationData, $expectedResults];
 
-        // Case #1 with compression.
-        $aggregationData = ['field' => 'price', 'percents' => null, 'compression' => 200];
+        // Case #1 with compression = 0.
+        $aggregationData = ['field' => 'price', 'percents' => null, 'compression' => 0];
+        $expectedResults = [
+            '1.0' => 18.75,
+            '5.0' => 18.75,
+            '25.0' => 18.75,
+            '50.0' => 18.75,
+            '75.0' => 18.75,
+            '95.0' => 18.75,
+            '99.0' => 18.75,
+        ];
         $out[] = [$aggregationData, $expectedResults];
 
         // Case #2 with percents.
@@ -104,10 +116,10 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
         $aggregation = new PercentilesAggregation('test_agg');
         $aggregation->setField($aggData['field']);
 
-        if ($aggData['compression']) {
+        if (array_key_exists('compression', $aggData)) {
             $aggregation->setCompression($aggData['compression']);
         }
-        if ($aggData['percents']) {
+        if (array_key_exists('percents', $aggData)) {
             $aggregation->setPercents($aggData['percents']);
         }
 
@@ -122,7 +134,7 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
     /**
      * Tests percentiles aggregation using script instead of field.
      */
-    public function testCardinalityWithScript()
+    public function testPercentilesAggregationWithScript()
     {
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
