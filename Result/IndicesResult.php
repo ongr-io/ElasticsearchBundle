@@ -91,7 +91,7 @@ class IndicesResult
     private function getSelectedIndices($indices, $name)
     {
         $results = [];
-        $existIndexes = array_intersect_key($this->rawData['_indices'], array_flip($indices));
+        $existIndexes = array_intersect_key($this->getRaw()['_indices'], array_flip($indices));
         foreach ($existIndexes as $index => $value) {
             $results[$index] = $this->getRaw()['_indices'][$index]['_shards'][$name];
         }
