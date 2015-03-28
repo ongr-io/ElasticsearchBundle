@@ -16,6 +16,9 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
+/**
+ * PercentileRanksAggregation functional tests.
+ */
 class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
@@ -68,11 +71,20 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         ];
         $out[] = [$aggregationData, $expectedResults];
 
-        // Case #2 with compression.
+        // Case #1 with compression.
         $aggregationData = ['field' => 'price', 'values' => [10, 20, 90], 'compression' => 200];
         $expectedResults = [
             '10.0' => 12.5,
             '20.0' => 0,
+            '90.0' => 100,
+        ];
+        $out[] = [$aggregationData, $expectedResults];
+
+        // Case #2 with compression = 0.
+        $aggregationData = ['field' => 'price', 'values' => [10, 20, 90], 'compression' => 0];
+        $expectedResults = [
+            '10.0' => 0,
+            '20.0' => 100,
             '90.0' => 100,
         ];
         $out[] = [$aggregationData, $expectedResults];
@@ -95,11 +107,11 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         $aggregation = new PercentileRanksAggregation('test_agg');
         $aggregation->setField($aggData['field']);
 
-        if ($aggData['values']) {
+        if (array_key_exists('values', $aggData)) {
             $aggregation->setValues($aggData['values']);
         }
 
-        if ($aggData['compression']) {
+        if (array_key_exists('compression', $aggData)) {
             $aggregation->setCompression($aggData['compression']);
         }
         $search = $repo->createSearch()->addAggregation($aggregation);
