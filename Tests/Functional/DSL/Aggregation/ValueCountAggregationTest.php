@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Aggregation\ValueCountAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
+/**
+ * Function tests for value count aggregation.
+ */
 class ValueCountAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
@@ -65,7 +68,7 @@ class ValueCountAggregationTest extends AbstractElasticsearchTestCase
             ],
         ];
 
-        $this->assertArrayHasKey('aggregations', $results);
+        $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
         $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
     }
 

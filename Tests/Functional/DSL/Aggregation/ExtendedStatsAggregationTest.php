@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Aggregation\ExtendedStatsAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
+/**
+ * Function tests for extended stats aggregation.
+ */
 class ExtendedStatsAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
@@ -83,7 +86,7 @@ class ExtendedStatsAggregationTest extends AbstractElasticsearchTestCase
             ],
         ];
 
-        $this->assertArrayHasKey('aggregations', $results);
+        $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
         $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
     }
 

@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Aggregation\MinAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
+/**
+ * Function tests for min aggregation.
+ */
 class MinAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
@@ -88,7 +91,7 @@ class MinAggregationTest extends AbstractElasticsearchTestCase
                 'value' => 12.54,
             ],
         ];
-        $this->assertArrayHasKey('aggregations', $results);
+        $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
         $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
     }
 }
