@@ -15,11 +15,14 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
+use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Result\IndicesResult;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
@@ -591,5 +594,39 @@ class RepositoryTest extends ElasticsearchTestCase
                 }
             }
         }
+    }
+
+    /**
+     * Tests if documents are deleted by query.
+     */
+    public function testDeleteByQuery()
+    {
+        /** @var Manager $manager */
+        $all = new MatchAllQuery();
+        $manager = $this->getManager();
+        $index = $manager->getConnection()->getIndexName();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $search = $repository->createSearch()->addQuery($all);
+        $results = $repository->execute($search)->count();
+        $this->assertEquals(4, $results);
+
+        $query = $repository->createSearch();
+        $term = new RangeQuery('price', ['gt' => 1, 'lt' => 200]);
+        $query->addQuery($term);
+
+        $expectedResults = [
+            'failed' => [$index => 0],
+            'successful' => [$index => 5],
+            'total' => [$index => 5],
+        ];
+        /** @var IndicesResult $result */
+        $result = $repository->deleteByQuery($query);
+        $this->assertEquals($expectedResults['failed'], $result->getFailed());
+        $this->assertEquals($expectedResults['successful'], $result->getSuccessful());
+        $this->assertEquals($expectedResults['total'], $result->getTotal());
+
+        $search = $repository->createSearch()->addQuery($all);
+        $results = $repository->execute($search)->count();
+        $this->assertEquals(2, $results);
     }
 }

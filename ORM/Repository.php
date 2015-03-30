@@ -21,6 +21,7 @@ use ONGR\ElasticsearchBundle\DSL\Suggester\Suggesters;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
+use ONGR\ElasticsearchBundle\Result\IndicesResult;
 use ONGR\ElasticsearchBundle\Result\RawResultIterator;
 use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
 use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
@@ -184,6 +185,23 @@ class Repository
             ->search($this->types, $this->checkFields($search->toArray()), $search->getQueryParams());
 
         return $this->parseResult($results, $resultsType, $search->getScroll());
+    }
+
+    /**
+     * Delete by query.
+     *
+     * @param Search $search
+     *
+     * @return array
+     */
+    public function deleteByQuery(Search $search)
+    {
+        $results = $this
+            ->manager
+            ->getConnection()
+            ->deleteByQuery($this->types, $search->toArray());
+
+        return new IndicesResult($results);
     }
 
     /**
