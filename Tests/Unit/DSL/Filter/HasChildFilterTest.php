@@ -69,7 +69,7 @@ class HasChildFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArray($type, $queryType, $queryToArray, $parameters, $dslType, $expected)
     {
-        $mockQuery = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
+        $mockQuery = $this->getMockBuilder('Ongr\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
         $mockQuery->expects($this->once())
             ->method('getType')
             ->will($this->returnValue($queryType));
