@@ -621,7 +621,6 @@ class RepositoryTest extends ElasticsearchTestCase
         ];
         /** @var IndicesResult $result */
         $result = $repository->deleteByQuery($query);
-
         $this->assertEquals($expectedResults['failed'], $result->getFailed());
         $this->assertEquals($expectedResults['successful'], $result->getSuccessful());
         $this->assertEquals($expectedResults['total'], $result->getTotal());
