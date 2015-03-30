@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Mapping;
+namespace Ongr\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\FileCacheReader;
 use Doctrine\Common\Util\Inflector;
-use ONGR\ElasticsearchBundle\Annotation\Document;
-use ONGR\ElasticsearchBundle\Annotation\MultiField;
-use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader;
+use Ongr\ElasticsearchBundle\Annotation\Document;
+use Ongr\ElasticsearchBundle\Annotation\MultiField;
+use Ongr\ElasticsearchBundle\Annotation\Property;
+use Ongr\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
+use Ongr\ElasticsearchBundle\Document\DocumentInterface;
+use Ongr\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
+use Ongr\ElasticsearchBundle\Mapping\Proxy\ProxyLoader;
 
 /**
  * DocumentParser wrapper for getting bundle documents mapping.

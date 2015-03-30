@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Result\Aggregation;
+namespace Ongr\ElasticsearchBundle\Result\Aggregation;
 
-use ONGR\ElasticsearchBundle\Result\Converter;
+use Ongr\ElasticsearchBundle\Result\Converter;
 
 /**
  * HitsAggregationIterator class.

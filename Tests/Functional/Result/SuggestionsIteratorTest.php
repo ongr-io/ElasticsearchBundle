@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,21 +9,21 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\PhraseOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Completion;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Context;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Phrase;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Term;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\PhraseOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class SuggestionsIteratorTest extends ElasticsearchTestCase
 {
@@ -169,7 +169,7 @@ class SuggestionsIteratorTest extends ElasticsearchTestCase
 
         $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
+        $this->assertInstanceOf('Ongr\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
         $suggestions = iterator_to_array($iterator->getSuggestions());
 
@@ -180,7 +180,7 @@ class SuggestionsIteratorTest extends ElasticsearchTestCase
         /** @var SuggestionEntry[] $suggestionEntries */
         foreach ($suggestions as $suggestionEntries) {
             foreach ($suggestionEntries as $suggestionEntry) {
-                $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry', $suggestionEntry);
+                $this->assertInstanceOf('Ongr\ElasticsearchBundle\Result\Suggestion\SuggestionEntry', $suggestionEntry);
                 $options = iterator_to_array($suggestionEntry->getOptions());
                 sort($options);
 

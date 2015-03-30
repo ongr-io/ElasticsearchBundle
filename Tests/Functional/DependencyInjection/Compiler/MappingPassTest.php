@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection\Compiler;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DependencyInjection\Compiler;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use Ongr\ElasticsearchBundle\Client\Connection;
+use Ongr\ElasticsearchBundle\Mapping\MetadataCollector;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -42,7 +42,7 @@ class MappingPassTest extends WebTestCase
         $connection = $container->get('es.manager')->getConnection();
         $productMapping = $connection->getMapping('product');
         $expectedMapping = $mappingService->getMappingByNamespace(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product'
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product'
         );
 
         $this->assertEquals($expectedMapping['product']['properties'], $productMapping['properties']);

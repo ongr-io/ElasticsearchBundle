@@ -1,9 +1,9 @@
 <?php
 
-namespace ONGR\ElasticsearchBundle\Result\Suggestion\Option;
+namespace Ongr\ElasticsearchBundle\Result\Suggestion\Option;
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -11,7 +11,7 @@ namespace ONGR\ElasticsearchBundle\Result\Suggestion\Option;
  * file that was distributed with this source code.
  */
 
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option;
 
 /**
  * Data holder for term option.

@@ -32,7 +32,7 @@ ongr_elasticsearch:
         bar:
             connection: bar
             mappings:
-                - ONGRElasticsearchBundle
+                - OngrElasticsearchBundle
         readonly:
             connection: default
             debug: true
@@ -42,6 +42,6 @@ ongr_elasticsearch:
 
 services:
     es_test.foo.warmer:
-        class: ONGR\ElasticsearchBundle\Tests\app\fixture\Warmer\FooWarmer
+        class: Ongr\ElasticsearchBundle\Tests\app\fixture\Warmer\FooWarmer
         tags:
             - { name: es.warmer, manager: "default,bar" }

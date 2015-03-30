@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,23 +9,23 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional;
+namespace Ongr\ElasticsearchBundle\Tests\Functional;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
-use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
+use Ongr\ElasticsearchBundle\Document\DocumentInterface;
+use Ongr\ElasticsearchBundle\DSL\Filter\MissingFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\PrefixFilter;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Completion;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Context;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Phrase;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Term;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\Option\TermOption;
+use Ongr\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 
 class RepositoryTest extends ElasticsearchTestCase
 {
@@ -292,7 +292,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $document = $repo->createDocument();
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             $document
         );
     }
@@ -322,7 +322,7 @@ class RepositoryTest extends ElasticsearchTestCase
 
         $searchResult = $repo->execute($search, Repository::RESULTS_OBJECT);
         $this->assertInstanceOf(
-            '\ONGR\ElasticsearchBundle\Result\DocumentIterator',
+            '\Ongr\ElasticsearchBundle\Result\DocumentIterator',
             $searchResult
         );
         $this->assertCount(0, $searchResult);
@@ -554,7 +554,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $repository = $manager->getRepository('AcmeTestBundle:Color');
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument',
+            'Ongr\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument',
             $repository->createDocument()
         );
     }

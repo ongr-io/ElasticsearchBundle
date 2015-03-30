@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Command;
 
-use ONGR\ElasticsearchBundle\Command\IndexExportCommand;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\Command\IndexExportCommand;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;

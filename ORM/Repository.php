@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,21 +9,21 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\ORM;
+namespace Ongr\ElasticsearchBundle\ORM;
 
 use Elasticsearch\Common\Exceptions\Missing404Exception;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\TermsQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Suggesters;
-use ONGR\ElasticsearchBundle\Result\Converter;
-use ONGR\ElasticsearchBundle\Result\DocumentIterator;
-use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
-use ONGR\ElasticsearchBundle\Result\RawResultIterator;
-use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
-use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
+use Ongr\ElasticsearchBundle\Document\DocumentInterface;
+use Ongr\ElasticsearchBundle\DSL\Query\TermsQuery;
+use Ongr\ElasticsearchBundle\DSL\Search;
+use Ongr\ElasticsearchBundle\DSL\Sort\Sort;
+use Ongr\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Suggesters;
+use Ongr\ElasticsearchBundle\Result\Converter;
+use Ongr\ElasticsearchBundle\Result\DocumentIterator;
+use Ongr\ElasticsearchBundle\Result\DocumentScanIterator;
+use Ongr\ElasticsearchBundle\Result\RawResultIterator;
+use Ongr\ElasticsearchBundle\Result\RawResultScanIterator;
+use Ongr\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
 
 /**
  * Repository class.

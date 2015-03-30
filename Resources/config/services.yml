@@ -1,8 +1,8 @@
 parameters:
     es.logging.path: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
-    es.export.class: ONGR\ElasticsearchBundle\Service\ExportService
-    es.import.class: ONGR\ElasticsearchBundle\Service\ImportService
-    es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Client\IndexSuffixFinder
+    es.export.class: Ongr\ElasticsearchBundle\Service\ExportService
+    es.import.class: Ongr\ElasticsearchBundle\Service\ImportService
+    es.client.index_suffix_finder.class: Ongr\ElasticsearchBundle\Client\IndexSuffixFinder
 
 services:
     es.export:

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Annotation\Suggester;
+namespace Ongr\ElasticsearchBundle\Annotation\Suggester;
 
 use Doctrine\Common\Annotations\Annotation\Required;
-use ONGR\ElasticsearchBundle\Annotation\AbstractProperty;
+use Ongr\ElasticsearchBundle\Annotation\AbstractProperty;
 
 /**
  * Abstract class for various suggester annotations.

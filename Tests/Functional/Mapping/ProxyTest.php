@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Mapping;
 
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 /**
  * Tests proxy classes.
@@ -44,7 +44,7 @@ class ProxyTest extends ElasticsearchTestCase
         $product = $manager->getRepository('AcmeTestBundle:Product')->find(1);
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
+            'Ongr\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
             $product,
             'Recieved document should be a proxy.'
         );

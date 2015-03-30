@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Aggregation;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\FiltersAggregation;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\FiltersAggregation;
 
 /**
  * Unit test for filters aggregation.
@@ -26,7 +26,7 @@ class FiltersAggregationTest extends \PHPUnit_Framework_TestCase
      */
     public function testIfExceptionIsThrown()
     {
-        $mock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
+        $mock = $this->getMockBuilder('Ongr\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
         $aggregation = new FiltersAggregation('test_agg');
         $aggregation->addFilter($mock);
     }

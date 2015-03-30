@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Document;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Document;
 
 /**
  * Tests AbstractDocument.
  *
  * Class AbstractDocumentTest
  *
- * @package ONGR\ElasticsearchBundle\Tests\Unit\Document
+ * @package Ongr\ElasticsearchBundle\Tests\Unit\Document
  */
 class AbstractDocumentTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,8 +25,8 @@ class AbstractDocumentTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetGet()
     {
-        /** @var \ONGR\ElasticsearchBundle\Document\AbstractDocument $stub */
-        $stub = $this->getMockForAbstractClass('\ONGR\ElasticsearchBundle\Document\AbstractDocument');
+        /** @var \Ongr\ElasticsearchBundle\Document\AbstractDocument $stub */
+        $stub = $this->getMockForAbstractClass('\Ongr\ElasticsearchBundle\Document\AbstractDocument');
         $stub->__set('_id', '123');
         $stub->__set('_score', '123');
         $stub->__set('_ttl', '123');
@@ -50,8 +50,8 @@ class AbstractDocumentTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHighlightException()
     {
-        /** @var \ONGR\ElasticsearchBundle\Document\AbstractDocument $stub */
-        $stub = $this->getMockForAbstractClass('\ONGR\ElasticsearchBundle\Document\AbstractDocument');
+        /** @var \Ongr\ElasticsearchBundle\Document\AbstractDocument $stub */
+        $stub = $this->getMockForAbstractClass('\Ongr\ElasticsearchBundle\Document\AbstractDocument');
         $stub->__set('highlight', null);
         $stub->getHighLight();
     }

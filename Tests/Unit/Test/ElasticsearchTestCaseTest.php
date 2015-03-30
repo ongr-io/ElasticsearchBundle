@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Test;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Test;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use Ongr\ElasticsearchBundle\Client\Connection;
+use Ongr\ElasticsearchBundle\Mapping\MetadataCollector;
+use Ongr\ElasticsearchBundle\ORM\Manager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -52,13 +52,13 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->connectionMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Client\Connection')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Client\Connection')
             ->setMethods(['getVersionNumber', 'dropAndCreateIndex', 'dropIndex'])
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->collectorMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Mapping\MetadataCollector')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -68,12 +68,12 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $this->managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\ORM\Manager')
             ->setConstructorArgs([$this->connectionMock, $this->collectorMock, [], []])
             ->getMock();
 
         $this->dummyBase = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
             ->setMethods(['getContainer'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -276,7 +276,7 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
         $skipped = false;
 
         $this->dummyBase = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
             ->setMethods(['getIgnoredVersions', 'getContainer'])
             ->disableOriginalConstructor()
             ->getMock();

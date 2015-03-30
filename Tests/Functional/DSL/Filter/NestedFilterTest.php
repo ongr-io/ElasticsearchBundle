@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Filter\MatchAllFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\NestedFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\RangeFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\TermsFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\BuilderInterface;
+use Ongr\ElasticsearchBundle\DSL\Filter\MatchAllFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\NestedFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\RangeFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\TermsFilter;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Nested Filter functional test.

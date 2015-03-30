@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Warmer;
+namespace Ongr\ElasticsearchBundle\Tests\app\fixture\Warmer;
 
-use ONGR\ElasticsearchBundle\Cache\WarmerInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
+use Ongr\ElasticsearchBundle\Cache\WarmerInterface;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\DSL\Search;
 
 /**
  * Warmer for testing purposes.

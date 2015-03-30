@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Result;
+namespace Ongr\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
-use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
-use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
+use Ongr\ElasticsearchBundle\Document\DocumentInterface;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
+use Ongr\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
+use Ongr\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
 
 /**
  * This class is able to iterate over Elasticsearch result documents while casting data into models.

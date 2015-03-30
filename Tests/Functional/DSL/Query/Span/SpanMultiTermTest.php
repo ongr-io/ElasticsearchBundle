@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\FuzzyQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\PrefixQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\RegexpQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanMultiTermQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\WildcardQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\BuilderInterface;
+use Ongr\ElasticsearchBundle\DSL\Query\FuzzyQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\PrefixQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\RangeQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\RegexpQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\Span\SpanMultiTermQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\WildcardQuery;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class SpanMultiTermTest extends AbstractElasticsearchTestCase
 {

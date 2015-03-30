@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Document\Suggester;
+namespace Ongr\ElasticsearchBundle\Document\Suggester;
 
 /**
  * Abstract record document for various suggesters.
  * 
- * @deprecated use ONGR\ElasticsearchBundle\Document\Suggester\AbstractSuggester, will be removed in 1.0.
+ * @deprecated use Ongr\ElasticsearchBundle\Document\Suggester\AbstractSuggester, will be removed in 1.0.
  */
 trait SuggesterTrait
 {

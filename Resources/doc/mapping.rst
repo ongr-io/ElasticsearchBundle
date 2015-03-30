@@ -71,8 +71,8 @@ Document mapping
 
     <?php
     //AcmeTestBundle:Content
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\AbstractContentDocument;
 
     /**
      * Holds content page data.
@@ -109,8 +109,8 @@ It is little different to define nested and object types. For this user will nee
     <?php
     //AcmeTestBundle:Content
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Holds content page data.
@@ -148,8 +148,8 @@ To define an object:
     <?php
     //AcmeTestBundle:ContentMetaObject
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * Holds contents meta object data.

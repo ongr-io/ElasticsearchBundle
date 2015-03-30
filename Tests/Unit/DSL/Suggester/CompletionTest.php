@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Suggester;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Suggester;
 
-use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
-use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
+use Ongr\ElasticsearchBundle\DSL\Suggester\Completion;
+use Ongr\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
 class CompletionTest extends \PHPUnit_Framework_TestCase
 {
@@ -133,7 +133,7 @@ class CompletionTest extends \PHPUnit_Framework_TestCase
         $this->setStub(new Completion('foo', 'bar'));
         $this->addIgnoredField('useFuzzy');
 
-        return 'ONGR\ElasticsearchBundle\DSL\Suggester\Completion';
+        return 'Ongr\ElasticsearchBundle\DSL\Suggester\Completion';
     }
 
     /**

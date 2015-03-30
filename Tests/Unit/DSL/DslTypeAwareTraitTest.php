@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL;
 
-use ONGR\ElasticsearchBundle\DSL\DslTypeAwareTrait;
+use Ongr\ElasticsearchBundle\DSL\DslTypeAwareTrait;
 
 /**
  * Test for DslTypeAwareTrait.
@@ -28,7 +28,7 @@ class DslTypeAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mock = $this->getMockForTrait('ONGR\ElasticsearchBundle\DSL\DslTypeAwareTrait');
+        $this->mock = $this->getMockForTrait('Ongr\ElasticsearchBundle\DSL\DslTypeAwareTrait');
     }
 
     /**

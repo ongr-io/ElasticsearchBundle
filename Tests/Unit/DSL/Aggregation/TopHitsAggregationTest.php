@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Aggregation;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TopHitsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sorts;
+use Ongr\ElasticsearchBundle\DSL\Aggregation\TopHitsAggregation;
+use Ongr\ElasticsearchBundle\DSL\Sort\Sorts;
 
 /**
  * Unit tests for top hits aggregation.

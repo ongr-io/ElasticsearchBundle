@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Document;
+namespace Ongr\ElasticsearchBundle\Document;
 
-use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
+use Ongr\ElasticsearchBundle\Result\DocumentHighlight;
 
 /**
  * Interface for ES Documents.

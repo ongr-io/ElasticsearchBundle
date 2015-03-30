@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Query\PrefixQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Query\PrefixQuery;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * PrefixQuery functional tests.

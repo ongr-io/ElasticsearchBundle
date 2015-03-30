@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Annotation;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Annotation;
 
-use ONGR\ElasticsearchBundle\Annotation\Skip;
+use Ongr\ElasticsearchBundle\Annotation\Skip;
 
 /**
  * Tests for Skip annotation.
@@ -46,7 +46,7 @@ class SkipTest extends \PHPUnit_Framework_TestCase
         if ($exception) {
             $this->setExpectedException(
                 'InvalidArgumentException',
-                'Annotation `ONGR\ElasticsearchBundle\Annotation\Skip` unexpected type given.'
+                'Annotation `Ongr\ElasticsearchBundle\Annotation\Skip` unexpected type given.'
                 . ' Expected string or array, given `object`'
             );
         }

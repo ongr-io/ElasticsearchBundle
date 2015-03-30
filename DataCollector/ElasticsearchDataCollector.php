@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DataCollector;
+namespace Ongr\ElasticsearchBundle\DataCollector;
 
 use Monolog\Logger;
-use ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler;
+use Ongr\ElasticsearchBundle\Logger\Handler\CollectionHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;

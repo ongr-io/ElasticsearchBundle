@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Annotation;
+namespace Ongr\ElasticsearchBundle\Annotation;
 
-use ONGR\ElasticsearchBundle\Mapping\AbstractAnnotationCamelizer;
-use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
+use Ongr\ElasticsearchBundle\Mapping\AbstractAnnotationCamelizer;
+use Ongr\ElasticsearchBundle\Mapping\DumperInterface;
 
 /**
  * Makes sure thats annotations are well formated.

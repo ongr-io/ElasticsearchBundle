@@ -26,7 +26,7 @@ Enable Elasticsearch bundle in your AppKernel:
     {
         $bundles = array(
             // ...
-            new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
+            new Ongr\ElasticsearchBundle\OngrElasticsearchBundle(),
         );
     }
 
@@ -87,8 +87,8 @@ Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch
     <?php
     namespace Acme\AcmeDemoBundle\Document;
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+    use Ongr\ElasticsearchBundle\Annotation as ES;
+    use Ongr\ElasticsearchBundle\Document\AbstractDocument;
 
     /**
      * @ES\Document

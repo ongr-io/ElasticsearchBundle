@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DependencyInjection;
+namespace Ongr\ElasticsearchBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\DirectoryResource;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 /**
  * This is the class that loads and manages bundle configuration.
  */
-class ONGRElasticsearchExtension extends Extension
+class OngrElasticsearchExtension extends Extension
 {
     /**
      * {@inheritdoc}
@@ -46,7 +46,7 @@ class ONGRElasticsearchExtension extends Extension
 
         $this->addClassesToCompile(
             [
-                'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
+                'Ongr\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
             ]
         );
     }
@@ -60,7 +60,7 @@ class ONGRElasticsearchExtension extends Extension
     private function addDocumentFinderDefinition(array $config, ContainerBuilder $container)
     {
         $documentFinder = new Definition(
-            'ONGR\ElasticsearchBundle\Mapping\DocumentFinder',
+            'Ongr\ElasticsearchBundle\Mapping\DocumentFinder',
             [
                 $container->getParameter('kernel.bundles'),
             ]
@@ -87,7 +87,7 @@ class ONGRElasticsearchExtension extends Extension
         );
 
         $documentParser = new Definition(
-            'ONGR\ElasticsearchBundle\Mapping\DocumentParser',
+            'Ongr\ElasticsearchBundle\Mapping\DocumentParser',
             [
                 $cachedReader,
                 new Reference('es.document_finder'),
@@ -95,7 +95,7 @@ class ONGRElasticsearchExtension extends Extension
         );
 
         $proxyLoader = new Definition(
-            'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader',
+            'Ongr\ElasticsearchBundle\Mapping\Proxy\ProxyLoader',
             [
                 $this->getCacheDir($container, 'proxies'),
                 $container->getParameter('kernel.debug'),
@@ -103,7 +103,7 @@ class ONGRElasticsearchExtension extends Extension
         );
 
         $metadataCollector = new Definition(
-            'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
+            'Ongr\ElasticsearchBundle\Mapping\MetadataCollector',
             [
                 new Reference('es.document_finder'),
                 $documentParser,
@@ -177,7 +177,7 @@ class ONGRElasticsearchExtension extends Extension
      */
     private function getLogTraceDefinition()
     {
-        $handler = new Definition('ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler', []);
+        $handler = new Definition('Ongr\ElasticsearchBundle\Logger\Handler\CollectionHandler', []);
 
         $logger = new Definition(
             'Monolog\Logger',
@@ -199,7 +199,7 @@ class ONGRElasticsearchExtension extends Extension
      */
     private function getDataCollectorDefinition($loggers = [])
     {
-        $collector = new Definition('ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector');
+        $collector = new Definition('Ongr\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector');
         $collector->addMethodCall('setManagers', [new Parameter('es.managers')]);
 
         foreach ($loggers as $logger) {
@@ -209,7 +209,7 @@ class ONGRElasticsearchExtension extends Extension
         $collector->addTag(
             'data_collector',
             [
-                'template' => 'ONGRElasticsearchBundle:Profiler:profiler.html.twig',
+                'template' => 'OngrElasticsearchBundle:Profiler:profiler.html.twig',
                 'id' => 'es',
             ]
         );

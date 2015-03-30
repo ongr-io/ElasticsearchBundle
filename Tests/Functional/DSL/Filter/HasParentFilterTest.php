@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\DSL\Filter\HasParentFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\BuilderInterface;
+use Ongr\ElasticsearchBundle\DSL\Filter\TermFilter;
+use Ongr\ElasticsearchBundle\DSL\Query\TermQuery;
+use Ongr\ElasticsearchBundle\DSL\Filter\HasParentFilter;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * HasParent filter functional test.

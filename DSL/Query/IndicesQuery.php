@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DSL\Query;
+namespace Ongr\ElasticsearchBundle\DSL\Query;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use Ongr\ElasticsearchBundle\DSL\BuilderInterface;
 
 /**
  * Elasticsearch indices query class.
@@ -67,7 +67,7 @@ class IndicesQuery implements BuilderInterface
         $output['query'] = [$this->query->getType() => $this->query->toArray()];
 
         if ($this->noMatchQuery !== null) {
-            if (is_a($this->noMatchQuery, 'ONGR\ElasticsearchBundle\DSL\BuilderInterface')) {
+            if (is_a($this->noMatchQuery, 'Ongr\ElasticsearchBundle\DSL\BuilderInterface')) {
                 $output['no_match_query'] = [$this->noMatchQuery->getType() => $this->noMatchQuery->toArray()];
             } else {
                 $output['no_match_query'] = $this->noMatchQuery;

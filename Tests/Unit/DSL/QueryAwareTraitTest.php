@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL;
 
 /**
  * Tests query aware trait provided methods.
@@ -21,7 +21,7 @@ class QueryAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasQueryMethodWithoutQueries()
     {
-        $mock = $this->getMockForTrait('ONGR\ElasticsearchBundle\DSL\Query\QueryAwareTrait');
+        $mock = $this->getMockForTrait('Ongr\ElasticsearchBundle\DSL\Query\QueryAwareTrait');
         $this->assertFalse($mock->hasQuery('some_type'));
     }
 
@@ -30,9 +30,9 @@ class QueryAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasQueryMethodWithQueries()
     {
-        $builder = $this->getMock('ONGR\ElasticsearchBundle\DSL\BuilderInterface');
+        $builder = $this->getMock('Ongr\ElasticsearchBundle\DSL\BuilderInterface');
         $builder->expects($this->once())->method('getType')->willReturn('foo_type');
-        $mock = $this->getMockForTrait('ONGR\ElasticsearchBundle\DSL\Query\QueryAwareTrait');
+        $mock = $this->getMockForTrait('Ongr\ElasticsearchBundle\DSL\Query\QueryAwareTrait');
         $mock->addQuery($builder);
         $this->assertTrue($mock->hasQuery('foo_type'));
     }

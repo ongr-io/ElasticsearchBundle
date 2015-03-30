@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\IdsFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Filter\IdsFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\PrefixFilter;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\RangeQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\TermQuery;
+use Ongr\ElasticsearchBundle\DSL\Sort\Sort;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 /**
  * Search functional test.
@@ -84,9 +84,9 @@ class SearchTest extends ElasticsearchTestCase
     /**
      * Gets results array for specified Search.
      *
-     * @param \ONGR\ElasticsearchBundle\DSL\Search $search
+     * @param \Ongr\ElasticsearchBundle\DSL\Search $search
      *
-     * @return array|\ONGR\ElasticsearchBundle\Result\DocumentIterator
+     * @return array|\Ongr\ElasticsearchBundle\Result\DocumentIterator
      */
     protected function getSearchResultsArray($search)
     {

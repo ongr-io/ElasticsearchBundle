@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\LimitFilter;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Filter\LimitFilter;
+use Ongr\ElasticsearchBundle\DSL\Query\MatchQuery;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class BoolTestWithMatchQueryAndLimitFilterTest extends ElasticsearchTestCase
 {

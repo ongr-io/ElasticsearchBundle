@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DSL\Query\Span;
+namespace Ongr\ElasticsearchBundle\DSL\Query\Span;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use Ongr\ElasticsearchBundle\DSL\BuilderInterface;
 
 /**
  * Interface SpanQueryInterface to recognise span queries.

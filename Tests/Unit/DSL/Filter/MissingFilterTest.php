@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\MissingFilter;
 
 class MissingFilterTest extends \PHPUnit_Framework_TestCase
 {

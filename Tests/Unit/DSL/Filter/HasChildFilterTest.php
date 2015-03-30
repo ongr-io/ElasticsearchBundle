@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Filter;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\HasChildFilter;
+use Ongr\ElasticsearchBundle\DSL\Filter\HasChildFilter;
 
 class HasChildFilterTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +20,7 @@ class HasChildFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetType()
     {
-        $mock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
+        $mock = $this->getMockBuilder('Ongr\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
         $filter = new HasChildFilter('test_field', $mock);
         $result = $filter->getType();
         $this->assertEquals('has_child', $result);
@@ -69,7 +69,7 @@ class HasChildFilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArray($type, $queryType, $queryToArray, $parameters, $dslType, $expected)
     {
-        $mockQuery = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
+        $mockQuery = $this->getMockBuilder('Ongr\ElasticsearchBundle\DSL\BuilderInterface')->getMock();
         $mockQuery->expects($this->once())
             ->method('getType')
             ->will($this->returnValue($queryType));

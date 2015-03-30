@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DataCollector;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DataCollector;
 
-use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
+use Ongr\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
 
 class ElasticsearchDataCollectorTest extends \PHPUnit_Framework_TestCase
 {

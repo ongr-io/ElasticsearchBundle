@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Client;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Client;
 
 use Elasticsearch\Client;
-use ONGR\ElasticsearchBundle\Client\Connection;
+use Ongr\ElasticsearchBundle\Client\Connection;
 
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -311,7 +311,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testWarmersActionException()
     {
-        $warmerMock = $this->getMock('ONGR\ElasticsearchBundle\Cache\WarmerInterface');
+        $warmerMock = $this->getMock('Ongr\ElasticsearchBundle\Cache\WarmerInterface');
         $warmerMock
             ->expects($this->once())
             ->method('warmUp');
@@ -336,7 +336,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidateWarmersException()
     {
-        $warmerMock = $this->getMock('ONGR\ElasticsearchBundle\Cache\WarmerInterface');
+        $warmerMock = $this->getMock('Ongr\ElasticsearchBundle\Cache\WarmerInterface');
         $warmerMock
             ->expects($this->once())
             ->method('warmUp');

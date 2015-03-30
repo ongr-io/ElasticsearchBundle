@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
+namespace Ongr\ElasticsearchBundle\DependencyInjection\Compiler;
 
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use Ongr\ElasticsearchBundle\Mapping\MetadataCollector;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -36,14 +36,14 @@ class MappingPass implements CompilerPassInterface
             $bundlesMetadata = $this->getBundlesMetadata($container, $settings);
 
             $classMetadataCollection = new Definition(
-                'ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection',
+                'Ongr\ElasticsearchBundle\Mapping\ClassMetadataCollection',
                 [
                     $bundlesMetadata,
                 ]
             );
 
             $managerDefinition = new Definition(
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'Ongr\ElasticsearchBundle\ORM\Manager',
                 [
                     $this->getConnectionDefinition($container, $connections, $settings),
                     $classMetadataCollection,
@@ -63,7 +63,7 @@ class MappingPass implements CompilerPassInterface
             /** @var Definition $data */
             foreach ($bundlesMetadata as $repository => $data) {
                 $repositoryDefinition = new Definition(
-                    'ONGR\ElasticsearchBundle\ORM\Repository',
+                    'Ongr\ElasticsearchBundle\ORM\Repository',
                     [
                         $managerDefinition,
                         [$repository],
@@ -101,7 +101,7 @@ class MappingPass implements CompilerPassInterface
         $collector = $container->get('es.metadata_collector');
         foreach ($settings['mappings'] as $bundle) {
             foreach ($collector->getMapping($bundle) as $repository => $metadata) {
-                $metadataDefinition = new Definition('ONGR\ElasticsearchBundle\Mapping\ClassMetadata');
+                $metadataDefinition = new Definition('Ongr\ElasticsearchBundle\Mapping\ClassMetadata');
                 $metadataDefinition->addArgument([$repository => $metadata]);
 
                 $out[strpos($bundle, ':') === false ? $bundle
@@ -138,7 +138,7 @@ class MappingPass implements CompilerPassInterface
             ]
         );
         $connection = new Definition(
-            'ONGR\ElasticsearchBundle\Client\Connection',
+            'Ongr\ElasticsearchBundle\Client\Connection',
             [
                 $client,
                 $this->getIndexParams($connections[$settings['connection']], $settings, $container),

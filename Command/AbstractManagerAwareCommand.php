@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Command;
+namespace Ongr\ElasticsearchBundle\Command;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use Ongr\ElasticsearchBundle\Client\Connection;
+use Ongr\ElasticsearchBundle\ORM\Manager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
 

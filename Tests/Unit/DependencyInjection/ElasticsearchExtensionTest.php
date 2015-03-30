@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DependencyInjection;
 
-use ONGR\ElasticsearchBundle\DependencyInjection\ONGRElasticsearchExtension;
+use Ongr\ElasticsearchBundle\DependencyInjection\OngrElasticsearchExtension;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -119,7 +119,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
         $container->setParameter('kernel.bundles', ['testBundle' => 'testClass']);
         $container->setParameter('kernel.cache_dir', '');
         $container->setParameter('kernel.debug', true);
-        $extension = new ONGRElasticsearchExtension();
+        $extension = new OngrElasticsearchExtension();
         $extension->load(
             $parameters,
             $container
@@ -129,7 +129,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
             $reflection = new \ReflectionClass($this);
             $dir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . 'customDir';
 
-            $handler = new Definition('ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler', []);
+            $handler = new Definition('Ongr\ElasticsearchBundle\Logger\Handler\CollectionHandler', []);
             $logger = new Definition(
                 'Monolog\Logger',
                 [
@@ -138,13 +138,13 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 ]
             );
 
-            $collector = new Definition('ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector');
+            $collector = new Definition('Ongr\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector');
             $collector->addMethodCall('setManagers', [new Parameter('es.managers')]);
             $collector->addMethodCall('addLogger', [new Reference('es.logger.trace')]);
             $collector->addTag(
                 'data_collector',
                 [
-                    'template' => 'ONGRElasticsearchBundle:Profiler:profiler.html.twig',
+                    'template' => 'OngrElasticsearchBundle:Profiler:profiler.html.twig',
                     'id' => 'es',
                 ]
             );

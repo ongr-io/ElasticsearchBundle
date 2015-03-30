@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Annotation;
+namespace Ongr\ElasticsearchBundle\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Required;
 
@@ -66,7 +66,7 @@ final class Property extends AbstractProperty
     public $payloads;
 
     /**
-     * @var array<\ONGR\ElasticsearchBundle\Annotation\MultiField>
+     * @var array<\Ongr\ElasticsearchBundle\Annotation\MultiField>
      */
     public $fields;
 

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\DependencyInjection;
 
-use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
+use Ongr\ElasticsearchBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\Definition\Processor;
 
 /**

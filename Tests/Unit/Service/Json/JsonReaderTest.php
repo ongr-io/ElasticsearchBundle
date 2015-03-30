@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Service\Json;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Service\Json;
 
-use ONGR\ElasticsearchBundle\Service\Json\JsonReader;
+use Ongr\ElasticsearchBundle\Service\Json\JsonReader;
 use org\bovigo\vfs\vfsStream;
 
 class JsonReaderTest extends \PHPUnit_Framework_TestCase
@@ -105,7 +105,7 @@ OUT;
     public function testReader($contents, $expectedDocuments)
     {
         $managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\ORM\Manager')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -113,7 +113,7 @@ OUT;
         file_put_contents($filename, $contents);
 
         $reader = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Service\Json\JsonReader')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Service\Json\JsonReader')
             ->setConstructorArgs([$managerMock, $filename])
             ->setMethods(['getConverter'])
             ->getMock();
@@ -189,7 +189,7 @@ OUT;
     public function testReaderRaw($contents, $expectedDocuments)
     {
         $managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\ORM\Manager')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -279,7 +279,7 @@ OUT;
     public function testGetConverter()
     {
         $managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\ORM\Manager')
             ->disableOriginalConstructor()
             ->setMethods(['getTypesMapping', 'getBundlesMapping'])
             ->getMock();
@@ -299,7 +299,7 @@ OUT;
         $method->setAccessible(true);
         $converter = $method->invoke($reader, []);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Converter', $converter);
+        $this->assertInstanceOf('Ongr\ElasticsearchBundle\Result\Converter', $converter);
     }
 
     /**
@@ -317,7 +317,7 @@ OUT;
         file_put_contents($filename, $contents);
 
         $reader = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Service\Json\JsonReader')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Service\Json\JsonReader')
             ->setConstructorArgs([null, $filename])
             ->setMethods(['getConverter'])
             ->getMock();
@@ -345,7 +345,7 @@ OUT;
     private function getConverterMock()
     {
         $converterMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
+            ->getMockBuilder('Ongr\ElasticsearchBundle\Result\Converter')
             ->disableOriginalConstructor()
             ->setMethods(['convertToDocument'])
             ->getMock();

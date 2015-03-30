@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
 
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanFirstQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanNearQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanOrQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanTermQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use Ongr\ElasticsearchBundle\DSL\Query\Span\SpanFirstQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\Span\SpanNearQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\Span\SpanOrQuery;
+use Ongr\ElasticsearchBundle\DSL\Query\Span\SpanTermQuery;
+use Ongr\ElasticsearchBundle\ORM\Repository;
+use Ongr\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class SpanOrTest extends AbstractElasticsearchTestCase
 {

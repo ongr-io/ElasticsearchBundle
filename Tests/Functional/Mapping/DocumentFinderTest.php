@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\Mapping;
 
-use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
+use Ongr\ElasticsearchBundle\Mapping\DocumentFinder;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DocumentFinderTest extends WebTestCase

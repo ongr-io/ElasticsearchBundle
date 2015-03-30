@@ -1,11 +1,11 @@
-ONGR Elasticsearch Bundle
+Ongr Elasticsearch Bundle
 =========================
 
 Elasticsearch Bundle was created in order to serve the need for
 professional `elasticsearch <http://www.elasticsearch.org>`_ integration with enterprise level Symfony
 2 systems. This bundle is:
 
-- Supported by `ONGR <http://ongr.io>`_ development team.
+- Supported by `Ongr <http://ongr.io>`_ development team.
 - Uses the official `elasticsearch-php <https://github.com/elasticsearch/elasticsearch-php>`_ client.
 - Ensures full integration with Symfony 2 framework.
 

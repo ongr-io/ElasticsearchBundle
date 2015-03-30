@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection;
+namespace Ongr\ElasticsearchBundle\Tests\Functional\DependencyInjection;
 
-use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
+use Ongr\ElasticsearchBundle\Test\TestHelperTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ElasticsearchExtensionTest extends WebTestCase
@@ -26,39 +26,39 @@ class ElasticsearchExtensionTest extends WebTestCase
         return [
             [
                 'es.manager',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'Ongr\ElasticsearchBundle\ORM\Manager',
             ],
             [
                 'es.manager.default',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'Ongr\ElasticsearchBundle\ORM\Manager',
             ],
             [
                 'es.manager.bar',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'Ongr\ElasticsearchBundle\ORM\Manager',
             ],
             [
                 'es.manager.default.product',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'Ongr\ElasticsearchBundle\ORM\Repository',
             ],
             [
                 'es.manager.default.bar',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'Ongr\ElasticsearchBundle\ORM\Repository',
             ],
             [
                 'es.manager.default.color',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'Ongr\ElasticsearchBundle\ORM\Repository',
             ],
             [
                 'es.manager.default.colordocument',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'Ongr\ElasticsearchBundle\ORM\Repository',
             ],
             [
                 'es.manager.default.media',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'Ongr\ElasticsearchBundle\ORM\Repository',
             ],
             [
                 'es.metadata_collector',
-                'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
+                'Ongr\ElasticsearchBundle\Mapping\MetadataCollector',
             ],
         ];
     }
@@ -116,7 +116,7 @@ class ElasticsearchExtensionTest extends WebTestCase
                 'connection' => 'bar',
                 'debug' => false,
                 'readonly' => false,
-                'mappings' => ['ONGRElasticsearchBundle'],
+                'mappings' => ['OngrElasticsearchBundle'],
             ],
             'readonly' => [
                 'connection' => 'default',

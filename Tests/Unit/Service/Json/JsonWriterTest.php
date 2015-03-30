@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\Service\Json;
+namespace Ongr\ElasticsearchBundle\Tests\Unit\Service\Json;
 
-use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
+use Ongr\ElasticsearchBundle\Service\Json\JsonWriter;
 use org\bovigo\vfs\vfsStream;
 
 class JsonWriterTest extends \PHPUnit_Framework_TestCase

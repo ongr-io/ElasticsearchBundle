@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ONGR package.
+ * This file is part of the Ongr package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>
  *
@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\ORM;
+namespace Ongr\ElasticsearchBundle\ORM;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
-use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use ONGR\ElasticsearchBundle\Result\Converter;
+use Ongr\ElasticsearchBundle\Client\Connection;
+use Ongr\ElasticsearchBundle\Document\DocumentInterface;
+use Ongr\ElasticsearchBundle\Mapping\ClassMetadata;
+use Ongr\ElasticsearchBundle\Mapping\ClassMetadataCollection;
+use Ongr\ElasticsearchBundle\Mapping\MetadataCollector;
+use Ongr\ElasticsearchBundle\Result\Converter;
 
 /**
  * Manager class.
