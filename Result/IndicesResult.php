@@ -30,27 +30,39 @@ class IndicesResult
     }
 
     /**
+     * Extract total result from response.
+     *
+     * @param array $indices
+     *
      * @return array
      */
-    public function getTotal()
+    public function getTotal($indices = [])
     {
-        return $this->extract(func_get_args(), 'total');
+        return $this->extract($indices, 'total');
     }
 
     /**
+     * Extract failed result from response.
+     *
+     * @param array $indices
+     *
      * @return array
      */
-    public function getFailed()
+    public function getFailed($indices = [])
     {
-        return $this->extract(func_get_args(), 'failed');
+        return $this->extract($indices, 'failed');
     }
 
     /**
+     * Extract successful result from response.
+     *
+     * @param array $indices
+     *
      * @return array
      */
-    public function getSuccessful()
+    public function getSuccessful($indices = [])
     {
-        return $this->extract(func_get_args(), 'successful');
+        return $this->extract($indices, 'successful');
     }
 
     /**

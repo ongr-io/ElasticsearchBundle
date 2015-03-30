@@ -21,7 +21,7 @@ class IndicesResultTest extends \PHPUnit_Framework_TestCase
     /**
      * IndicesResult test.
      */
-    public function testGetTotalGetSuccesfullGetFailed()
+    public function testGetTotalGetSuccessfulGetFailed()
     {
         $indices = [
             '_indices' => [
@@ -62,8 +62,8 @@ class IndicesResultTest extends \PHPUnit_Framework_TestCase
         $getExpectedIndex = ['ongr-elasticsearch-bundle-default-test' => 5];
         $getExpectedIndexFailed = ['ongr-elasticsearch-bundle-default-test' => 0];
 
-        $getTotalIndex = $indicesResult->getTotal('ongr-elasticsearch-bundle-default-test', 'not_exist');
-        $getFailedIndex = $indicesResult->getFailed('ongr-elasticsearch-bundle-default-test');
+        $getTotalIndex = $indicesResult->getTotal(['ongr-elasticsearch-bundle-default-test', 'not_exist']);
+        $getFailedIndex = $indicesResult->getFailed(['ongr-elasticsearch-bundle-default-test']);
         $this->assertEquals($getExpectedIndex, $getTotalIndex);
         $this->assertEquals($getExpectedIndexFailed, $getFailedIndex);
 
