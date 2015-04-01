@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
+use ONGR\ElasticsearchBundle\DSL\Bool\Bool;
 use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
 use ONGR\ElasticsearchBundle\DSL\Filter\IdsFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
@@ -100,13 +101,15 @@ class BoolFilterTest extends ElasticsearchTestCase
     public function testBoolFilter($mustFilter, $mustNotFilter, $shouldFilter, $parameters, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
         /** @var Search $search */
-        $search = $repo->createSearch()->addFilter($mustFilter, 'must');
-        $search->addFilter($mustNotFilter, 'must_not');
-        $search->addFilter($shouldFilter, 'should');
-        $search->setBoolFilterParameters($parameters);
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
+        $search = $repository
+            ->createSearch()
+            ->addFilter($mustFilter, Bool::MUST)
+            ->addFilter($mustNotFilter, Bool::MUST_NOT)
+            ->addFilter($shouldFilter, Bool::SHOULD)
+            ->setBoolFilterParameters($parameters);
+        $results = $repository->execute($search, Repository::RESULTS_ARRAY);
         sort($results);
         $this->assertEquals($expected, $results);
     }
