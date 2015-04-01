@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
 use ONGR\ElasticsearchBundle\DSL\Sort\AbstractSort;
 use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
 
+/**
+ * Unit test for Sort.
+ */
 class SortTest extends \PHPUnit_Framework_TestCase
 {
     /**

@@ -13,6 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Filter;
 
 use ONGR\ElasticsearchBundle\DSL\Filter\GeohashCellFilter;
 
+/**
+ * Unit test for GeohashCellFilter.
+ */
 class GeohashCellFilterTest extends \PHPUnit_Framework_TestCase
 {
     /**

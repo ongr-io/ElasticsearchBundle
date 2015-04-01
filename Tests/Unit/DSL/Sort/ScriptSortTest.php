@@ -14,6 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Sort;
 use ONGR\ElasticsearchBundle\DSL\Sort\AbstractSort;
 use ONGR\ElasticsearchBundle\DSL\Sort\ScriptSort;
 
+/**
+ * Unit test for ScriptSort.
+ */
 class ScriptSortTest extends \PHPUnit_Framework_TestCase
 {
     /**

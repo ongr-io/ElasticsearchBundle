@@ -16,6 +16,9 @@ use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
 use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
+/**
+ * Unit test for Context.
+ */
 class ContextTest extends \PHPUnit_Framework_TestCase
 {
     use EncapsulationTestAwareTrait;
