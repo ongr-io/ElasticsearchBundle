@@ -156,7 +156,8 @@ class GeoShapeFilterTest extends AbstractElasticsearchTestCase
                 'shape' => [
                     'type' => 'Point',
                     'coordinates' => [
-                        13.400544, 52.530286,
+                        13.400544,
+                        52.530286,
                     ],
                 ],
             ],

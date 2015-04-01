@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 use Doctrine\Common\Inflector\Inflector;
 
 /**
- * Transforms document properties from underscore case to camel case. 
+ * Transforms document properties from underscore case to camel case.
  */
 abstract class AbstractAnnotationCamelizer
 {

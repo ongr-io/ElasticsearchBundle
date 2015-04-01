@@ -85,7 +85,6 @@ class RangeAggregationTest extends ElasticsearchTestCase
         ];
 
         // Case #1 nested range aggregations.
-
         $aggregation2 = [
             'name' => 'test_agg',
             'field' => 'price',

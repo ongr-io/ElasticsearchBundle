@@ -72,16 +72,14 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
             ],
             $stub,
             [
-                'price' =>
-                    [
-                        'propertyName' => 'price',
-                        'type' => 'float',
-                    ],
-                'highlight' =>
-                    [
-                        'propertyName' => 'highlight',
-                        'type' => 'DocumentHighlight',
-                    ],
+                'price' => [
+                    'propertyName' => 'price',
+                    'type' => 'float',
+                ],
+                'highlight' => [
+                    'propertyName' => 'highlight',
+                    'type' => 'DocumentHighlight',
+                ],
             ]
         );
     }

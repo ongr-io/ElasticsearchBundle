@@ -87,7 +87,6 @@ class OptionIterator implements \ArrayAccess, \Iterator
     }
 
     // Methods below implements \Iterator interface.
-
     /**
      * {@inheritdoc}
      */
