@@ -14,6 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL\Sort;
 use ONGR\ElasticsearchBundle\DSL\Sort\AbstractSort;
 use ONGR\ElasticsearchBundle\DSL\Sort\GeoSort;
 
+/**
+ * Unit test for GeoSort.
+ */
 class GeoSortTest extends \PHPUnit_Framework_TestCase
 {
     /**

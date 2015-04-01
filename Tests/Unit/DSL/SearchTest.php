@@ -14,6 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\DSL;
 use ONGR\ElasticsearchBundle\DSL\Search;
 use ONGR\ElasticsearchBundle\DSL\Sort\AbstractSort;
 
+/**
+ * Unit test for Search.
+ */
 class SearchTest extends \PHPUnit_Framework_TestCase
 {
     /**

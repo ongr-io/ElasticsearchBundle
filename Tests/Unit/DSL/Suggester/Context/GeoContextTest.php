@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\DSL\Suggester\Context\CategoryContext;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context\GeoContext;
 use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
+/**
+ * Unit test for GeoContext.
+ */
 class GeoContextTest extends \PHPUnit_Framework_TestCase
 {
     use EncapsulationTestAwareTrait;
