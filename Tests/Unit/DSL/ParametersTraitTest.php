@@ -21,14 +21,14 @@ class ParametersTraitTest extends \PHPUnit_Framework_TestCase
     /**
      * @var ParametersTrait
      */
-    private $mock;
+    private $parametersTraitMock;
 
     /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-        $this->mock = $this->getMockForTrait('ONGR\ElasticsearchBundle\DSL\ParametersTrait');
+        $this->parametersTraitMock = $this->getMockForTrait('ONGR\ElasticsearchBundle\DSL\ParametersTrait');
     }
 
     /**
@@ -36,9 +36,9 @@ class ParametersTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetParameter()
     {
-        $this->assertFalse($this->mock->getParameter('unavailable_parameter'));
-        $this->mock->addParameter('available_parameter', 123);
-        $this->assertEquals(123, $this->mock->getParameter('available_parameter'));
+        $this->assertFalse($this->parametersTraitMock->getParameter('unavailable_parameter'));
+        $this->parametersTraitMock->addParameter('available_parameter', 123);
+        $this->assertEquals(123, $this->parametersTraitMock->getParameter('available_parameter'));
     }
 
     /**
@@ -46,9 +46,9 @@ class ParametersTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddParameter()
     {
-        $this->mock->addParameter('available_parameter', 123);
-        $this->assertEquals(123, $this->mock->getParameter('available_parameter'));
-        $this->mock->addParameter('available_parameter', 321);
-        $this->assertEquals(123, $this->mock->getParameter('available_parameter'));
+        $this->parametersTraitMock->addParameter('available_parameter', 123);
+        $this->assertEquals(123, $this->parametersTraitMock->getParameter('available_parameter'));
+        $this->parametersTraitMock->addParameter('available_parameter', 321);
+        $this->assertEquals(123, $this->parametersTraitMock->getParameter('available_parameter'));
     }
 }

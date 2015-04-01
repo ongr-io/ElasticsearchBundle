@@ -24,18 +24,18 @@ class IndicesQueryTest extends \PHPUnit_Framework_TestCase
      */
     public function getArrayWithManyIndicesDataProvider()
     {
-        $mockQuery = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Query\Query')
+        $queryMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Query\Query')
             ->getMock();
-        $mockQuery->expects($this->any())
+        $queryMock->expects($this->any())
             ->method('toArray')
             ->willReturn(['testKey' => 'testValue']);
-        $mockQuery->expects($this->any())
+        $queryMock->expects($this->any())
             ->method('getType')
             ->willReturn('testType');
 
         return [
             [
-                $mockQuery,
+                $queryMock,
                 [
                     'test_indice1',
                     'test_indice2',

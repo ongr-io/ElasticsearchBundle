@@ -20,14 +20,14 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetBoolParameters()
     {
-        $missingFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
+        $missingFilterMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
             ->setConstructorArgs(['test_field'])
             ->getMock();
-        $missingFilter->expects($this->once())
+        $missingFilterMock->expects($this->once())
             ->method('setParameters');
 
         $query = new Query();
-        $query->setQuery($missingFilter);
+        $query->setQuery($missingFilterMock);
         $query->setBoolParameters([false]);
     }
 
@@ -36,20 +36,20 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddQuery()
     {
-        $missingFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
+        $missingFilterMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
             ->disableOriginalConstructor()
             ->setMethods(['addToBool'])
             ->getMock();
-        $missingFilter->expects($this->once())
+        $missingFilterMock->expects($this->once())
             ->method('addToBool')
             ->withAnyParameters();
-        $postFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\PostFilter')
+        $postFilterMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\PostFilter')
             ->disableOriginalConstructor()
             ->getMock();
 
         $query = new Query();
-        $query->setQuery($missingFilter);
-        $query->addQuery($postFilter);
+        $query->setQuery($missingFilterMock);
+        $query->addQuery($postFilterMock);
     }
 
     /**
@@ -66,18 +66,18 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArray()
     {
-        $missingFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
+        $missingFilterMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
             ->disableOriginalConstructor()
             ->getMock();
-        $missingFilter->expects($this->once())
+        $missingFilterMock->expects($this->once())
             ->method('getType')
             ->willReturn('test_type');
-        $missingFilter->expects($this->once())
+        $missingFilterMock->expects($this->once())
             ->method('toArray')
             ->willReturn('test_array');
 
         $query = new Query();
-        $query->setQuery($missingFilter);
+        $query->setQuery($missingFilterMock);
         $this->assertEquals(['test_type' => 'test_array'], $query->toArray());
     }
 }

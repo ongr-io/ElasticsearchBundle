@@ -20,13 +20,13 @@ class NestedQueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArray()
     {
-        $missingFilter = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
+        $missingFilterMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter')
             ->setConstructorArgs(['test_field'])
             ->getMock();
-        $missingFilter->expects($this->any())
+        $missingFilterMock->expects($this->any())
             ->method('getType')
             ->willReturn('test_type');
-        $missingFilter->expects($this->any())
+        $missingFilterMock->expects($this->any())
             ->method('toArray')
             ->willReturn(['testKey' => 'testValue']);
 
@@ -37,7 +37,7 @@ class NestedQueryTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $query = new NestedQuery('test_path', $missingFilter);
+        $query = new NestedQuery('test_path', $missingFilterMock);
         $this->assertEquals($result, $query->toArray());
     }
 }

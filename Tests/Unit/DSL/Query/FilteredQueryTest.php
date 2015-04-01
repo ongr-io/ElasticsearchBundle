@@ -60,8 +60,8 @@ class FilteredQueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArray($parameter, $expected)
     {
-        $query = new FilteredQuery($parameter);
-        $result = $query->toArray();
+        $filteredQuery = new FilteredQuery($parameter);
+        $result = $filteredQuery->toArray();
         $this->assertEquals($expected, $result);
     }
 
@@ -70,8 +70,8 @@ class FilteredQueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetType()
     {
-        $query = new FilteredQuery();
-        $this->assertEquals('filtered', $query->getType());
+        $filteredQuery = new FilteredQuery();
+        $this->assertEquals('filtered', $filteredQuery->getType());
     }
 
     /**
@@ -103,7 +103,7 @@ class FilteredQueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetQueryWithoutQuery()
     {
-        $query = new FilteredQuery();
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\DSL\Query\Query', $query->getQuery());
+        $filteredQuery = new FilteredQuery();
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\DSL\Query\Query', $filteredQuery->getQuery());
     }
 }
