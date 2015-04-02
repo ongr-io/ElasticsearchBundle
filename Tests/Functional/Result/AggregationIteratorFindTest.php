@@ -11,10 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\StatsAggregation;
+use ONGR\ElasticsearchBundle\DSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
-use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class AggregationIteratorFindTest extends ElasticsearchTestCase
@@ -64,46 +63,67 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
                 'key' => 'weak',
                 'doc_count' => 2,
                 'agg_test_agg_2' => [
-                    'count' => 2,
-                    'min' => 15.1,
-                    'max' => 32.0,
-                    'avg' => 23.6,
-                    'sum' => 47.1,
+                    'buckets' => [
+                        [
+                            'key' => '*-20.0',
+                            'to' => 20.0,
+                            'to_as_string' => '20.0',
+                            'doc_count' => 1,
+                        ],
+                        [
+                            'key' => '20.0-*',
+                            'from' => 20.0,
+                            'from_as_string' => '20.0',
+                            'doc_count' => 1,
+                        ],
+                    ],
                 ],
             ],
             [
                 'key' => 'solid',
                 'doc_count' => 1,
                 'agg_test_agg_2' => [
-                    'count' => 1,
-                    'min' => 10.45,
-                    'max' => 10.45,
-                    'avg' => 10.45,
-                    'sum' => 10.45,
+                    'buckets' => [
+                        [
+                            'key' => '*-20.0',
+                            'to' => 20.0,
+                            'to_as_string' => '20.0',
+                            'doc_count' => 1,
+                        ],
+                        [
+                            'key' => '20.0-*',
+                            'from' => 20.0,
+                            'from_as_string' => '20.0',
+                            'doc_count' => 0,
+                        ],
+                    ],
                 ],
             ],
         ];
 
-        $expected = new AggregationIterator($rawData);
-
         $out[] = [
             'test_agg',
-            $expected,
+            new AggregationIterator($rawData),
         ];
 
         $rawData = [
-            'count' => 2,
-            'min' => 15.1,
-            'max' => 32.0,
-            'avg' => 23.6,
-            'sum' => 47.1,
+            [
+                'key' => '*-20.0',
+                'to' => 20.0,
+                'to_as_string' => '20.0',
+                'doc_count' => 1,
+            ],
+            [
+                'key' => '20.0-*',
+                'from' => 20.0,
+                'from_as_string' => '20.0',
+                'doc_count' => 1,
+            ],
         ];
-
-        $expected = new ValueAggregation($rawData);
 
         $out[] = [
             'test_agg.0.test_agg_2',
-            $expected,
+            new AggregationIterator($rawData),
         ];
 
         return $out;
@@ -119,10 +139,13 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
      */
     public function testIteration($path, $expected)
     {
-        $aggregation = $this->buildAggregation();
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $search = $repo->createSearch()->addAggregation($aggregation);
-        $results = $repo->execute($search);
+        $repository = $this
+            ->getManager()
+            ->getRepository('AcmeTestBundle:Product');
+        $search = $repository
+            ->createSearch()
+            ->addAggregation($this->buildAggregation());
+        $results = $repository->execute($search);
         $result = $results->getAggregations()->find($path);
 
         $this->assertEquals($expected, $result, '', 0.1);
@@ -137,8 +160,10 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
     {
         $aggregation = new TermsAggregation('test_agg');
         $aggregation->setField('description');
-        $aggregation2 = new StatsAggregation('test_agg_2');
+        $aggregation2 = new RangeAggregation('test_agg_2');
         $aggregation2->setField('price');
+        $aggregation2->addRange(null, 20);
+        $aggregation2->addRange(20, null);
         $aggregation->addAggregation($aggregation2);
 
         return $aggregation;
