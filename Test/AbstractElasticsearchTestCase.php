@@ -106,12 +106,14 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * Ignores versions specified.
      *
-     * Returns two dimensional array, first item in sub array is version to ignore, second is comparator.
+     * Returns two dimensional array, first item in sub array is version to ignore, second is comparator,
+     * last test name. If no test name is provided it will be used on all test class.
+     *
      * Comparator types can be found in `version_compare` documentation.
      *
      * Example: [
      *   ['1.2.7', '<='],
-     *   ['1.2.9', '==']
+     *   ['1.2.9', '==', 'testSmth']
      * ]
      *
      * @return array
@@ -129,12 +131,22 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     protected function ignoreVersions(Connection $connection)
     {
         $currentVersion = $connection->getVersionNumber();
-        foreach ($this->getIgnoredVersions() as $ignoredVersion) {
-            if (version_compare($currentVersion, $ignoredVersion[0], $ignoredVersion[1])) {
-                $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
+        $ignore = null;
 
-                return;
+        foreach ($this->getIgnoredVersions() as $ignoredVersion) {
+            if (version_compare($currentVersion, $ignoredVersion[0], $ignoredVersion[1]) === true) {
+                $ignore = true;
+                if (isset($ignoredVersion[2])) {
+                    if ($ignoredVersion[2] === $this->getName()) {
+                        break;
+                    }
+                    $ignore = false;
+                }
             }
+        }
+
+        if ($ignore === true) {
+            $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
         }
     }
 
