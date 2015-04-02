@@ -16,6 +16,7 @@ use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
+use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
@@ -77,6 +78,21 @@ class RepositoryTest extends ElasticsearchTestCase
                         '_id' => 4,
                         'title' => 'tuna',
                         'description' => 'tuna bar Loremo Batman',
+                    ],
+                ],
+                'color' => [
+                    [
+                        '_id' => 1,
+                        'enabled_cdn' => [
+                            [
+                                'cdn_url' => 'foo',
+                            ],
+                        ],
+                        'disabled_cdn' => [
+                            [
+                                'cdn_url' => 'foo',
+                            ],
+                        ],
                     ],
                 ],
             ],
@@ -629,5 +645,27 @@ class RepositoryTest extends ElasticsearchTestCase
         $search = $repository->createSearch()->addQuery($all);
         $results = $repository->execute($search)->count();
         $this->assertEquals(2, $results);
+    }
+
+    /**
+     * Tests finding object with enabled property set to false.
+     */
+    public function testFindWithDisabledProperty()
+    {
+        $repository = $this
+            ->getManager()
+            ->getRepository('AcmeTestBundle:Color');
+
+        $search = $repository
+            ->createSearch()
+            ->addQuery(new TermQuery('disabled_cdn.cdn_url', 'foo'));
+
+        $this->assertCount(0, $repository->execute($search));
+
+        $search = $repository
+            ->createSearch()
+            ->addQuery(new TermQuery('enabled_cdn.cdn_url', 'foo'));
+
+        $this->assertCount(1, $repository->execute($search));
     }
 }
