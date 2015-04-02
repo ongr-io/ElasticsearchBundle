@@ -109,12 +109,14 @@ class BoolTestWithMatchQueryAndLimitFilterTest extends ElasticsearchTestCase
     public function testBoolWithMatchQueryAndLimitFilter($query, $limit, $expected)
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $matchQuery = new MatchQuery('description', $query);
-        $limitFilter = new LimitFilter($limit);
-        $search = $repo->createSearch()->addQuery($matchQuery);
-        $search->addFilter($limitFilter);
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
+        $repository = $this
+            ->getManager()
+            ->getRepository('AcmeTestBundle:Product');
+        $search = $repository
+            ->createSearch()
+            ->addQuery(new MatchQuery('description', $query))
+            ->addFilter(new LimitFilter($limit));
+        $results = $repository->execute($search, Repository::RESULTS_ARRAY);
 
         sort($results);
         sort($expected);

@@ -317,13 +317,13 @@ class RepositoryTest extends ElasticsearchTestCase
      */
     public function testRepositoryExecuteWhenZeroResult()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $search = $repo->createSearch();
-        $search->addFilter(new PrefixFilter('title', 'dummy'));
+        $search = $repository
+            ->createSearch()
+            ->addFilter(new PrefixFilter('title', 'dummy'));
 
-        $searchResult = $repo->execute($search, Repository::RESULTS_OBJECT);
+        $searchResult = $repository->execute($search, Repository::RESULTS_OBJECT);
         $this->assertInstanceOf(
             '\ONGR\ElasticsearchBundle\Result\DocumentIterator',
             $searchResult
@@ -575,8 +575,9 @@ class RepositoryTest extends ElasticsearchTestCase
             ->addQuery($matchAllQuery);
 
         $repository->execute($search);
-        $this->assertArrayHasKey($matchAllQuery->getType(), $search->getQueries());
-        $this->assertEquals(1, count($search->getQueries()));
+        $builder = $search->getQuery();
+        $this->assertNotInstanceOf('ONGR\ElasticsearchBundle\DSL\Bool\Bool', $builder, 'Query should not be bool.');
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery', $builder, 'Query should be same.');
     }
 
     /**

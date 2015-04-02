@@ -90,7 +90,9 @@ class CompletionTest extends ElasticsearchTestCase
             ->getManager('default', true, $this->getCustomMapping())
             ->getRepository('AcmeTestBundle:Product');
 
-        $search = $repository->createSearch()->addSuggester($completion);
+        $search = $repository
+            ->createSearch()
+            ->addSuggester($completion);
         $result = $repository->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('score', $result['suggest']['description-completion'][0]['options'][0]);
