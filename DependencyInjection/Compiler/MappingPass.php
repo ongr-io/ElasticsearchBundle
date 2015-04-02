@@ -47,6 +47,7 @@ class MappingPass implements CompilerPassInterface
                 [
                     $this->getConnectionDefinition($container, $connections, $settings),
                     $classMetadataCollection,
+                    new Reference('event_dispatcher'),
                 ]
             );
 

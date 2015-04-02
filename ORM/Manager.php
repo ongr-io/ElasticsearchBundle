@@ -13,10 +13,13 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchEvent;
+use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Manager class.
@@ -39,13 +42,20 @@ class Manager
     private $converter;
 
     /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
+
+    /**
      * @param Connection              $connection
      * @param ClassMetadataCollection $classMetadataCollection
+     * @param EventDispatcher         $eventDispatcher
      */
-    public function __construct($connection, $classMetadataCollection)
+    public function __construct($connection, $classMetadataCollection, $eventDispatcher)
     {
         $this->connection = $connection;
         $this->classMetadataCollection = $classMetadataCollection;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -91,17 +101,19 @@ class Manager
     /**
      * Adds document to next flush.
      *
-     * @param DocumentInterface $object
+     * @param DocumentInterface $document
      */
-    public function persist(DocumentInterface $object)
+    public function persist(DocumentInterface $document)
     {
-        $mapping = $this->getDocumentMapping($object);
-        $document = $this->getConverter()->convertToArray($object);
+        $this->eventDispatcher->dispatch(Events::PRE_PERSIST, new ElasticsearchEvent($document));
+
+        $mapping = $this->getDocumentMapping($document);
+        $documentArray = $this->getConverter()->convertToArray($document);
 
         $this->getConnection()->bulk(
             'index',
             $mapping->getType(),
-            $document
+            $documentArray
         );
     }
 
