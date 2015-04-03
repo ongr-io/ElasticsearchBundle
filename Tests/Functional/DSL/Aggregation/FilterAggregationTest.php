@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
 use ONGR\ElasticsearchBundle\DSL\Aggregation\FilterAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\StatsAggregation;
+use ONGR\ElasticsearchBundle\DSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchBundle\DSL\Filter\RegexpFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
@@ -74,19 +74,25 @@ class FilterAggregationTest extends ElasticsearchTestCase
         $filter = new RegexpFilter('title', 'pizza');
         $aggregation->setFilter($filter);
 
-        $aggregation2 = new StatsAggregation('test_agg_2');
+        $aggregation2 = new RangeAggregation('test_agg_2');
         $aggregation2->setField('price');
+        $aggregation2->addRange(10, 20);
         $aggregation->addAggregation($aggregation2);
 
         $result = [
             'agg_test_agg' => [
                 'doc_count' => 1,
                 'agg_test_agg_2' => [
-                    'count' => 1,
-                    'min' => 15.10,
-                    'max' => 15.10,
-                    'avg' => 15.10,
-                    'sum' => 15.10,
+                    'buckets' => [
+                        [
+                            'key' => '10.0-20.0',
+                            'from' => 10,
+                            'from_as_string' => '10.0',
+                            'to' => 20,
+                            'to_as_string' => '20.0',
+                            'doc_count' => 1,
+                        ],
+                    ],
                 ],
             ],
         ];

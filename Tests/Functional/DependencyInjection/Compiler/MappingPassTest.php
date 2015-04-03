@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection\Compiler
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Check if mapping is loaded as expected.
  */
-class MappingPassTest extends WebTestCase
+class MappingPassTest extends AbstractElasticsearchTestCase
 {
     /**
      * Tests if mapping is gathered correctly.
