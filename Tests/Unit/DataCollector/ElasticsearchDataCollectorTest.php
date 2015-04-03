@@ -13,6 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\DataCollector;
 
 use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
 
+/**
+ * Unit tests for ElasticsearchDataCollector class.
+ */
 class ElasticsearchDataCollectorTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -22,5 +25,20 @@ class ElasticsearchDataCollectorTest extends \PHPUnit_Framework_TestCase
     {
         $collector = new ElasticsearchDataCollector();
         $this->assertEquals('es', $collector->getName());
+    }
+
+    /**
+     * Tests getManagers method.
+     */
+    public function testGetManagers()
+    {
+        $collector = new ElasticsearchDataCollector();
+        $collector->setManagers([ 'default' => [], 'testManager' => [] ]);
+
+        $result = $collector->getManagers();
+        $this->assertEquals(
+            [ 'default' => 'es.manager', 'testManager' => 'es.manager.testManager' ],
+            $result
+        );
     }
 }
