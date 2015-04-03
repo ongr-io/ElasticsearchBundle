@@ -25,7 +25,12 @@ abstract class AbstractProperty extends AbstractAnnotationCamelizer implements D
     public function dump(array $exclude = [])
     {
         $array = array_diff_key(
-            array_filter(get_object_vars($this)),
+            array_filter(
+                get_object_vars($this),
+                function ($value) {
+                    return $value || is_bool($value);
+                }
+            ),
             array_flip(array_merge(['name', 'objectName', 'multiple'], $exclude))
         );
 

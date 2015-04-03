@@ -23,4 +23,28 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  */
 class ColorDocument extends AbstractDocument
 {
+    /**
+     * @var CdnObject[]
+     *
+     * @ES\Property(
+     *      type="object",
+     *      name="disabled_cdn",
+     *      enabled=false,
+     *      multiple=true,
+     *      objectName="AcmeTestBundle:CdnObject"
+     * )
+     */
+    public $disabledCdn;
+
+    /**
+     * @var CdnObject[]
+     *
+     * @ES\Property(
+     *      type="object",
+     *      name="enabled_cdn",
+     *      multiple=true,
+     *      objectName="AcmeTestBundle:CdnObject"
+     * )
+     */
+    public $enabledCdn;
 }

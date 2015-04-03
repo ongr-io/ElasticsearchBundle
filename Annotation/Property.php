@@ -66,6 +66,11 @@ final class Property extends AbstractProperty
     public $payloads;
 
     /**
+     * @var bool
+     */
+    public $enabled;
+
+    /**
      * @var array<\ONGR\ElasticsearchBundle\Annotation\MultiField>
      */
     public $fields;
