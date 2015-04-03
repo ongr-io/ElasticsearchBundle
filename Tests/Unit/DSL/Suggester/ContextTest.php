@@ -16,6 +16,9 @@ use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
 use ONGR\ElasticsearchBundle\Test\EncapsulationTestAwareTrait;
 
+/**
+ * Unit test for Context.
+ */
 class ContextTest extends \PHPUnit_Framework_TestCase
 {
     use EncapsulationTestAwareTrait;
@@ -29,7 +32,8 @@ class ContextTest extends \PHPUnit_Framework_TestCase
 
         $context = new Context('', '', $name);
         $context->setSize(123);
-        $context->setContext(new Phrase('', ''));
+        $context->setContext([]);
+        $context->addContext(new Context\CategoryContext('', ''));
 
         $result = $context->toArray();
 
