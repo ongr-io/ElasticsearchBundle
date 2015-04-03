@@ -45,7 +45,6 @@ Add minimal configuration for Elasticsearch bundle.
             default:
                 hosts:
                     - { host: 127.0.0.1:9200 }
-                    - { host: 10.0.0.1:9200 }
                 index_name: acme
                 settings:
                     refresh_interval: -1
