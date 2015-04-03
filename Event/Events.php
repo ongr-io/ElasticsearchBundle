@@ -22,4 +22,25 @@ final class Events
      * The event listener receives an ElasticsearchEvent instance.
      */
     const PRE_PERSIST = 'es.pre_persist';
+
+    /**
+     * Event dispatched after any document is persisted.
+     *
+     * The event listener receives an ElasticsearchEvent instance.
+     */
+    const POST_PERSIST = 'es.post_persist';
+
+    /**
+     * Event dispatched before data are commited.
+     *
+     * The event listener receives an Event instance.
+     */
+    const PRE_COMMIT = 'es.pre_commit';
+
+    /**
+     * Event dispatched after data are commited.
+     *
+     * The event listener receives an Event instance.
+     */
+    const POST_COMMIT = 'es.post_commit';
 }

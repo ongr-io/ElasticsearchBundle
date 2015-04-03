@@ -19,6 +19,7 @@ use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -115,6 +116,8 @@ class Manager
             $mapping->getType(),
             $documentArray
         );
+
+        $this->eventDispatcher->dispatch(Events::POST_PERSIST, new ElasticsearchEvent($document));
     }
 
     /**
@@ -122,7 +125,9 @@ class Manager
      */
     public function commit()
     {
+        $this->eventDispatcher->dispatch(Events::PRE_COMMIT, new Event());
         $this->getConnection()->commit();
+        $this->eventDispatcher->dispatch(Events::POST_COMMIT, new Event());
     }
 
     /**
