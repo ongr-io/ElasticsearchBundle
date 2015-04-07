@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Event;
 
+use ONGR\ElasticsearchBundle\Client\Connection;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchDocumentEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Event\ElasticsearchEvent;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -24,18 +26,39 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class ElasticsearchEventTest extends AbstractElasticsearchTestCase
 {
     /**
-     * Tests if ElasticsearchEvent is dispatched before document is persisted.
+     * Data provider for testPersistEventDispatch().
+     *
+     * @return array
      */
-    public function testPrePersistEventDispatch()
+    public function getTestPersistEventDispatchData()
+    {
+        return [
+            [Events::PRE_PERSIST],
+            [Events::POST_PERSIST],
+        ];
+    }
+
+    /**
+     * Tests if ElasticsearchDocumentEvent is dispatched before/after document is persisted.
+     *
+     * @param string $eventName
+     *
+     * @dataProvider getTestPersistEventDispatchData
+     */
+    public function testPersistEventDispatch($eventName)
     {
         /** @var string $productTitle */
         $productTitle = '';
 
+        /** @var Connection $connection */
+        $connection = null;
+
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = $this->getContainer()->get('event_dispatcher');
         $eventDispatcher->addListener(
-            Events::PRE_PERSIST,
-            function (ElasticsearchEvent $event) use (&$productTitle) {
+            $eventName,
+            function (ElasticsearchDocumentEvent $event) use (&$connection, &$productTitle) {
+                $connection = $event->getConnection();
                 $productTitle = $event->getDocument()->title;
             }
         );
@@ -45,50 +68,54 @@ class ElasticsearchEventTest extends AbstractElasticsearchTestCase
 
         /** @var Manager $manager */
         $manager = $this->getManager();
+        $manager->setEventDispatcher($this->getContainer()->get('event_dispatcher'));
         $manager->persist($product);
 
-        $this->assertEquals('Test product', $productTitle);
-    }
-
-    /**
-     * Tests if ElasticsearchEvent is dispatched after document is persisted.
-     */
-    public function testPostPersistEventDispatch()
-    {
-        /** @var string $productTitle */
-        $productTitle = '';
-
-        /** @var EventDispatcher $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
-        $eventDispatcher->addListener(
-            Events::POST_PERSIST,
-            function (ElasticsearchEvent $event) use (&$productTitle) {
-                $productTitle = $event->getDocument()->title;
-            }
+        $this->assertInstanceOf(
+            'ONGR\ElasticsearchBundle\Client\Connection',
+            $connection,
+            'Connection passed to the event must be instance of Connection class.'
         );
-
-        $product = new Product();
-        $product->title = 'Test product';
-
-        /** @var Manager $manager */
-        $manager = $this->getManager();
-        $manager->persist($product);
-
-        $this->assertEquals('Test product', $productTitle);
+        $this->assertEquals(
+            'Test product',
+            $productTitle,
+            'Document passed to the event must be the same as the persisting document.'
+        );
     }
 
     /**
-     * Tests if Event is dispatched before data are commited.
+     * Data provider for testCommitEventDispatch().
+     *
+     * @return array
      */
-    public function testPreCommitEventDispatch()
+    public function getTestCommitEventDispatchData()
+    {
+        return [
+            [Events::PRE_COMMIT],
+            [Events::POST_COMMIT],
+        ];
+    }
+
+    /**
+     * Tests if ElasticsearchEvent is dispatched before/after data are commited.
+     *
+     * @param string $eventName
+     *
+     * @dataProvider getTestCommitEventDispatchData
+     */
+    public function testCommitEventDispatch($eventName)
     {
         $eventDispatched = false;
 
+        /** @var Connection $connection */
+        $connection = null;
+
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = $this->getContainer()->get('event_dispatcher');
         $eventDispatcher->addListener(
-            Events::PRE_COMMIT,
-            function () use (&$eventDispatched) {
+            $eventName,
+            function (ElasticsearchEvent $event) use (&$connection, &$eventDispatched) {
+                $connection = $event->getConnection();
                 $eventDispatched = true;
             }
         );
@@ -98,38 +125,16 @@ class ElasticsearchEventTest extends AbstractElasticsearchTestCase
 
         /** @var Manager $manager */
         $manager = $this->getManager();
+        $manager->setEventDispatcher($this->getContainer()->get('event_dispatcher'));
         $manager->persist($product);
 
-        $this->assertFalse($eventDispatched, 'PreCommit event should have not been dispatched yet.');
+        $this->assertFalse($eventDispatched, 'Event should have not been dispatched yet.');
         $manager->commit();
-        $this->assertTrue($eventDispatched, 'PreCommit event should have been already dispatched.');
-    }
-
-    /**
-     * Tests if Event is dispatched after data are commited.
-     */
-    public function testPostCommitEventDispatch()
-    {
-        $eventDispatched = false;
-
-        /** @var EventDispatcher $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
-        $eventDispatcher->addListener(
-            Events::POST_COMMIT,
-            function () use (&$eventDispatched) {
-                $eventDispatched = true;
-            }
+        $this->assertTrue($eventDispatched, 'Event should have been already dispatched.');
+        $this->assertInstanceOf(
+            'ONGR\ElasticsearchBundle\Client\Connection',
+            $connection,
+            'Connection passed to the event must be instance of Connection class.'
         );
-
-        $product = new Product();
-        $product->title = 'Test product';
-
-        /** @var Manager $manager */
-        $manager = $this->getManager();
-        $manager->persist($product);
-
-        $this->assertFalse($eventDispatched, 'PostCommit event should have not been dispatched yet.');
-        $manager->commit();
-        $this->assertTrue($eventDispatched, 'PostCommit event should have been already dispatched.');
     }
 }

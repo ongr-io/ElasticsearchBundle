@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Event;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Client\Connection;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -20,25 +20,25 @@ use Symfony\Component\EventDispatcher\Event;
 class ElasticsearchEvent extends Event
 {
     /**
-     * @var DocumentInterface
+     * @var Connection
      */
-    protected $document;
+    protected $connection;
 
     /**
-     * @param DocumentInterface $document
+     * @param Connection $connection
      */
-    public function __construct(DocumentInterface $document)
+    public function __construct(Connection $connection)
     {
-        $this->document = $document;
+        $this->connection = $connection;
     }
 
     /**
-     * Returns document associated with the event.
+     * Returns connection associated with the event.
      *
-     * @return DocumentInterface
+     * @return Connection
      */
-    public function getDocument()
+    public function getConnection()
     {
-        return $this->document;
+        return $this->connection;
     }
 }

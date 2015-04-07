@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchDocumentEvent;
 use ONGR\ElasticsearchBundle\Event\ElasticsearchEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
@@ -50,13 +51,11 @@ class Manager
     /**
      * @param Connection              $connection
      * @param ClassMetadataCollection $classMetadataCollection
-     * @param EventDispatcher         $eventDispatcher
      */
-    public function __construct($connection, $classMetadataCollection, $eventDispatcher)
+    public function __construct($connection, $classMetadataCollection)
     {
         $this->connection = $connection;
         $this->classMetadataCollection = $classMetadataCollection;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -67,6 +66,14 @@ class Manager
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    /**
+     * @param EventDispatcher $eventDispatcher
+     */
+    public function setEventDispatcher($eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -106,7 +113,10 @@ class Manager
      */
     public function persist(DocumentInterface $document)
     {
-        $this->eventDispatcher->dispatch(Events::PRE_PERSIST, new ElasticsearchEvent($document));
+        $this->dispatchEvent(
+            Events::PRE_PERSIST,
+            new ElasticsearchDocumentEvent($this->getConnection(), $document)
+        );
 
         $mapping = $this->getDocumentMapping($document);
         $documentArray = $this->getConverter()->convertToArray($document);
@@ -117,7 +127,10 @@ class Manager
             $documentArray
         );
 
-        $this->eventDispatcher->dispatch(Events::POST_PERSIST, new ElasticsearchEvent($document));
+        $this->dispatchEvent(
+            Events::POST_PERSIST,
+            new ElasticsearchDocumentEvent($this->getConnection(), $document)
+        );
     }
 
     /**
@@ -125,9 +138,17 @@ class Manager
      */
     public function commit()
     {
-        $this->eventDispatcher->dispatch(Events::PRE_COMMIT, new Event());
+        $this->dispatchEvent(
+            Events::PRE_COMMIT,
+            new ElasticsearchEvent($this->getConnection())
+        );
+
         $this->getConnection()->commit();
-        $this->eventDispatcher->dispatch(Events::POST_COMMIT, new Event());
+
+        $this->dispatchEvent(
+            Events::POST_COMMIT,
+            new ElasticsearchEvent($this->getConnection())
+        );
     }
 
     /**
@@ -222,5 +243,18 @@ class Manager
         }
 
         return $this->converter;
+    }
+
+    /**
+     * Dispatches an event, if eventDispatcher is set.
+     *
+     * @param string $eventName
+     * @param Event  $event
+     */
+    private function dispatchEvent($eventName, Event $event)
+    {
+        if ($this->eventDispatcher != null) {
+            $this->eventDispatcher->dispatch($eventName, $event);
+        }
     }
 }
