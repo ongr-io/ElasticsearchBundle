@@ -29,6 +29,8 @@ install:
   - wget -q -O conf.py https://raw.githubusercontent.com/ongr-io/docs-aggregator/master/source/conf-travis.py
 
 before_script:
+  - if [[ $TRAVIS_PHP_VERSION = 5.6 && $ELASTICSEARCH = 1.4.4 ]]; then COVERAGE_NEEDED=true; else COVERAGE_NEEDED=false; fi
+  - if [[ $COVERAGE_NEEDED = false ]]; then phpenv config-rm xdebug.ini || true; fi
   - composer install --no-interaction
 
 script:
@@ -37,9 +39,12 @@ script:
   - sphinx-build -nWq -b html -c . Resources/doc _build/html
 
 after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && wget --post-data="" -q -O /dev/null http://readthedocs.org/build/ongr'
+  - >
+    if [[ $COVERAGE_NEEDED = true ]]; then
+        wget https://scrutinizer-ci.com/ocular.phar;
+        php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
+    fi
 
 notifications:
   slack: ongr:oyJ6inOcsttTBsnkuHV6dWbT
