@@ -33,7 +33,7 @@ before_script:
 
 script:
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
-  - vendor/bin/phpcs -p --standard=$TRAVIS_BUILD_DIR/vendor/ongr/ongr-strict-standard/ONGR --ignore=vendor/,Tests/app/,Test/ElasticsearchTestCase.php ./
+  - vendor/bin/phpcs -p --standard=$TRAVIS_BUILD_DIR/vendor/ongr/ongr-strict-standard/Ongr --ignore=vendor/,Tests/app/,Test/ElasticsearchTestCase.php ./
   - sphinx-build -nWq -b html -c . Resources/doc _build/html
 
 after_script:

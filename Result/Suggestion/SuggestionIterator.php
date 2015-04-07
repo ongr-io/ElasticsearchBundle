@@ -82,7 +82,6 @@ class SuggestionIterator implements \ArrayAccess, \Iterator
     }
 
     // Methods below implements \Iterator interface.
-
     /**
      * {@inheritdoc}
      */

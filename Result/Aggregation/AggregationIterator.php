@@ -47,7 +47,6 @@ class AggregationIterator implements \ArrayAccess, \Iterator
     }
 
     // Methods below implements \ArrayAccess interface.
-
     /**
      * {@inheritdoc}
      */
@@ -108,7 +107,6 @@ class AggregationIterator implements \ArrayAccess, \Iterator
     }
 
     // Methods below implements \Iterator interface.
-
     /**
      * {@inheritdoc}
      */

@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
  * Annotation used inherit properties during the parsing process.
- * 
+ *
  * @Annotation
  * @Target("CLASS")
  */

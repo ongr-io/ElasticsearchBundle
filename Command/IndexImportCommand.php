@@ -54,7 +54,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
     {
         $manager = $this->getManager($input->getOption('manager'));
 
-        /* @var ImportService $importService */
+        /** @var ImportService $importService */
         $importService = $this->getContainer()->get('es.import');
         $importService->importIndex(
             $manager,

@@ -1,6 +1,6 @@
 <?php
 
- /*
+/*
  * This file is part of the ONGR package.
  *
  * (c) NFQ Technologies UAB <info@nfq.com>

@@ -104,8 +104,11 @@ class MappingPass implements CompilerPassInterface
                 $metadataDefinition = new Definition('ONGR\ElasticsearchBundle\Mapping\ClassMetadata');
                 $metadataDefinition->addArgument([$repository => $metadata]);
 
-                $out[strpos($bundle, ':') === false ? $bundle
-                    . ':' . $metadata['class'] : $bundle] = $metadataDefinition;
+                if (strpos($bundle, ':') === false) {
+                    $out[$bundle . ':' . $metadata['class']] = $metadataDefinition;
+                } else {
+                    $out[$bundle] = $metadataDefinition;
+                }
             }
         }
 

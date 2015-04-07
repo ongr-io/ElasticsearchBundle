@@ -73,11 +73,15 @@ class TypeDropCommand extends AbstractManagerAwareCommand
                 $manager
             );
         } else {
+            if (empty($type)) {
+                $typeString = '';
+            } else {
+                $typeString = ' `<comment>' . implode('</comment><info>`, `</info><comment>', $type) . '</comment>`';
+            }
             $message = sprintf(
                 '<info>Manager `</info><comment>%s</comment><info>` does not contain%s type(s) information.</info>',
                 $manager,
-                empty($type) ? '' : ' `<comment>'
-                . implode('</comment><info>`, `</info><comment>', $type) . '</comment>`'
+                $typeString
             );
         }
 

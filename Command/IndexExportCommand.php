@@ -52,7 +52,7 @@ class IndexExportCommand extends AbstractManagerAwareCommand
     {
         $manager = $this->getManager($input->getOption('manager'));
 
-        /* @var ExportService $exportService */
+        /** @var ExportService $exportService */
         $exportService = $this->getContainer()->get('es.export');
         $exportService->exportIndex($manager, $input->getArgument('filename'), $input->getOption('chunk'), $output);
 

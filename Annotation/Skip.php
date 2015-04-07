@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
  * Annotation used to skip properties during the parsing process.
- * 
+ *
  * @Annotation
  * @Target("CLASS")
  */
