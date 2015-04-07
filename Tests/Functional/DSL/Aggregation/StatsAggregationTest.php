@@ -25,6 +25,7 @@ class StatsAggregationTest extends AbstractElasticsearchTestCase
         return [
             ['1.5.0', '>=', 'testStatsAggregationWithOlderResults'],
             ['1.5.0', '<', 'testStatsAggregation'],
+            ['1.5.0', '<', 'testStatsAggregationWithScriptSet'],
         ];
     }
 
@@ -152,10 +153,14 @@ class StatsAggregationTest extends AbstractElasticsearchTestCase
         $expectedResult = [
             'agg_test_agg' => [
                 'count' => 3,
-                'min' => 12.54,
+                'min' => 12.539999771118163,
                 'max' => 38.4,
-                'sum' => 69.06,
-                'avg' => 23.02,
+                'sum' => 69.060000228881833,
+                'avg' => 23.020000076293943,
+                'min_as_string' => '12.539999771118163',
+                'max_as_string' => '38.4',
+                'avg_as_string' => '23.020000076293943',
+                'sum_as_string' => '69.06000022888183',
             ],
         ];
         $this->assertArrayHasKey('aggregations', $results);
