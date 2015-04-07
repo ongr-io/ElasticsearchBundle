@@ -16,9 +16,9 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Functional tests for max aggregation. Elasticsearch version >= 1.5.0.
+ * Functional tests for max aggregation. Elasticsearch version < 1.5.0.
  */
-class MaxAggregationTest extends AbstractElasticsearchTestCase
+class MaxAggregationOlderVersionTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -26,7 +26,7 @@ class MaxAggregationTest extends AbstractElasticsearchTestCase
     protected function getIgnoredVersions()
     {
         return [
-            ['1.5.0', '<'],
+            ['1.5.0', '>='],
         ];
     }
 
@@ -75,7 +75,6 @@ class MaxAggregationTest extends AbstractElasticsearchTestCase
         $expectedResult = [
             'agg_test_agg' => [
                 'value' => 32.0,
-                'value_as_string' => '32.0',
             ],
         ];
 
@@ -100,7 +99,6 @@ class MaxAggregationTest extends AbstractElasticsearchTestCase
         $expectedResult = [
             'agg_test_agg' => [
                 'value' => 38.4,
-                'value_as_string' => '38.4',
             ],
         ];
         $this->assertArrayHasKey('aggregations', $results);
