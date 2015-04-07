@@ -16,9 +16,9 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Functional tests for sum aggregation. Elasticsearch version >= 1.5.0.
+ * Functional tests for sum aggregation. Elasticsearch version < 1.5.0.
  */
-class SumAggregationTest extends AbstractElasticsearchTestCase
+class SumAggregationOlderVersionTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -26,7 +26,7 @@ class SumAggregationTest extends AbstractElasticsearchTestCase
     protected function getIgnoredVersions()
     {
         return [
-            ['1.5.0', '<'],
+            ['1.5.0', '>='],
         ];
     }
 
@@ -74,8 +74,7 @@ class SumAggregationTest extends AbstractElasticsearchTestCase
 
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 57.550000190734863,
-                'value_as_string' => '57.55000019073486',
+                'value' => 57.55,
             ],
         ];
 
@@ -99,8 +98,7 @@ class SumAggregationTest extends AbstractElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 69.060000228881833,
-                'value_as_string' => '69.06000022888183',
+                'value' => 69.06,
             ],
         ];
         $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
