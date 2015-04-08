@@ -96,7 +96,10 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
             $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
 
             // Clear memory.
-            $this->documents[$offset] = null;
+            unset($this->documents[$offset]);
+            if (isset($this->converted[$offset - 10])) {
+                unset($this->converted[$offset - 10]);
+            }
         }
 
         return $this->converted[$offset];
