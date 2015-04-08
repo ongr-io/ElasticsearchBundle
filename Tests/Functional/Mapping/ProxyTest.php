@@ -11,12 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
 
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Tests proxy classes.
  */
-class ProxyTest extends ElasticsearchTestCase
+class ProxyTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -25,10 +25,19 @@ class ProxyTest extends ElasticsearchTestCase
     {
         return [
             'default' => [
-                'product' => [
+                'color' => [
                     [
                         '_id' => 1,
-                        'title' => 'foo',
+                        'enabled_cdn' => [
+                            [
+                                'cdn_url' => 'foo',
+                            ],
+                        ],
+                        'disabled_cdn' => [
+                            [
+                                'cdn_url' => 'foo',
+                            ],
+                        ],
                     ],
                 ],
             ],
@@ -41,13 +50,15 @@ class ProxyTest extends ElasticsearchTestCase
     public function testIsInitialized()
     {
         $manager = $this->getManager();
-        $product = $manager->getRepository('AcmeTestBundle:Product')->find(1);
+        $product = $manager->getRepository('AcmeTestBundle:Color')->find(1);
 
         $this->assertInstanceOf(
             'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
             $product,
             'Recieved document should be a proxy.'
         );
+        $result = $product->findByPath('enabled_cdn[0].cdn_url');
+        $this->assertEquals('foo', $result);
         $this->assertTrue($product->__isInitialized(), 'Document should have initialized flag set.');
     }
 }
