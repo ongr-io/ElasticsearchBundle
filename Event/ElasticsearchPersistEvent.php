@@ -15,9 +15,9 @@ use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 
 /**
- * Event to be dispatched in various Elasticsearch methods, containing associated document.
+ * Event to be dispatched before and after persisting a document.
  */
-class ElasticsearchDocumentEvent extends ElasticsearchEvent
+class ElasticsearchPersistEvent extends AbstractElasticsearchEvent
 {
     /**
      * @var DocumentInterface
@@ -30,7 +30,8 @@ class ElasticsearchDocumentEvent extends ElasticsearchEvent
      */
     public function __construct(Connection $connection, DocumentInterface $document)
     {
-        $this->connection = $connection;
+        parent::__construct($connection);
+
         $this->document = $document;
     }
 

@@ -12,18 +12,18 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Event;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
-use ONGR\ElasticsearchBundle\Event\ElasticsearchDocumentEvent;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchCommitEvent;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
-use ONGR\ElasticsearchBundle\Event\ElasticsearchEvent;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\_Proxy\Product;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
- * Tests checking that ElasticsearchEvent is being dispatched correctly.
+ * Tests checking that events are being dispatched correctly.
  */
-class ElasticsearchEventTest extends AbstractElasticsearchTestCase
+class EventsTest extends AbstractElasticsearchTestCase
 {
     /**
      * Data provider for testPersistEventDispatch().
@@ -39,7 +39,7 @@ class ElasticsearchEventTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Tests if ElasticsearchDocumentEvent is dispatched before/after document is persisted.
+     * Tests if ElasticsearchPersistEvent is dispatched before/after document is persisted.
      *
      * @param string $eventName
      *
@@ -57,7 +57,7 @@ class ElasticsearchEventTest extends AbstractElasticsearchTestCase
         $eventDispatcher = $this->getContainer()->get('event_dispatcher');
         $eventDispatcher->addListener(
             $eventName,
-            function (ElasticsearchDocumentEvent $event) use (&$connection, &$productTitle) {
+            function (ElasticsearchPersistEvent $event) use (&$connection, &$productTitle) {
                 $connection = $event->getConnection();
                 $productTitle = $event->getDocument()->title;
             }
@@ -97,7 +97,7 @@ class ElasticsearchEventTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Tests if ElasticsearchEvent is dispatched before/after data are commited.
+     * Tests if ElasticsearchCommitEvent is dispatched before/after data are commited.
      *
      * @param string $eventName
      *
@@ -114,7 +114,7 @@ class ElasticsearchEventTest extends AbstractElasticsearchTestCase
         $eventDispatcher = $this->getContainer()->get('event_dispatcher');
         $eventDispatcher->addListener(
             $eventName,
-            function (ElasticsearchEvent $event) use (&$connection, &$eventDispatched) {
+            function (ElasticsearchCommitEvent $event) use (&$connection, &$eventDispatched) {
                 $connection = $event->getConnection();
                 $eventDispatched = true;
             }

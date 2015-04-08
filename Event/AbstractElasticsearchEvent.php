@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\Event;
 /**
  * Event to be dispatched in various Elasticsearch methods.
  */
-class ElasticsearchEvent extends Event
+abstract class AbstractElasticsearchEvent extends Event
 {
     /**
      * @var Connection

@@ -13,8 +13,8 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Event\ElasticsearchDocumentEvent;
-use ONGR\ElasticsearchBundle\Event\ElasticsearchEvent;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchCommitEvent;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
@@ -115,7 +115,7 @@ class Manager
     {
         $this->dispatchEvent(
             Events::PRE_PERSIST,
-            new ElasticsearchDocumentEvent($this->getConnection(), $document)
+            new ElasticsearchPersistEvent($this->getConnection(), $document)
         );
 
         $mapping = $this->getDocumentMapping($document);
@@ -129,7 +129,7 @@ class Manager
 
         $this->dispatchEvent(
             Events::POST_PERSIST,
-            new ElasticsearchDocumentEvent($this->getConnection(), $document)
+            new ElasticsearchPersistEvent($this->getConnection(), $document)
         );
     }
 
@@ -140,14 +140,14 @@ class Manager
     {
         $this->dispatchEvent(
             Events::PRE_COMMIT,
-            new ElasticsearchEvent($this->getConnection())
+            new ElasticsearchCommitEvent($this->getConnection())
         );
 
         $this->getConnection()->commit();
 
         $this->dispatchEvent(
             Events::POST_COMMIT,
-            new ElasticsearchEvent($this->getConnection())
+            new ElasticsearchCommitEvent($this->getConnection())
         );
     }
 
