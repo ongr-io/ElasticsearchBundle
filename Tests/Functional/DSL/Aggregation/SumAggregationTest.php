@@ -16,10 +16,20 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Function tests for sum aggregation.
+ * Functional tests for sum aggregation. Elasticsearch version >= 1.5.0.
  */
 class SumAggregationTest extends AbstractElasticsearchTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getIgnoredVersions()
+    {
+        return [
+            ['1.5.0', '<'],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -51,7 +61,7 @@ class SumAggregationTest extends AbstractElasticsearchTestCase
     /**
      * Test for sum aggregation.
      */
-    public function testMinAggregation()
+    public function testSumAggregation()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
@@ -64,7 +74,8 @@ class SumAggregationTest extends AbstractElasticsearchTestCase
 
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 57.55,
+                'value' => 57.550000190734863,
+                'value_as_string' => '57.55000019073486',
             ],
         ];
 
@@ -75,7 +86,7 @@ class SumAggregationTest extends AbstractElasticsearchTestCase
     /**
      * Test for sum aggregation when script is set.
      */
-    public function testStatsAggregationWithScriptSet()
+    public function testSumAggregationWithScriptSet()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
@@ -88,7 +99,8 @@ class SumAggregationTest extends AbstractElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 69.06,
+                'value' => 69.060000228881833,
+                'value_as_string' => '69.06000022888183',
             ],
         ];
         $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');

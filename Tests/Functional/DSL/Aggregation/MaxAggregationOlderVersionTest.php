@@ -11,14 +11,14 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AvgAggregation;
+use ONGR\ElasticsearchBundle\DSL\Aggregation\MaxAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Functional tests for avg aggregation. Elasticsearch version >= 1.5.0.
+ * Functional tests for max aggregation. Elasticsearch version < 1.5.0.
  */
-class AvgAggregationTest extends AbstractElasticsearchTestCase
+class MaxAggregationOlderVersionTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -26,7 +26,7 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
     protected function getIgnoredVersions()
     {
         return [
-            ['1.5.0', '<'],
+            ['1.5.0', '>='],
         ];
     }
 
@@ -59,14 +59,14 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test for avg aggregation.
+     * Test for max aggregation.
      */
-    public function testAvgAggregation()
+    public function testMaxAggregation()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $aggregation = new AvgAggregation('test_agg');
+        $aggregation = new MaxAggregation('test_agg');
         $aggregation->setField('price');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
@@ -74,8 +74,7 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
 
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 19.18333339691162,
-                'value_as_string' => '19.18333339691162',
+                'value' => 32.0,
             ],
         ];
 
@@ -84,26 +83,25 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test for avg aggregation when script is set.
+     * Test for max aggregation when script is set.
      */
-    public function testAvgAggregationWithScriptSet()
+    public function testMaxAggregationWithScriptSet()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $aggregation = new AvgAggregation('test_agg');
+        $aggregation = new MaxAggregation('test_agg');
         $aggregation->setField('price');
         $aggregation->setScript('_value * 1.2');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
-
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 23.020000076293943,
-                'value_as_string' => '23.020000076293943',
+                'value' => 38.4,
             ],
         ];
+        $this->assertArrayHasKey('aggregations', $results);
         $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
     }
 }

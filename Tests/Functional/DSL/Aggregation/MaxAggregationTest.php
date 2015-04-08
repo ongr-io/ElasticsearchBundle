@@ -16,10 +16,20 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Function tests for max aggregation.
+ * Functional tests for max aggregation. Elasticsearch version >= 1.5.0.
  */
 class MaxAggregationTest extends AbstractElasticsearchTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getIgnoredVersions()
+    {
+        return [
+            ['1.5.0', '<'],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -51,7 +61,7 @@ class MaxAggregationTest extends AbstractElasticsearchTestCase
     /**
      * Test for max aggregation.
      */
-    public function testMinAggregation()
+    public function testMaxAggregation()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
@@ -64,7 +74,8 @@ class MaxAggregationTest extends AbstractElasticsearchTestCase
 
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 32,
+                'value' => 32.0,
+                'value_as_string' => '32.0',
             ],
         ];
 
@@ -75,7 +86,7 @@ class MaxAggregationTest extends AbstractElasticsearchTestCase
     /**
      * Test for max aggregation when script is set.
      */
-    public function testStatsAggregationWithScriptSet()
+    public function testMaxAggregationWithScriptSet()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
@@ -89,6 +100,7 @@ class MaxAggregationTest extends AbstractElasticsearchTestCase
         $expectedResult = [
             'agg_test_agg' => [
                 'value' => 38.4,
+                'value_as_string' => '38.4',
             ],
         ];
         $this->assertArrayHasKey('aggregations', $results);

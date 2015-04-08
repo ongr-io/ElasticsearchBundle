@@ -17,10 +17,20 @@ use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * PercentileRanksAggregation functional tests.
+ * PercentileRanksAggregation functional tests. Elasticsearch version >= 1.5.0.
  */
 class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getIgnoredVersions()
+    {
+        return [
+            ['1.5.0', '<'],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -67,7 +77,9 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         $aggregationData = ['field' => 'price', 'values' => [10, 30], 'compression' => null];
         $expectedResults = [
             '10.0' => 12.5,
-            '30.0' => 100,
+            '30.0' => 100.0,
+            '10.0_as_string' => '12.5',
+            '30.0_as_string' => '100.0',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -75,17 +87,23 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         $aggregationData = ['field' => 'price', 'values' => [10, 20, 90], 'compression' => 200];
         $expectedResults = [
             '10.0' => 12.5,
-            '20.0' => 0,
-            '90.0' => 100,
+            '20.0' => 0.0,
+            '90.0' => 100.0,
+            '10.0_as_string' => '12.5',
+            '20.0_as_string' => '0.0',
+            '90.0_as_string' => '100.0',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
         // Case #2 with compression = 0.
         $aggregationData = ['field' => 'price', 'values' => [10, 20, 90], 'compression' => 0];
         $expectedResults = [
-            '10.0' => 0,
-            '20.0' => 100,
-            '90.0' => 100,
+            '10.0' => 0.0,
+            '20.0' => 100.0,
+            '90.0' => 100.0,
+            '10.0_as_string' => '0.0',
+            '20.0_as_string' => '100.0',
+            '90.0_as_string' => '100.0',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -139,7 +157,9 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         $result = $repository->execute($search)->getAggregations()->find('foo');
         $expectedResults = [
             '10.0' => 12.5,
-            '30.0' => 100,
+            '30.0' => 100.0,
+            '10.0_as_string' => '12.5',
+            '30.0_as_string' => '100.0',
         ];
         $this->assertEquals($expectedResults, $result->getValue()['values']);
     }

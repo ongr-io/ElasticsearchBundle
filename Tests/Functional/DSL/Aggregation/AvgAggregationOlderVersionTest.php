@@ -16,9 +16,9 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Functional tests for avg aggregation. Elasticsearch version >= 1.5.0.
+ * Functional tests for avg aggregation. Elasticsearch version < 1.5.0.
  */
-class AvgAggregationTest extends AbstractElasticsearchTestCase
+class AvgAggregationOlderVersionTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -26,7 +26,7 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
     protected function getIgnoredVersions()
     {
         return [
-            ['1.5.0', '<'],
+            ['1.5.0', '>='],
         ];
     }
 
@@ -74,8 +74,7 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
 
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 19.18333339691162,
-                'value_as_string' => '19.18333339691162',
+                'value' => 19.18,
             ],
         ];
 
@@ -100,8 +99,7 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
 
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 23.020000076293943,
-                'value_as_string' => '23.020000076293943',
+                'value' => 23.02,
             ],
         ];
         $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);

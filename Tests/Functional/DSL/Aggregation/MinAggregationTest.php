@@ -16,10 +16,20 @@ use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Function tests for min aggregation.
+ * Functional tests for min aggregation. Elasticsearch version >= 1.5.0.
  */
 class MinAggregationTest extends AbstractElasticsearchTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getIgnoredVersions()
+    {
+        return [
+            ['1.5.0', '<'],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -64,7 +74,8 @@ class MinAggregationTest extends AbstractElasticsearchTestCase
 
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 10.45,
+                'value' => 10.449999809265137,
+                'value_as_string' => '10.449999809265137',
             ],
         ];
 
@@ -75,7 +86,7 @@ class MinAggregationTest extends AbstractElasticsearchTestCase
     /**
      * Test for min aggregation when script is set.
      */
-    public function testStatsAggregationWithScriptSet()
+    public function testMinAggregationWithScriptSet()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
@@ -88,7 +99,8 @@ class MinAggregationTest extends AbstractElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
         $expectedResult = [
             'agg_test_agg' => [
-                'value' => 12.54,
+                'value' => 12.539999771118163,
+                'value_as_string' => '12.539999771118163',
             ],
         ];
         $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');

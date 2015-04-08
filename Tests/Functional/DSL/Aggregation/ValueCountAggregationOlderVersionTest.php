@@ -11,22 +11,29 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AvgAggregation;
+use ONGR\ElasticsearchBundle\DSL\Aggregation\ValueCountAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Functional tests for avg aggregation. Elasticsearch version >= 1.5.0.
+ * Functional tests for value count aggregation. Elasticsearch version < 1.5.0.
  */
-class AvgAggregationTest extends AbstractElasticsearchTestCase
+class ValueCountAggregationOlderVersionTest extends AbstractElasticsearchTestCase
 {
+    /**
+     * @var array
+     */
+    protected $expectedResults = [
+        'older' => ['agg_test_agg' => ['value' => 3]],
+    ];
+
     /**
      * {@inheritdoc}
      */
     protected function getIgnoredVersions()
     {
         return [
-            ['1.5.0', '<'],
+            ['1.5.0', '>='],
         ];
     }
 
@@ -59,51 +66,37 @@ class AvgAggregationTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test for avg aggregation.
+     * Test for value count aggregation.
      */
-    public function testAvgAggregation()
+    public function testValueCountAggregation()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $aggregation = new AvgAggregation('test_agg');
+        $aggregation = new ValueCountAggregation('test_agg');
         $aggregation->setField('price');
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
-        $expectedResult = [
-            'agg_test_agg' => [
-                'value' => 19.18333339691162,
-                'value_as_string' => '19.18333339691162',
-            ],
-        ];
-
         $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
-        $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
+        $this->assertEquals($this->expectedResults['older'], $results['aggregations'], '', 0.01);
     }
 
     /**
-     * Test for avg aggregation when script is set.
+     * Test for value count aggregation when script is set.
      */
-    public function testAvgAggregationWithScriptSet()
+    public function testValueCountAggregationWithScriptSet()
     {
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $aggregation = new AvgAggregation('test_agg');
-        $aggregation->setField('price');
-        $aggregation->setScript('_value * 1.2');
+        $aggregation = new ValueCountAggregation('test_agg');
+        $aggregation->setScript("doc['price'].value");
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
-        $expectedResult = [
-            'agg_test_agg' => [
-                'value' => 23.020000076293943,
-                'value_as_string' => '23.020000076293943',
-            ],
-        ];
-        $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
+        $this->assertEquals($this->expectedResults['older'], $results['aggregations'], '', 0.01);
     }
 }

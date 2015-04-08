@@ -17,9 +17,9 @@ use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * Functional tests for percentiles aggregation. Elasticsearch version >= 1.5.0.
+ * Functional tests for percentiles aggregation. Elasticsearch version < 1.5.0.
  */
-class PercentilesAggregationTest extends AbstractElasticsearchTestCase
+class PercentilesAggregationOlderVersionTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -27,7 +27,7 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
     protected function getIgnoredVersions()
     {
         return [
-            ['1.5.0', '<'],
+            ['1.5.0', '>='],
         ];
     }
 
@@ -76,20 +76,13 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
         // Case #0 without any percent or compression.
         $aggregationData = ['field' => 'price', 'percents' => null, 'compression' => null];
         $expectedResults = [
-            '1.0' => 10.149999999999999,
+            '1.0' => 10.15,
             '5.0' => 10.75,
             '25.0' => 13.75,
-            '50.0' => 20.0,
-            '75.0' => 25.0,
-            '95.0' => 25.0,
-            '99.0' => 25.0,
-            '1.0_as_string' => '10.149999999999999',
-            '5.0_as_string' => '10.75',
-            '25.0_as_string' => '13.75',
-            '50.0_as_string' => '20.0',
-            '75.0_as_string' => '25.0',
-            '95.0_as_string' => '25.0',
-            '99.0_as_string' => '25.0',
+            '50.0' => 20,
+            '75.0' => 25,
+            '95.0' => 25,
+            '99.0' => 25,
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -103,13 +96,6 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
             '75.0' => 18.75,
             '95.0' => 18.75,
             '99.0' => 18.75,
-            '1.0_as_string' => '18.75',
-            '5.0_as_string' => '18.75',
-            '25.0_as_string' => '18.75',
-            '50.0_as_string' => '18.75',
-            '75.0_as_string' => '18.75',
-            '95.0_as_string' => '18.75',
-            '99.0_as_string' => '18.75',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -119,9 +105,6 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
             '10.0' => 11.5,
             '20.0' => 13,
             '90.0' => 25,
-            '10.0_as_string' => '11.5',
-            '20.0_as_string' => '13.0',
-            '90.0_as_string' => '25.0',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -180,13 +163,6 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
             '75.0' => 2.5,
             '95.0' => 2.5,
             '99.0' => 2.5,
-            '1.0_as_string' => '1.015',
-            '5.0_as_string' => '1.075',
-            '25.0_as_string' => '1.375',
-            '50.0_as_string' => '2.0',
-            '75.0_as_string' => '2.5',
-            '95.0_as_string' => '2.5',
-            '99.0_as_string' => '2.5',
         ];
         $this->assertEquals($expectedResults, $result->getValue()['values']);
     }
