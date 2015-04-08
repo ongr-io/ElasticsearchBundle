@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class TermsAggregationTest extends ElasticsearchTestCase
+class TermsAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -107,7 +107,7 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $aggregation = [
             'name' => 'test_agg',
             'field' => 'surface',
-            'order' => [TermsAggregation::MODE_TERM, TermsAggregation::DIRECTION_ASC],
+            'order' => ['_term', 'asc'],
         ];
 
         $result = [
@@ -134,7 +134,7 @@ class TermsAggregationTest extends ElasticsearchTestCase
         $aggregation = [
             'name' => 'test_agg',
             'field' => 'surface',
-            'min_document_cound' => 2,
+            'min_document_count' => 2,
         ];
 
         $result = [
@@ -285,6 +285,29 @@ class TermsAggregationTest extends ElasticsearchTestCase
     }
 
     /**
+     * Test for terms aggregation with shard_size, collect_mode, shard_min_doc_count.
+     */
+    public function testTermsAggregationWithCollectMode()
+    {
+        /** @var Repository $repo */
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $aggregationFoo = new TermsAggregation('test_foo');
+        $aggregationFoo->setField('title');
+        $aggregationFoo->setShardSize(5);
+        $aggregationFoo->setExecutionHint(TermsAggregation::HINT_MAP);
+        $aggregationFoo->setCollectMode(TermsAggregation::COLLECT_BREADTH_FIRST);
+
+        $aggregationBar = new TermsAggregation('test_bar');
+        $aggregationBar->setField('title');
+        $aggregationBar->setShardMinDocCount(5);
+        $aggregationFoo->addAggregation($aggregationBar);
+
+        $search = $repo->createSearch()->addAggregation($aggregationFoo);
+        $results = $repo->execute($search, Repository::RESULTS_RAW);
+        $this->assertEquals(3, count($results['aggregations'][$aggregationFoo->getName()]['buckets']));
+    }
+
+    /**
      * Builds term aggregation.
      *
      * @param array $options
@@ -305,7 +328,7 @@ class TermsAggregationTest extends ElasticsearchTestCase
         }
 
         if (array_key_exists('min_document_count', $options)) {
-            $term->setMinDocumentCount($options['min_document_count']);
+            $term->setMinDocCount($options['min_document_count']);
         }
 
         if (array_key_exists('order', $options)) {
