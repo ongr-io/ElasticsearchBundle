@@ -110,11 +110,7 @@ class DocumentScanIterator extends DocumentIterator
         $raw = $this->repository->scan($this->scrollId, $this->scrollDuration, Repository::RESULTS_RAW);
         $this->setScrollId($raw['_scroll_id']);
 
-        $this->documents = [];
-
-        foreach($raw['hits']['hits'] as $key=>$value) {
-            $this->documents[$key + $this->key] = $value;
-        }
+        $this->documents = array_merge($this->documents, $raw['hits']['hits']);
 
         return isset($this->documents[$this->key]);
     }
@@ -133,5 +129,30 @@ class DocumentScanIterator extends DocumentIterator
     public function next()
     {
         $this->key++;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        if (!isset($this->converted[$offset])) {
+            if (!isset($this->documents[$offset])) {
+                return null;
+            }
+
+            $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
+
+            // Clear memory.
+            if (isset($this->converted[$offset - 20])) {
+                $this->converted[$offset - 20] = null;
+            }
+
+            if (isset($this->documents[$offset])) {
+                $this->documents[$offset] = null;
+            }
+        }
+
+        return $this->converted[$offset];
     }
 }
