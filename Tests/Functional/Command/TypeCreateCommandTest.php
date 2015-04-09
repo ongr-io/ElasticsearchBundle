@@ -99,7 +99,7 @@ class TypeCreateCommandTest extends AbstractElasticsearchTestCase
             [
                 ['--type' => ['product', 'comment']],
                 "Created `product`, `comment` type(s) for manager named `default`.\n",
-                ['product', 'foocontent'],
+                ['product', 'fooContent'],
             ],
             [
                 ['--type' => ['product']],

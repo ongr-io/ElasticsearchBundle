@@ -38,7 +38,7 @@ class IndexExportCommandTest extends ElasticsearchTestCase
                         'price' => 32,
                     ],
                 ],
-                'foocontent' => [
+                'fooContent' => [
                     [
                         '_id' => 1,
                         'header' => 'test_1',
@@ -75,14 +75,14 @@ class IndexExportCommandTest extends ElasticsearchTestCase
         $expectedResults = [
             [
                 '_id' => '1',
-                '_type' => 'foocontent',
+                '_type' => 'fooContent',
                 '_source' => [
                     'header' => 'test_1',
                 ],
             ],
             [
                 '_id' => '2',
-                '_type' => 'foocontent',
+                '_type' => 'fooContent',
                 '_source' => [
                     'header' => 'test_2',
                 ],
