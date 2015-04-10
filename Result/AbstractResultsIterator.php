@@ -95,8 +95,8 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
 
             $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
 
-            // Clear memory.
-                unset($this->documents[$offset]);
+            // Clear memory. Bug: still drops elements.
+            //unset($this->documents[$offset]);
         }
 
         return $this->converted[$offset];
