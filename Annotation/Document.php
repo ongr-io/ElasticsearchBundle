@@ -45,6 +45,11 @@ final class Document
     public $enabled;
 
     /**
+     * @var bool
+     */
+    public $all;
+
+    /**
      * Constructor.
      */
     public function __construct()
