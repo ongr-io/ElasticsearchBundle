@@ -45,7 +45,7 @@ final class Document
     public $enabled;
 
     /**
-     * @var bool
+     * @var array
      */
     public $all;
 
