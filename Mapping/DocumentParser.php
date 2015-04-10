@@ -273,7 +273,7 @@ class DocumentParser
      */
     private function getDocumentType(\ReflectionClass $reflectionClass, Document $document)
     {
-        return strtolower(empty($document->type) ? $reflectionClass->getShortName() : $document->type);
+        return empty($document->type) ? $reflectionClass->getShortName() : $document->type;
     }
 
     /**

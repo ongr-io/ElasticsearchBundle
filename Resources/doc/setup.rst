@@ -114,14 +114,20 @@ Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch
 
 .. note:: This is the basic example only, for more information about mapping, please take a look at `mapping <mapping.html>`_ chapter.
 
-Step 6: Create index
---------------------
+Step 6: Create index and mappings
+---------------------------------
 
 Elasticsearch bundle provides several ``CLI`` commands. One of them is for creating index, run command in your terminal:
 
 .. code:: bash
 
-    app/console ongr:es:index:create
+    app/console es:index:create
+
+Another command is used for putting mappings into elasticsearch client. Run the following commandin your terminal:
+
+.. code:: bash
+
+    app/console es:type:create
 
 .. note:: More about the rest of the commands can be found in `commands <commands.html>`_ chapter.
 

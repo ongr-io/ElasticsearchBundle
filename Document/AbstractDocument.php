@@ -88,7 +88,7 @@ abstract class AbstractDocument implements DocumentInterface
                 $this->setParent($value);
                 break;
             default:
-                $this->{$property} = $value;
+                // Required default case.
                 break;
         }
     }

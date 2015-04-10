@@ -13,10 +13,15 @@ namespace ONGR\ElasticsearchBundle\ORM;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchCommitEvent;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistEvent;
+use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Manager class.
@@ -39,6 +44,11 @@ class Manager
     private $converter;
 
     /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
+
+    /**
      * @param Connection              $connection
      * @param ClassMetadataCollection $classMetadataCollection
      */
@@ -56,6 +66,14 @@ class Manager
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    /**
+     * @param EventDispatcher $eventDispatcher
+     */
+    public function setEventDispatcher($eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -91,17 +109,27 @@ class Manager
     /**
      * Adds document to next flush.
      *
-     * @param DocumentInterface $object
+     * @param DocumentInterface $document
      */
-    public function persist(DocumentInterface $object)
+    public function persist(DocumentInterface $document)
     {
-        $mapping = $this->getDocumentMapping($object);
-        $document = $this->getConverter()->convertToArray($object);
+        $this->dispatchEvent(
+            Events::PRE_PERSIST,
+            new ElasticsearchPersistEvent($this->getConnection(), $document)
+        );
+
+        $mapping = $this->getDocumentMapping($document);
+        $documentArray = $this->getConverter()->convertToArray($document);
 
         $this->getConnection()->bulk(
             'index',
             $mapping->getType(),
-            $document
+            $documentArray
+        );
+
+        $this->dispatchEvent(
+            Events::POST_PERSIST,
+            new ElasticsearchPersistEvent($this->getConnection(), $document)
         );
     }
 
@@ -110,7 +138,17 @@ class Manager
      */
     public function commit()
     {
+        $this->dispatchEvent(
+            Events::PRE_COMMIT,
+            new ElasticsearchCommitEvent($this->getConnection())
+        );
+
         $this->getConnection()->commit();
+
+        $this->dispatchEvent(
+            Events::POST_COMMIT,
+            new ElasticsearchCommitEvent($this->getConnection())
+        );
     }
 
     /**
@@ -205,5 +243,18 @@ class Manager
         }
 
         return $this->converter;
+    }
+
+    /**
+     * Dispatches an event, if eventDispatcher is set.
+     *
+     * @param string $eventName
+     * @param Event  $event
+     */
+    private function dispatchEvent($eventName, Event $event)
+    {
+        if ($this->eventDispatcher != null) {
+            $this->eventDispatcher->dispatch($eventName, $event);
+        }
     }
 }

@@ -11,8 +11,9 @@ Currently documented are these query types:
 - `boosting query <index.html#id2>`_
 - `has child query <index.html#id3>`_
 - `has parent query <index.html#id4>`_
-- `dis max query <index.html#5>`_
-- `prefix query <index.html#6>`_
+- `dis max query <index.html#id5>`_
+- `prefix query <index.html#id6>`_
+- `fuzzy query <index.html#id7>`_
 
 boosting query
 --------------
@@ -97,3 +98,19 @@ Usage sample:
     $search = $repo
         ->createSearch()
         ->addQuery($prefix);
+
+
+fuzzy query
+-----------
+The `fuzzy <http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html>`_ query uses similarity based on Levenshtein edit distance for *string* fields, and a *+/-* margin on numeric and date fields.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $fuzzy = new FuzzyQuery('user', 'ki');
+    $search = $repo
+        ->createSearch()
+        ->addQuery($fuzzy);

@@ -86,18 +86,4 @@ class ProxyLoader
 
         return $this->cacheDir . DIRECTORY_SEPARATOR . strtolower(substr($namespace, strrpos($namespace, '\\') + 1));
     }
-
-    /**
-     * Returns Filesystem object.
-     *
-     * @return Filesystem
-     */
-    private function getFilesystem()
-    {
-        if (!$this->fileSystem) {
-            $this->fileSystem = new Filesystem();
-        }
-
-        return $this->fileSystem;
-    }
 }

@@ -25,7 +25,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDocumentMapping()
     {
-        $manager = new Manager(null, $this->getClassMetadataCollectionMock());
+        $manager = new Manager(
+            null,
+            $this->getClassMetadataCollectionMock(),
+            $this->getMock('Symfony\Components\EventDispatcher\EventDispatcher')
+        );
         $this->assertNull($manager->getDocumentMapping('test'));
     }
 
@@ -49,7 +53,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                     'rep1' => $classMetadataMock,
                     'rep2' => clone $classMetadataMock,
                 ]
-            )
+            ),
+            $this->getMock('Symfony\Components\EventDispatcher\EventDispatcher')
         );
         $types = [
             'rep1',
@@ -70,7 +75,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     {
         $manager = new Manager(
             null,
-            $this->getClassMetadataCollectionMock(['rep2' => '', 'rep3' => ''])
+            $this->getClassMetadataCollectionMock(['rep2' => '', 'rep3' => '']),
+            $this->getMock('Symfony\Components\EventDispatcher\EventDispatcher')
         );
         $types = [
             'rep1',
@@ -89,7 +95,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     {
         $manager = new Manager(
             null,
-            $this->getClassMetadataCollectionMock(['rep2' => '', 'rep3' => ''])
+            $this->getClassMetadataCollectionMock(['rep2' => '', 'rep3' => '']),
+            $this->getMock('Symfony\Components\EventDispatcher\EventDispatcher')
         );
         $manager->getRepository('rep1');
     }
