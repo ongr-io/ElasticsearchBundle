@@ -16,6 +16,7 @@ Currently documented are these filter types:
 - `Geo Polygon Filter <index.html#id7>`_
 - `GeoShape Filter <index.html#id8>`_
 - `Geohash Cell Filter <index.html#id9>`_
+- `Limit Filter <index.html#id9>`_
 
 
 Has Child Filter
@@ -193,4 +194,20 @@ Usage sample:
 
     $geohashCellFilter = new GeohashCellFilter('pin', ['lat' => 13.4080, 'lon' => 52.5186]);
     $search->addFilter($geohashCellFilter);
+    $results = $repository->execute($search);
+
+
+Limit Filter
+------------
+
+The `limit <http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-limit-filter.html>`_ filter limits the number of documents (per shard) to execute on.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $limitFilter = new LimitFilter(100);
+    $search->addFilter($limitFilter);
     $results = $repository->execute($search);
