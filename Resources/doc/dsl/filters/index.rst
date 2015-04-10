@@ -8,14 +8,17 @@ Filters
 
 Currently documented are these filter types:
 
-- `has child filter <index.html#id2>`_
-- `has parent filter <index.html#id3>`_
-- `geo distance filter <index.html#id4>`_
-- `geo distance range filter <index.html#id5>`_
-- `geo polygon filter <index.html#id6>`_
+- `Has Child Filter <index.html#id2>`_
+- `Has Parent Filter <index.html#id3>`_
+- `Geo Bounding Box Filter <index.html#id4>`_
+- `Geo Distance Filter <index.html#id5>`_
+- `Geo Distance Range Filter <index.html#id6>`_
+- `Geo Polygon Filter <index.html#id7>`_
+- `GeoShape Filter <index.html#id8>`_
+- `Geohash Cell Filter <index.html#id9>`_
 
 
-has child filter
+Has Child Filter
 ----------------
 The `has_child <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-has-child-filter.html>`_ filter accepts a query and the child type to run against, and results in parent documents that have child docs matching the query.
 
@@ -46,7 +49,7 @@ The ``has_child`` filter with query:
     $results = $repository->execute($search);
 
 
-has parent filter
+Has Parent Filter
 -----------------
 
 The `has_parent <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-has-parent-filter.html>`_ filter accepts a query and a parent type. The query is executed in the parent document space, which is specified by the parent type. This filter returns child documents which associated parents have matched.
@@ -76,7 +79,29 @@ The ``has_parent`` filter with query:
     $results = $repository->execute($search);
 
 
-geo distance filter
+Geo Bounding Box Filter
+-----------------------
+
+The `geo bounding box <http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-bounding-box-filter.html>`_ filters documents that include only hits that exists in a specified bounding box.
+
+.. note:: The filter requires the geo_point type to be set on the relevant field.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $geoBoundingBoxFilter = new GeoBoundingBoxFilter('location', [
+        ['lat' => 40.73, 'lon' => -74.1],
+        ['lat' => 40.01, 'lon' => -71.12],
+    ]);
+    $search->addFilter($geoBoundingBoxFilter);
+    $results = $repository->execute($search);
+
+
+
+Geo Distance Filter
 -------------------
 
 The `geo distance <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-filter.html>`_ filters documents that include only hits that exists within a specific distance from a geo point.
@@ -94,7 +119,7 @@ Usage sample:
     $results = $repository->execute($search);
 
 
-geo distance range filter
+Geo Distance Range Filter
 -------------------------
 
 The `geo distance range <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-range-filter.html>`_ filters documents that exists within a range from a specific point.
@@ -112,7 +137,7 @@ Usage sample:
     $results = $repository->execute($search);
 
 
-geo polygon filter
+Geo Polygon Filter
 ------------------
 
 The `geo polygon <http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-geo-polygon-filter.html>`_ filter allows to include hits that only fall within a polygon of points.
@@ -131,4 +156,41 @@ Usage sample:
         ['lat' => 70, 'lon' => -90],
     ]);
     $search->addFilter($geoPolygonFilter);
+    $results = $repository->execute($search);
+
+
+GeoShape Filter
+---------------
+
+The `geoshape <http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-shape-filter.html>`_ filters documents indexed using the *geo_shape* type.
+
+.. note:: The filter requires the geo_point type to be set on the relevant field.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $geoShapeFilter = new GeoShapeFilter();
+    $geoShapeFilter->addShape('location', 'Point', [13.400544, 52.530286]);
+    $search->addFilter($geoShapeFilter);
+    $results = $repository->execute($search);
+
+
+Geohash Cell Filter
+-------------------
+
+The `geohash cell <http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geohash-cell-filter.html>`_ filter provides access to a hierarchy of geohashes. By defining a geohash cell, only geopoints within this cell will match this filter.
+
+.. note:: The filter requires the geo_point type to be set on the relevant field.
+
+Usage sample:
+
+.. code:: php
+
+    ...
+
+    $geohashCellFilter = new GeohashCellFilter('pin', ['lat' => 13.4080, 'lon' => 52.5186]);
+    $search->addFilter($geohashCellFilter);
     $results = $repository->execute($search);
