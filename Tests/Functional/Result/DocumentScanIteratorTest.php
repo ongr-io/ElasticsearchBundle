@@ -28,10 +28,10 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
      */
     protected function getDataArray()
     {
-        $documents = ['default' => ['foocontent' => []]];
+        $documents = ['default' => ['fooContent' => []]];
 
         for ($i = 0; $i < 4; $i++) {
-            $documents['default']['foocontent'][] = [
+            $documents['default']['fooContent'][] = [
                 '_id' => 'someId_' . $i,
                 'header' => 'content_' . $i,
             ];

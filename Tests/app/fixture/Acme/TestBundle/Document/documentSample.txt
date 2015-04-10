@@ -6,7 +6,7 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
 /**
- * @ES\Document
+ * @ES\Document(type="article")
  */
 class Article extends AbstractDocument
 {
