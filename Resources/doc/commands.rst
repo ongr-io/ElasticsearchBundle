@@ -6,6 +6,20 @@ All commands can be accessed using *Symfony* command line interface.
 To use it simply type
 ``app/console <command_name> <arguments/options>`` in root folder of your project.
 
+Overview
+--------
+
+- `Create index <commands.html#id1>`_
+- `Drop index <commands.html#id2>`_
+- `Import index <commands.html#id3>`_
+- `Export index <commands.html#id4>`_
+- `Type create <commands.html#id5>`_
+- `Type update <commands.html#id6>`_
+- `Type drop <commands.html#id7>`_
+- `Cache clear <commands.html#id8>`_
+- `Warmer put <commands.html#id9>`_
+- `Warmer delete <commands.html#id10>`_
+
 Create index
 ------------
 
@@ -129,6 +143,22 @@ Export index
    | ``ongr:es:index:export test.json --manager shop --chunk 10``   | Exports data from ``shop`` *manager* index with a chunk size of ``10``.                                               |
    +----------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------+
 
+Type create
+-----------
+
+- Command name: ``es:type:create``.
+- Description: Puts mappings into elasticsearch client for specific *manager*.
+- Options:
+
+   +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
+   | Full name       | Short name    | Value            | What it does                                                                                  |
+   +=================+===============+==================+===============================================================================================+
+   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to create types for. If not specified, default manager is used.      |
+   +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
+   | ``--type``      | ``-t``        | Type name.       | Used to select a specific types to create in your *manager* mapping.                          |
+   +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
+
+
 Type update
 -----------
 
@@ -155,6 +185,24 @@ Type update
    +-----------------------------------------------------------------+---------------------------------------------------------------+
    | ``ongr:es:type:update --manager shop --type article --force``   | Updates mapping for ``shop`` *manager* type ``article``.      |
    +-----------------------------------------------------------------+---------------------------------------------------------------+
+
+Type drop
+---------
+
+- Command name: ``es:type:drop``.
+- Description: Drop elasticsearch index mappings.
+- options:
+
+   +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
+   | Full name       | Short name    | Value            | What it does                                                                                  |
+   +=================+===============+==================+===============================================================================================+
+   | ``--force``     | ``-f``        | *not required*   | This flag is required for the command to work.                                                |
+   +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
+   | ``--manager``   | *undefined*   | Manager name.    | Used to select *manager* to drop types for. If not specified, default manager is used.        |
+   +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
+   | ``--type``      | ``-t``        | Type name.       | Used to select a specific types to drop in your *manager* mapping.                            |
+   +-----------------+---------------+------------------+-----------------------------------------------------------------------------------------------+
+
 
 Cache clear
 -----------
