@@ -12,7 +12,7 @@ Create simple query with Search DSL
     $search = $repository->createSearch();
     $matchAllQuery = new MatchAllQuery();
     $search->addQuery($matchAllQuery);
-    $results = $repo->execute($search);
+    $results = $repository->execute($search);
 
 Fill form:
 
@@ -28,10 +28,10 @@ In the results section, results will be returned ``DocumentIterator`` with loade
 
 .. code:: php
 
-    $results = $repo->execute($search, Repository::RESULTS_OBJECT);       // Default option to get DocumentIterator.
-    $results = $repo->execute($search, Repository::RESULTS_ARRAY);        // Returns normalized array.
-    $results = $repo->execute($search, Repository::RESULTS_RAW);          // Raw data what is got from elasticsearch.
-    $results = $repo->execute($search, Repository::RESULTS_RAW_ITERATOR); // Returns RawResultScanIterator.
+    $results = $repository->execute($search, Repository::RESULTS_OBJECT);       // Default option to get DocumentIterator.
+    $results = $repository->execute($search, Repository::RESULTS_ARRAY);        // Returns normalized array.
+    $results = $repository->execute($search, Repository::RESULTS_RAW);          // Raw data what is got from elasticsearch.
+    $results = $repository->execute($search, Repository::RESULTS_RAW_ITERATOR); // Returns RawResultScanIterator.
 
 Combining filters and queries
 -----------------------------
@@ -46,13 +46,13 @@ Combining filters and queries
     $queryStringQuery = new QueryStringQuery("cherries", ["default_field"=>"description"]);
     $search->addQuery($queryStringQuery);
 
-    $termsQuery = new TermsQuery("wineColour", "Red");
+    $termsQuery = new TermsQuery("wineColour", ["Red"]);
     $search->addQuery($termsQuery);
 
     $rangeFilter = new RangeFilter('price', ['from' => 10, 'to' => 20]);
     $search->addFilter($rangeFilter);
 
-    $results = $repo->execute($search);
+    $results = $repository->execute($search);
 
 It will create query:
 
