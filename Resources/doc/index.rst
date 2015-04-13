@@ -11,6 +11,7 @@ Installation is a quick 7 (actually 6) step process:
     :titlesonly:
 
     setup
+    guide
 
 Bundle documentation
 --------------------

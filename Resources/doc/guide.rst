@@ -75,7 +75,7 @@ Go to ``app/config/config.yml``, add configuration at the very bottom:
 Creating Database for ElasticSearch
 -----------------------------------
 
-Go to ``src/Acme/DemoBundle`` and create new Folder ``Document``. It must be named as "Document". ONGR points to exactly this directory.
+Go to ``src/Acme/DemoBundle`` and create new Folder ``Document``. It must be named as "Document". ONGR points to exactly this directory as default.
 
 Go to ``src/Acme/DemoBundle/Document`` and create new File ``Product.php``.
 Open this Product.php and paste that:
