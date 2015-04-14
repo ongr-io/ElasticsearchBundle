@@ -87,13 +87,15 @@ class Repository
     /**
      * Returns a single document data by ID or null if document is not found.
      *
-     * @param string $id Document Id to find.
+     * @param string $id             Document Id to find.
+     * @param string $scrollDuration Scroll duration.
+     * @param string $resultType     Result type returned.
      *
      * @return DocumentInterface|null
      *
      * @throws \LogicException
      */
-    public function find($id)
+    public function find($id, $scrollDuration = Search::SCROLL_DURATION, $resultType = self::RESULTS_OBJECT)
     {
         if (count($this->types) !== 1) {
             throw new \LogicException('Only one type must be specified for the find() method');
@@ -116,7 +118,11 @@ class Repository
             $this->manager->getBundlesMapping()
         );
 
-        return $converter->convertToDocument($result);
+        if ($resultType == self::RESULTS_OBJECT) {
+            return $converter->convertToDocument($result);
+        } else {
+            return $this->parseResult($result, $resultType, $scrollDuration);
+        }
     }
 
     /**
@@ -382,6 +388,9 @@ class Repository
     private function convertToNormalizedArray($data)
     {
         $output = [];
+        if (array_key_exists('_source', $data)) {
+            return $data['_source'];
+        }
         if (isset($data['hits']['hits'][0]['_source'])) {
             foreach ($data['hits']['hits'] as $item) {
                 $output[] = $item['_source'];
