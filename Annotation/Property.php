@@ -56,6 +56,11 @@ final class Property extends AbstractProperty
     public $searchAnalyzer;
 
     /**
+     * @var bool
+     */
+    public $includeInAll;
+
+    /**
      * @var float
      */
     public $boost;
