@@ -99,4 +99,14 @@ final class Property extends AbstractProperty
      * @var int
      */
     public $ignoreAbove;
+
+    /**
+     * @var bool
+     */
+    public $store;
+
+    /**
+     * @var string
+     */
+    public $indexName;
 }
