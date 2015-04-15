@@ -137,12 +137,12 @@ class Repository
         $offset = null,
         $resultType = self::RESULTS_OBJECT
     ) {
-        $search = new Search();
+        $search = $this->createSearch();
 
-        if ($limit) {
+        if ($limit !== null) {
             $search->setSize($limit);
         }
-        if ($offset) {
+        if ($offset !== null) {
             $search->setFrom($offset);
         }
 
