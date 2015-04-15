@@ -17,6 +17,7 @@ use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
+use ONGR\ElasticsearchBundle\DSL\Search;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
 use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
@@ -667,5 +668,70 @@ class RepositoryTest extends ElasticsearchTestCase
             ->addQuery(new TermQuery('enabled_cdn.cdn_url', 'foo'));
 
         $this->assertCount(1, $repository->execute($search));
+    }
+
+    /**
+     * Tests if find works as expected with RESULTS_RAW return type.
+     */
+    public function testFindArrayRaw()
+    {
+        $manager = $this->getManager();
+        $index = $manager->getConnection()->getIndexName();
+        $repository = $manager->getRepository('AcmeTestBundle:Color');
+        $document = $repository->find(1, Search::SCROLL_DURATION, Repository::RESULTS_RAW);
+        $expected = [
+            '_index' => $index,
+            '_type' => 'color',
+            '_id' => 1,
+            '_version' => 1,
+            'found' => 1,
+            '_source' => [
+                'enabled_cdn' => [
+                    [
+                        'cdn_url' => 'foo',
+                    ],
+                ],
+                'disabled_cdn' => [
+                    [
+                        'cdn_url' => 'foo',
+                    ],
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $document);
+    }
+
+    /**
+     * Tests if find works as expected with RESULTS_ARRAY return type.
+     */
+    public function testFindArray()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Color');
+        $document = $repository->find(1, Search::SCROLL_DURATION, Repository::RESULTS_ARRAY);
+        $expected = [
+            'enabled_cdn' => [
+                [
+                    'cdn_url' => 'foo',
+                ],
+            ],
+            'disabled_cdn' => [
+                [
+                    'cdn_url' => 'foo',
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $document);
+    }
+
+    /**
+     * Tests if find works as expected with RESULTS_RAW_ITERATOR return type.
+     */
+    public function testFindArrayIterator()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $document = $repository->find(1, Search::SCROLL_DURATION, Repository::RESULTS_RAW_ITERATOR);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawResultIterator', $document);
     }
 }
