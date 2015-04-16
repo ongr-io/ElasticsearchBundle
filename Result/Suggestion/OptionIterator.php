@@ -86,7 +86,6 @@ class OptionIterator implements \ArrayAccess, \Iterator
         throw new \LogicException('Data of this iterator can not be changed after initialization.');
     }
 
-    // Methods below implements \Iterator interface.
     /**
      * {@inheritdoc}
      */
