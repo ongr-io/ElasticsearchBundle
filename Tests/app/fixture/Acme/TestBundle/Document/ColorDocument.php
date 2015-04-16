@@ -19,7 +19,7 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 /**
  * Class ColorDocument.
  *
- * @ES\Document(type="color")
+ * @ES\Document(type="color", all={"enabled": false})
  */
 class ColorDocument extends AbstractDocument
 {

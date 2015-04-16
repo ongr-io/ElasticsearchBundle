@@ -45,6 +45,11 @@ final class Document
     public $enabled;
 
     /**
+     * @var array
+     */
+    public $all;
+
+    /**
      * Constructor.
      */
     public function __construct()
