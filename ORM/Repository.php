@@ -87,15 +87,14 @@ class Repository
     /**
      * Returns a single document data by ID or null if document is not found.
      *
-     * @param string $id             Document Id to find.
-     * @param string $scrollDuration Scroll duration.
-     * @param string $resultType     Result type returned.
+     * @param string $id         Document Id to find.
+     * @param string $resultType Result type returned.
      *
      * @return DocumentInterface|null
      *
      * @throws \LogicException
      */
-    public function find($id, $scrollDuration = Search::SCROLL_DURATION, $resultType = self::RESULTS_OBJECT)
+    public function find($id, $resultType = self::RESULTS_OBJECT)
     {
         if (count($this->types) !== 1) {
             throw new \LogicException('Only one type must be specified for the find() method');
@@ -113,16 +112,14 @@ class Repository
             return null;
         }
 
-        $converter = new Converter(
-            $this->manager->getTypesMapping(),
-            $this->manager->getBundlesMapping()
-        );
-
-        if ($resultType == self::RESULTS_OBJECT) {
-            return $converter->convertToDocument($result);
-        } else {
-            return $this->parseResult($result, $resultType, $scrollDuration);
+        if ($resultType === self::RESULTS_OBJECT) {
+            return (new Converter(
+                $this->manager->getTypesMapping(),
+                $this->manager->getBundlesMapping()
+            ))->convertToDocument($result);
         }
+
+        return $this->parseResult($result, $resultType, '');
     }
 
     /**
@@ -387,10 +384,12 @@ class Repository
      */
     private function convertToNormalizedArray($data)
     {
-        $output = [];
         if (array_key_exists('_source', $data)) {
             return $data['_source'];
         }
+
+        $output = [];
+
         if (isset($data['hits']['hits'][0]['_source'])) {
             foreach ($data['hits']['hits'] as $item) {
                 $output[] = $item['_source'];

@@ -678,7 +678,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $manager = $this->getManager();
         $index = $manager->getConnection()->getIndexName();
         $repository = $manager->getRepository('AcmeTestBundle:Color');
-        $document = $repository->find(1, Search::SCROLL_DURATION, Repository::RESULTS_RAW);
+        $document = $repository->find(1, Repository::RESULTS_RAW);
         $expected = [
             '_index' => $index,
             '_type' => 'color',
@@ -708,7 +708,7 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
         $repository = $manager->getRepository('AcmeTestBundle:Color');
-        $document = $repository->find(1, Search::SCROLL_DURATION, Repository::RESULTS_ARRAY);
+        $document = $repository->find(1, Repository::RESULTS_ARRAY);
         $expected = [
             'enabled_cdn' => [
                 [
@@ -731,7 +731,7 @@ class RepositoryTest extends ElasticsearchTestCase
     {
         $manager = $this->getManager();
         $repository = $manager->getRepository('AcmeTestBundle:Product');
-        $document = $repository->find(1, Search::SCROLL_DURATION, Repository::RESULTS_RAW_ITERATOR);
+        $document = $repository->find(1, Repository::RESULTS_RAW_ITERATOR);
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawResultIterator', $document);
     }
 }

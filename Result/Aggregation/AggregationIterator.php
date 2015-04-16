@@ -46,7 +46,6 @@ class AggregationIterator implements \ArrayAccess, \Iterator
         $this->converter = $converter;
     }
 
-    // Methods below implements \ArrayAccess interface.
     /**
      * {@inheritdoc}
      */
@@ -106,7 +105,6 @@ class AggregationIterator implements \ArrayAccess, \Iterator
         throw new \LogicException('Data of this iterator can not be changed after initialization.');
     }
 
-    // Methods below implements \Iterator interface.
     /**
      * {@inheritdoc}
      */
