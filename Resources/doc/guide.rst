@@ -3,15 +3,15 @@ Beginners guide
 
 Befor starting this, you should have already installed:
 
-Text editor (Phpstorm, Vim, SublimeText, BlueFish..),
+Text editor (`PhpStorm <https://www.jetbrains.com/phpstorm/download/>`_ or `Vim <http://vim.en.softonic.com/>`_, or `SublimeText <http://www.sublimetext.com/2>`_, or `BlueFish <http://bluefish.openoffice.nl/download.html>`_ or other..),
 
-Symfony,
+`Composer <https://getcomposer.org/download/>`_,
 
-Composer,
+`Git <http://git-scm.com/downloads>`_,
 
-Git,
+`Symfony <https://github.com/symfony/symfony-installer>`_ (Preferred installation `here <https://github.com/symfony/symfony-installer>`_),
 
-ElasticSearch (and launched it, so you can go to localhost:9200 and see it's working)
+`ElasticSearch <https://www.elastic.co/downloads/elasticsearch>`_ (and launched it, so you can go to `localhost:9200 <localhost:9200>`_ and see it's working)
 
 Create new Symfony project
 --------------------------
@@ -19,14 +19,17 @@ Open Terminal, go to your working directory or create new
 
 .. code:: bash
 
+    cd ~
     mkdir Sites
     cd Sites
 
-Create new Symfony project
+Create new Symfony project (You need to have installed Symfony with preferred installation)
 
 .. code:: bash
 
     symfony new project
+
+.. note:: You should create new project using exactly this way. If you create it using composer, (in the next chapter) inside config you need to change Bundle name (for ongr_elasticsearch managers mappings) and in later chapters it can confuse you.
 
 Setup ElasticSearchBundle
 -------------------------
@@ -115,7 +118,7 @@ Open this Product.php and paste that:
             public $place;
         }
 
-Open terminal and create new index
+Open terminal and create new index (means Database)
 
 .. code:: bash
 
@@ -166,7 +169,11 @@ Open terminal and update your index with this data:
 
     app/console es:index:import --raw src/Acme/DemoBundle/Data/items.json
 
-You can now locate to ``localhost:9200/product/product/1`` and you should see your first product.
+You can now locate to `localhost:9200/product/product/1 <localhost:9200/product/product/1>`_ and you should see your first product.
+
+.. note:: ElasticSearch comparison to MySQL: index = Database, type = Table. 
+
+    In this example we created 25 Tables (all named product) inside one Database (named product).
 
 Getting data from ElasticSearch
 -------------------------------
@@ -208,4 +215,4 @@ Open terminal and launch your server:
 
     php app/console server:run
 
-Go to ``localhost:8000`` and you should see your first product.
+Go to `localhost:8000 <localhost:8000>`_ and you should see your first product.
