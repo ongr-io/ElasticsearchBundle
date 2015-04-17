@@ -14,10 +14,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
+use ONGR\ElasticsearchBundle\DSL\Search;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
@@ -293,6 +295,29 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $actualProduct = $results[0];
 
         $this->assertGreaterThan(time(), $actualProduct->getCreatedAt()->getTimestamp());
+    }
+
+    /**
+     * Check if `token_count` field works as expected.
+     */
+    public function testPersistTokenCountField()
+    {
+        $manager = $this->getManager();
+        $colorDocument = new ColorDocument();
+        $colorDocument->piecesCount = 't e s t';
+        $manager->persist($colorDocument);
+        $manager->commit();
+        $repository = $manager->getRepository('AcmeTestBundle:ColorDocument');
+
+        // Analyzer is whitespace, so there are four tokens.
+        $search = new Search();
+        $search->addQuery(new TermQuery('pieces_count.count', '4'));
+        $this->assertEquals(1, $repository->execute($search)->getTotalCount());
+
+        // Test with invalid count.
+        $search = new Search();
+        $search->addQuery(new TermQuery('pieces_count.count', '6'));
+        $this->assertEquals(0, $repository->execute($search)->getTotalCount());
     }
 
     /**

@@ -61,4 +61,15 @@ class ColorDocument extends AbstractDocument
      * @ES\Property(includeInAll=true, type="string", name="included_in_all")
      */
     public $includedInAll;
+
+    /**
+     * @var int
+     *
+     * @ES\Property(
+     *     type="string",
+     *     name="pieces_count",
+     *     fields={@ES\MultiField(name="count", type="token_count", analyzer="whitespace")}
+     * )
+     */
+    public $piecesCount;
 }
