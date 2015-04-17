@@ -2,7 +2,7 @@ imports:
   - php
 tools:
   external_code_coverage:
-      timeout: 3600
+      timeout: 5400
 filter:
   excluded_paths:
     - Tests/*
