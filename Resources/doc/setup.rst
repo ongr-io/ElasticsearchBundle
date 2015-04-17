@@ -1,6 +1,8 @@
 Setup
 =====
 
+Look at `beginners guide <guide.html>`_ for basic example.
+
 Step 1: Install Elasticsearch bundle
 ------------------------------------
 
@@ -10,7 +12,7 @@ Elasticsearch bundle is installed using `Composer <https://getcomposer.org>`_.
 
     php composer.phar require ongr/elasticsearch-bundle "~0.1"
 
-.. note:: Instructions for installing and deploying Elasticsearch can be found in `Elasticsearch installation page <http://www.elasticsearch.org/guide/reference/setup/installation/>`_.
+.. note:: Instructions for installing and deploying Elasticsearch can be found in `Elasticsearch installation page <https://www.elastic.co/downloads/elasticsearch/>`_.
 
 Step 2: Enable Elasticsearch bundle
 -----------------------------------
