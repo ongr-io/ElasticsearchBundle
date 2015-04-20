@@ -11,13 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection;
 
-use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ElasticsearchExtensionTest extends WebTestCase
 {
-    use TestHelperTrait;
-
     /**
      * @return array
      */
@@ -127,7 +124,7 @@ class ElasticsearchExtensionTest extends WebTestCase
         ];
         $actualManagers = $container->getParameter('es.managers');
 
-        $this->assertArrayContainsArray($expectedConnections, $actualConnections);
+        $this->assertArraySubset($expectedConnections, $actualConnections);
         $this->assertEquals($expectedManagers, $actualManagers);
     }
 }

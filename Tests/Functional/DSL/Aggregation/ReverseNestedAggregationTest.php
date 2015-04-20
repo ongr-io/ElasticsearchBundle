@@ -13,18 +13,14 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
 use ONGR\ElasticsearchBundle\DSL\Aggregation\NestedAggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\ReverseNestedAggregation;
-
 use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\FilterAggregation;
 use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
 class ReverseNestedAggregationTest extends AbstractElasticsearchTestCase
 {
-    use TestHelperTrait;
-
     /**
      * {@inheritdoc}
      */
@@ -248,8 +244,7 @@ class ReverseNestedAggregationTest extends AbstractElasticsearchTestCase
      */
     public function testReverseNestedAggregation($aggregation, $reverseAggregation, $expectedResult, $mapping)
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager('default', true, $mapping)->getRepository('AcmeTestBundle:Product');
+        $repository = $this->getManager('default', true, $mapping)->getRepository('AcmeTestBundle:Product');
 
         $revereNestedAggregation = new ReverseNestedAggregation('test_reverse_nested_agg');
         $revereNestedAggregation->addAggregation($reverseAggregation);
@@ -258,13 +253,12 @@ class ReverseNestedAggregationTest extends AbstractElasticsearchTestCase
 
         $nestedAggregation = new NestedAggregation('test_nested_agg');
         $nestedAggregation->setPath('sub_products');
-
         $nestedAggregation->addAggregation($aggregation);
 
-        $search = $repo->createSearch()->addAggregation($nestedAggregation);
-        $results = $repo->execute($search, Repository::RESULTS_RAW);
+        $search = $repository->createSearch()->addAggregation($nestedAggregation);
+        $results = $repository->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('aggregations', $results);
-        $this->assertArrayContainsArray($expectedResult, $results['aggregations']['agg_test_nested_agg']);
+        $this->assertArraySubset($expectedResult, $results['aggregations']['agg_test_nested_agg']);
     }
 }

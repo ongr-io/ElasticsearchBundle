@@ -84,14 +84,12 @@ class RangeTest extends ElasticsearchTestCase
      */
     public function testRangeQuery($parameters, $expected)
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $search = $repository
+            ->createSearch()
+            ->addQuery(new RangeQuery('price', $parameters));
 
-        $rangeQuery = new RangeQuery('price', $parameters);
-
-        $search = $repo->createSearch()->addQuery($rangeQuery);
-
-        $results = $repo->execute($search, Repository::RESULTS_ARRAY);
+        $results = $repository->execute($search, Repository::RESULTS_ARRAY);
 
         sort($results);
         sort($expected);
