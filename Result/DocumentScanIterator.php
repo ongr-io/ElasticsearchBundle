@@ -130,4 +130,29 @@ class DocumentScanIterator extends DocumentIterator
     {
         $this->key++;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        if (!isset($this->converted[$offset])) {
+            if (!isset($this->documents[$offset])) {
+                return null;
+            }
+
+            $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
+
+            // Clear memory.
+            if (isset($this->converted[$offset - 20])) {
+                $this->converted[$offset - 20] = null;
+            }
+
+            if (isset($this->documents[$offset])) {
+                $this->documents[$offset] = null;
+            }
+        }
+
+        return $this->converted[$offset];
+    }
 }
