@@ -17,12 +17,9 @@ use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Test\TestHelperTrait;
 
 class DocumentScanIteratorTest extends ElasticsearchTestCase
 {
-    use TestHelperTrait;
-
     /**
      * {@inheritdoc}
      */
@@ -90,10 +87,10 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
      */
     public function testIteration(Search $search, $isSorted)
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Content');
-
-        $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
+        $iterator = $this
+            ->getManager()
+            ->getRepository('AcmeTestBundle:Content')
+            ->execute($search, Repository::RESULTS_OBJECT);
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentScanIterator', $iterator);
         $this->assertCount(4, $iterator);
@@ -110,8 +107,8 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
             $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
             $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
         } else {
-            $this->assertArrayContainsArrayValues($expectedHeaders, $this->iterateThrough($iterator), true);
-            $this->assertArrayContainsArrayValues($expectedHeaders, $this->iterateThrough($iterator), true);
+            $this->assertEmpty(array_diff($expectedHeaders, $this->iterateThrough($iterator)));
+            $this->assertEmpty(array_diff($expectedHeaders, $this->iterateThrough($iterator)));
         }
     }
 

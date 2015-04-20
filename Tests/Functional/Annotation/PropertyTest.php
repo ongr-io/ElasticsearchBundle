@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Annotation;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\DelayedObjectWrapper;
 
 /**
  * Property Test.
@@ -46,7 +47,7 @@ class PropertyTest extends AbstractElasticsearchTestCase
      */
     public function testDocumentMappingWithIncludeInAll($field, $expected)
     {
-        $manager = $this->getManager();
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
         $params = [
             'index' => $manager->getConnection()->getIndexName(),
             'type' => 'color',

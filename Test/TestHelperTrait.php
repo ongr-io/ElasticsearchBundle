@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Test;
 
 /**
  * A helper used to check if array contains a sub array.
+ *
+ * @deprecated use assertArraySubset method from phpunit > 4.4
  */
 trait TestHelperTrait
 {

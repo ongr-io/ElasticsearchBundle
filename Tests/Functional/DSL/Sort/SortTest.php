@@ -108,13 +108,14 @@ class SortTest extends ElasticsearchTestCase
      */
     public function testSimpleSort($sorts, $expectedIds)
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $search = $repo->createSearch();
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $search = $repository->createSearch();
+
         foreach ($sorts as $sort) {
             $search->addSort(new Sort($sort['field'], $sort['order'], $sort['nested'], $sort['mode']));
         }
-        $results = $repo->execute($search, Repository::RESULTS_RAW_ITERATOR);
+
+        $results = $repository->execute($search, Repository::RESULTS_RAW_ITERATOR);
         $ids = [];
         foreach ($results as $result) {
             $ids[] = $result['_id'];
