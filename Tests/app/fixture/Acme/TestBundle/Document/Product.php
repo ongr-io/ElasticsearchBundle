@@ -112,4 +112,18 @@ class Product extends Item
      * @ES\Property(type="ip", name="ip")
      */
     public $ip;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="limited", index="not_analyzed", ignore_above=20)
+     */
+    public $limited;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="stored", store=true, indexName="ongr-esb-test")
+     */
+    public $stored;
 }
