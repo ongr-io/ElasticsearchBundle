@@ -61,4 +61,26 @@ class PropertyTest extends AbstractElasticsearchTestCase
         ];
         $this->assertEquals($expectedMapping, $result['ongr-esb-test']['mappings']['color'][$field]['mapping']);
     }
+
+    /**
+     * Check if "ignore above" option is set as expected.
+     */
+    public function testDocumentMappingWithIgnoreAbove()
+    {
+        $manager = $this->getManager();
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'color',
+            'field' => 'limited',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'limited' => [
+                'ignore_above' => 20,
+                'type' => 'string',
+                'index' => 'not_analyzed',
+            ],
+        ];
+        $this->assertEquals($expectedMapping, $result['ongr-esb-test']['mappings']['color']['limited']['mapping']);
+    }
 }

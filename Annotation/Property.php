@@ -94,4 +94,9 @@ final class Property extends AbstractProperty
      * @var bool OneToOne or OneToMany.
      */
     public $multiple;
+
+    /**
+     * @var int
+     */
+    public $ignoreAbove;
 }

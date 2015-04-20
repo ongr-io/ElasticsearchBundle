@@ -72,4 +72,11 @@ class ColorDocument extends AbstractDocument
      * )
      */
     public $piecesCount;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="limited", index="not_analyzed", ignore_above=20)
+     */
+    public $limited;
 }
