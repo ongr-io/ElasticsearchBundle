@@ -71,7 +71,7 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
 
         $typesOutput = empty($types) ? 'all' : implode('</comment><info>`, `</info><comment>', $types);
 
-        switch($result) {
+        switch ($result) {
             case 1:
                 $message = sprintf(
                     '<info>`</info><comment>%s</comment><info>` type(s) have been updated for manager'
