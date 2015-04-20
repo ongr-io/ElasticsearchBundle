@@ -293,13 +293,14 @@ class TermsAggregationTest extends AbstractElasticsearchTestCase
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $aggregationFoo = new TermsAggregation('test_foo');
         $aggregationFoo->setField('title');
-        $aggregationFoo->setShardSize(5);
-        $aggregationFoo->setExecutionHint(TermsAggregation::HINT_MAP);
-        $aggregationFoo->setCollectMode(TermsAggregation::COLLECT_BREADTH_FIRST);
+        $aggregationFoo->addParameter('size', 5);
+        $aggregationFoo->addParameter('shard_size', 5);
+        $aggregationFoo->addParameter('execution_hint', 'map');
+        $aggregationFoo->addParameter('collect_mode', 'breadth_first');
 
         $aggregationBar = new TermsAggregation('test_bar');
         $aggregationBar->setField('title');
-        $aggregationBar->setShardMinDocCount(5);
+        $aggregationBar->addParameter('shard_min_doc_count', 5);
         $aggregationFoo->addAggregation($aggregationBar);
 
         $search = $repo->createSearch()->addAggregation($aggregationFoo);
@@ -320,23 +321,23 @@ class TermsAggregationTest extends AbstractElasticsearchTestCase
         $term->setField($options['field']);
 
         if (array_key_exists('exclude', $options)) {
-            $term->setExclude($options['exclude']);
+            $term->addParameter('exclude', $options['exclude']);
         }
 
         if (array_key_exists('include', $options)) {
-            $term->setInclude($options['include']);
+            $term->addParameter('include', $options['include']);
         }
 
         if (array_key_exists('min_document_count', $options)) {
-            $term->setMinDocCount($options['min_document_count']);
+            $term->addParameter('min_doc_count', $options['min_document_count']);
         }
 
         if (array_key_exists('order', $options)) {
-            call_user_func_array([$term, 'setOrder'], $options['order']);
+            $term->addParameter('order', [$options['order'][0] => $options['order'][1]]);
         }
 
         if (array_key_exists('size', $options)) {
-            $term->setSize($options['size']);
+            $term->addParameter('size', $options['size']);
         }
 
         return $term;
