@@ -665,8 +665,7 @@ class Connection
 
         foreach ($warmers as $name => $body) {
             if (empty($names) || in_array($name, $names)) {
-                switch($action)
-                {
+                switch ($action) {
                     case 'put':
                         $this->getClient()->indices()->putWarmer(
                             [

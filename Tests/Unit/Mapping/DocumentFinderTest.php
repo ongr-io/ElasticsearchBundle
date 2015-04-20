@@ -18,7 +18,7 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     /**
      * Data provider for testDocumentDir tests.
      *
-     * @return array $out
+     * @return array
      */
     public function getTestData()
     {
