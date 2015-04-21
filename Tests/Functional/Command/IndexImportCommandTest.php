@@ -50,11 +50,12 @@ class IndexImportCommandTest extends ElasticsearchTestCase
 
         $command = $app->find('ongr:es:index:import');
         $commandTester = new CommandTester($command);
+        $filenamePath = __DIR__ . '/../../app/fixture/Json/' . $filename;
         $commandTester->execute(
             [
                 'command' => $command->getName(),
                 '--raw' => true,
-                'filename' => __DIR__ . '/../../app/fixture/Json/' . $filename,
+                'filename' => $filenamePath,
                 '--bulk-size' => $bulkSize,
             ]
         );

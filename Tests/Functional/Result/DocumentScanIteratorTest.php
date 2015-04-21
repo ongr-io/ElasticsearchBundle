@@ -29,8 +29,8 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
 
         for ($i = 0; $i < 4; $i++) {
             $documents['default']['fooContent'][] = [
-                '_id' => 'someId_' . $i,
-                'header' => 'content_' . $i,
+                '_id' => "someId_{$i}",
+                'header' => "content_{$i}",
             ];
         }
 
