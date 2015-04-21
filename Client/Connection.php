@@ -488,7 +488,7 @@ class Connection
      *
      * @throws \LogicException
      *
-     * @deprecated Will be removed in 1.0. Please now use Connection#updateTypes()
+     * @deprecated Will be removed in 1.0. Please now use Connection#updateTypes().
      */
     public function updateMapping(array $types = [])
     {

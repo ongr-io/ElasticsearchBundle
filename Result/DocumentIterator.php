@@ -89,7 +89,7 @@ class DocumentIterator extends AbstractResultsIterator
      *
      * @param array $rawData
      *
-     * @return DocumentInterface Document
+     * @return DocumentInterface
      * @throws \LogicException
      */
     protected function convertDocument($rawData)
