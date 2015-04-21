@@ -54,7 +54,7 @@ class Converter
      *
      * @param array $rawData
      *
-     * @return DocumentInterface Document
+     * @return DocumentInterface
      *
      * @throws \LogicException
      */
