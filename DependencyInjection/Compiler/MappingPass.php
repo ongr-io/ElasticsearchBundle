@@ -172,10 +172,10 @@ class MappingPass implements CompilerPassInterface
             $params['connectionParams']['auth'] = array_values($connection['auth']);
         }
 
-        if ($manager['debug']) {
+        if ($manager['debug']['enabled'] === true) {
             $params['logging'] = true;
             $params['logPath'] = $container->getParameter('es.logging.path');
-            $params['logLevel'] = LogLevel::WARNING;
+            $params['logLevel'] = $manager['debug']['level'];
             $params['traceObject'] = new Reference('es.logger.trace');
         }
 

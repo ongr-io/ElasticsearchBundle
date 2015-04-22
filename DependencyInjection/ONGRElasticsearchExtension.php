@@ -162,7 +162,7 @@ class ONGRElasticsearchExtension extends Extension
     private function isDebugSet(array $config)
     {
         foreach ($config['managers'] as $manager) {
-            if ($manager['debug']) {
+            if ($manager['debug']['enabled'] === true) {
                 return true;
             }
         }
