@@ -40,12 +40,12 @@ class Product extends Item
      * @var PriceLocationSuggesting
      *
      * @ES\Suggester\ContextSuggesterProperty(
-     *   name = "suggestions",
-     *   objectName = "AcmeTestBundle:PriceLocationSuggesting",
-     *   payloads = true,
-     *   context = {
-     * @ES\Suggester\Context\GeoLocationContext(name="location", precision = "5m", neighbors = true, default = "u33"),
-     * @ES\Suggester\Context\CategoryContext(name="price", default = {"red", "green"}, path = "description")
+     *   name="suggestions",
+     *   objectName="AcmeTestBundle:PriceLocationSuggesting",
+     *   payloads=true,
+     *   context={
+     * @ES\Suggester\Context\GeoLocationContext(name="location", precision="5m", neighbors=true, default="u33"),
+     * @ES\Suggester\Context\CategoryContext(name="price", default={"red", "green"}, path="description")
      *   }
      * )
      */
@@ -55,11 +55,11 @@ class Product extends Item
      * @var CompletionSuggesting
      *
      * @ES\Suggester\CompletionSuggesterProperty(
-     *  name = "completion_suggesting",
-     *  objectName = "AcmeTestBundle:CompletionSuggesting",
-     *  index_analyzer = "simple",
-     *  search_analyzer = "simple",
-     *  payloads = false,
+     *  name="completion_suggesting",
+     *  objectName="AcmeTestBundle:CompletionSuggesting",
+     *  indexAnalyzer="simple",
+     *  searchAnalyzer="simple",
+     *  payloads=false,
      *  )
      */
     public $completionSuggesting;
@@ -74,7 +74,7 @@ class Product extends Item
     /**
      * @var string
      *
-     * @ES\Property(type="geo_point", name="location", geohash="true", geohash_prefix="true", geohash_precision="1km")
+     * @ES\Property(type="geo_point", name="location", geohash=true, geohashPrefix=true, geohashPrecision="1km")
      */
     public $location;
 
@@ -116,7 +116,7 @@ class Product extends Item
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="limited", index="not_analyzed", ignore_above=20)
+     * @ES\Property(type="string", name="limited", index="not_analyzed", ignoreAbove=20)
      */
     public $limited;
 

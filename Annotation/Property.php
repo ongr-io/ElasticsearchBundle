@@ -109,4 +109,19 @@ final class Property extends AbstractProperty
      * @var string
      */
     public $indexName;
+
+    /**
+     * @var bool
+     */
+    public $geohash;
+
+    /**
+     * @var bool
+     */
+    public $geohashPrefix;
+
+    /**
+     * @var string
+     */
+    public $geohashPrecision;
 }
