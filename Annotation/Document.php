@@ -22,7 +22,7 @@ final class Document
     /**
      * @var bool
      */
-    public $create;
+    public $create = true;
 
     /**
      * @var string
@@ -48,12 +48,4 @@ final class Document
      * @var array
      */
     public $all;
-
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        $this->create = true;
-    }
 }

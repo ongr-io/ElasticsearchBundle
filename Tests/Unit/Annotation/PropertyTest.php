@@ -20,17 +20,12 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function testFilter()
     {
-        $type = new Property(
-            [
-                'object_name' => 'foo/bar',
-                'type' => 'string',
-            ]
-        );
-
-        $this->assertEquals('foo/bar', $type->objectName, 'Properties should be camelized');
+        $type = new Property();
 
         $type->name = 'id';
         $type->index = 'no_index';
+        $type->objectName = 'foo/bar';
+        $type->type = 'string';
         $type->analyzer = null;
 
         $this->assertEquals(

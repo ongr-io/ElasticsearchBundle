@@ -11,13 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use ONGR\ElasticsearchBundle\Mapping\AbstractAnnotationCamelizer;
+use ONGR\ElasticsearchBundle\Mapping\Caser;
 use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
 
 /**
  * Makes sure thats annotations are well formated.
  */
-abstract class AbstractProperty extends AbstractAnnotationCamelizer implements DumperInterface
+abstract class AbstractProperty implements DumperInterface
 {
     /**
      * {@inheritdoc}
@@ -37,7 +37,7 @@ abstract class AbstractProperty extends AbstractAnnotationCamelizer implements D
         return array_combine(
             array_map(
                 function ($key) {
-                    return $this->underscore($key);
+                    return Caser::snake($key);
                 },
                 array_keys($array)
             ),
