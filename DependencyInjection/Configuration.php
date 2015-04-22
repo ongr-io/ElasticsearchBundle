@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection;
 
+use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -131,9 +132,35 @@ class Configuration implements ConfigurationInterface
                         ->isRequired()
                         ->info('Sets connection for manager.')
                     ->end()
-                    ->booleanNode('debug')
-                        ->info('Enables logging.')
-                        ->defaultFalse()
+                    ->arrayNode('debug')
+                        ->info('Enables logging')
+                        ->addDefaultsIfNotSet()
+                        ->beforeNormalization()
+                            ->ifTrue(
+                                function ($v) {
+                                    return is_bool($v);
+                                }
+                            )
+                            ->then(
+                                function ($v) {
+                                    return ['enabled' => $v];
+                                }
+                            )
+                        ->end()
+                        ->children()
+                            ->booleanNode('enabled')
+                                ->info('enables logging')
+                                ->defaultFalse()
+                            ->end()
+                            ->scalarNode('level')
+                                ->info('Sets psr logging level')
+                                ->defaultValue(LogLevel::WARNING)
+                                ->validate()
+                                ->ifNotInArray((new \ReflectionClass('Psr\Log\LogLevel'))->getConstants())
+                                    ->thenInvalid('Invalid Psr log level.')
+                                ->end()
+                            ->end()
+                        ->end()
                     ->end()
                     ->booleanNode('readonly')
                         ->info('Sets manager to read only state.')
