@@ -40,6 +40,13 @@ class ProxyTest extends AbstractElasticsearchTestCase
                         ],
                     ],
                 ],
+                'product' => [
+                    [
+                        '_id' => 1,
+                        'title' => ['foo', 'bar'],
+                        'price' => 10,
+                    ],
+                ],
             ],
         ];
     }
@@ -49,16 +56,57 @@ class ProxyTest extends AbstractElasticsearchTestCase
      */
     public function testIsInitialized()
     {
-        $manager = $this->getManager();
-        $product = $manager->getRepository('AcmeTestBundle:Color')->find(1);
+        $product = $this->getDocument('AcmeTestBundle:Color', 1);
 
         $this->assertInstanceOf(
             'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
             $product,
             'Recieved document should be a proxy.'
         );
+        $this->assertTrue($product->__isInitialized(), 'Document should have initialized flag set.');
+    }
+
+    /**
+     * Test if find by path works as expected.
+     */
+    public function testIfFindByPathInArray()
+    {
+        $product = $this->getDocument('AcmeTestBundle:Color', 1);
         $result = $product->findByPath('enabled_cdn[0].cdn_url');
         $this->assertEquals('foo', $result);
-        $this->assertTrue($product->__isInitialized(), 'Document should have initialized flag set.');
+    }
+
+    /**
+     * Test if find by path works as expected.
+     */
+    public function testIfFindByPathInScalar()
+    {
+        $product = $this->getDocument('AcmeTestBundle:Product', 1);
+        $result = $product->findByPath('price');
+        $this->assertEquals(10, $result);
+    }
+
+    /**
+     * Test if find by path works as expected when path not found.
+     */
+    public function testIfFindByPathWhenPathNotFound()
+    {
+        $product = $this->getDocument('AcmeTestBundle:Product', 1);
+        $result = $product->findByPath('foo');
+        $this->assertEquals(null, $result);
+    }
+
+    /**
+     * @param string $document
+     * @param int    $id
+     *
+     * @return null|\ONGR\ElasticsearchBundle\Document\DocumentInterface
+     */
+    private function getDocument($document, $id)
+    {
+        $manager = $this->getManager();
+        $product = $manager->getRepository($document)->find($id);
+
+        return $product;
     }
 }
