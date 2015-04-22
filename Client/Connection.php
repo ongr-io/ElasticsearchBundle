@@ -466,7 +466,7 @@ class Connection
      * Sets multiple mappings.
      *
      * @param array $mapping Mapping to set.
-     * @param bool  $cleanUp Cleans currect mapping.
+     * @param bool  $cleanUp Cleans current mapping.
      */
     public function setMultipleMapping(array $mapping, $cleanUp = false)
     {
@@ -588,7 +588,7 @@ class Connection
     }
 
     /**
-     * Adds warmer to conatiner.
+     * Adds warmer to container.
      *
      * @param WarmerInterface $warmer
      */

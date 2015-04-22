@@ -31,14 +31,14 @@ final class Events
     const POST_PERSIST = 'es.post_persist';
 
     /**
-     * Event dispatched before data are commited.
+     * Event dispatched before data are committed.
      *
      * The event listener receives an ElasticsearchCommitEvent instance.
      */
     const PRE_COMMIT = 'es.pre_commit';
 
     /**
-     * Event dispatched after data are commited.
+     * Event dispatched after data are committed.
      *
      * The event listener receives an ElasticsearchCommitEvent instance.
      */

@@ -40,7 +40,7 @@ class ONGRElasticsearchExtension extends Extension
         $container->setParameter('es.managers', $config['managers']);
 
         $this->addDocumentFinderDefinition($config, $container);
-        $this->addMedadataCollectorDefinition($config, $container);
+        $this->addMetadataCollectorDefinition($config, $container);
         $this->addDocumentsResource($config, $container);
         $this->addDataCollectorDefinition($config, $container);
 
@@ -75,7 +75,7 @@ class ONGRElasticsearchExtension extends Extension
      * @param array            $config
      * @param ContainerBuilder $container
      */
-    private function addMedadataCollectorDefinition(array $config, ContainerBuilder $container)
+    private function addMetadataCollectorDefinition(array $config, ContainerBuilder $container)
     {
         $cachedReader = new Definition(
             'Doctrine\Common\Annotations\FileCacheReader',

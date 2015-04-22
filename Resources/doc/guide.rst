@@ -1,7 +1,7 @@
 Beginners guide
 ===============
 
-Befor starting this, you should have already installed:
+Before starting this, you should have already installed:
 
 Text editor (`PhpStorm <https://www.jetbrains.com/phpstorm/download/>`_ or `Vim <http://vim.en.softonic.com/>`_, or `SublimeText <http://www.sublimetext.com/2>`_, or `BlueFish <http://bluefish.openoffice.nl/download.html>`_ or other..),
 

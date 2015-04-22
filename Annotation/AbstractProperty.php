@@ -15,7 +15,7 @@ use ONGR\ElasticsearchBundle\Mapping\Caser;
 use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
 
 /**
- * Makes sure thats annotations are well formated.
+ * Makes sure that annotations are well formatted.
  */
 abstract class AbstractProperty implements DumperInterface
 {
