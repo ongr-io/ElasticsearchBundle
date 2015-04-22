@@ -102,7 +102,10 @@ class ElasticsearchExtensionTest extends WebTestCase
         $expectedManagers = [
             'default' => [
                 'connection' => 'default',
-                'debug' => true,
+                'debug' => [
+                    'enabled' => true,
+                    'level' => 'warning',
+                ],
                 'readonly' => false,
                 'mappings' => [
                     'AcmeTestBundle',
@@ -111,13 +114,19 @@ class ElasticsearchExtensionTest extends WebTestCase
             ],
             'bar' => [
                 'connection' => 'bar',
-                'debug' => false,
+                'debug' => [
+                    'enabled' => false,
+                    'level' => 'warning',
+                ],
                 'readonly' => false,
                 'mappings' => ['ONGRElasticsearchBundle'],
             ],
             'readonly' => [
                 'connection' => 'default',
-                'debug' => true,
+                'debug' => [
+                    'enabled' => true,
+                    'level' => 'warning',
+                ],
                 'readonly' => true,
                 'mappings' => ['AcmeTestBundle'],
             ],
