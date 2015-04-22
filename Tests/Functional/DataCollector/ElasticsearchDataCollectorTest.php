@@ -121,7 +121,7 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
         $this->assertEquals(
             [
                 'body' => $this->getFileContents('collector_body_0.json'),
-                'method' => 'POST',
+                'method' => 'GET',
                 'httpParameters' => [],
                 'scheme' => 'http',
                 'port' => 9200,

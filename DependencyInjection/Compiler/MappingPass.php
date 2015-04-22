@@ -134,12 +134,12 @@ class MappingPass implements CompilerPassInterface
             );
         }
 
-        $client = new Definition(
-            'Elasticsearch\Client',
-            [
-                $this->getClientParams($connections[$settings['connection']], $settings, $container),
-            ]
-        );
+        $clientBuilder = $this->getClientBuilder($this->getClientParams($connections[$settings['connection']], $settings, $container));
+        $container->setDefinition('es.client.factory', $clientBuilder);
+
+        $client = new Definition('Elasticsearch\Client');
+        $client->setFactory([new Reference('es.client.factory'), 'build']);
+
         $connection = new Definition(
             'ONGR\ElasticsearchBundle\Client\Connection',
             [
@@ -257,5 +257,32 @@ class MappingPass implements CompilerPassInterface
         }
 
         return $warmers;
+    }
+
+    /**
+     * Builds client.
+     *
+     * @param array $param
+     * @return Definition
+     */
+    private function getClientBuilder(array $param)
+    {
+        $clientBuilder = new Definition('Elasticsearch\ClientBuilder');
+        $clientBuilder->addMethodCall('setHosts', [$param['hosts']]);
+
+        if (!empty($param['logPath']) && !empty($param['logLevel'])){
+            $clientLogger = new Definition('Monolog\Logger');
+            $clientLogger->setFactory(['Elasticsearch\ClientBuilder', 'defaultLogger']);
+            $clientLogger->setArguments([$param['logPath'], $param['logLevel']]);
+
+            $clientBuilder->addMethodCall('setLogger', [$clientLogger]);
+        }
+
+        if (!empty($param['traceObject']))
+            $clientBuilder->addMethodCall('setTracer', [$param['traceObject']]);
+
+        $clientBuilder->setPublic(false);
+
+        return $clientBuilder;
     }
 }
