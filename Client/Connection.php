@@ -185,11 +185,11 @@ class Connection
      *
      * @param array $params Parameters.
      *
-     * $params = [
-     *   'index' => 'index_name',
-     *   'type' => 'document_type',
-     *   'id' => 'id',
-     *   ];.
+     *                      $params = [
+     *                      'index' => 'index_name',
+     *                      'type' => 'document_type',
+     *                      'id' => 'id',
+     *                      ];.
      *
      * @return array
      */
