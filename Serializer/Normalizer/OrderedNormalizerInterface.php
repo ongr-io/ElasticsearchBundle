@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Serializer\Normalizer;
 
 /**
- * This should be implemented by normalizaible object that required to be processed in specific order.
+ * This should be implemented by normalizable object that required to be processed in specific order.
  */
 interface OrderedNormalizerInterface
 {
