@@ -154,8 +154,8 @@ class Connection
     public function commit()
     {
         $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
-        $this->client->bulk($this->bulkQueries);
-        $this->client->indices()->flush();
+        $this->getClient()->bulk($this->bulkQueries);
+        $this->flush();
 
         $this->bulkQueries = [];
     }
@@ -167,7 +167,7 @@ class Connection
      */
     public function refresh()
     {
-        $this->client->indices()->refresh();
+        $this->getClient()->indices()->refresh();
     }
 
     /**
@@ -177,7 +177,7 @@ class Connection
      */
     public function flush()
     {
-        $this->client->indices()->flush();
+        $this->getClient()->indices()->flush();
     }
 
     /**
@@ -197,7 +197,7 @@ class Connection
     {
         $this->isReadOnly('Delete');
 
-        return $this->client->delete($params);
+        return $this->getClient()->delete($params);
     }
 
     /**
@@ -215,7 +215,7 @@ class Connection
         $params['type'] = implode(',', $types);
         $params['body'] = $query;
 
-        return $this->client->deleteByQuery($params);
+        return $this->getClient()->deleteByQuery($params);
     }
 
     /**
@@ -238,7 +238,7 @@ class Connection
             $params = array_merge($queryStringParams, $params);
         }
 
-        return $this->client->search($params);
+        return $this->getClient()->search($params);
     }
 
     /**
@@ -256,7 +256,7 @@ class Connection
         $params['scroll_id'] = $scrollId;
         $params['scroll'] = $scrollDuration;
 
-        return $this->client->scroll($params);
+        return $this->getClient()->scroll($params);
     }
 
     /**
@@ -274,7 +274,7 @@ class Connection
         if ($noMapping) {
             unset($settings['body']['mappings']);
         }
-        $this->client->indices()->create($settings);
+        $this->getClient()->indices()->create($settings);
 
         if ($putWarmers) {
             // Sometimes Elasticsearch gives service unavailable.
@@ -290,7 +290,7 @@ class Connection
     {
         $this->isReadOnly('Drop index');
 
-        $this->client->indices()->delete(['index' => $this->getIndexName()]);
+        $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
     }
 
     /**
@@ -358,7 +358,7 @@ class Connection
 
         $tempSettings = $this->settings;
         $tempSettings['index'] = uniqid('mapping_check_');
-        $mappingCheckConnection = new Connection($this->client, $tempSettings);
+        $mappingCheckConnection = new Connection($this->getClient(), $tempSettings);
         $mappingCheckConnection->createIndex();
         $mappingCheckConnection->createTypes($types);
 
@@ -402,7 +402,7 @@ class Connection
      */
     public function indexExists()
     {
-        return $this->client->indices()->exists(['index' => $this->getIndexName()]);
+        return $this->getClient()->indices()->exists(['index' => $this->getIndexName()]);
     }
 
     /**
@@ -541,7 +541,7 @@ class Connection
     public function getMappingFromIndex($types = [])
     {
         $mapping = $this
-            ->client
+            ->getClient()
             ->indices()
             ->getMapping(['index' => $this->getIndexName()]);
 
@@ -559,7 +559,7 @@ class Connection
      */
     public function getVersionNumber()
     {
-        return $this->client->info()['version']['number'];
+        return $this->getClient()->info()['version']['number'];
     }
 
     /**
@@ -584,7 +584,7 @@ class Connection
     {
         $this->isReadOnly('Clear cache');
 
-        $this->client->indices()->clearCache(['index' => $this->getIndexName()]);
+        $this->getClient()->indices()->clearCache(['index' => $this->getIndexName()]);
     }
 
     /**
@@ -727,7 +727,7 @@ class Connection
     private function loadMappingArray(array $mapping)
     {
         foreach ($mapping as $type => $properties) {
-            $this->client->indices()->putMapping(
+            $this->getClient()->indices()->putMapping(
                 [
                     'index' => $this->getIndexName(),
                     'type' => $type,
@@ -747,7 +747,7 @@ class Connection
     private function unloadMappingArray(array $mapping)
     {
         foreach ($mapping as $type) {
-            $this->client->indices()->deleteMapping(
+            $this->getClient()->indices()->deleteMapping(
                 [
                     'index' => $this->getIndexName(),
                     'type' => $type,
