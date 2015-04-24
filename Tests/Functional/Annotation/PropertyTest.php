@@ -198,7 +198,7 @@ class PropertyTest extends AbstractElasticsearchTestCase
      * Check if "include in all" option is set as expected.
      *
      * @param string $field
-     * @param bool $expected
+     * @param bool   $expected
      *
      * @dataProvider getTestDocumentMappingWithIncludeInAllData
      */
