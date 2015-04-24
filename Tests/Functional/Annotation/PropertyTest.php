@@ -87,6 +87,29 @@ class PropertyTest extends AbstractElasticsearchTestCase
     }
 
     /**
+     * Check if "term_vector" option is set as expected.
+     */
+    public function testDocumentMappingWithTermVector()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'term_vector',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'term_vector' => [
+                'term_vector' => 'with_positions_offsets',
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals($expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['term_vector']['mapping']);
+    }
+
+
+    /**
      * Data provider for testDocumentMappingWithIncludeInAll.
      *
      * @return array

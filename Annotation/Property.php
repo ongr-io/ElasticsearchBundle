@@ -129,4 +129,9 @@ final class Property extends AbstractProperty
      * @var bool
      */
     public $docValues;
+
+    /**
+     * @var string
+     */
+    public $termVector;
 }

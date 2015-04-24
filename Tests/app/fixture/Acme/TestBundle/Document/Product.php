@@ -133,4 +133,11 @@ class Product extends Item
      * @ES\Property(type="string", name="column_stride_fashioned", docValues = true, index="not_analyzed")
      */
     public $column_stride_fashioned;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="term_vector", termVector = "with_positions_offsets")
+     */
+    public $term_vector;
 }
