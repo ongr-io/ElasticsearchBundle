@@ -134,4 +134,9 @@ final class Property extends AbstractProperty
      * @var string
      */
     public $termVector;
+
+    /**
+     * @var string
+     */
+    public $nullValue;
 }

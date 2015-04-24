@@ -108,6 +108,28 @@ class PropertyTest extends AbstractElasticsearchTestCase
             $result['ongr-esb-test']['mappings']['product']['term_vector']['mapping']);
     }
 
+    /**
+     * Check if "null_value" option is set as expected.
+     */
+    public function testDocumentMappingWithNullValue()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'null_value',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'null_value' => [
+                'null_value' => 'any',
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals($expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['null_value']['mapping']);
+    }
+
 
     /**
      * Data provider for testDocumentMappingWithIncludeInAll.

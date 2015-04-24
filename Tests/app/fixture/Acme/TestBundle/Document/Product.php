@@ -140,4 +140,11 @@ class Product extends Item
      * @ES\Property(type="string", name="term_vector", termVector = "with_positions_offsets")
      */
     public $term_vector;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="null_value", nullValue = "any")
+     */
+    public $null_value;
 }
