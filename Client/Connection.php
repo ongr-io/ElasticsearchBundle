@@ -150,13 +150,17 @@ class Connection
 
     /**
      * Flushes the current query container to the index, used for bulk queries execution.
+     *
+     * @throws \LogicException
      */
     public function commit()
     {
+        if (!$this->bulkQueries) {
+            throw new \LogicException('Nothing persisted to commit.');
+        }
         $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
         $this->getClient()->bulk($this->bulkQueries);
         $this->flush();
-
         $this->bulkQueries = [];
     }
 
