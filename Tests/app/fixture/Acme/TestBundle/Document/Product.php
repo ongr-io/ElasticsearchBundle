@@ -130,35 +130,35 @@ class Product extends Item
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="column_stride_fashioned", docValues = true, index="not_analyzed")
+     * @ES\Property(type="string", name="column_stride_fashioned", docValues=true, index="not_analyzed")
      */
-    public $column_stride_fashioned;
+    public $columnStrideFashioned;
 
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="term_vector", termVector = "with_positions_offsets")
+     * @ES\Property(type="string", name="term_vector", termVector="with_positions_offsets")
      */
-    public $term_vector;
+    public $termVector;
 
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="null_value", nullValue = "any")
+     * @ES\Property(type="string", name="null_value", nullValue="any")
      */
-    public $null_value;
+    public $nullValue;
 
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="norms_disabled", norms = {"enabled" : false})
+     * @ES\Property(type="string", name="norms_disabled", norms={"enabled": false})
      */
-    public $norms_disabled;
+    public $normsDisabled;
 
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="norms_eager", norms = {"loading" : "eager"})
+     * @ES\Property(type="string", name="norms_eager", norms={"loading": "eager"})
      */
-    public $norms_eager;
+    public $normsEager;
 }
