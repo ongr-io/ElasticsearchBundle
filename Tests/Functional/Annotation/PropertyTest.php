@@ -64,6 +64,29 @@ class PropertyTest extends AbstractElasticsearchTestCase
     }
 
     /**
+     * Check if "doc_values" option is set as expected.
+     */
+    public function testDocumentMappingWithDocValues()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'column_stride_fashioned',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'column_stride_fashioned' => [
+                'doc_values' => true,
+                'type' => 'string',
+                'index' => 'not_analyzed',
+            ],
+        ];
+        $this->assertEquals($expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['column_stride_fashioned']['mapping']);
+    }
+
+    /**
      * Data provider for testDocumentMappingWithIncludeInAll.
      *
      * @return array

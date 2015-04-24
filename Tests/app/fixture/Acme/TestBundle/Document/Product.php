@@ -126,4 +126,11 @@ class Product extends Item
      * @ES\Property(type="string", name="stored", store=true, indexName="ongr-esb-test")
      */
     public $stored;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="column_stride_fashioned", docValues = true, index="not_analyzed")
+     */
+    public $column_stride_fashioned;
 }
