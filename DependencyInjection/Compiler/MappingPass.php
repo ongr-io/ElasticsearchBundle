@@ -238,6 +238,7 @@ class MappingPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      *
      * @return array
+     *
      * @throws \LogicException If connection is not found.
      */
     private function setWarmers($connectionDefinition, $connection, ContainerBuilder $container)

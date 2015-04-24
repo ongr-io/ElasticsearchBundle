@@ -46,6 +46,7 @@ class Configuration implements ConfigurationInterface
      * Connections configuration node.
      *
      * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     *
      * @throws InvalidConfigurationException
      */
     private function getConnectionsNode()
