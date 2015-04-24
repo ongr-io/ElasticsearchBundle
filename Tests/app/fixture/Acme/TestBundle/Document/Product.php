@@ -147,4 +147,18 @@ class Product extends Item
      * @ES\Property(type="string", name="null_value", nullValue = "any")
      */
     public $null_value;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="norms_disabled", norms = {"enabled" : false})
+     */
+    public $norms_disabled;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="norms_eager", norms = {"loading" : "eager"})
+     */
+    public $norms_eager;
 }

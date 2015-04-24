@@ -139,4 +139,9 @@ final class Property extends AbstractProperty
      * @var string
      */
     public $nullValue;
+
+    /**
+     * @var array
+     */
+    public $norms;
 }

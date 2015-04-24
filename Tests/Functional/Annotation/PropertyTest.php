@@ -130,6 +130,54 @@ class PropertyTest extends AbstractElasticsearchTestCase
             $result['ongr-esb-test']['mappings']['product']['null_value']['mapping']);
     }
 
+    /**
+     * Check if "norms" option "enabled" is set as expected.
+     */
+    public function testDocumentMappingWithNormsDisabled()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'norms_disabled',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'norms_disabled' => [
+                'norms' => [
+                    'enabled' => false,
+                ],
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals($expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['norms_disabled']['mapping']);
+    }
+
+    /**
+     * Check if "norms" option "loading" is set as expected.
+     */
+    public function testDocumentMappingWithNormsEager()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'norms_eager',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'norms_eager' => [
+                'norms' => [
+                    'loading' => 'eager',
+                ],
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals($expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['norms_eager']['mapping']);
+    }
+
 
     /**
      * Data provider for testDocumentMappingWithIncludeInAll.
