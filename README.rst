@@ -25,6 +25,9 @@ Technical goodies:
 
 .. image:: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/coverage.png?b=master
    :target: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master
+   
+.. image:: https://insight.sensiolabs.com/projects/931d899c-663d-4ee4-9ec2-d971a9a06b9b/mini.png
+    :target: https://insight.sensiolabs.com/projects/931d899c-663d-4ee4-9ec2-d971a9a06b9b
 
 .. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/downloads
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
