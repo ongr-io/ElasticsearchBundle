@@ -56,9 +56,11 @@ class ImportService
 
         if (class_exists('\Symfony\Component\Console\Helper\ProgressBar')) {
             $progress = new ProgressBar($output, $reader->count());
+            $progress->setRedrawFrequency(100);
             $progress->start();
         } else {
             $progress = new ProgressHelper();
+            $progress->setRedrawFrequency(100);
             $progress->start($output, $reader->count());
         }
 
