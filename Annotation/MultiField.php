@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Required;
-
 /**
  * Annotation that can be used to define multi-field parameters.
  *

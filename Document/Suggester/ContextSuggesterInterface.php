@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Document\Suggester;
 
-use ONGR\ElasticsearchBundle\Annotation as ES;
-
 /**
  * Interface to be used for completion suggestion objects.
  */
