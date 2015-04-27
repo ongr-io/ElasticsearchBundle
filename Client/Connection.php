@@ -16,6 +16,7 @@ use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Cache\WarmerInterface;
 use ONGR\ElasticsearchBundle\Cache\WarmersContainer;
 use ONGR\ElasticsearchBundle\Mapping\MappingTool;
+use ONGR\ElasticsearchBundle\Exceptions\EmptyBulkException;
 
 /**
  * This class interacts with elasticsearch using injected client.
@@ -151,12 +152,12 @@ class Connection
     /**
      * Flushes the current query container to the index, used for bulk queries execution.
      *
-     * @throws \LogicException
+     * @throws EmptyBulkException
      */
     public function commit()
     {
         if (!$this->bulkQueries) {
-            throw new \LogicException('Nothing persisted to commit.');
+            throw new EmptyBulkException('Nothing persisted to commit.');
         }
         $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
         $this->getClient()->bulk($this->bulkQueries);
