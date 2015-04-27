@@ -62,4 +62,171 @@ class PropertyTest extends AbstractElasticsearchTestCase
         ];
         $this->assertEquals($expectedMapping, $result['ongr-esb-test']['mappings']['product']['stored']['mapping']);
     }
+
+    /**
+     * Check if "doc_values" option is set as expected.
+     */
+    public function testDocumentMappingWithDocValues()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'column_stride_fashioned',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'column_stride_fashioned' => [
+                'doc_values' => true,
+                'type' => 'string',
+                'index' => 'not_analyzed',
+            ],
+        ];
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['column_stride_fashioned']['mapping']
+        );
+    }
+
+    /**
+     * Check if "term_vector" option is set as expected.
+     */
+    public function testDocumentMappingWithTermVector()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'term_vector',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'term_vector' => [
+                'term_vector' => 'with_positions_offsets',
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['term_vector']['mapping']
+        );
+    }
+
+    /**
+     * Check if "null_value" option is set as expected.
+     */
+    public function testDocumentMappingWithNullValue()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'null_value',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'null_value' => [
+                'null_value' => 'any',
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['null_value']['mapping']
+        );
+    }
+
+    /**
+     * Check if "norms" option "enabled" is set as expected.
+     */
+    public function testDocumentMappingWithNormsDisabled()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'norms_disabled',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'norms_disabled' => [
+                'norms' => [
+                    'enabled' => false,
+                ],
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['norms_disabled']['mapping']
+        );
+    }
+
+    /**
+     * Check if "norms" option "loading" is set as expected.
+     */
+    public function testDocumentMappingWithNormsEager()
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'product',
+            'field' => 'norms_eager',
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            'norms_eager' => [
+                'norms' => [
+                    'loading' => 'eager',
+                ],
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['norms_eager']['mapping']
+        );
+    }
+
+    /**
+     * Data provider for testDocumentMappingWithIncludeInAll.
+     *
+     * @return array
+     */
+    public function getTestDocumentMappingWithIncludeInAllData()
+    {
+        $out = [];
+        // Case #0: should be included.
+        $out[] = ['field' => 'included_in_all', 'expected' => true];
+        // Case #1: should not be included.
+        $out[] = ['field' => 'excluded_from_all', 'expected' => false];
+
+        return $out;
+    }
+
+    /**
+     * Check if "include in all" option is set as expected.
+     *
+     * @param string $field
+     * @param bool   $expected
+     *
+     * @dataProvider getTestDocumentMappingWithIncludeInAllData
+     */
+    public function testDocumentMappingWithIncludeInAll($field, $expected)
+    {
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $params = [
+            'index' => $manager->getConnection()->getIndexName(),
+            'type' => 'color',
+            'field' => $field,
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $expectedMapping = [
+            $field => [
+                'include_in_all' => $expected,
+                'type' => 'string',
+            ],
+        ];
+        $this->assertEquals($expectedMapping, $result['ongr-esb-test']['mappings']['color'][$field]['mapping']);
+    }
 }

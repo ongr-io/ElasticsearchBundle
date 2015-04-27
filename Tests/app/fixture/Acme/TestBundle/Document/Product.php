@@ -126,4 +126,39 @@ class Product extends Item
      * @ES\Property(type="string", name="stored", store=true, indexName="ongr-esb-test")
      */
     public $stored;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="column_stride_fashioned", docValues=true, index="not_analyzed")
+     */
+    public $columnStrideFashioned;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="term_vector", termVector="with_positions_offsets")
+     */
+    public $termVector;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="null_value", nullValue="any")
+     */
+    public $nullValue;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="norms_disabled", norms={"enabled": false})
+     */
+    public $normsDisabled;
+
+    /**
+     * @var string
+     *
+     * @ES\Property(type="string", name="norms_eager", norms={"loading": "eager"})
+     */
+    public $normsEager;
 }
