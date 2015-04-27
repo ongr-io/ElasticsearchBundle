@@ -82,8 +82,10 @@ class PropertyTest extends AbstractElasticsearchTestCase
                 'index' => 'not_analyzed',
             ],
         ];
-        $this->assertEquals($expectedMapping,
-            $result['ongr-esb-test']['mappings']['product']['column_stride_fashioned']['mapping']);
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['column_stride_fashioned']['mapping']
+        );
     }
 
     /**
@@ -104,8 +106,10 @@ class PropertyTest extends AbstractElasticsearchTestCase
                 'type' => 'string',
             ],
         ];
-        $this->assertEquals($expectedMapping,
-            $result['ongr-esb-test']['mappings']['product']['term_vector']['mapping']);
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['term_vector']['mapping']
+        );
     }
 
     /**
@@ -126,8 +130,10 @@ class PropertyTest extends AbstractElasticsearchTestCase
                 'type' => 'string',
             ],
         ];
-        $this->assertEquals($expectedMapping,
-            $result['ongr-esb-test']['mappings']['product']['null_value']['mapping']);
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['null_value']['mapping']
+        );
     }
 
     /**
@@ -150,8 +156,10 @@ class PropertyTest extends AbstractElasticsearchTestCase
                 'type' => 'string',
             ],
         ];
-        $this->assertEquals($expectedMapping,
-            $result['ongr-esb-test']['mappings']['product']['norms_disabled']['mapping']);
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['norms_disabled']['mapping']
+        );
     }
 
     /**
@@ -174,10 +182,11 @@ class PropertyTest extends AbstractElasticsearchTestCase
                 'type' => 'string',
             ],
         ];
-        $this->assertEquals($expectedMapping,
-            $result['ongr-esb-test']['mappings']['product']['norms_eager']['mapping']);
+        $this->assertEquals(
+            $expectedMapping,
+            $result['ongr-esb-test']['mappings']['product']['norms_eager']['mapping']
+        );
     }
-
 
     /**
      * Data provider for testDocumentMappingWithIncludeInAll.
@@ -191,6 +200,7 @@ class PropertyTest extends AbstractElasticsearchTestCase
         $out[] = ['field' => 'included_in_all', 'expected' => true];
         // Case #1: should not be included.
         $out[] = ['field' => 'excluded_from_all', 'expected' => false];
+
         return $out;
     }
 
