@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
 use ONGR\ElasticsearchBundle\DSL\Bool\Bool;
 use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
+use ONGR\ElasticsearchBundle\DSL\Filter\BoolFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\IdsFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
 use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
@@ -105,9 +106,9 @@ class BoolFilterTest extends ElasticsearchTestCase
         /** @var Search $search */
         $search = $repository
             ->createSearch()
-            ->addFilter($mustFilter, Bool::MUST)
-            ->addFilter($mustNotFilter, Bool::MUST_NOT)
-            ->addFilter($shouldFilter, Bool::SHOULD)
+            ->addFilter($mustFilter, BoolFilter::MUST)
+            ->addFilter($mustNotFilter, BoolFilter::MUST_NOT)
+            ->addFilter($shouldFilter, BoolFilter::SHOULD)
             ->setBoolFilterParameters($parameters);
         $results = $repository->execute($search, Repository::RESULTS_ARRAY);
         sort($results);
