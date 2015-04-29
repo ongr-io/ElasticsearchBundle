@@ -50,7 +50,7 @@ class ImportService
      * @param OutputInterface $output
      * @param int             $bulkSize
      */
-    protected function executeRawImport($manager, $filename, $output, $bulkSize)
+    protected function executeRawImport(Manager $manager, $filename, OutputInterface $output, $bulkSize)
     {
         $reader = $this->getReader($manager, $filename, false);
 
