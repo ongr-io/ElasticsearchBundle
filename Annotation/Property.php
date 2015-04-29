@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Required;
-
 /**
  * Annotation used to check mapping type during the parsing process.
  *
