@@ -25,8 +25,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ExportService
 {
-    const SCROLL_DURATION = '5m';
-
     /**
      * Exports es index to provided file.
      *
@@ -94,7 +92,8 @@ class ExportService
     protected function getResults($repository, $chunkSize)
     {
         $search = $repository->createSearch();
-        $search->setScroll(self::SCROLL_DURATION)
+        $search
+            ->setScroll()
             ->setSize($chunkSize);
         $search->addQuery(new MatchAllQuery());
 
