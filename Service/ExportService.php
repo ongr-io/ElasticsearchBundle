@@ -44,9 +44,11 @@ class ExportService
 
         if (class_exists('\Symfony\Component\Console\Helper\ProgressBar')) {
             $progress = new ProgressBar($output, $results->getTotalCount());
+            $progress->setRedrawFrequency(100);
             $progress->start();
         } else {
             $progress = new ProgressHelper();
+            $progress->setRedrawFrequency(100);
             $progress->start($output, $results->getTotalCount());
         }
 
