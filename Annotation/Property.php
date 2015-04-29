@@ -124,4 +124,9 @@ final class Property extends AbstractProperty
      * @var string
      */
     public $geohashPrecision;
+
+    /**
+     * @var string
+     */
+    public $format;
 }

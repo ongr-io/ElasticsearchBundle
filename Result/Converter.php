@@ -99,7 +99,10 @@ class Converter
             }
 
             if ($aliases[$name]['type'] === 'date') {
-                $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+                $value = \DateTime::createFromFormat(
+                    isset($aliases[$name]['format']) ? $aliases[$name]['format'] : \DateTime::ISO8601,
+                    $value
+                );
             }
 
             if (array_key_exists('aliases', $aliases[$name])) {
@@ -161,7 +164,7 @@ class Converter
                 }
 
                 if ($value instanceof \DateTime) {
-                    $value = $value->format(\DateTime::ISO8601);
+                    $value = $value->format(isset($alias['format']) ? $alias['format'] : \DateTime::ISO8601);
                 }
 
                 $array[$name] = $value;
