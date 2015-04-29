@@ -252,7 +252,7 @@ class Manager
      */
     private function dispatchEvent($eventName, Event $event)
     {
-        if ($this->eventDispatcher != null) {
+        if ($this->eventDispatcher !== null) {
             $this->eventDispatcher->dispatch($eventName, $event);
         }
     }
