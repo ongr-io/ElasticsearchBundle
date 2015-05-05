@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\Mapping\Proxy;
 
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Resource\FileResource;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Loads proxy documents.
@@ -24,11 +23,6 @@ class ProxyLoader
      * @var string
      */
     private $cacheDir;
-
-    /**
-     * @var Filesystem
-     */
-    private $fileSystem;
 
     /**
      * @var bool
