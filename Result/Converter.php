@@ -99,10 +99,12 @@ class Converter
             }
 
             if ($aliases[$name]['type'] === 'date') {
-                $value = \DateTime::createFromFormat(
+                $newValue = \DateTime::createFromFormat(
                     isset($aliases[$name]['format']) ? $aliases[$name]['format'] : \DateTime::ISO8601,
                     $value
                 );
+                
+                $value = $newValue === false ? $value : $newValue;
             }
 
             if (array_key_exists('aliases', $aliases[$name])) {
