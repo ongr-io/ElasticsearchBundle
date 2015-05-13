@@ -51,7 +51,7 @@ class Manager
      * @param Connection              $connection
      * @param ClassMetadataCollection $classMetadataCollection
      */
-    public function __construct($connection, $classMetadataCollection)
+    public function __construct(Connection $connection, ClassMetadataCollection $classMetadataCollection)
     {
         $this->connection = $connection;
         $this->classMetadataCollection = $classMetadataCollection;
@@ -70,7 +70,7 @@ class Manager
     /**
      * @param EventDispatcher $eventDispatcher
      */
-    public function setEventDispatcher($eventDispatcher)
+    public function setEventDispatcher(EventDispatcher $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
