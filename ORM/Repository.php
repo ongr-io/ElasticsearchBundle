@@ -162,8 +162,8 @@ class Repository
     /**
      * Finds only one entity by a set of criteria.
      *
-     * @param array      $criteria   Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
-     * @param array|null $orderBy    Example: ['name' => 'ASC', 'surname' => 'DESC'].
+     * @param array      $criteria Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
+     * @param array|null $orderBy  Example: ['name' => 'ASC', 'surname' => 'DESC'].
      *
      * @return DocumentInterface|null The object.
      */
