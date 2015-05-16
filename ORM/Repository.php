@@ -160,6 +160,32 @@ class Repository
     }
 
     /**
+     * Finds only one entity by a set of criteria.
+     *
+     * @param array      $criteria   Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
+     * @param array|null $orderBy    Example: ['name' => 'ASC', 'surname' => 'DESC'].
+     *
+     * @return DocumentInterface|null The object.
+     */
+    public function findOneBy(array $criteria, array $orderBy = [])
+    {
+        $search = $this->createSearch();
+        $search->setSize(1);
+
+        foreach ($criteria as $field => $value) {
+            $search->addQuery(new TermsQuery($field, is_array($value) ? $value : [$value]), 'must');
+        }
+
+        foreach ($orderBy as $field => $direction) {
+            $search->addSort(new Sort($field, strcasecmp($direction, 'asc') == 0 ? Sort::ORDER_ASC : Sort::ORDER_DESC));
+        }
+
+        $result = $this->execute($search, self::RESULTS_OBJECT);
+
+        return $result->first();
+    }
+
+    /**
      * Returns search instance.
      *
      * @return Search
