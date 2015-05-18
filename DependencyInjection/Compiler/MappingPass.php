@@ -63,9 +63,12 @@ class MappingPass implements CompilerPassInterface
             foreach ($bundlesMetadata as $repository => $data) {
                 $repositoryDefinition = new Definition(
                     'ONGR\ElasticsearchBundle\ORM\Repository',
+                    [$repository]
+                );
+                $repositoryDefinition->setFactory(
                     [
-                        $managerDefinition,
-                        [$repository],
+                        new Reference(sprintf('es.manager.%s', $managerName)),
+                        'getRepository',
                     ]
                 );
 
