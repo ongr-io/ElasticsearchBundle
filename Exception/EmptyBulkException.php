@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Exceptions;
+namespace ONGR\ElasticsearchBundle\Exception;
 
 /**
  * Exception for connection if bulk is empty before commit.
  */
-class EmptyBulkException extends \LogicException
+class EmptyBulkException extends \Exception
 {
 }

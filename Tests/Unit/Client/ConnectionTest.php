@@ -177,9 +177,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if exception is thown when only commit is made.
+     * Tests if exception is thrown when only commit is made.
      *
-     * @expectedException \LogicException
+     * @expectedException \ONGR\ElasticsearchBundle\Exception\EmptyBulkException
+     * @expectedExceptionMessage Bulk container is empty. Add some queries before commit.
      */
     public function testCommitException()
     {
