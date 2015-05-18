@@ -219,7 +219,7 @@ class Repository
      */
     public function scan(
         $scrollId,
-        $scrollDuration = Search::SCROLL_DURATION,
+        $scrollDuration = '5m',
         $resultsType = self::RESULTS_OBJECT
     ) {
         $results = $this->getManager()->getConnection()->scroll($scrollId, $scrollDuration);
