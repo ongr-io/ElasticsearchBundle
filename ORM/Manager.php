@@ -102,6 +102,17 @@ class Manager
      */
     private function createRepository(array $types)
     {
+        if (count($types) === 1) {
+            $type = reset($types);
+            $mapping = $this->getBundlesMapping();
+            $fields = $mapping[$type]->getFields();
+            if (!empty($fields['repositoryClass'])) {
+                $repositoryClass = $fields['repositoryClass'];
+
+                return new $repositoryClass($this, $types);
+            }
+        }
+
         return new Repository($this, $types);
     }
 

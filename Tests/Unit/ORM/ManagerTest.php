@@ -102,6 +102,35 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Check if custom repository is created.
+     */
+    public function testGetCustomRepository()
+    {
+        $classMetadataMock = $this
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\ClassMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $classMetadataMock
+            ->expects($this->any())
+            ->method('getType');
+        $classMetadataMock
+            ->expects($this->any())
+            ->method('getFields')
+            ->willReturn(['repositoryClass' => '\stdClass']);
+
+        $manager = new Manager(
+            null,
+            $this->getClassMetadataCollectionMock(['rep1' => $classMetadataMock]),
+            $this->getMock('Symfony\Components\EventDispatcher\EventDispatcher')
+        );
+
+        $types = ['rep1'];
+        $repository = $manager->getRepository($types);
+
+        $this->assertEquals(new \stdClass($manager, $types), $repository);
+    }
+
+    /**
      * Returns class metadata collection mock.
      *
      * @param array $metadata
