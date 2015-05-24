@@ -29,6 +29,7 @@ class DocumentTest extends AbstractElasticsearchTestCase
             '_ttl' => null,
             'enabled' => null,
             '_all' => ['enabled' => false],
+            'repositoryClass' => null,
         ];
         $this->assertEquals($expectedResult, $result);
     }

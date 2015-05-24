@@ -32,6 +32,11 @@ final class Document
     /**
      * @var string
      */
+    public $repositoryClass;
+
+    /**
+     * @var string
+     */
     public $parent;
 
     /**

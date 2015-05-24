@@ -117,6 +117,7 @@ class DocumentParser
                         '_ttl' => $class->ttl,
                         'enabled' => $class->enabled,
                         '_all' => $class->all,
+                        'repositoryClass' => $class->repositoryClass,
                     ],
                     'aliases' => $this->getAliases($reflectionClass),
                     'objects' => $this->getObjects(),
