@@ -160,6 +160,48 @@ class Repository
     }
 
     /**
+     * Finds only one entity by a set of criteria.
+     *
+     * @param array      $criteria   Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
+     * @param array|null $orderBy    Example: ['name' => 'ASC', 'surname' => 'DESC'].
+     * @param string     $resultType Result type returned.
+     *
+     * @return DocumentInterface|null The object.
+     */
+    public function findOneBy(array $criteria, array $orderBy = [], $resultType = self::RESULTS_OBJECT)
+    {
+        $search = $this->createSearch();
+        $search->setSize(1);
+
+        foreach ($criteria as $field => $value) {
+            $search->addQuery(new TermsQuery($field, is_array($value) ? $value : [$value]), 'must');
+        }
+
+        foreach ($orderBy as $field => $direction) {
+            $search->addSort(new Sort($field, strcasecmp($direction, 'asc') == 0 ? Sort::ORDER_ASC : Sort::ORDER_DESC));
+        }
+
+        $result = $this
+            ->getManager()
+            ->getConnection()
+            ->search($this->types, $this->checkFields($search->toArray()), $search->getQueryParams());
+
+        if ($resultType === self::RESULTS_OBJECT) {
+            $rawData = $result['hits']['hits'];
+            if (!count($rawData)) {
+                return null;
+            }
+
+            return (new Converter(
+                $this->getManager()->getTypesMapping(),
+                $this->getManager()->getBundlesMapping()
+            ))->convertToDocument($rawData[0]);
+        }
+
+        return $this->parseResult($result, $resultType, '');
+    }
+
+    /**
      * Returns search instance.
      *
      * @return Search
