@@ -13,7 +13,8 @@
     "require": {
         "php": ">=5.4",
         "symfony/symfony": "~2.3",
-        "elasticsearch/elasticsearch": "~1.0",
+        "elasticsearch/elasticsearch": "~2.0@beta",
+        "monolog/monolog": "~1.0",
         "doctrine/annotations": "~1.2"
     },
     "require-dev": {
