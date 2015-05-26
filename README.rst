@@ -25,17 +25,20 @@ Technical goodies:
 
 .. image:: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/coverage.png?b=master
    :target: https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master
+   
+.. image:: https://insight.sensiolabs.com/projects/931d899c-663d-4ee4-9ec2-d971a9a06b9b/mini.png
+    :target: https://insight.sensiolabs.com/projects/931d899c-663d-4ee4-9ec2-d971a9a06b9b
 
-.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/downloads.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/downloads
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
-.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
-.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/unstable.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/v/unstable
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
-.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/license.svg
+.. image:: https://poser.pugx.org/ongr/elasticsearch-bundle/license
    :target: https://packagist.org/packages/ongr/elasticsearch-bundle
 
 Documentation

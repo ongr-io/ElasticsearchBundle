@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation\Suggester\Context;
 
-use Doctrine\Common\Annotations\Annotation\Required;
 use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
 
 /**

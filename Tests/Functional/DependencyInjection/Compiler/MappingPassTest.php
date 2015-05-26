@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection\Compiler
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
@@ -46,5 +48,24 @@ class MappingPassTest extends AbstractElasticsearchTestCase
         );
 
         $this->assertEquals($expectedMapping['product']['properties'], $productMapping['properties']);
+    }
+
+    /**
+     * Check if changed index name in manager is passed into repository services.
+     */
+    public function testConnectionIndexNameChange()
+    {
+        $container = $this->createClient()->getContainer();
+
+        /** @var Manager $manager */
+        $manager = $container->get('es.manager.default');
+        $manager->getConnection()->setIndexName('new-index');
+
+        /** @var Repository $repository */
+        $repository = $container->get('es.manager.default.product');
+        $this->assertEquals(
+            'new-index',
+            $repository->getManager()->getConnection()->getIndexName()
+        );
     }
 }

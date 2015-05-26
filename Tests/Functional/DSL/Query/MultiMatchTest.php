@@ -34,6 +34,7 @@ class MultiMatchTest extends ElasticsearchTestCase
      *              ]
      *          ]
      *      ]
+     *
      * @return array
      */
     protected function getDataArray()

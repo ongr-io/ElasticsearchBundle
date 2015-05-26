@@ -104,9 +104,8 @@ class NamedBuilderBag
     {
         return array_filter(
             $this->bag,
-            function ($builder) use ($type) {
-                /** @var NamedBuilderInterface $builder */
-
+            /** @var NamedBuilderInterface $builder */
+            function (NamedBuilderInterface $builder) use ($type) {
                 return $type === null || $builder->getType() == $type;
             }
         );

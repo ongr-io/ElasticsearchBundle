@@ -90,6 +90,7 @@ class JsonReader implements \Countable, \Iterator
      * Returns file handler.
      *
      * @return resource
+     *
      * @throws \LogicException
      */
     protected function getFileHandler()

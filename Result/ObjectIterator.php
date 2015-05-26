@@ -22,11 +22,6 @@ class ObjectIterator extends AbstractResultsIterator
     private $alias;
 
     /**
-     * @var array Raw data from Elasticsearch.
-     */
-    private $rawData;
-
-    /**
      * @var Converter
      */
     private $converter;
@@ -41,7 +36,6 @@ class ObjectIterator extends AbstractResultsIterator
     public function __construct($converter, $rawData, $alias)
     {
         $this->converter = $converter;
-        $this->rawData = $rawData;
         $this->alias = $alias;
         $this->converted = [];
 
@@ -54,7 +48,10 @@ class ObjectIterator extends AbstractResultsIterator
      */
     protected function convertDocument($rawData)
     {
-        return $this->converter
-            ->assignArrayToObject($rawData, new $this->alias['proxyNamespace'](), $this->alias['aliases']);
+        return $this->converter->assignArrayToObject(
+            $rawData,
+            new $this->alias['proxyNamespace'](),
+            $this->alias['aliases']
+        );
     }
 }

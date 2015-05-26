@@ -11,18 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\DSL\Filter;
 
+use ONGR\ElasticsearchBundle\DSL\Query\BoolQuery;
+
 /**
- * Represents Elasticsearch "or" filter.
+ * Represents Elasticsearch "bool" filter.
  *
- * @link http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-or-filter.html
+ * @link http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html
  */
-class OrFilter extends AndFilter
+class BoolFilter extends BoolQuery
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getType()
-    {
-        return 'or';
-    }
 }

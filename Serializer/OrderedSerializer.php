@@ -58,7 +58,7 @@ class OrderedSerializer extends Serializer
         if (!empty($filteredData)) {
             uasort(
                 $filteredData,
-                function ($a, $b) {
+                function (OrderedNormalizerInterface $a, OrderedNormalizerInterface $b) {
                     return $a->getOrder() > $b->getOrder();
                 }
             );

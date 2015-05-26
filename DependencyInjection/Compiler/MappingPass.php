@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -64,9 +63,12 @@ class MappingPass implements CompilerPassInterface
             foreach ($bundlesMetadata as $repository => $data) {
                 $repositoryDefinition = new Definition(
                     'ONGR\ElasticsearchBundle\ORM\Repository',
+                    [$repository]
+                );
+                $repositoryDefinition->setFactory(
                     [
-                        $managerDefinition,
-                        [$repository],
+                        new Reference(sprintf('es.manager.%s', $managerName)),
+                        'getRepository',
                     ]
                 );
 
@@ -238,6 +240,7 @@ class MappingPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      *
      * @return array
+     *
      * @throws \LogicException If connection is not found.
      */
     private function setWarmers($connectionDefinition, $connection, ContainerBuilder $container)

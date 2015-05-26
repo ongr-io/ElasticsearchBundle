@@ -223,6 +223,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      * @param array  $customMapping Custom index mapping config.
      *
      * @return Manager
+     *
      * @throws \LogicException
      */
     protected function getManager($name = 'default', $createIndex = true, array $customMapping = [])

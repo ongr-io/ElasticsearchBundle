@@ -18,7 +18,6 @@ use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -253,7 +252,7 @@ class Manager
      */
     private function dispatchEvent($eventName, Event $event)
     {
-        if ($this->eventDispatcher != null) {
+        if ($this->eventDispatcher !== null) {
             $this->eventDispatcher->dispatch($eventName, $event);
         }
     }

@@ -79,6 +79,10 @@ class ProxyFactory
     {
         \$this->__isInitialized = \$initialized;
     }
+    public function findByPath(\$path)
+    {
+        return (new \Symfony\Component\PropertyAccess\PropertyAccessor())->getValue(\$this, \$path);
+    }
 
 EOF;
     }

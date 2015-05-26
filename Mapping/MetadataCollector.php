@@ -11,13 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Mapping;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\FileCacheReader;
-use Doctrine\Common\Util\Inflector;
-use ONGR\ElasticsearchBundle\Annotation\Document;
-use ONGR\ElasticsearchBundle\Annotation\MultiField;
-use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader;

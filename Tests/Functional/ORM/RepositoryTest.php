@@ -231,6 +231,86 @@ class RepositoryTest extends ElasticsearchTestCase
     }
 
     /**
+     * Data provider for test find one by.
+     *
+     * @return array
+     */
+    public function getFindOneByData()
+    {
+        $out = [];
+
+        // Case #0 find one by title for not existed.
+        $out[] = [
+            null,
+            ['title' => 'baz'],
+        ];
+
+        // Case #1 simple find one by title.
+        $out[] = [
+            1,
+            ['title' => 'foo'],
+        ];
+
+        // Case #2 find one by multiple titles and simple sort.
+        $out[] = [
+            2,
+            [
+                'title' => [
+                    'foo',
+                    'bar',
+                ],
+            ],
+            ['title' => 'asc'],
+        ];
+
+        // Case #3 find one by multiple titles and multiple sorts.
+        $criteria = [
+            'description' => [
+                'foo',
+                'goo',
+            ],
+            'title' => [
+                'foo',
+                'bar',
+                'gar',
+            ],
+        ];
+        $out[] = [
+            2,
+            $criteria,
+            [
+                'description' => 'ASC',
+                'price' => 'DESC',
+            ],
+        ];
+
+        return $out;
+    }
+
+    /**
+     * Check if find one by works as expected.
+     *
+     * @param int|null $expectedResult
+     * @param array    $criteria
+     * @param array    $orderBy
+     *
+     * @dataProvider getFindOneByData()
+     */
+    public function testFindOneBy($expectedResult, $criteria, $orderBy = [])
+    {
+        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+
+        $result = $repo->findOneBy($criteria, $orderBy);
+
+        if ($expectedResult === null) {
+            $this->assertNull($result);
+        } else {
+            $this->assertNotNull($result);
+            $this->assertEquals($expectedResult, $result->getId());
+        }
+    }
+
+    /**
      * Test repository find method with array result type.
      */
     public function testFind()
