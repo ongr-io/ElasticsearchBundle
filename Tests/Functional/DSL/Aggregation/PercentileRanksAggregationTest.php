@@ -78,8 +78,6 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         $expectedResults = [
             '10.0' => 12.5,
             '30.0' => 100.0,
-            '10.0_as_string' => '12.5',
-            '30.0_as_string' => '100.0',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -89,9 +87,6 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
             '10.0' => 12.5,
             '20.0' => 0.0,
             '90.0' => 100.0,
-            '10.0_as_string' => '12.5',
-            '20.0_as_string' => '0.0',
-            '90.0_as_string' => '100.0',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -101,9 +96,6 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
             '10.0' => 0.0,
             '20.0' => 100.0,
             '90.0' => 100.0,
-            '10.0_as_string' => '0.0',
-            '20.0_as_string' => '100.0',
-            '90.0_as_string' => '100.0',
         ];
         $out[] = [$aggregationData, $expectedResults];
 
@@ -137,7 +129,10 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
 
         /** @var ValueAggregation $result */
         $result = $results->getAggregations()['test_agg'];
-        $this->assertEquals($expectedResults, $result->getValue()['values']);
+
+        foreach ($expectedResults as $checkKey => $checkValue) {
+            $this->assertEquals($checkValue, $result->getValue()['values'][$checkKey]);
+        }
     }
 
     /**
@@ -158,9 +153,10 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         $expectedResults = [
             '10.0' => 12.5,
             '30.0' => 100.0,
-            '10.0_as_string' => '12.5',
-            '30.0_as_string' => '100.0',
         ];
-        $this->assertEquals($expectedResults, $result->getValue()['values']);
+
+        foreach ($expectedResults as $checkKey => $checkValue) {
+            $this->assertEquals($checkValue, $result->getValue()['values'][$checkKey]);
+        }
     }
 }

@@ -21,14 +21,6 @@ use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 class ValueCountAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
-     * @var array
-     */
-    protected $expectedResults = [
-        'new' => ['agg_test_agg' => ['value' => 3, 'value_as_string' => '3']],
-        'older' => ['agg_test_agg' => ['value' => 3]],
-    ];
-
-    /**
      * {@inheritdoc}
      */
     protected function getIgnoredVersions()
@@ -81,7 +73,7 @@ class ValueCountAggregationTest extends AbstractElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
-        $this->assertEquals($this->expectedResults['new'], $results['aggregations'], '', 0.01);
+        $this->assertEquals(3, $results['aggregations']['agg_test_agg']['value'], '', 0.01);
     }
 
     /**
@@ -98,6 +90,6 @@ class ValueCountAggregationTest extends AbstractElasticsearchTestCase
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
-        $this->assertEquals($this->expectedResults['older'], $results['aggregations'], '', 0.01);
+        $this->assertEquals(3, $results['aggregations']['agg_test_agg']['value'], '', 0.01);
     }
 }

@@ -73,39 +73,17 @@ class StatsAggregationTest extends AbstractElasticsearchTestCase
 
         $this->assertArrayHasKey('aggregations', $results);
 
-        array_walk_recursive(
-            $results,
-            function (&$value, $key) {
-                switch (gettype($value)) {
-                    case 'string':
-                        $value = is_numeric($value) ? (string)round(floatval($value), 2) : $value;
-                        break;
-                    case 'double':
-                        $value = round($value, 2);
-                        break;
-                    default:
-                        // Do nothing.
-                        break;
-                }
-            }
-        );
+        $expectedValues = [
+            'count' => 3,
+            'min' => 10.45,
+            'max' => 32,
+            'avg' => 19.18,
+            'sum' => 57.55,
+        ];
 
-        $this->assertEquals(
-            [
-                'agg_test_agg' => [
-                    'count' => 3,
-                    'min' => 10.45,
-                    'max' => 32,
-                    'avg' => 19.18,
-                    'sum' => 57.55,
-                    'min_as_string' => '10.45',
-                    'max_as_string' => '32',
-                    'avg_as_string' => '19.18',
-                    'sum_as_string' => '57.55',
-                ],
-            ],
-            $results['aggregations']
-        );
+        foreach ($expectedValues as $checkKey => $checkValue) {
+            $this->assertEquals($checkValue, $results['aggregations']['agg_test_agg'][$checkKey], '', 0.01);
+        }
     }
 
     /**
@@ -153,17 +131,16 @@ class StatsAggregationTest extends AbstractElasticsearchTestCase
         $expectedResult = [
             'agg_test_agg' => [
                 'count' => 3,
-                'min' => 12.539999771118163,
+                'min' => 12.540,
                 'max' => 38.4,
-                'sum' => 69.060000228881833,
-                'avg' => 23.020000076293943,
-                'min_as_string' => '12.539999771118163',
-                'max_as_string' => '38.4',
-                'avg_as_string' => '23.020000076293943',
-                'sum_as_string' => '69.06000022888183',
+                'sum' => 69.060,
+                'avg' => 23.020,
             ],
         ];
         $this->assertArrayHasKey('aggregations', $results);
-        $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
+
+        foreach ($expectedResult['agg_test_agg'] as $checkKey => $checkValue) {
+            $this->assertEquals($checkValue, $results['aggregations']['agg_test_agg'][$checkKey], '', 0.01);
+        }
     }
 }
