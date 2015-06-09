@@ -15,7 +15,6 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Reads records one by one.
@@ -161,20 +160,16 @@ class JsonReader implements \Countable, \Iterator
     /**
      * Configures OptionResolver for resolving document metadata fields.
      *
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    protected function configureResolver(OptionsResolverInterface $resolver)
+    protected function configureResolver(OptionsResolver $resolver)
     {
         $resolver
             ->setRequired(['_id', '_type', '_source'])
             ->setDefaults(['_score' => null])
-            ->setAllowedTypes(
-                [
-                    '_id' => ['integer', 'string'],
-                    '_type' => 'string',
-                    '_source' => 'array',
-                ]
-            );
+            ->addAllowedTypes('_id', ['integer', 'string'])
+            ->addAllowedTypes('_type', 'string')
+            ->addAllowedTypes('_source', 'array');
     }
 
     /**
