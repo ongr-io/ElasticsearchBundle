@@ -72,10 +72,10 @@ class ExtendedStatsAggregationTest extends AbstractElasticsearchTestCase
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
-        $expectedMin = 10.449999809265137;
+        $expectedMin = 10.450;
 
         $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
-        $this->assertEquals($expectedMin, $results['aggregations'][$aggregation->getName()]['min']);
+        $this->assertEquals($expectedMin, $results['aggregations'][$aggregation->getName()]['min'], '', 0.01);
     }
 
     /**
@@ -94,28 +94,20 @@ class ExtendedStatsAggregationTest extends AbstractElasticsearchTestCase
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $expectedResult = [
-            'agg_test_agg' => [
-                'count' => 3,
-                'min' => 10.449999809265137,
-                'max' => 32.0,
-                'avg' => 19.183333396911621,
-                'sum' => 57.550000190734863,
-                'sum_of_squares' => 1361.2125075340273,
-                'variance' => 85.737222294277672,
-                'std_deviation' => 9.2594396317637742,
-                'std_deviation_bounds' => ['upper' => 28.442773028675397, 'lower' => 9.9238937651478469],
-                'min_as_string' => '10.449999809265137',
-                'max_as_string' => '32.0',
-                'avg_as_string' => '19.18333339691162',
-                'sum_as_string' => '57.55000019073486',
-                'sum_of_squares_as_string' => '1361.2125075340273',
-                'variance_as_string' => '85.73722229427767',
-                'std_deviation_as_string' => '9.259439631763774',
-                'std_deviation_bounds_as_string' => ['upper' => '28.442773028675397', 'lower' => '9.9238937651478469'],
-            ],
+            'count' => 3,
+            'min' => 10.450,
+            'max' => 32.0,
+            'avg' => 19.183,
+            'sum' => 57.550,
+            'sum_of_squares' => 1361.212,
+            'variance' => 85.737,
+            'std_deviation' => 9.259,
+            'std_deviation_bounds' => ['upper' => 28.443, 'lower' => 9.924],
         ];
 
-        $this->assertEquals($expectedResult, $results['aggregations']);
+        foreach ($expectedResult as $checkKey => $checkValue) {
+            $this->assertEquals($checkValue, $results['aggregations']['agg_test_agg'][$checkKey], '', 0.01);
+        }
     }
 
     /**
@@ -128,8 +120,8 @@ class ExtendedStatsAggregationTest extends AbstractElasticsearchTestCase
         $aggregation->setScript("doc['product.price'].value * 1.5");
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
-        $expectedMin = 15.674999713897705;
+        $expectedMin = 15.675;
 
-        $this->assertEquals($expectedMin, $results['aggregations'][$aggregation->getName()]['min']);
+        $this->assertEquals($expectedMin, $results['aggregations'][$aggregation->getName()]['min'], '', 0.01);
     }
 }

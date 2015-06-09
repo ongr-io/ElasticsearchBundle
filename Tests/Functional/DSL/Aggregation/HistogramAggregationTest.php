@@ -172,31 +172,28 @@ class HistogramAggregationTest extends AbstractElasticsearchTestCase
 
         $aggregation->setOrder($statsAggregation->getName() . '.min', HistogramAggregation::DIRECTION_ASC);
         $aggregation->addAggregation($statsAggregation);
+
         $expectedResults = [
-            'agg_test_agg' => [
-                'buckets' => [
-                    [
-                        'key' => 0,
-                        'doc_count' => 2,
-                        'agg_price_stats' => [
-                            'count' => 2,
-                            'min' => 2.0,
-                            'max' => 3.0,
-                            'avg' => 2.5,
-                            'sum' => 5.0,
-                            'min_as_string' => '2.0',
-                            'max_as_string' => '3.0',
-                            'avg_as_string' => '2.5',
-                            'sum_as_string' => '5.0',
-                        ],
-                    ],
-                ],
+            'doc_count' => 2,
+            'agg_price_stats' => [
+                'count' => 2,
+                'min' => 2.0,
+                'max' => 3.0,
+                'avg' => 2.5,
+                'sum' => 5.0,
             ],
         ];
+
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW)['aggregations'];
 
-        $this->assertEquals($expectedResults, $results);
+        $resultBucket = $results['agg_test_agg']['buckets'][0];
+
+        $this->assertEquals($expectedResults['doc_count'], $resultBucket['doc_count']);
+
+        foreach ($expectedResults['agg_price_stats'] as $checkKey => $checkValue) {
+            $this->assertEquals($checkValue, $resultBucket['agg_price_stats'][$checkKey], '', 0.01);
+        }
     }
 }

@@ -72,15 +72,10 @@ class MinAggregationTest extends AbstractElasticsearchTestCase
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
-        $expectedResult = [
-            'agg_test_agg' => [
-                'value' => 10.449999809265137,
-                'value_as_string' => '10.449999809265137',
-            ],
-        ];
+        $expectedResult = 10.45;
 
         $this->assertArrayHasKey('aggregations', $results);
-        $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
+        $this->assertEquals($expectedResult, $results['aggregations']['agg_test_agg']['value'], '', 0.01);
     }
 
     /**
@@ -97,13 +92,10 @@ class MinAggregationTest extends AbstractElasticsearchTestCase
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
-        $expectedResult = [
-            'agg_test_agg' => [
-                'value' => 12.539999771118163,
-                'value_as_string' => '12.539999771118163',
-            ],
-        ];
+
+        $expectedResult = 12.54;
+
         $this->assertArrayHasKey('aggregations', $results, 'results array should have aggregations key');
-        $this->assertEquals($expectedResult, $results['aggregations'], '', 0.01);
+        $this->assertEquals($expectedResult, $results['aggregations']['agg_test_agg']['value'], '', 0.01);
     }
 }
