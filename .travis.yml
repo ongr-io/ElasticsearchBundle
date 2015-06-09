@@ -9,8 +9,8 @@ php:
 
 env:
   - ELASTICSEARCH="1.3.9"
-  - ELASTICSEARCH="1.4.4"
-  - ELASTICSEARCH="1.5.1"
+  - ELASTICSEARCH="1.4.5"
+  - ELASTICSEARCH="1.5.2"
 
 matrix:
   allow_failures:
