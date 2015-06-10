@@ -61,7 +61,7 @@ class FuzzyLikeThisTest extends AbstractElasticsearchTestCase
         $out = [];
         $testData = $this->getDataArray();
 
-        // FLT in single field
+        // FLT in single field.
         $out[] = [
             'description',
             'Lorem',
@@ -74,7 +74,7 @@ class FuzzyLikeThisTest extends AbstractElasticsearchTestCase
             ],
         ];
 
-        // FLT in multiple fields
+        // FLT in multiple fields.
         $out[] = [
             'description,title',
             'Lorem bar',
