@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\Suggestion\OptionIterator;
 use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
@@ -245,7 +244,7 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
             'ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator',
             $iterator->getAggregations()
         );
-        $this->assertEquals(new ValueAggregation(['doc_count' => 1]), $iterator->getAggregations()['foo']);
+        $this->assertEquals(['doc_count' => 1], $iterator->getAggregations()['foo']->getValue());
     }
 
     /**
