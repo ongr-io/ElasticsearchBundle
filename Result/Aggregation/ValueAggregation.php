@@ -42,8 +42,8 @@ class ValueAggregation
     /**
      * Constructor.
      *
-     * @param array      $rawData
-     * @param Converter  $converter
+     * @param array     $rawData
+     * @param Converter $converter
      */
     public function __construct($rawData, $converter = null)
     {
