@@ -56,7 +56,7 @@ class SubAggregationTest extends AbstractElasticsearchTestCase
     {
         $out = [];
 
-        // Case 0
+        // Case 0: top hits aggregation inside ranges.
         $search = new Search();
 
         $rangeAgg = new RangeAggregation('range');
@@ -68,7 +68,8 @@ class SubAggregationTest extends AbstractElasticsearchTestCase
         $topHitsAgg->setSort(
             new Sorts(
                 new Sort(
-                    'price', Sort::ORDER_DESC
+                    'price',
+                    Sort::ORDER_DESC
                 )
             )
         );
@@ -90,8 +91,8 @@ class SubAggregationTest extends AbstractElasticsearchTestCase
     /**
      * Test for terms aggregation.
      *
-     * @param $search
-     * @param $expectedTopHits
+     * @param Search $search
+     * @param array  $expectedTopHits
      *
      * @dataProvider getTestSubAggregationsData
      */
