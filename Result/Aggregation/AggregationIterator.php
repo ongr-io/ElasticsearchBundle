@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\Result\Converter;
 /**
  * This class hold aggregations from Elasticsearch result.
  */
-class AggregationIterator implements \ArrayAccess, \Iterator
+class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
 {
     /**
      * @var array
@@ -171,5 +171,13 @@ class AggregationIterator implements \ArrayAccess, \Iterator
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        return count($this->rawData);
     }
 }
