@@ -19,7 +19,12 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 /**
  * Comment document for testing.
  *
- * @ES\Document(type="comment", parent="AcmeTestBundle:Content", ttl={"enabled":true, "default": "1d"})
+ * @ES\Document(
+ *      type="comment",
+ *      parent="AcmeTestBundle:Content",
+ *      ttl={"enabled":true, "default": "1d"},
+ *      dynamic="strict"
+ * )
  */
 class Comment extends AbstractDocument
 {

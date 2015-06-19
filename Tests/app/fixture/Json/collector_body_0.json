@@ -7,8 +7,8 @@
         }
     },
     "fields": [
-        "_parent",
         "_ttl",
+        "_parent",
         "_source"
     ]
 }
