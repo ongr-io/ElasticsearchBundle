@@ -35,9 +35,13 @@ trait ContextSuggesterTrait
      * Sets context to be used for completion.
      *
      * @param object $context
+     *
+     * @return $this
      */
     public function setContext($context)
     {
         $this->context = $context;
+
+        return $this;
     }
 }

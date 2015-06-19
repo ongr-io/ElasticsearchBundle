@@ -106,7 +106,7 @@ abstract class AbstractDocument implements DocumentInterface
      *
      * @param string $documentId
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setId($documentId)
     {
@@ -130,7 +130,7 @@ abstract class AbstractDocument implements DocumentInterface
      *
      * @param string $documentScore
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setScore($documentScore)
     {
@@ -154,7 +154,7 @@ abstract class AbstractDocument implements DocumentInterface
      *
      * @param string $parent
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setParent($parent)
     {
@@ -214,7 +214,7 @@ abstract class AbstractDocument implements DocumentInterface
      *
      * @param string $ttl
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setTtl($ttl)
     {

@@ -20,6 +20,8 @@ interface SuggesterInterface
      * Setter for input to store.
      *
      * @param string $input
+     *
+     * @return $this
      */
     public function setInput($input);
 
@@ -34,6 +36,8 @@ interface SuggesterInterface
      * Setter for string to return.
      *
      * @param string $output
+     *
+     * @return $this
      */
     public function setOutput($output);
 
@@ -55,6 +59,8 @@ interface SuggesterInterface
      * Setter for a weight used to rank suggestions.
      *
      * @param int|string $weight
+     *
+     * @return $this
      */
     public function setWeight($weight);
 
@@ -69,6 +75,8 @@ interface SuggesterInterface
      * Setter for object to be returned in the suggest option.
      *
      * @param object $payload
+     *
+     * @return $this
      */
     public function setPayload($payload);
 }

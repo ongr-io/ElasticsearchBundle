@@ -23,7 +23,7 @@ interface DocumentInterface
      *
      * @param string $documentId
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setId($documentId);
 
@@ -39,7 +39,7 @@ interface DocumentInterface
      *
      * @param string $documentScore
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setScore($documentScore);
 
@@ -55,7 +55,7 @@ interface DocumentInterface
      *
      * @param string $parent
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setParent($parent);
 
@@ -78,7 +78,7 @@ interface DocumentInterface
      *
      * @param int $ttl
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setTtl($ttl);
 

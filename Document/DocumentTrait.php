@@ -100,7 +100,7 @@ trait DocumentTrait
      *
      * @param string $documentId
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setId($documentId)
     {
@@ -124,7 +124,7 @@ trait DocumentTrait
      *
      * @param string $documentScore
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setScore($documentScore)
     {
@@ -148,7 +148,7 @@ trait DocumentTrait
      *
      * @param string $parent
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setParent($parent)
     {
@@ -208,7 +208,7 @@ trait DocumentTrait
      *
      * @param string $ttl
      *
-     * @return DocumentInterface
+     * @return $this
      */
     public function setTtl($ttl)
     {
