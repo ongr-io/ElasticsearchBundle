@@ -28,22 +28,22 @@ class DateRangeAggregationTest extends AbstractElasticsearchTestCase
                 'comment' => [
                     [
                         '_parent' => 1,
-                        'sub_title' => 'foo',
+                        'userName' => 'foo',
                         'createdAt' => '2010',
                     ],
                     [
                         '_parent' => 1,
-                        'sub_title' => 'bar bar',
+                        'userName' => 'bar bar',
                         'createdAt' => '2011',
                     ],
                     [
                         '_parent' => 2,
-                        'sub_title' => 'foo bar',
+                        'userName' => 'foo bar',
                         'createdAt' => '2013',
                     ],
                     [
                         '_parent' => 2,
-                        'sub_title' => 'bar',
+                        'userName' => 'bar',
                         'createdAt' => '2015',
                     ],
                 ],

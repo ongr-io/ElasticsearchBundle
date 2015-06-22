@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
 use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
+use ONGR\ElasticsearchBundle\Result\Converter;
 
 /**
  * This is the class for plain aggregation result with nested aggregations support.
@@ -34,13 +35,20 @@ class ValueAggregation
     private $aggregations;
 
     /**
+     * @var Converter
+     */
+    private $converter;
+
+    /**
      * Constructor.
      *
-     * @param array $rawData
+     * @param array     $rawData
+     * @param Converter $converter
      */
-    public function __construct($rawData)
+    public function __construct($rawData, $converter = null)
     {
         $this->rawData = $rawData;
+        $this->converter = $converter;
     }
 
     /**
@@ -89,7 +97,7 @@ class ValueAggregation
             }
         }
 
-        $this->aggregations = new AggregationIterator($data);
+        $this->aggregations = new AggregationIterator($data, $this->converter);
 
         return $this->aggregations;
     }

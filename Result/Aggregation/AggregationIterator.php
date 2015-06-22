@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\Result\Converter;
 /**
  * This class hold aggregations from Elasticsearch result.
  */
-class AggregationIterator implements \ArrayAccess, \Iterator
+class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
 {
     /**
      * @var array
@@ -68,7 +68,10 @@ class AggregationIterator implements \ArrayAccess, \Iterator
         }
 
         if (isset($this->rawData[$offset]['buckets'])) {
-            $this->aggregations[$offset] = new AggregationIterator($this->rawData[$offset]['buckets']);
+            $this->aggregations[$offset] = new AggregationIterator(
+                $this->rawData[$offset]['buckets'],
+                $this->converter
+            );
         } elseif (isset($this->rawData[$offset]['hits'])) {
             if (!$this->converter) {
                 throw new \InvalidArgumentException(
@@ -80,7 +83,7 @@ class AggregationIterator implements \ArrayAccess, \Iterator
                 $this->converter
             );
         } else {
-            $this->aggregations[$offset] = new ValueAggregation($this->rawData[$offset]);
+            $this->aggregations[$offset] = new ValueAggregation($this->rawData[$offset], $this->converter);
         }
 
         // Clear memory.
@@ -168,5 +171,13 @@ class AggregationIterator implements \ArrayAccess, \Iterator
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        return count($this->rawData);
     }
 }

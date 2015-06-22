@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
+use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class AggregationIteratorFindTest extends ElasticsearchTestCase
@@ -103,7 +104,7 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
 
         $out[] = [
             'test_agg',
-            new AggregationIterator($rawData),
+            new AggregationIterator($rawData, $this->getConverter()),
         ];
 
         $rawData = [
@@ -123,7 +124,7 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
 
         $out[] = [
             'test_agg.0.test_agg_2',
-            new AggregationIterator($rawData),
+            new AggregationIterator($rawData, $this->getConverter()),
         ];
 
         return $out;
@@ -167,5 +168,18 @@ class AggregationIteratorFindTest extends ElasticsearchTestCase
         $aggregation->addAggregation($aggregation2);
 
         return $aggregation;
+    }
+
+    /**
+     * Returns converter object to inject into AggregationIterator.
+     *
+     * @return Converter
+     */
+    private function getConverter()
+    {
+        return new Converter(
+            $this->getManager()->getTypesMapping(),
+            $this->getManager()->getBundlesMapping()
+        );
     }
 }

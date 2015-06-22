@@ -50,10 +50,14 @@ abstract class AbstractSuggester implements SuggesterInterface
      * Setter for input to store.
      *
      * @param string[]|string $input
+     *
+     * @return $this
      */
     public function setInput($input)
     {
         $this->input = $input;
+
+        return $this;
     }
 
     /**
@@ -70,10 +74,14 @@ abstract class AbstractSuggester implements SuggesterInterface
      * Setter for string to return.
      *
      * @param string $output
+     *
+     * @return $this
      */
     public function setOutput($output)
     {
         $this->output = $output;
+
+        return $this;
     }
 
     /**
@@ -90,10 +98,14 @@ abstract class AbstractSuggester implements SuggesterInterface
      * Setter for object to be returned in the suggest option.
      *
      * @param object $payload
+     *
+     * @return $this
      */
     public function setPayload($payload)
     {
         $this->payload = (object)$payload;
+
+        return $this;
     }
 
     /**
@@ -110,10 +122,14 @@ abstract class AbstractSuggester implements SuggesterInterface
      * Setter for a weight used to rank suggestions.
      *
      * @param int|string $weight
+     *
+     * @return $this
      */
     public function setWeight($weight)
     {
         $this->weight = $weight;
+
+        return $this;
     }
 
     /**

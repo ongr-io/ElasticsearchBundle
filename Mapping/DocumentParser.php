@@ -112,12 +112,10 @@ class DocumentParser
             return [
                 $type => [
                     'properties' => $properties,
-                    'fields' => [
-                        '_parent' => $parent === null ? null : ['type' => $parent],
-                        '_ttl' => $class->ttl,
-                        'enabled' => $class->enabled,
-                        '_all' => $class->all,
-                    ],
+                    'fields' => array_merge(
+                        $class->dump(),
+                        ['_parent' => $parent === null ? null : ['type' => $parent]]
+                    ),
                     'aliases' => $this->getAliases($reflectionClass),
                     'objects' => $this->getObjects(),
                     'proxyNamespace' => ProxyFactory::getProxyNamespace($reflectionClass, true),
