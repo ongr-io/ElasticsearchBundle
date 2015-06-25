@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\ONGRElasticsearchExtension;
+use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -30,7 +31,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $parameters = [
             'elasticsearch' => [
-                'document_dir' => 'customDir',
                 'connections' => [
                     'test' => ['index_name' => 'test'],
                 ],
@@ -76,7 +76,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
 
         $parameters = [
             'elasticsearch' => [
-                'document_dir' => 'customDir',
                 'connections' => [
                     'test' => ['index_name' => 'test'],
                 ],
@@ -136,7 +135,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
 
         if ($parameters['elasticsearch']['managers']['test']['debug']) {
             $reflection = new \ReflectionClass($this);
-            $dir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . 'customDir';
+            $dir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . DocumentFinder::DOCUMENT_DIR;
 
             $handler = new Definition('ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler', []);
             $logger = new Definition(

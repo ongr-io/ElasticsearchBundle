@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection;
 
+use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -65,7 +66,6 @@ class ONGRElasticsearchExtension extends Extension
                 $container->getParameter('kernel.bundles'),
             ]
         );
-        $documentFinder->addMethodCall('setDocumentDir', [$config['document_dir']]);
         $container->setDefinition('es.document_finder', $documentFinder);
     }
 
@@ -133,7 +133,7 @@ class ONGRElasticsearchExtension extends Extension
 
         foreach ($watchedBundles as $name => $class) {
             $bundle = new \ReflectionClass($class);
-            $dir = dirname($bundle->getFileName()) . DIRECTORY_SEPARATOR . $config['document_dir'];
+            $dir = dirname($bundle->getFileName()) . DIRECTORY_SEPARATOR . DocumentFinder::DOCUMENT_DIR;
             $container->addResource(new DirectoryResource($dir));
         }
     }

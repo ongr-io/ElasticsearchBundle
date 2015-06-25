@@ -45,7 +45,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'mappings' => ['AcmeTestBundle'],
                 ],
             ],
-            'document_dir' => 'Document',
         ];
 
         $out = [];
@@ -53,7 +52,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         // Case #0 basic.
         $out[] = [
             [
-                'document_dir' => 'Docs',
                 'connections' => [
                     'acme' => ['index_name' => 'acme'],
                 ],
@@ -64,7 +62,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
-            array_merge($expectedConfiguration, ['document_dir' => 'Docs']),
+            $expectedConfiguration,
         ];
 
         // Case #1 hosts as arrays.

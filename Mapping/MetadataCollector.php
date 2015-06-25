@@ -145,13 +145,12 @@ class MetadataCollector
         $this->proxyPaths = [];
         $bundleNamespace = $this->finder->getBundleClass($bundle);
         $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
-        $documentDir = str_replace('/', '\\', $this->finder->getDocumentDir());
 
         // Loop through documents found in bundle.
         foreach ($this->finder->getBundleDocumentPaths($bundle) as $document) {
             $documentReflection = new \ReflectionClass(
                 $bundleNamespace .
-                '\\' . $documentDir .
+                '\\' . DocumentFinder::DOCUMENT_DIR .
                 '\\' . pathinfo($document, PATHINFO_FILENAME)
             );
 

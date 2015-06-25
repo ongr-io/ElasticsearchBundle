@@ -24,42 +24,17 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     {
         $out = [];
 
-        // Case #0 one level directory.
+        // Case #0
         $out[] = [
-            'Document',
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             'AcmeTestBundle:Product',
             true,
         ];
 
-        // Case #1 two levels directory, `\` directory separator.
+        // Case #1
         $out[] = [
-            'Document\Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             'AcmeTestBundle:Product',
-        ];
-
-        // Case #2 two levels directory, `/` directory separator.
-        $out[] = [
-            'Document/Document',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Document\Product',
-            'AcmeTestBundle:Product',
-        ];
-
-        // Case #3 two levels directory, `/` directory separator.
-        $out[] = [
-            'Document/Test',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
-            'AcmeTestBundle:Item',
-            true,
-        ];
-
-        // Case #4 two levels directory, `\` directory separator.
-        $out[] = [
-            'Document\Test',
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Test\Item',
-            'AcmeTestBundle:Item',
-            true,
         ];
 
         return $out;
@@ -75,10 +50,9 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider getTestData
      */
-    public function testDocumentDir($documentDir, $expectedNamespace, $document, $testPath = false)
+    public function testDocumentDir($expectedNamespace, $document, $testPath = false)
     {
         $finder = new DocumentFinder($this->getBundles());
-        $finder->setDocumentDir($documentDir);
 
         $this->assertEquals($expectedNamespace, $finder->getNamespace($document));
         if ($testPath) {

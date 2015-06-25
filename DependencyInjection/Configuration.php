@@ -31,10 +31,6 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('document_dir')
-                    ->info("Sets directory name from which documents will be loaded from bundles.'Document' by default")
-                    ->defaultValue('Document')
-                ->end()
                 ->append($this->getConnectionsNode())
                 ->append($this->getManagersNode())
             ->end();
