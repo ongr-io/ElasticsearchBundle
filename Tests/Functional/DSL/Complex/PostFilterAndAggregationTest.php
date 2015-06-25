@@ -82,7 +82,7 @@ class PostFilterAndAggregationTest extends ElasticsearchTestCase
         $name = 'foo';
         $TermsAgg = new TermsAggregation($name);
         $TermsAgg->setField('title');
-        $TermsAgg->setInclude($name);
+        $TermsAgg->addParameter('include', $name);
 
         $filterAgg = new FilterAggregation($name . '-filter');
 
