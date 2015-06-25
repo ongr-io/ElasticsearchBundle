@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
 use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class RangeAggregationTest extends ElasticsearchTestCase

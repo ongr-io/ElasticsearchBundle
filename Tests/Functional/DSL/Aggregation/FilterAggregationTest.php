@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 use ONGR\ElasticsearchDSL\Aggregation\FilterAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchDSL\Filter\RegexpFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class FilterAggregationTest extends ElasticsearchTestCase

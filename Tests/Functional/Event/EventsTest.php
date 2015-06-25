@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\Event\ElasticsearchCommitEvent;
 use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\_Proxy\Product;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

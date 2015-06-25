@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
 use ONGR\ElasticsearchDSL\Filter\TermsFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class TermsFilterTest extends ElasticsearchTestCase

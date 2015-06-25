@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 
 use ONGR\ElasticsearchDSL\Filter\LimitFilter;
 use ONGR\ElasticsearchDSL\Query\MatchQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class BoolTestWithMatchQueryAndLimitFilterTest extends ElasticsearchTestCase

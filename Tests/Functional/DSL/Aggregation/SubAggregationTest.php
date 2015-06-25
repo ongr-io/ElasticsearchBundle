@@ -16,7 +16,7 @@ use ONGR\ElasticsearchDSL\Aggregation\TopHitsAggregation;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchDSL\Sort\Sorts;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class SubAggregationTest extends AbstractElasticsearchTestCase

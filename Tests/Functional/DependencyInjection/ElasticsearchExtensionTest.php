@@ -23,35 +23,35 @@ class ElasticsearchExtensionTest extends WebTestCase
         return [
             [
                 'es.manager',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
                 'es.manager.default',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
                 'es.manager.bar',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
                 'es.manager.default.product',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'ONGR\ElasticsearchBundle\Service\Repository',
             ],
             [
                 'es.manager.default.bar',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'ONGR\ElasticsearchBundle\Service\Repository',
             ],
             [
                 'es.manager.default.color',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'ONGR\ElasticsearchBundle\Service\Repository',
             ],
             [
                 'es.manager.default.colordocument',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'ONGR\ElasticsearchBundle\Service\Repository',
             ],
             [
                 'es.manager.default.media',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'ONGR\ElasticsearchBundle\Service\Repository',
             ],
             [
                 'es.metadata_collector',

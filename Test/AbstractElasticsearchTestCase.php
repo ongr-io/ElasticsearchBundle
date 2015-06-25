@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Test;
 
 use Elasticsearch\Common\Exceptions\ElasticsearchException;
 use ONGR\ElasticsearchBundle\Client\Connection;
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

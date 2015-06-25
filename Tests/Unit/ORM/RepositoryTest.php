@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
 
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -77,7 +77,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTypes($types, $expectedTypes, $bundlesMapping)
     {
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->disableOriginalConstructor()
             ->getMock();
         $manager->expects($this->exactly(2))

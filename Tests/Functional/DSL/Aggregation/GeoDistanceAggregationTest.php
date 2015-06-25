@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchDSL\Aggregation\GeoDistanceAggregation;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 class GeoDistanceAggregationTest extends AbstractElasticsearchTestCase
 {

@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
 use ONGR\ElasticsearchDSL\Aggregation\DateRangeAggregation;
 use ONGR\ElasticsearchDSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class DateRangeAggregationTest extends AbstractElasticsearchTestCase

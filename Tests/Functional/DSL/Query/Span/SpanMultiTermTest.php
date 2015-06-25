@@ -18,7 +18,7 @@ use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchDSL\Query\RegexpQuery;
 use ONGR\ElasticsearchDSL\Query\Span\SpanMultiTermQuery;
 use ONGR\ElasticsearchDSL\Query\WildcardQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class SpanMultiTermTest extends AbstractElasticsearchTestCase

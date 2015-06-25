@@ -16,7 +16,7 @@ use ONGR\ElasticsearchDSL\Aggregation\ReverseNestedAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\FilterAggregation;
 use ONGR\ElasticsearchDSL\Filter\TermFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class ReverseNestedAggregationTest extends AbstractElasticsearchTestCase

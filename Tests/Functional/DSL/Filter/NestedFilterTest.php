@@ -16,7 +16,7 @@ use ONGR\ElasticsearchDSL\Filter\MatchAllFilter;
 use ONGR\ElasticsearchDSL\Filter\NestedFilter;
 use ONGR\ElasticsearchDSL\Filter\RangeFilter;
 use ONGR\ElasticsearchDSL\Filter\TermsFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**

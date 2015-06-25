@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 use ONGR\ElasticsearchDSL\Filter\AndFilter;
 use ONGR\ElasticsearchDSL\Filter\MissingFilter;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class AndFilterTest extends ElasticsearchTestCase

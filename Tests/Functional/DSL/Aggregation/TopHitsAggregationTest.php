@@ -18,7 +18,7 @@ use ONGR\ElasticsearchDSL\Query\FunctionScoreQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchDSL\Sort\Sorts;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**

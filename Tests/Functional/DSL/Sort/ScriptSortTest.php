@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Sort;
 
 use ONGR\ElasticsearchDSL\Sort\ScriptSort;
 use ONGR\ElasticsearchDSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class ScriptSortTest extends ElasticsearchTestCase

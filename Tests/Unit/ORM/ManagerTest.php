@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
 
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
-use ONGR\ElasticsearchBundle\ORM\Manager;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 /**
  * Unit tests for Manager.

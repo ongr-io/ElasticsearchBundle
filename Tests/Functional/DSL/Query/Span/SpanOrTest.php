@@ -15,7 +15,7 @@ use ONGR\ElasticsearchDSL\Query\Span\SpanFirstQuery;
 use ONGR\ElasticsearchDSL\Query\Span\SpanNearQuery;
 use ONGR\ElasticsearchDSL\Query\Span\SpanOrQuery;
 use ONGR\ElasticsearchDSL\Query\Span\SpanTermQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class SpanOrTest extends AbstractElasticsearchTestCase

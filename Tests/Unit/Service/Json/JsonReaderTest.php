@@ -105,7 +105,7 @@ OUT;
     public function testReader($contents, $expectedDocuments)
     {
         $managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -189,7 +189,7 @@ OUT;
     public function testReaderRaw($contents, $expectedDocuments)
     {
         $managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -279,7 +279,7 @@ OUT;
     public function testGetConverter()
     {
         $managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->disableOriginalConstructor()
             ->setMethods(['getTypesMapping', 'getBundlesMapping'])
             ->getMock();

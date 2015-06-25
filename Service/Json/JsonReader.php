@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Service\Json;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 

@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Sort;
 
 use ONGR\ElasticsearchDSL\Filter\IdsFilter;
 use ONGR\ElasticsearchDSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
 class SortTest extends ElasticsearchTestCase

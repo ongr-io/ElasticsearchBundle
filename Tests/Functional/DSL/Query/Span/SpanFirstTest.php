@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
 
 use ONGR\ElasticsearchDSL\Query\Span\SpanFirstQuery;
 use ONGR\ElasticsearchDSL\Query\Span\SpanTermQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class SpanFirstTest extends AbstractElasticsearchTestCase

@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

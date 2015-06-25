@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Test;
 
 use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -68,7 +68,7 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $this->managerMock = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Manager')
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->setConstructorArgs([$this->connectionMock, $this->collectorMock, [], []])
             ->getMock();
 

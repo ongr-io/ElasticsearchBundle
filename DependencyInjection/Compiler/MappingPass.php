@@ -42,7 +42,7 @@ class MappingPass implements CompilerPassInterface
             );
 
             $managerDefinition = new Definition(
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'ONGR\ElasticsearchBundle\Service\Manager',
                 [
                     $this->getConnectionDefinition($container, $connections, $settings),
                     $classMetadataCollection,
@@ -62,7 +62,7 @@ class MappingPass implements CompilerPassInterface
             /** @var Definition $data */
             foreach ($bundlesMetadata as $repository => $data) {
                 $repositoryDefinition = new Definition(
-                    'ONGR\ElasticsearchBundle\ORM\Repository',
+                    'ONGR\ElasticsearchBundle\Service\Repository',
                     [$repository]
                 );
                 $repositoryDefinition->setFactory(

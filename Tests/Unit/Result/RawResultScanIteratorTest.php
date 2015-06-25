@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
 
 class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
@@ -30,7 +30,7 @@ class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $repository = $this->getMockBuilder('ONGR\ElasticsearchBundle\ORM\Repository')
+        $repository = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Repository')
             ->disableOriginalConstructor()
             ->getMock();
 

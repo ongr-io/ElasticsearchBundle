@@ -17,7 +17,7 @@ use ONGR\ElasticsearchDSL\Suggester\Completion;
 use ONGR\ElasticsearchDSL\Suggester\Context;
 use ONGR\ElasticsearchDSL\Suggester\Phrase;
 use ONGR\ElasticsearchDSL\Suggester\Term;
-use ONGR\ElasticsearchBundle\ORM\Repository;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\PhraseOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\SimpleOption;
