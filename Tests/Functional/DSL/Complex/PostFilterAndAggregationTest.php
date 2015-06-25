@@ -11,9 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\FilterAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Filter\RangeFilter;
+use ONGR\ElasticsearchDSL\Aggregation\FilterAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
+use ONGR\ElasticsearchDSL\Filter\RangeFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

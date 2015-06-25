@@ -11,9 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
 
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanNearQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanNotQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanTermQuery;
+use ONGR\ElasticsearchDSL\Query\Span\SpanNearQuery;
+use ONGR\ElasticsearchDSL\Query\Span\SpanNotQuery;
+use ONGR\ElasticsearchDSL\Query\Span\SpanTermQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

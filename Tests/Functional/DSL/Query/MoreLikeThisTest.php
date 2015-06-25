@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MoreLikeThisQuery;
+use ONGR\ElasticsearchDSL\Query\MoreLikeThisQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

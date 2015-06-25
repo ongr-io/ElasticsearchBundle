@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 use ONGR\ElasticsearchBundle\Result\Converter;
 
 /**

@@ -11,13 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TopHitsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Query\FunctionScoreQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sorts;
+use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\TopHitsAggregation;
+use ONGR\ElasticsearchDSL\Query\FunctionScoreQuery;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Sort\Sort;
+use ONGR\ElasticsearchDSL\Sort\Sorts;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

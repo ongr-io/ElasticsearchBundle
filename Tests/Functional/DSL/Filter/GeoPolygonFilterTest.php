@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Filter\GeoPolygonFilter;
+use ONGR\ElasticsearchDSL\BuilderInterface;
+use ONGR\ElasticsearchDSL\Filter\GeoPolygonFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

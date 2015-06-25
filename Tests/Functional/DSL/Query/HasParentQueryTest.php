@@ -11,9 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\HasParentQuery;
+use ONGR\ElasticsearchDSL\BuilderInterface;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Query\HasParentQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

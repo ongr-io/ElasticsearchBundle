@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Cache;
 
-use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchDSL\Search;
 
 /**
  * Container for WarmerInterfaces.

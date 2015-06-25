@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\MatchAllFilter;
+use ONGR\ElasticsearchDSL\Filter\MatchAllFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

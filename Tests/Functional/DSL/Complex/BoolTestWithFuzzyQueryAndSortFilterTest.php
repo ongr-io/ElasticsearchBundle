@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 
-use ONGR\ElasticsearchBundle\DSL\Query\FuzzyQuery;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
+use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
+use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

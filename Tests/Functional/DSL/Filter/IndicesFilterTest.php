@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\IndicesFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
+use ONGR\ElasticsearchDSL\Filter\IndicesFilter;
+use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

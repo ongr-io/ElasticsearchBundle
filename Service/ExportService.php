@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\RawResultIterator;

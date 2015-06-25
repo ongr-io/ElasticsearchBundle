@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\OrFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
+use ONGR\ElasticsearchDSL\Filter\OrFilter;
+use ONGR\ElasticsearchDSL\Filter\TermFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

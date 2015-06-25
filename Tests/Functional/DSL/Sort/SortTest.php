@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Sort;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\IdsFilter;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
+use ONGR\ElasticsearchDSL\Filter\IdsFilter;
+use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
 
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanFirstQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanTermQuery;
+use ONGR\ElasticsearchDSL\Query\Span\SpanFirstQuery;
+use ONGR\ElasticsearchDSL\Query\Span\SpanTermQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

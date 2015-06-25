@@ -11,12 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Suggester\AbstractSuggester;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Suggester\AbstractSuggester;
+use ONGR\ElasticsearchDSL\Suggester\Completion;
+use ONGR\ElasticsearchDSL\Suggester\Context;
+use ONGR\ElasticsearchDSL\Suggester\Phrase;
+use ONGR\ElasticsearchDSL\Suggester\Term;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\CompletionOption;
 use ONGR\ElasticsearchBundle\Result\Suggestion\Option\PhraseOption;

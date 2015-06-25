@@ -11,11 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Filter\MatchAllFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\NestedFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\RangeFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\TermsFilter;
+use ONGR\ElasticsearchDSL\BuilderInterface;
+use ONGR\ElasticsearchDSL\Filter\MatchAllFilter;
+use ONGR\ElasticsearchDSL\Filter\NestedFilter;
+use ONGR\ElasticsearchDSL\Filter\RangeFilter;
+use ONGR\ElasticsearchDSL\Filter\TermsFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

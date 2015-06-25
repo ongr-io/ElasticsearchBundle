@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexImportCommand;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;

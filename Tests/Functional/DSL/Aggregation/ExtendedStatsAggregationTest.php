@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\ExtendedStatsAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\ExtendedStatsAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

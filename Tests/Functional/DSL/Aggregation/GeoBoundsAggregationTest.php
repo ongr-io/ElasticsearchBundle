@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\GeoBoundsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchQuery;
+use ONGR\ElasticsearchDSL\Aggregation\GeoBoundsAggregation;
+use ONGR\ElasticsearchDSL\Query\MatchQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**

@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\LimitFilter;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchQuery;
+use ONGR\ElasticsearchDSL\Filter\LimitFilter;
+use ONGR\ElasticsearchDSL\Query\MatchQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

@@ -13,8 +13,8 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;

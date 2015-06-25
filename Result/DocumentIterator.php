@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
 

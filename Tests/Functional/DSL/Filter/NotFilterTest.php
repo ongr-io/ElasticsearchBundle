@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\NotFilter;
+use ONGR\ElasticsearchDSL\Filter\MissingFilter;
+use ONGR\ElasticsearchDSL\Filter\NotFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

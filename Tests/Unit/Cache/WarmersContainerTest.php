@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Cache;
 
 use ONGR\ElasticsearchBundle\Cache\WarmersContainer;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Search;
 
 class WarmersContainerTest extends \PHPUnit_Framework_TestCase
 {

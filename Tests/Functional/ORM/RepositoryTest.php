@@ -12,16 +12,16 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Completion;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Context;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
-use ONGR\ElasticsearchBundle\DSL\Suggester\Term;
+use ONGR\ElasticsearchDSL\Filter\MissingFilter;
+use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\RangeQuery;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Search;
+use ONGR\ElasticsearchDSL\Suggester\Completion;
+use ONGR\ElasticsearchDSL\Suggester\Context;
+use ONGR\ElasticsearchDSL\Suggester\Phrase;
+use ONGR\ElasticsearchDSL\Suggester\Term;
 use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\IndicesResult;
@@ -683,8 +683,8 @@ class RepositoryTest extends ElasticsearchTestCase
 
         $repository->execute($search);
         $builder = $search->getQuery();
-        $this->assertNotInstanceOf('ONGR\ElasticsearchBundle\DSL\Bool\Bool', $builder, 'Query should not be bool.');
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery', $builder, 'Query should be same.');
+        $this->assertNotInstanceOf('ONGR\ElasticsearchDSL\Bool\Bool', $builder, 'Query should not be bool.');
+        $this->assertInstanceOf('ONGR\ElasticsearchDSL\Query\MatchAllQuery', $builder, 'Query should be same.');
     }
 
     /**

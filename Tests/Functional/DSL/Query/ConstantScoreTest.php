@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
-use ONGR\ElasticsearchBundle\DSL\Query\ConstantScoreQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\ConstantScoreQuery;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

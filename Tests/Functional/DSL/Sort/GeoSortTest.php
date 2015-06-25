@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Sort;
 
-use ONGR\ElasticsearchBundle\DSL\Sort\GeoSort;
+use ONGR\ElasticsearchDSL\Sort\GeoSort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

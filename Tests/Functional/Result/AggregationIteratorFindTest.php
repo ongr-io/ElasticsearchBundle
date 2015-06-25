@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\RangeAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;

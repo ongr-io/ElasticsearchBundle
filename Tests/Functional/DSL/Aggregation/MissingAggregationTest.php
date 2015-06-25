@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\MissingAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\MissingAggregation;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class MissingAggregationTest extends AbstractElasticsearchTestCase

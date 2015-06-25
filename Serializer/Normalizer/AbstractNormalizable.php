@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Serializer\Normalizer;
 
-use ONGR\ElasticsearchBundle\DSL\ParametersTrait;
+use ONGR\ElasticsearchDSL\ParametersTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 
 /**

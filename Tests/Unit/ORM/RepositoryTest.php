@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\ORM;
 
-use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 

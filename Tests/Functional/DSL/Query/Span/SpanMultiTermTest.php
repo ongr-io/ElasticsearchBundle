@@ -11,13 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query\Span;
 
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\FuzzyQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\PrefixQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\RegexpQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\Span\SpanMultiTermQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\WildcardQuery;
+use ONGR\ElasticsearchDSL\BuilderInterface;
+use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
+use ONGR\ElasticsearchDSL\Query\PrefixQuery;
+use ONGR\ElasticsearchDSL\Query\RangeQuery;
+use ONGR\ElasticsearchDSL\Query\RegexpQuery;
+use ONGR\ElasticsearchDSL\Query\Span\SpanMultiTermQuery;
+use ONGR\ElasticsearchDSL\Query\WildcardQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

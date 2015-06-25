@@ -11,9 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Highlight;
 
-use ONGR\ElasticsearchBundle\DSL\Highlight\Field;
-use ONGR\ElasticsearchBundle\DSL\Highlight\Highlight;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Highlight\Field;
+use ONGR\ElasticsearchDSL\Highlight\Highlight;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

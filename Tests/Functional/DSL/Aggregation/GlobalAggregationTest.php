@@ -11,10 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\GlobalAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\RangeAggregation;
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchQuery;
+use ONGR\ElasticsearchDSL\Aggregation\GlobalAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
+use ONGR\ElasticsearchDSL\BuilderInterface;
+use ONGR\ElasticsearchDSL\Query\MatchQuery;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

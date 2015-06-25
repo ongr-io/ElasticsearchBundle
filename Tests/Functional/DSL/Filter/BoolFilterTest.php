@@ -11,13 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
-use ONGR\ElasticsearchBundle\DSL\Bool\Bool;
-use ONGR\ElasticsearchBundle\DSL\BuilderInterface;
-use ONGR\ElasticsearchBundle\DSL\Filter\BoolFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\IdsFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\MissingFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
-use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchDSL\Bool\Bool;
+use ONGR\ElasticsearchDSL\BuilderInterface;
+use ONGR\ElasticsearchDSL\Filter\BoolFilter;
+use ONGR\ElasticsearchDSL\Filter\IdsFilter;
+use ONGR\ElasticsearchDSL\Filter\MissingFilter;
+use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
+use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

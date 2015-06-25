@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Suggester;
 
-use ONGR\ElasticsearchBundle\DSL\Suggester\Phrase;
+use ONGR\ElasticsearchDSL\Suggester\Phrase;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 

@@ -11,11 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\NestedAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\ReverseNestedAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\FilterAggregation;
-use ONGR\ElasticsearchBundle\DSL\Filter\TermFilter;
+use ONGR\ElasticsearchDSL\Aggregation\NestedAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\ReverseNestedAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\FilterAggregation;
+use ONGR\ElasticsearchDSL\Filter\TermFilter;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 

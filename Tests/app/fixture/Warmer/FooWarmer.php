@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Warmer;
 
 use ONGR\ElasticsearchBundle\Cache\WarmerInterface;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Search;
 
 /**
  * Warmer for testing purposes.

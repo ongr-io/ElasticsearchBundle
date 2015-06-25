@@ -11,12 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL;
 
-use ONGR\ElasticsearchBundle\DSL\Filter\IdsFilter;
-use ONGR\ElasticsearchBundle\DSL\Filter\PrefixFilter;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\RangeQuery;
-use ONGR\ElasticsearchBundle\DSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
+use ONGR\ElasticsearchDSL\Filter\IdsFilter;
+use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\RangeQuery;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
@@ -84,7 +84,7 @@ class SearchTest extends ElasticsearchTestCase
     /**
      * Gets results array for specified Search.
      *
-     * @param \ONGR\ElasticsearchBundle\DSL\Search $search
+     * @param \ONGR\ElasticsearchDSL\Search $search
      *
      * @return array|\ONGR\ElasticsearchBundle\Result\DocumentIterator
      */

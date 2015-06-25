@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\PercentileRanksAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\PercentileRanksAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;

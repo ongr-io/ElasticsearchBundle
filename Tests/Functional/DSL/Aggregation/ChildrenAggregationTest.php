@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 
-use ONGR\ElasticsearchBundle\DSL\Aggregation\ChildrenAggregation;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\TermsAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\ChildrenAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\ORM\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
 
