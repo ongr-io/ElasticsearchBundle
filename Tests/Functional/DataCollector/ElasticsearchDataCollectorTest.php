@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DataCollector;
 
 use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
@@ -51,9 +52,8 @@ class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
     public function testGetQueryCount()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
 
-        $document = $repository->createDocument();
+        $document = new Product();
         $document->title = 'tuna';
 
         $manager->persist($document);

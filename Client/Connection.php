@@ -320,28 +320,6 @@ class Connection
     }
 
     /**
-     * Drops mapping from elasticsearch client.
-     *
-     * @param array $types Specific types to drop.
-     *
-     * @return int
-     */
-    public function dropTypes(array $types = [])
-    {
-        $this->isReadOnly('Drop types');
-
-        $mapping = $this->getMapping($types);
-
-        if (empty($mapping)) {
-            return 0;
-        }
-
-        $this->unloadMappingArray(array_keys($mapping));
-
-        return 1;
-    }
-
-    /**
      * Updates elasticsearch client mapping.
      *
      * @param array $types Specific types to update.

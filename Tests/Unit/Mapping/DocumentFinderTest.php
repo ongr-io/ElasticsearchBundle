@@ -24,14 +24,14 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     {
         $out = [];
 
-        // Case #0
+        // Case #0.
         $out[] = [
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             'AcmeTestBundle:Product',
             true,
         ];
 
-        // Case #1
+        // Case #1.
         $out[] = [
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
             'AcmeTestBundle:Product',
@@ -43,7 +43,6 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     /**
      * Tests if correct namespace is returned.
      *
-     * @param string $documentDir
      * @param string $expectedNamespace
      * @param string $document
      * @param bool   $testPath

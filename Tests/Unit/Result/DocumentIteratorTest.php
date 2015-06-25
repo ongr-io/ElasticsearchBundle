@@ -283,8 +283,6 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
                     'properties' => [
                         'header' => ['type' => 'string'],
                     ],
-                    // Should be generated but in this example will be using original.
-                    'proxyNamespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
                     'namespace' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Content',
                 ]
             ),

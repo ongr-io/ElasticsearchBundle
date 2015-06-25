@@ -419,26 +419,6 @@ class Repository
     }
 
     /**
-     * Creates new instance of document.
-     *
-     * @return DocumentInterface
-     *
-     * @throws \LogicException
-     */
-    public function createDocument()
-    {
-        if (count($this->namespaces) > 1) {
-            throw new \LogicException(
-                'Repository can not create new document when it is associated with multiple namespaces'
-            );
-        }
-
-        $class = $this->getManager()->getBundlesMapping()[reset($this->namespaces)]->getProxyNamespace();
-
-        return new $class();
-    }
-
-    /**
      * Returns elasticsearch manager used in this repository for getting/setting documents.
      *
      * @return Manager

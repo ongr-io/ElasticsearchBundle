@@ -50,7 +50,7 @@ class ObjectIterator extends AbstractResultsIterator
     {
         return $this->converter->assignArrayToObject(
             $rawData,
-            new $this->alias['proxyNamespace'](),
+            new $this->alias['namespace'](),
             $this->alias['aliases']
         );
     }

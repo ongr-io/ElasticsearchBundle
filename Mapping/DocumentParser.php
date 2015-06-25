@@ -18,7 +18,6 @@ use ONGR\ElasticsearchBundle\Annotation\Inherit;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Annotation\Skip;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 
 /**
  * Document parser used for reading document annotations.
@@ -112,7 +111,6 @@ class DocumentParser
                     ),
                     'aliases' => $this->getAliases($reflectionClass),
                     'objects' => $this->getObjects(),
-                    'proxyNamespace' => ProxyFactory::getProxyNamespace($reflectionClass, true),
                     'namespace' => $reflectionClass->getName(),
                     'class' => $reflectionClass->getShortName(),
                 ],
@@ -174,7 +172,6 @@ class DocumentParser
                         [
                             'multiple' => $type instanceof Property ? $type->multiple : false,
                             'aliases' => $this->getAliases($child),
-                            'proxyNamespace' => ProxyFactory::getProxyNamespace($child, true),
                             'namespace' => $child->getName(),
                         ]
                     );

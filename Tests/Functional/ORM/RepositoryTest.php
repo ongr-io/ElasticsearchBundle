@@ -361,32 +361,6 @@ class RepositoryTest extends ElasticsearchTestCase
     }
 
     /**
-     * Test for createDocument().
-     */
-    public function testCreateDocument()
-    {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
-        $document = $repo->createDocument();
-
-        $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
-            $document
-        );
-    }
-
-    /**
-     * Test for createDocument() in case multiple namespaces are associated with repository.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage can not create new document
-     */
-    public function testCreateDocumentException()
-    {
-        $repo = $this->getManager()->getRepository(['AcmeTestBundle:Product', 'AcmeTestBundle:Content']);
-        $repo->createDocument();
-    }
-
-    /**
      * Test parseResult when 0 documents found using execute.
      */
     public function testRepositoryExecuteWhenZeroResult()
@@ -422,7 +396,7 @@ class RepositoryTest extends ElasticsearchTestCase
         $repository = $manager->getRepository('AcmeTestBundle:Product');
 
         /** @var Product $document */
-        $document = $repository->createDocument();
+        $document = new Product();
 
         $document->setId(5);
         $document->title = 'awesome';
@@ -461,20 +435,6 @@ class RepositoryTest extends ElasticsearchTestCase
                 'title' => $document->title,
             ],
             'Document should be updated.'
-        );
-    }
-
-    /**
-     * Tests if repository is fetched without suffix.
-     */
-    public function testGetRepositoryWithDoucmentSuffix()
-    {
-        $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeTestBundle:Color');
-
-        $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument',
-            $repository->createDocument()
         );
     }
 

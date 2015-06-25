@@ -44,12 +44,6 @@ class ONGRElasticsearchExtension extends Extension
         $this->addMetadataCollectorDefinition($config, $container);
         $this->addDocumentsResource($config, $container);
         $this->addDataCollectorDefinition($config, $container);
-
-        $this->addClassesToCompile(
-            [
-                'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface',
-            ]
-        );
     }
 
     /**
@@ -94,20 +88,11 @@ class ONGRElasticsearchExtension extends Extension
             ]
         );
 
-        $proxyLoader = new Definition(
-            'ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader',
-            [
-                $this->getCacheDir($container, 'proxies'),
-                $container->getParameter('kernel.debug'),
-            ]
-        );
-
         $metadataCollector = new Definition(
             'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
             [
                 new Reference('es.document_finder'),
                 $documentParser,
-                $proxyLoader,
             ]
         );
         $container->setDefinition('es.metadata_collector', $metadataCollector);

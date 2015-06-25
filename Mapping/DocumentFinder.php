@@ -24,7 +24,7 @@ class DocumentFinder
     /**
      * @var string Directory in bundle to load documents from.
      */
-    CONST DOCUMENT_DIR = 'Document';
+    const DOCUMENT_DIR = 'Document';
 
     /**
      * Constructor.
@@ -85,12 +85,11 @@ class DocumentFinder
         $bundleReflection = new \ReflectionClass($this->getBundleClass($bundle));
 
         return glob(
-            dirname(
-                $bundleReflection->getFileName()) .
-                DIRECTORY_SEPARATOR .
-                self::DOCUMENT_DIR .
-                DIRECTORY_SEPARATOR .
-                '*.php'
+            dirname($bundleReflection->getFileName()) .
+            DIRECTORY_SEPARATOR .
+            self::DOCUMENT_DIR .
+            DIRECTORY_SEPARATOR .
+            '*.php'
         );
     }
 }

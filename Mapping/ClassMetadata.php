@@ -75,14 +75,6 @@ class ClassMetadata
     }
 
     /**
-     * @return string
-     */
-    public function getProxyNamespace()
-    {
-        return $this->metadata['proxyNamespace'];
-    }
-
-    /**
      * @return array
      */
     public function getFields()
@@ -114,6 +106,6 @@ class ClassMetadata
     protected function configureOptions(OptionsResolver $optionsResolver)
     {
         $optionsResolver
-            ->setRequired(['properties', 'fields', 'aliases', 'namespace', 'proxyNamespace', 'class', 'objects']);
+            ->setRequired(['properties', 'fields', 'aliases', 'namespace', 'class', 'objects']);
     }
 }

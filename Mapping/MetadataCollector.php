@@ -12,8 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader;
 
 /**
  * DocumentParser wrapper for getting bundle documents mapping.
@@ -31,30 +29,18 @@ class MetadataCollector
     private $parser;
 
     /**
-     * @var ProxyLoader
-     */
-    private $proxyLoader;
-
-    /**
-     * @var array
-     */
-    private $proxyPaths = [];
-
-    /**
      * @var array Contains mappings gathered from bundle documents.
      */
     private $documents = [];
 
     /**
-     * @param DocumentFinder $finder      For finding documents.
-     * @param DocumentParser $parser      For reading document annotations.
-     * @param ProxyLoader    $proxyLoader For creating proxy documents.
+     * @param DocumentFinder $finder For finding documents.
+     * @param DocumentParser $parser For reading document annotations.
      */
-    public function __construct($finder, $parser, $proxyLoader)
+    public function __construct($finder, $parser)
     {
         $this->finder = $finder;
         $this->parser = $parser;
-        $this->proxyLoader = $proxyLoader;
     }
 
     /**
@@ -164,16 +150,6 @@ class MetadataCollector
     }
 
     /**
-     * Returns document proxy paths.
-     *
-     * @return array
-     */
-    public function getProxyPaths()
-    {
-        return $this->proxyPaths;
-    }
-
-    /**
      * Gathers annotation data from class.
      *
      * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
@@ -182,22 +158,6 @@ class MetadataCollector
      */
     private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
     {
-        $mapping = $this->parser->parse($reflectionClass);
-
-        if ($mapping !== null) {
-            $type = key($mapping);
-            $this->proxyPaths[$mapping[$type]['proxyNamespace']] = $this->proxyLoader->load($reflectionClass);
-
-            foreach ($mapping[$type]['objects'] as $namespace) {
-                $objectReflection = new \ReflectionClass($namespace);
-                $proxyObject = ProxyFactory::getProxyNamespace($objectReflection);
-
-                if (!array_key_exists($proxyObject, $this->proxyPaths)) {
-                    $this->proxyPaths[$proxyObject] = $this->proxyLoader->load($objectReflection);
-                }
-            }
-        }
-
-        return $mapping;
+        return $this->parser->parse($reflectionClass);
     }
 }

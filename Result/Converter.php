@@ -67,14 +67,10 @@ class Converter
         /** @var ClassMetadata $metadata */
         $metadata = $this->bundlesMapping[$this->typesMapping[$rawData['_type']]];
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
-        $proxy = $metadata->getProxyNamespace();
+        $namespace = $metadata->getNamespace();
 
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject($data, new $proxy(), $metadata->getAliases());
-
-        if ($object instanceof ProxyInterface) {
-            $object->__setInitialized(true);
-        }
+        $object = $this->assignArrayToObject($data, new $namespace(), $metadata->getAliases());
 
         $this->setObjectFields($object, $rawData, ['_id', '_score', 'highlight', 'fields _parent', 'fields _ttl']);
 
@@ -113,7 +109,7 @@ class Converter
                 } else {
                     $value = $this->assignArrayToObject(
                         $value,
-                        new $aliases[$name]['proxyNamespace'](),
+                        new $aliases[$name]['namespace'](),
                         $aliases[$name]['aliases']
                     );
                 }
@@ -155,11 +151,11 @@ class Converter
                     if ($alias['multiple']) {
                         $this->isTraversable($value);
                         foreach ($value as $item) {
-                            $this->checkVariableType($item, [$alias['namespace'], $alias['proxyNamespace']]);
+                            $this->checkVariableType($item, [$alias['namespace']]);
                             $new[] = $this->convertToArray($item, $alias['aliases']);
                         }
                     } else {
-                        $this->checkVariableType($value, [$alias['namespace'], $alias['proxyNamespace']]);
+                        $this->checkVariableType($value, [$alias['namespace']]);
                         $new = $this->convertToArray($value, $alias['aliases']);
                     }
                     $value = $new;
@@ -301,7 +297,7 @@ class Converter
         $class = get_class($document);
 
         foreach ($this->bundlesMapping as $repository) {
-            if (in_array($class, [$repository->getNamespace(), $repository->getProxyNamespace()])) {
+            if ($class == $repository->getNamespace()) {
                 return $repository->getAliases();
             }
         }

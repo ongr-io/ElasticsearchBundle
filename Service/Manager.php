@@ -176,7 +176,7 @@ class Manager
     public function getDocumentMapping($document)
     {
         foreach ($this->getBundlesMapping() as $repository) {
-            if (in_array(get_class($document), [$repository->getNamespace(), $repository->getProxyNamespace()])) {
+            if (get_class($document) == $repository->getNamespace()) {
                 return $repository;
             }
         }
