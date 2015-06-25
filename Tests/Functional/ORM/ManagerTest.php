@@ -137,49 +137,6 @@ class ManagerTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Check if indexed suggest fields are stored as expected.
-     */
-    public function testPersistSuggesters()
-    {
-        /** @var Manager $manager */
-        $manager = $this->getManager();
-
-        $categoryContext = new PriceLocationContext();
-        $categoryContext->price = '500';
-        $categoryContext->location = ['lat' => 50, 'lon' => 50];
-        $suggester = new PriceLocationSuggesting();
-        $suggester->setInput(['test']);
-        $suggester->setOutput('success');
-        $suggester->setContext($categoryContext);
-        $suggester->setPayload(['test']);
-        $suggester->setWeight(50);
-
-        $completionSuggester = new CompletionSuggesting();
-        $completionSuggester->setInput(['a', 'b', 'c']);
-        $completionSuggester->setOutput('completion success');
-        $completionSuggester->setWeight(30);
-
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
-        $product = $repository->createDocument();
-        $product->contextSuggesting = $suggester;
-        $product->completionSuggesting = $completionSuggester;
-
-        $manager->persist($product);
-        $manager->commit();
-
-        /** @var Product[] $actualProduct */
-        $actualProducts = $repository->execute($repository->createSearch());
-        $this->assertCount(1, $actualProducts);
-
-        /** @var Product $actualProduct */
-        $actualProduct = $actualProducts->current();
-        $actualProduct->setId(null);
-        $actualProduct->setScore(null);
-
-        $this->assertEquals($this->convertToArray($product), $this->convertToArray($actualProduct));
-    }
-
-    /**
      * Data provider for testPersistExceptions().
      *
      * @return array

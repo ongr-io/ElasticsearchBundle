@@ -37,34 +37,6 @@ class Product extends Item
     public $description;
 
     /**
-     * @var PriceLocationSuggesting
-     *
-     * @ES\Suggester\ContextSuggesterProperty(
-     *   name="suggestions",
-     *   objectName="AcmeTestBundle:PriceLocationSuggesting",
-     *   payloads=true,
-     *   context={
-     * @ES\Suggester\Context\GeoLocationContext(name="location", precision="5m", neighbors=true, default="u33"),
-     * @ES\Suggester\Context\CategoryContext(name="price", default={"red", "green"}, path="description")
-     *   }
-     * )
-     */
-    public $contextSuggesting;
-
-    /**
-     * @var CompletionSuggesting
-     *
-     * @ES\Suggester\CompletionSuggesterProperty(
-     *  name="completion_suggesting",
-     *  objectName="AcmeTestBundle:CompletionSuggesting",
-     *  indexAnalyzer="simple",
-     *  searchAnalyzer="simple",
-     *  payloads=false,
-     *  )
-     */
-    public $completionSuggesting;
-
-    /**
      * @var int
      *
      * @ES\Property(type="integer", name="price")

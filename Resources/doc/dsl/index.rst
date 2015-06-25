@@ -109,4 +109,3 @@ Available API's
             sorting/index
             aggregations/index
             highlights/index
-            suggesters/index

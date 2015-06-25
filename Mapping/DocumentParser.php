@@ -18,7 +18,6 @@ use ONGR\ElasticsearchBundle\Annotation\Inherit;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Annotation\Skip;
-use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
 use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 
 /**
@@ -26,11 +25,6 @@ use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
  */
 class DocumentParser
 {
-    /**
-     * @const string
-     */
-    const SUGGESTER_PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty';
-
     /**
      * @const string
      */
@@ -133,16 +127,11 @@ class DocumentParser
      *
      * @param \ReflectionProperty $property
      *
-     * @return AbstractSuggesterProperty|Property
+     * @return Property
      */
     public function getPropertyAnnotationData($property)
     {
-        $type = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
-        if ($type === null) {
-            $type = $this->reader->getPropertyAnnotation($property, self::SUGGESTER_PROPERTY_ANNOTATION);
-        }
-
-        return $type;
+        return $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
     }
 
     /**
@@ -211,10 +200,6 @@ class DocumentParser
             'MultiField',
             'Inherit',
             'Skip',
-            'Suggester/CompletionSuggesterProperty',
-            'Suggester/ContextSuggesterProperty',
-            'Suggester/Context/CategoryContext',
-            'Suggester/Context/GeoLocationContext',
         ];
 
         foreach ($annotations as $annotation) {
@@ -348,11 +333,6 @@ class DocumentParser
                     $fieldsMap[$field->name] = $field->dump();
                 }
                 $maps['fields'] = $fieldsMap;
-            }
-
-            // Suggestions.
-            if ($type instanceof AbstractSuggesterProperty) {
-                $this->getObjectMapping($type->objectName);
             }
 
             $mapping[$type->name] = $maps;

@@ -12,8 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
-use ONGR\ElasticsearchBundle\Result\Suggestion\OptionIterator;
-use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionEntry;
 
 class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -245,52 +243,6 @@ class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
             $iterator->getAggregations()
         );
         $this->assertEquals(['doc_count' => 1], $iterator->getAggregations()['foo']->getValue());
-    }
-
-    /**
-     * Test for getSuggestions().
-     */
-    public function testGetSuggestions()
-    {
-        $rawData = [
-            'hits' => [
-                'total' => 0,
-                'hits' => [],
-            ],
-            'suggest' => [
-                'foo' => [
-                    [
-                        'text' => 'foobar',
-                        'offset' => 0,
-                        'length' => 6,
-                        'options' => [
-                            [
-                                'text' => 'foobar',
-                                'freq' => 77,
-                                'score' => 0.8888889,
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
-
-        $iterator = new DocumentIterator($rawData, [], []);
-        $suggestions = $iterator->getSuggestions();
-
-        $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator',
-            $iterator->getSuggestions()
-        );
-
-        $expectedSuggestion = new SuggestionEntry(
-            'foobar',
-            0,
-            6,
-            new OptionIterator($rawData['suggest']['foo'][0]['options'])
-        );
-
-        $this->assertEquals($expectedSuggestion, $suggestions['foo'][0]);
     }
 
     /**
