@@ -16,6 +16,7 @@ use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Cache\WarmerInterface;
 use ONGR\ElasticsearchBundle\Cache\WarmersContainer;
 use ONGR\ElasticsearchBundle\Mapping\MappingTool;
+use ONGR\ElasticsearchBundle\Exception\EmptyBulkException;
 
 /**
  * This class interacts with elasticsearch using injected client.
@@ -150,13 +151,17 @@ class Connection
 
     /**
      * Flushes the current query container to the index, used for bulk queries execution.
+     *
+     * @throws EmptyBulkException
      */
     public function commit()
     {
+        if (!$this->bulkQueries) {
+            throw new EmptyBulkException('Bulk container is empty. Add some queries before commit.');
+        }
         $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
         $this->getClient()->bulk($this->bulkQueries);
         $this->flush();
-
         $this->bulkQueries = [];
     }
 

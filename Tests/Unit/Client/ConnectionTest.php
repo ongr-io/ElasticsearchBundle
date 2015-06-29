@@ -156,10 +156,35 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testSetBulkParams()
     {
         $client = $this->getClient(['flush']);
-        $client->expects($this->once())->method('bulk')->with(['refresh' => 'true']);
+        $result = [
+            'refresh' => 'true',
+            'body' => [
+                0 => [
+                    'create' => [
+                        '_index' => 'foo',
+                        '_type' => 'type',
+                    ],
+                ],
+                1 => [],
+            ],
+        ];
+        $client->expects($this->once())->method('bulk')->with($result);
 
-        $connection = new Connection($client, []);
+        $connection = new Connection($client, ['index' => 'foo']);
         $connection->setBulkParams(['refresh' => 'true']);
+        $connection->bulk('create', 'type', []);
+        $connection->commit();
+    }
+
+    /**
+     * Tests if exception is thrown when only commit is made.
+     *
+     * @expectedException \ONGR\ElasticsearchBundle\Exception\EmptyBulkException
+     * @expectedExceptionMessage Bulk container is empty. Add some queries before commit.
+     */
+    public function testCommitException()
+    {
+        $connection = new Connection($this->getClient(), []);
         $connection->commit();
     }
 
