@@ -22,7 +22,8 @@
         "symfony/property-access": "~2.7",
         "doctrine/annotations": "~1.2",
         "doctrine/inflector": "~1.0",
-        "elasticsearch/elasticsearch": "~1.0"
+        "elasticsearch/elasticsearch": "~1.0",
+        "ongr/elasticsearch-dsl": "dev-master"
     },
     "require-dev": {
         "symfony/framework-bundle": "~2.7",
