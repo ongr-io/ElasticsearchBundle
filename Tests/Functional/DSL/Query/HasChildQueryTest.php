@@ -15,12 +15,12 @@ use ONGR\ElasticsearchDSL\BuilderInterface;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Query\HasChildQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * HasChild query functional test.
  */
-class HasChildQueryTest extends ElasticsearchTestCase
+class HasChildQueryTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

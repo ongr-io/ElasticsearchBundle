@@ -18,12 +18,12 @@ use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Search functional test.
  */
-class SearchTest extends ElasticsearchTestCase
+class SearchTest extends AbstractElasticsearchTestCase
 {
     /**
      * @var Repository

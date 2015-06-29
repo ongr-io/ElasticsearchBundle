@@ -13,14 +13,14 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\WarmerDeleteCommand;
 use ONGR\ElasticsearchBundle\Test\DelayedObjectWrapper;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * Tests es warmer delete command.
  */
-class WarmerDeleteCommandTest extends ElasticsearchTestCase
+class WarmerDeleteCommandTest extends AbstractElasticsearchTestCase
 {
     /**
      * @return array

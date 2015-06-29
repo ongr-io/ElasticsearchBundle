@@ -15,9 +15,9 @@ use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchBundle\Result\Converter;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class AggregationIteratorFindTest extends ElasticsearchTestCase
+class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

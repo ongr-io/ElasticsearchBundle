@@ -15,9 +15,9 @@ use ONGR\ElasticsearchDSL\Aggregation\NestedAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\StatsAggregation;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class NestedAggregationTest extends ElasticsearchTestCase
+class NestedAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

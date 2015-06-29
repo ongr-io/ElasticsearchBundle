@@ -21,10 +21,10 @@ use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\IndicesResult;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 
-class RepositoryTest extends ElasticsearchTestCase
+class RepositoryTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

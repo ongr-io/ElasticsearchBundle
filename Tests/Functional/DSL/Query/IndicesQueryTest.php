@@ -14,12 +14,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 use ONGR\ElasticsearchDSL\Query\IndicesQuery;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Indices query functional test.
  */
-class IndicesQueryTest extends ElasticsearchTestCase
+class IndicesQueryTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

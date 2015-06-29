@@ -15,9 +15,9 @@ use ONGR\ElasticsearchDSL\BuilderInterface;
 use ONGR\ElasticsearchDSL\Filter\QueryFilter;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class QueryFilterTest extends ElasticsearchTestCase
+class QueryFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

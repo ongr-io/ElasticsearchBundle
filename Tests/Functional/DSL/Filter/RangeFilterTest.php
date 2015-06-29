@@ -13,9 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
 use ONGR\ElasticsearchDSL\Filter\RangeFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class RangeFilterTest extends ElasticsearchTestCase
+class RangeFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

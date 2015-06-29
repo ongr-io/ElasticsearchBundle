@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\WildcardQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Wildcard query functional test.
  */
-class WildcardTest extends ElasticsearchTestCase
+class WildcardTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

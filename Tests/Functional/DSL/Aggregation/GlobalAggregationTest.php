@@ -16,9 +16,9 @@ use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchDSL\BuilderInterface;
 use ONGR\ElasticsearchDSL\Query\MatchQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class GlobalAggregationTest extends ElasticsearchTestCase
+class GlobalAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

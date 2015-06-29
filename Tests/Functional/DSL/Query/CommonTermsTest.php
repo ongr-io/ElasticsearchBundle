@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\CommonTermsQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * CommonTerms query functional test.
  */
-class CommonTermsTest extends ElasticsearchTestCase
+class CommonTermsTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

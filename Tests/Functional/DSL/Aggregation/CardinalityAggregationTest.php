@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 use ONGR\ElasticsearchDSL\Aggregation\CardinalityAggregation;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class CardinalityAggregationTest extends ElasticsearchTestCase
+class CardinalityAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

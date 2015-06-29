@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Range query query functional test.
  */
-class RangeTest extends ElasticsearchTestCase
+class RangeTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

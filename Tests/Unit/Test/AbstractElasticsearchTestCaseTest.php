@@ -17,9 +17,9 @@ use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Tests ElasticsearchTestCase.
+ * Tests AbstractElasticsearchTestCase.
  */
-class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
+class AbstractElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Connection|\PHPUnit_Framework_MockObject_MockObject
@@ -73,7 +73,7 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $this->dummyBase = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\AbstractElasticsearchTestCaseDummy')
             ->setMethods(['getContainer'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -276,7 +276,7 @@ class ElasticsearchTestCaseTest extends \PHPUnit_Framework_TestCase
         $skipped = false;
 
         $this->dummyBase = $this
-            ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\ElasticsearchTestCaseDummy')
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Tests\Unit\Test\AbstractElasticsearchTestCaseDummy')
             ->setMethods(['getIgnoredVersions', 'getContainer'])
             ->disableOriginalConstructor()
             ->getMock();

@@ -13,9 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
 use ONGR\ElasticsearchDSL\Filter\TermFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class TermFilterTest extends ElasticsearchTestCase
+class TermFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

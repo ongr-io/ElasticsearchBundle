@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 use ONGR\ElasticsearchDSL\Filter\LimitFilter;
 use ONGR\ElasticsearchDSL\Query\MatchQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class BoolTestWithMatchQueryAndLimitFilterTest extends ElasticsearchTestCase
+class BoolTestWithMatchQueryAndLimitFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

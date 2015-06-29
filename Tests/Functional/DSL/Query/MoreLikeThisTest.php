@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\MoreLikeThisQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * More like this query functional test.
  */
-class MoreLikeThisTest extends ElasticsearchTestCase
+class MoreLikeThisTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

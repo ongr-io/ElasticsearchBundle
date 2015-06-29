@@ -15,9 +15,9 @@ use ONGR\ElasticsearchDSL\Filter\AndFilter;
 use ONGR\ElasticsearchDSL\Filter\MissingFilter;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class AndFilterTest extends ElasticsearchTestCase
+class AndFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

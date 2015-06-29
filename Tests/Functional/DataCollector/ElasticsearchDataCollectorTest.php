@@ -15,11 +15,11 @@ use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ElasticsearchDataCollectorTest extends ElasticsearchTestCase
+class ElasticsearchDataCollectorTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

@@ -11,12 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Test;
 
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
- * ElasticsearchTestCase dummy class for testing.
+ * AbstractElasticsearchTestCase dummy class for testing.
  */
-class ElasticsearchTestCaseDummy extends ElasticsearchTestCase
+class AbstractElasticsearchTestCaseDummy extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

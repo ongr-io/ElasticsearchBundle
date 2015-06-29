@@ -13,11 +13,11 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexImportCommand;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class IndexImportCommandTest extends ElasticsearchTestCase
+class IndexImportCommandTest extends AbstractElasticsearchTestCase
 {
     /**
      * Data provider for testIndexImport.

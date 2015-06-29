@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\RegexpQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Regexp query functional test.
  */
-class RegexpTest extends ElasticsearchTestCase
+class RegexpTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

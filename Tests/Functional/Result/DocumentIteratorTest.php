@@ -13,9 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class DocumentIteratorTest extends ElasticsearchTestCase
+class DocumentIteratorTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

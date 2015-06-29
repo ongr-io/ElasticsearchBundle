@@ -13,9 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
 use ONGR\ElasticsearchDSL\Filter\ScriptFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class ScriptFilterTest extends ElasticsearchTestCase
+class ScriptFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

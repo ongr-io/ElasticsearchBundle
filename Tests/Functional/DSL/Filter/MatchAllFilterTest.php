@@ -13,9 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 
 use ONGR\ElasticsearchDSL\Filter\MatchAllFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class MatchAllFilterTest extends ElasticsearchTestCase
+class MatchAllFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

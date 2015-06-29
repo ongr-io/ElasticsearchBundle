@@ -12,9 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class DocumentIteratorAggregationsTest extends ElasticsearchTestCase
+class DocumentIteratorAggregationsTest extends AbstractElasticsearchTestCase
 {
     /**
      * Data provider for testIteration().

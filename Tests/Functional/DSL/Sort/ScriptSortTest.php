@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Sort;
 use ONGR\ElasticsearchDSL\Sort\ScriptSort;
 use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class ScriptSortTest extends ElasticsearchTestCase
+class ScriptSortTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

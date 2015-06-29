@@ -12,12 +12,12 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexExportCommand;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class IndexExportCommandTest extends ElasticsearchTestCase
+class IndexExportCommandTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

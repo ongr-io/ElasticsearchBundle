@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Filter;
 use ONGR\ElasticsearchDSL\Filter\IndicesFilter;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class IndicesFilterTest extends ElasticsearchTestCase
+class IndicesFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

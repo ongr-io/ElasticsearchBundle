@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Sort;
 
 use ONGR\ElasticsearchDSL\Sort\GeoSort;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * GeoSort functional test.
  */
-class GeoSortTest extends ElasticsearchTestCase
+class GeoSortTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

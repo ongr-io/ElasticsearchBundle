@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
 use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class BoolTestWithFuzzyQueryAndSortFilterTest extends ElasticsearchTestCase
+class BoolTestWithFuzzyQueryAndSortFilterTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

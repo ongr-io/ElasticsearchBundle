@@ -16,9 +16,9 @@ use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class DocumentScanIteratorTest extends ElasticsearchTestCase
+class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

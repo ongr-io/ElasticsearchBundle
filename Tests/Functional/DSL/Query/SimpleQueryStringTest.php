@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\SimpleQueryStringQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * SimpleQueryStringQuery query functional test.
  */
-class SimpleQueryStringTest extends ElasticsearchTestCase
+class SimpleQueryStringTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

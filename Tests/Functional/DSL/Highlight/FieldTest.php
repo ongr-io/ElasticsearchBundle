@@ -15,12 +15,12 @@ use ONGR\ElasticsearchDSL\Highlight\Field;
 use ONGR\ElasticsearchDSL\Highlight\Highlight;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Highlighting functional test.
  */
-class FieldTest extends ElasticsearchTestCase
+class FieldTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

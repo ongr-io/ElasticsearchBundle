@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * MatchAll query functional test.
  */
-class MatchAllTest extends ElasticsearchTestCase
+class MatchAllTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

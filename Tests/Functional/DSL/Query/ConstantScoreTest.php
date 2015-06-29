@@ -14,12 +14,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 use ONGR\ElasticsearchDSL\Query\ConstantScoreQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Constant score query functional test.
  */
-class ConstantScoreTest extends ElasticsearchTestCase
+class ConstantScoreTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

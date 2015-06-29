@@ -13,9 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class DocumentIteratorNestedAggregationTest extends ElasticsearchTestCase
+class DocumentIteratorNestedAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * Data provider for testIteration().

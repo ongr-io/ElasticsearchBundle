@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Fuzzy query functional test.
  */
-class FuzzyTest extends ElasticsearchTestCase
+class FuzzyTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

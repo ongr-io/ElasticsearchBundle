@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 use ONGR\ElasticsearchDSL\Aggregation\ChildrenAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class ChildrenAggregationTest extends ElasticsearchTestCase
+class ChildrenAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

@@ -17,12 +17,12 @@ use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\NestedQuery;
 use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Nested query functional test.
  */
-class NestedQueryTest extends ElasticsearchTestCase
+class NestedQueryTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}

@@ -13,12 +13,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
 use ONGR\ElasticsearchDSL\Query\MultiMatchQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
  * Multi match query functional test.
  */
-class MultiMatchTest extends ElasticsearchTestCase
+class MultiMatchTest extends AbstractElasticsearchTestCase
 {
     /**
      * @internal param array $data Example:

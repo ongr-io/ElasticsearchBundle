@@ -15,9 +15,9 @@ use ONGR\ElasticsearchDSL\Aggregation\FilterAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchDSL\Filter\RegexpFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class FilterAggregationTest extends ElasticsearchTestCase
+class FilterAggregationTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
