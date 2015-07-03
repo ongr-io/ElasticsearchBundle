@@ -152,7 +152,8 @@ class PercentilesAggregationTest extends AbstractElasticsearchTestCase
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $aggregation = new PercentilesAggregation('foo');
-        $aggregation->setScript("doc['product.price'].value / 10");
+        $aggregation->setScript("doc['product.price'].value / kof");
+        $aggregation->setScriptParams(['kof' => 10]);
         $search = $repository
             ->createSearch()
             ->addAggregation($aggregation);

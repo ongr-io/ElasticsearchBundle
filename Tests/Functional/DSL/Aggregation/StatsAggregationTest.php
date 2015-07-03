@@ -124,7 +124,9 @@ class StatsAggregationTest extends AbstractElasticsearchTestCase
 
         $aggregation = new StatsAggregation('test_agg');
         $aggregation->setField('price');
-        $aggregation->setScript('_value * 1.2');
+        $aggregation->setScript('_value * kof');
+        $aggregation->setScriptParams(['kof' => 1.2]);
+
 
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);

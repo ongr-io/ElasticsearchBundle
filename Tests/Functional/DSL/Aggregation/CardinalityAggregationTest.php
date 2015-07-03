@@ -102,7 +102,9 @@ class CardinalityAggregationTest extends ElasticsearchTestCase
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $aggregation = new CardinalityAggregation('foo');
-        $aggregation->setScript("doc['product.price'].value + ' ' + doc['product.title'].value");
+        $aggregation->setScript("doc[field].value + ' ' + doc[field].value");
+        $aggregation->setScriptParams(['field' => 'product.price']);
+
         $search = $repository
             ->createSearch()
             ->addAggregation($aggregation);

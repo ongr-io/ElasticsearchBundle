@@ -117,7 +117,9 @@ class ExtendedStatsAggregationTest extends AbstractElasticsearchTestCase
     {
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $aggregation = new ExtendedStatsAggregation('test_agg');
-        $aggregation->setScript("doc['product.price'].value * 1.5");
+        $aggregation->setScript("doc['product.price'].value * kof");
+        $aggregation->setScriptParams(['kof' => 1.5]);
+
         $search = $repo->createSearch()->addAggregation($aggregation);
         $results = $repo->execute($search, Repository::RESULTS_RAW);
         $expectedMin = 15.675;

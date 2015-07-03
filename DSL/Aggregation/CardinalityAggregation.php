@@ -43,6 +43,7 @@ class CardinalityAggregation extends AbstractAggregation
                 'script' => $this->getScript(),
                 'precision_threshold' => $this->getPrecisionThreshold(),
                 'rehash' => $this->isRehash(),
+                'params' => $this->getScriptParams(),
             ],
             function ($val) {
                 return ($val || is_bool($val));
