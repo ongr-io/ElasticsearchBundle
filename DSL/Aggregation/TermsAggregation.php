@@ -39,6 +39,7 @@ class TermsAggregation extends AbstractAggregation
             [
                 'field' => $this->getField(),
                 'script' => $this->getScript(),
+                'params' => $this->getScriptParams(),
             ]
         );
 

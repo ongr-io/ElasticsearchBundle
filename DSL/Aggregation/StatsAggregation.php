@@ -35,13 +35,13 @@ class StatsAggregation extends AbstractAggregation
      */
     public function getArray()
     {
-        $out = [];
-        if ($this->getField()) {
-            $out['field'] = $this->getField();
-        }
-        if ($this->getScript()) {
-            $out['script'] = $this->getScript();
-        }
+        $out = array_filter(
+            [
+                'field' => $this->getField(),
+                'script' => $this->getScript(),
+                'params' => $this->getScriptParams(),
+            ]
+        );
 
         return $out;
     }

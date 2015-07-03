@@ -61,6 +61,7 @@ class ExtendedStatsAggregation extends AbstractAggregation
                 'field' => $this->getField(),
                 'script' => $this->getScript(),
                 'sigma' => $this->getSigma(),
+                'params' => $this->getScriptParams(),
             ],
             function ($val) {
                 return ($val || is_numeric($val));

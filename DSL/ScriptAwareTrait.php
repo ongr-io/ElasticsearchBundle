@@ -22,6 +22,11 @@ trait ScriptAwareTrait
     private $script;
 
     /**
+     * @var array
+     */
+    private $params;
+
+    /**
      * @return string
      */
     public function getScript()
@@ -35,5 +40,21 @@ trait ScriptAwareTrait
     public function setScript($script)
     {
         $this->script = $script;
+    }
+
+    /**
+     * @param array $params
+     */
+    public function setScriptParams($params)
+    {
+        $this->params = $params;
+    }
+
+    /**
+     * @return array
+     */
+    public function getScriptParams()
+    {
+        return $this->params;
     }
 }
