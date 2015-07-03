@@ -143,7 +143,7 @@ class PercentileRanksAggregationTest extends AbstractElasticsearchTestCase
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $aggregation = new PercentileRanksAggregation('foo');
-        $aggregation->setScript("doc[field].value");
+        $aggregation->setScript('doc[field].value');
         $aggregation->setScriptParams(['field' => 'product.price']);
 
         $aggregation->setValues([10, 30]);

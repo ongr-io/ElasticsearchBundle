@@ -43,7 +43,7 @@ trait ScriptAwareTrait
     }
 
     /**
-     * @param $params
+     * @param array $params
      */
     public function setScriptParams($params)
     {

@@ -85,7 +85,7 @@ class ValueCountAggregationTest extends AbstractElasticsearchTestCase
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $aggregation = new ValueCountAggregation('test_agg');
-        $aggregation->setScript("doc[field].value");
+        $aggregation->setScript('doc[field].value');
         $aggregation->setScriptParams(['field' => 'price']);
 
         $search = $repo->createSearch()->addAggregation($aggregation);
