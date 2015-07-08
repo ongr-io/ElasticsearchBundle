@@ -59,7 +59,7 @@ final class Document implements DumperInterface
     /**
      * @var array
      */
-    public $dynamic_templates;
+    public $dynamicTemplates;
     
     /**
      * @var array
@@ -82,7 +82,7 @@ final class Document implements DumperInterface
                 '_all' => $this->all,
                 'enabled' => $this->enabled,
                 'dynamic' => $this->dynamic,
-                'dynamic_templates' => $this->dynamic_templates,
+                'dynamic_templates' => $this->dynamicTemplates,
                 'transform' => $this->transform,
                 'dynamic_date_formats' => $this->dynamicDateFormats,
             ],
