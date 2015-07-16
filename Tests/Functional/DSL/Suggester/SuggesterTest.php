@@ -90,6 +90,8 @@ class SuggesterTest extends AbstractElasticsearchTestCase
      */
     public function testTermSuggest()
     {
+        $this->markTestSkipped('Waiting for DSL update');
+
         $suggester = new Suggester(Suggester::TYPE_TERM, 'title', 'someting titl');
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Suggester');
         $suggestResult = $repository->suggest($suggester);
@@ -111,6 +113,8 @@ class SuggesterTest extends AbstractElasticsearchTestCase
      */
     public function testPhraseSuggest()
     {
+        $this->markTestSkipped('Waiting for DSL update');
+
         $suggester = new Suggester(Suggester::TYPE_PHRASE, 'title', 'Someting original');
         $suggester->addParameter('highlight', ['pre_tag' => '*', 'post_tag' => '*']);
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Suggester');
@@ -133,6 +137,8 @@ class SuggesterTest extends AbstractElasticsearchTestCase
      */
     public function testCompletionSuggest()
     {
+        $this->markTestSkipped('Waiting for DSL update');
+
         $suggester = new Suggester(Suggester::TYPE_COMPLETION, 'completionSuggester', 'ti');
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Suggester');
         $suggestResult = $repository->suggest($suggester);
@@ -156,6 +162,8 @@ class SuggesterTest extends AbstractElasticsearchTestCase
      */
     public function testSimpleOption()
     {
+        $this->markTestSkipped('Waiting for DSL update');
+
         $suggester = new Suggester(Suggester::TYPE_PHRASE, 'title', 'Someting original');
         $repository = $this->getManager()->getRepository('AcmeTestBundle:Suggester');
         $suggestResult = $repository->suggest($suggester);
