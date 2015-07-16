@@ -16,15 +16,47 @@ use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
 /**
  * Testing document for representing media.
- * 
+ *
  * @ES\Document();
  */
 class Media extends AbstractDocument
 {
     /**
      * @var string
-     * 
+     *
      * @ES\Property(name="media", type="string", index="not_analyzed")
      */
     public $url;
+
+    /**
+     * Test adding raw mapping.
+     *
+     * @var string
+     *
+     * @ES\Property(name="name", type="string", index="not_analyzed", raw={"null_value":"data"})
+     */
+    public $name;
+
+    /**
+     * Test overriding with raw mapping.
+     *
+     * @var string
+     *
+     * @ES\Property(name="title", type="string", index="not_analyzed", raw={"index":"no"})
+     */
+    public $title;
+
+    /**
+     * Test adding and overriding with raw mapping.
+     *
+     * @var string
+     *
+     * @ES\Property(
+     *  name="description",
+     *  type="string",
+     *  index="not_analyzed",
+     *  raw={"null_value":"data", "index":"no"}
+     * )
+     */
+    public $description;
 }

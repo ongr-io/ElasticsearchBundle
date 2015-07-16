@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Annotation;
 
+use ONGR\ElasticsearchBundle\ORM\Manager;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Test\DelayedObjectWrapper;
 
@@ -61,5 +62,74 @@ class PropertyTest extends AbstractElasticsearchTestCase
             ],
         ];
         $this->assertEquals($expectedMapping, $result['ongr-esb-test']['mappings']['product']['stored']['mapping']);
+    }
+
+    /**
+     * Data provider for testDocumentMappingWithRawData.
+     *
+     * @return array
+     */
+    public function rawDataTestProvider()
+    {
+        return [
+            // Case #0. Additional data.
+            [
+                'type' => 'Media',
+                'field' => 'name',
+                'expected' => [
+                    'name' => [
+                        'type' => 'string',
+                        'index' => 'not_analyzed',
+                        'null_value' => 'data',
+                    ],
+                ],
+            ],
+            // Case #1. Overridden data.
+            [
+                'type' => 'Media',
+                'field' => 'title',
+                'expected' => [
+                    'title' => [
+                        'type' => 'string',
+                        'index' => 'no',
+                    ],
+                ],
+            ],
+            // Case #2. Additional and Overridden data.
+            [
+                'type' => 'Media',
+                'field' => 'description',
+                'expected' => [
+                    'description' => [
+                        'type' => 'string',
+                        'index' => 'no',
+                        'null_value' => 'data',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Check if "raw" data was merged into mapping as expected.
+     *
+     * @param string $type
+     * @param string $field
+     * @param array  $expected
+     *
+     * @dataProvider rawDataTestProvider
+     */
+    public function testDocumentMappingWithRawData($type, $field, $expected)
+    {
+        /** @var Manager $manager */
+        $manager = DelayedObjectWrapper::wrap($this->getManager());
+        $index = $manager->getConnection()->getIndexName();
+        $params = [
+            'index' => $index,
+            'type' => $type,
+            'field' => $field,
+        ];
+        $result = $manager->getConnection()->getClient()->indices()->getFieldMapping($params);
+        $this->assertEquals($expected, $result[$index]['mappings'][$type][$field]['mapping']);
     }
 }
