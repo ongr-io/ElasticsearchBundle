@@ -127,4 +127,9 @@ final class Property extends AbstractProperty
      * @var string
      */
     public $format;
+
+    /**
+     * @var array
+     */
+    public $raw;
 }

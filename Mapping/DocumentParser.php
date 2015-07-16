@@ -355,6 +355,13 @@ class DocumentParser
                 $this->getObjectMapping($type->objectName);
             }
 
+            // Raw override.
+            if (isset($maps['raw'])) {
+                $raw = $maps['raw'];
+                unset($maps['raw']);
+                $maps = array_merge($maps, $raw);
+            }
+
             $mapping[$type->name] = $maps;
         }
 
