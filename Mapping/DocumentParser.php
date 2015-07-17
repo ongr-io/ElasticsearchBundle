@@ -18,7 +18,7 @@ use ONGR\ElasticsearchBundle\Annotation\Inherit;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Annotation\Skip;
-use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
+use ONGR\ElasticsearchBundle\Annotation\Suggester;
 
 /**
  * Document parser used for reading document annotations.
@@ -33,7 +33,7 @@ class DocumentParser
     /**
      * @const string
      */
-    const SUGGESTER_PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty';
+    const SUGGESTER_PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Suggester';
 
     /**
      * @var Reader Used to read document annotations.
@@ -131,7 +131,7 @@ class DocumentParser
      *
      * @param \ReflectionProperty $property
      *
-     * @return AbstractSuggesterProperty|Property
+     * @return Suggester|Property
      */
     public function getPropertyAnnotationData($property)
     {
@@ -208,10 +208,7 @@ class DocumentParser
             'MultiField',
             'Inherit',
             'Skip',
-            'Suggester/Completion',
-            'Suggester/Context',
-            'Suggester/Context/Category',
-            'Suggester/Context/GeoLocation',
+            'Suggester',
         ];
 
         foreach ($annotations as $annotation) {
@@ -348,7 +345,7 @@ class DocumentParser
             }
 
             // Suggestions.
-            if ($type instanceof AbstractSuggesterProperty) {
+            if ($type instanceof Suggester) {
                 $this->getObjectMapping($type->objectName);
             }
 

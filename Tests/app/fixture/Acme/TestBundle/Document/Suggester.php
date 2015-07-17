@@ -13,8 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\AbstractDocument;
-use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesting;
-use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggesting;
+use ONGR\ElasticsearchBundle\Document\Suggestions;
 
 /**
  * Document for suggester testing.
@@ -29,20 +28,20 @@ class Suggester extends AbstractDocument
     protected $title;
 
     /**
-     * @var CompletionSuggesting
-     * @ES\Suggester\Completion(name="completionSuggester", payloads=true)
+     * @var Suggestions
+     * @ES\Suggester(name="completionSuggester", payloads=true)
      */
     protected $completion;
 
     /**
-     * @var ContextSuggesting
-     * @ES\Suggester\Context(
+     * @var Suggestions
+     * @ES\Suggester(
      *  name="contextSuggester",
      *  payloads=true,
      *  context={
-     *      @ES\Suggester\Context\Category(name="title"),
-     *      @ES\Suggester\Context\GeoLocation(name="location", precision="1km")
-     *  }
+     *      "title" : {"type" : "category"},
+     *      "location" : {"type" : "geo", "precision" : "1km"}
+     *  },
      * )
      */
     protected $context;
@@ -68,7 +67,7 @@ class Suggester extends AbstractDocument
     }
 
     /**
-     * @return CompletionSuggesting
+     * @return Suggestions
      */
     public function getCompletion()
     {
@@ -76,7 +75,7 @@ class Suggester extends AbstractDocument
     }
 
     /**
-     * @param CompletionSuggesting $completion
+     * @param Suggestions $completion
      *
      * @return $this
      */
@@ -88,7 +87,7 @@ class Suggester extends AbstractDocument
     }
 
     /**
-     * @return ContextSuggesting
+     * @return Suggestions
      */
     public function getContext()
     {
@@ -96,7 +95,7 @@ class Suggester extends AbstractDocument
     }
 
     /**
-     * @param ContextSuggesting $context
+     * @param Suggestions $context
      *
      * @return $this
      */

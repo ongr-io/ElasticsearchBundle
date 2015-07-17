@@ -9,14 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Annotation\Suggester;
-
-use ONGR\ElasticsearchBundle\Annotation\AbstractProperty;
+namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * Abstract class for various suggester annotations.
+ * Class Suggester.
+ *
+ * @Annotation
+ * @Target("PROPERTY")
  */
-abstract class AbstractSuggesterProperty extends AbstractProperty
+class Suggester extends AbstractProperty
 {
     /**
      * @var string
@@ -32,10 +33,8 @@ abstract class AbstractSuggesterProperty extends AbstractProperty
 
     /**
      * @var string
-     *
-     * @Required
      */
-     public $objectName;
+    public $objectName = 'ONGR\ElasticsearchBundle\Document\Suggestions';
 
     /**
      * @var string
@@ -66,4 +65,9 @@ abstract class AbstractSuggesterProperty extends AbstractProperty
      * @var bool
      */
     public $payloads;
+
+    /**
+     * @var array<array>
+     */
+    public $context;
 }

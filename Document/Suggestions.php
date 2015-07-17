@@ -9,14 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Document\Suggester;
+namespace ONGR\ElasticsearchBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
  * Abstract record document for various suggesters.
+ * @ES\Object()
  */
-abstract class AbstractSuggester implements SuggesterInterface
+class Suggestions implements SuggestionsInterface
 {
     /**
      * @var string[]|string Input to store.
@@ -45,6 +46,13 @@ abstract class AbstractSuggester implements SuggesterInterface
      * @ES\Property(type="string", name="weight")
      */
     private $weight;
+
+    /**
+     * @var array
+     *
+     * @ES\Property(type="object", name="context")
+     */
+    protected $context = null;
 
     /**
      * Setter for input to store.
@@ -140,5 +148,52 @@ abstract class AbstractSuggester implements SuggesterInterface
     public function getWeight()
     {
         return $this->weight;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContext($name = null)
+    {
+        if ($name === null) {
+            return $this->context;
+        }
+        if (!isset($this->context[$name])) {
+            return null;
+        }
+
+        return $this->context[$name];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setContext(array $context)
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addContext($name, $value)
+    {
+        $this->context[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeContext($name)
+    {
+        if (array_key_exists($name, $this->context)) {
+            unset($this->context[$name]);
+        }
+
+        return $this;
     }
 }

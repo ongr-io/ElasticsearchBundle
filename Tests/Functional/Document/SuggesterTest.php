@@ -9,11 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Suggester\Suggester;
+namespace ONGR\ElasticsearchBundle\Tests\Functional\Document;
 
-use ONGR\ElasticsearchBundle\Annotation\Suggester\Context;
-use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesting;
-use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggesting;
+use ONGR\ElasticsearchBundle\Document\Suggestions;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Suggester;
 
@@ -27,13 +25,13 @@ class SuggesterTest extends AbstractElasticsearchTestCase
      */
     public function testAddingAndGettingCompletion()
     {
-        $completion = new CompletionSuggesting();
+        $completion = new Suggestions();
         $completion->setInput(['title', 'data']);
         $completion->setOutput(['title 1']);
         $completion->setPayload(['id' => 1]);
         $completion->setWeight(1);
 
-        $context = new ContextSuggesting();
+        $context = new Suggestions();
         $context->setInput(['title', 'data2']);
         $context->setOutput(['title 1']);
         $context->setPayload(['id' => 1, 'data' => 2]);

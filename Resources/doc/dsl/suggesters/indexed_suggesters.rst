@@ -10,8 +10,7 @@ Mapping
 Completion
 ~~~~~~~~~~
 
-Starting with a more simple example, completion suggester. Completion suggester is a simple field which
-you would just define in a document or an object using a special annotation for suggesters.
+Starting with a more simple example, completion suggester.
 Available mapping parameters can be found `here`_. For example:
 
 .. code:: php
@@ -22,7 +21,7 @@ Available mapping parameters can be found `here`_. For example:
 
     use ONGR\ElasticsearchBundle\Annotation as ES;
     use ONGR\ElasticsearchBundle\Document\AbstractDocument;
-    use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesting;
+    use ONGR\ElasticsearchBundle\Document\Suggestions;
 
     /**
      * Product document.
@@ -32,9 +31,9 @@ Available mapping parameters can be found `here`_. For example:
     class Product extends AbstractDocument
     {
         /**
-         * @var CompletionSuggesting
+         * @var Suggestions
          *
-         * @ES\Suggester\Completion(
+         * @ES\Suggester(
          *  name = "completion_suggesting",
          *  index_analyzer = "simple",
          *  search_analyzer = "simple",
@@ -44,34 +43,11 @@ Available mapping parameters can be found `here`_. For example:
         public $completionSuggesting;
     }
 
-As you can see we need to define an object for it so we can store and retrieve its' data objectively.
-To do that, we can just use a trait already prepared in ESB.
-
-.. code:: php
-
-    <?php
-
-    namespace Acme\DemoBundle\Document;
-
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesterInterface;
-    use ONGR\ElasticsearchBundle\Document\Suggester\CompletionSuggesterTrait;
-
-    /**
-     * Suggesting document for testing.
-     *
-     * @ES\Object
-     */
-    class CompletionSuggesting implements CompletionSuggesterInterface
-    {
-        use CompletionSuggesterTrait;
-    }
-
 Context
 ~~~~~~~
 
 Context suggester not only uses the `parameters`_ used in completion suggester, but also additional context mapping,
-into which you’ll store your data. To do this, ESB uses special annotation objects.
+into which you’ll store your data.
 
 Here’s an example:
 
@@ -83,7 +59,7 @@ Here’s an example:
 
     use ONGR\ElasticsearchBundle\Annotation as ES;
     use ONGR\ElasticsearchBundle\Document\AbstractDocument;
-    use ONGR\ElasticsearchBundle\Document\Suggester\ContextSuggesting;
+    use ONGR\ElasticsearchBundle\Document\Suggestions;
 
     /**
      * Product document.
@@ -93,15 +69,23 @@ Here’s an example:
     class Product extends AbstractDocument
     {
         /**
-         * @var ContextSuggesting
+         * @var Suggestions
          *
-         * @ES\Suggester\Context(
+         * @ES\Suggester(
          *   name = "suggestions",
-         *   objectName = "AcmeDemoBundle:PriceLocationSuggesting",
          *   payloads = true,
          *   context = {
-         *      @ES\Suggester\Context\GeoLocation(name="location", precision = "5m", neighbors = true, default = "u33"),
-         *      @ES\Suggester\Context\Category(name="price", default = {"red", "green"}, path = "description")
+         *      "location" : {
+         *          "type" : "geo",
+         *          "precision" : "5m",
+         *          "neighbors" : true,
+         *          "default" : "u33"
+         *      },
+         *      "price" : {
+         *          "type" : "category",
+         *          "default" : {"red", "green"},
+         *          "path" : "description"
+         *      }
          *   }
          * )
          */
@@ -126,7 +110,7 @@ Example:
 
     <?php
 
-    $suggester = new ContextSuggesting();
+    $suggester = new Suggestions();
     $suggester->setInput(['test']);
     $suggester->setOutput('success');
     $suggester->addContext('price', 500);
@@ -134,7 +118,7 @@ Example:
     $suggester->setPayload(['test']);
     $suggester->setWeight(50);
 
-    $completionSuggester = new CompletionSuggesting();
+    $completionSuggester = new Suggestions();
     $completionSuggester->setInput(['a', 'b', 'c']);
     $completionSuggester->setOutput('completion success');
     $completionSuggester->setWeight(30);

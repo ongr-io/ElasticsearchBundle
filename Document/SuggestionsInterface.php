@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Document\Suggester;
+namespace ONGR\ElasticsearchBundle\Document;
 
 /**
  * Interface for a basic suggester.
  */
-interface SuggesterInterface
+interface SuggestionsInterface
 {
     /**
      * Setter for input to store.
@@ -79,4 +79,41 @@ interface SuggesterInterface
      * @return $this
      */
     public function setPayload($payload);
+
+    /**
+     * Sets context to be used for completion.
+     *
+     * @param array $contexts Key stands for context name and value - context value.
+     *
+     * @return $this
+     */
+    public function setContext(array $contexts);
+
+    /**
+     * Returns specific context.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function getContext($name = null);
+
+    /**
+     * Sets specific context.
+     *
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return $this
+     */
+    public function addContext($name, $value);
+
+    /**
+     * Removes specific context.
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function removeContext($name);
 }
