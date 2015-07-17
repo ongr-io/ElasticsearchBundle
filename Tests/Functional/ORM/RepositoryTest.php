@@ -12,17 +12,15 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchDSL\Filter\MissingFilter;
+use ONGR\ElasticsearchBundle\Result\IndicesResult;
+use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
-use ONGR\ElasticsearchDSL\Search;
-use ONGR\ElasticsearchBundle\Service\Manager;
-use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Result\IndicesResult;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 
 class RepositoryTest extends AbstractElasticsearchTestCase
 {
@@ -462,7 +460,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $repository->execute($search);
         $builder = $search->getQuery();
-        $this->assertNotInstanceOf('ONGR\ElasticsearchDSL\Bool\Bool', $builder, 'Query should not be bool.');
+        $this->assertNotInstanceOf('ONGR\ElasticsearchDSL\Query\BoolQuery', $builder, 'Query should not be bool.');
         $this->assertInstanceOf('ONGR\ElasticsearchDSL\Query\MatchAllQuery', $builder, 'Query should be same.');
     }
 

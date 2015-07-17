@@ -11,9 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Query;
 
-use ONGR\ElasticsearchDSL\Query\FuzzyLikeThisQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Query\FuzzyLikeThisQuery;
 
 /**
  * FuzzyLikeThis query functional test.
@@ -76,7 +76,7 @@ class FuzzyLikeThisTest extends AbstractElasticsearchTestCase
 
         // FLT in multiple fields.
         $out[] = [
-            'description,title',
+            ['description', 'title'],
             'Lorem bar',
             [],
             [
