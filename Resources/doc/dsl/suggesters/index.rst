@@ -16,11 +16,11 @@ Suggesters
 You can use suggesters (in any query, as you would normally) or `suggester api`_.
 
 There are basically four types of suggesters: terms, phrase, completion and context. To find out available parameters
-for these suggesters check out `types <types.html>`_ section.
+for these suggesters check out `types <./types.html>`_ section.
 
 .. note::
     Completion and context suggesters need indexed data in order to work. To find out how to setup indexing
-    and mapping, check `indexed suggesters <indexed_suggesters.html>`_ section.
+    and mapping, check `indexed suggesters <./indexed_suggesters.html>`_ section.
 ..
 
 Using Suggesters in Any Query
@@ -34,7 +34,7 @@ would add aggregations, filters, etc...
     $termSuggester = new Suggester(Suggester::TYPE_TERM, 'description', 'distributed');
     $repository = $manager->getRepository('AcmeTestBundle:Product');
     $search = $repository->createSearch();
-    $search->addSuggestion(($termSuggester);
+    $search->addSuggestion($termSuggester);
     $results = $repository->execute($search);
 
 ..
@@ -66,7 +66,9 @@ Using Suggesters with Suggest API
 Using Results
 -------------
 
-Once you have the suggestions iterator, you can get all the information needed from it. Multiple suggestions have one or more suggestion entries based on your analyzer, and each suggestion entry may or may not have multiple options available. To use this data, you can loop through the iterator, or just access the data you need using indexes.
+Once you have the suggestions iterator, you can get all the information needed from it. Multiple suggestions have
+one or more suggestion entries based on your analyzer, and each suggestion entry may or may not have multiple
+options available. To use this data, you can loop through the iterator, or just access the data you need using indexes.
 
 .. code:: php
 

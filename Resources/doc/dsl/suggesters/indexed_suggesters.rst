@@ -47,7 +47,8 @@ Context
 ~~~~~~~
 
 Context suggester not only uses the `parameters`_ used in completion suggester, but also additional context mapping,
-into which you’ll store your data.
+into which you’ll store your data. Context mapping is same as completion,
+once context is added it becomes context mapping.
 
 Here’s an example:
 
@@ -113,10 +114,10 @@ Example:
     $suggester = new Suggestions();
     $suggester->setInput(['test']);
     $suggester->setOutput('success');
-    $suggester->addContext('price', 500);
-    $suggester->addContext('location', ['lat' => 50, 'lon' => 50]);
     $suggester->setPayload(['test']);
     $suggester->setWeight(50);
+    $suggester->addContext('price', 500);
+    $suggester->addContext('location', ['lat' => 50, 'lon' => 50]);
 
     $completionSuggester = new Suggestions();
     $completionSuggester->setInput(['a', 'b', 'c']);
@@ -150,6 +151,66 @@ an example:
 
     $results = $repository->suggest([$contextSuggester, $completionSuggester]);
 
+..
+
+Storing custom class
+--------------------
+
+If there is a need to extend ``ONGR\ElasticsearchBundle\Document\Suggestions`` class it should implement
+``ONGR\ElasticsearchBundle\Document\SuggestionsInterface`` and then when mapping indexed suggester provide ``objectName``
+parameter with your class name (it is possible to use FQN or logical class name e.g. ``BundleName:ClassName``)
+
+Example :
+
+.. code:: php
+
+    namespace Acme\DemoBundle\Document;
+
+    use ONGR\ElasticsearchBundle\Annotation as ES;
+    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+    use ONGR\ElasticsearchBundle\Document\SuggestionsInterface;
+
+    /**
+     * Suggestions object.
+     *
+     * @ES\Object()
+     */
+    class Suggestions implements SuggestionsInterface
+    {
+        // ...
+    }
+
+    /**
+     * Product document.
+     *
+     * @ES\Document(type="product")
+     */
+    class Product extends AbstractDocument
+    {
+        /**
+         * @var Suggestions
+         *
+         * @ES\Suggester(
+         *   name = "suggestions",
+         *   objectName = "AcmeDemoBundle:Suggestions"
+         *   payloads = true,
+         *   context = {
+         *      "location" : {
+         *          "type" : "geo",
+         *          "precision" : "5m",
+         *          "neighbors" : true,
+         *          "default" : "u33"
+         *      },
+         *      "price" : {
+         *          "type" : "category",
+         *          "default" : {"red", "green"},
+         *          "path" : "description"
+         *      }
+         *   }
+         * )
+         */
+        public $contextSuggesting;
+    }
 ..
 
 .. _here: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-suggesters-completion.html#completion-suggester-mapping
