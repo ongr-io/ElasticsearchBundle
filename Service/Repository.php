@@ -13,15 +13,17 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchDSL\Query\TermsQuery;
-use ONGR\ElasticsearchDSL\Search;
-use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
 use ONGR\ElasticsearchBundle\Result\IndicesResult;
 use ONGR\ElasticsearchBundle\Result\RawResultIterator;
 use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
+use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
+use ONGR\ElasticsearchDSL\Query\TermsQuery;
+use ONGR\ElasticsearchDSL\Search;
+use ONGR\ElasticsearchDSL\Sort\Sort;
+use ONGR\ElasticsearchDSL\Suggester\Suggester;
 
 /**
  * Repository class.
@@ -265,6 +267,30 @@ class Repository
         $results = $this->getManager()->getConnection()->scroll($scrollId, $scrollDuration);
 
         return $this->parseResult($results, $resultsType, $scrollDuration);
+    }
+
+    /**
+     * Get suggestions using suggest api.
+     *
+     * @param Suggester[]|Suggester $suggesters
+     *
+     * @return SuggestionIterator
+     */
+    public function suggest($suggesters)
+    {
+        if (!is_array($suggesters)) {
+            $suggesters = [$suggesters];
+        }
+
+        $body = [];
+        /** @var Suggester $suggester */
+        foreach ($suggesters as $suggester) {
+            $body = array_merge($suggester->toArray(), $body);
+        }
+        $results = $this->getManager()->getConnection()->getClient()->suggest(['body' => $body]);
+        unset($results['_shards']);
+
+        return new SuggestionIterator($results);
     }
 
     /**
