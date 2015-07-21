@@ -11,11 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Highlight;
 
-use ONGR\ElasticsearchDSL\Highlight\Field;
-use ONGR\ElasticsearchDSL\Highlight\Highlight;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Highlight as HighlightDocument;
+use ONGR\ElasticsearchDSL\Highlight\Field;
+use ONGR\ElasticsearchDSL\Highlight\Highlight;
+use ONGR\ElasticsearchDSL\Query\FuzzyLikeThisQuery;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
 
 /**
  * Highlighting functional test.
@@ -39,6 +41,20 @@ class FieldTest extends AbstractElasticsearchTestCase
                         '_id' => 2,
                         'title' => 'foo baz bar bazbarfoo bar baz foo',
                         'description' => 'description',
+                    ],
+                ],
+                'Highlight' => [
+                    [
+                        '_id' => 1,
+                        'plain_field' => 'foo baz bazfoo baz foo',
+                        'offsets_field' => 'foo baz bazfoo baz foo',
+                        'term_vector_field' => 'foo baz bazfoo baz foo',
+                    ],
+                    [
+                        '_id' => 2,
+                        'plain_field' => 'foo baz bar bazbarfoo bar baz foo',
+                        'offsets_field' => 'foo baz bar bazbarfoo bar baz foo',
+                        'term_vector_field' => 'foo baz bar bazbarfoo bar baz foo',
                     ],
                 ],
             ],
@@ -146,5 +162,52 @@ class FieldTest extends AbstractElasticsearchTestCase
             10,
             strlen(strip_tags($results['hits']['hits'][1]['highlight']['title'][0]))
         );
+    }
+
+    /**
+     * Data provider for testHighlighterTypes.
+     *
+     * @return array
+     */
+    public function highlighterTypeTestProvider()
+    {
+        return [
+            [
+                'type' => Highlight::TYPE_POSTINGS,
+                'field' => 'offsets_field',
+            ],
+            [
+                'type' => Highlight::TYPE_FVH,
+                'field' => 'term_vector_field',
+            ],
+        ];
+    }
+
+    /**
+     * Tests if provided mapping allows for different highlighter types.
+     *
+     * @param string $type
+     * @param string $field
+     *
+     * @dataProvider highlighterTypeTestProvider
+     */
+    public function testHighlighterTypes($type, $field)
+    {
+        /** @var Repository $repository */
+        $repository = $this->getManager()->getRepository('AcmeTestBundle:Highlight');
+        $fuzzyLikeThisQuery = new FuzzyLikeThisQuery($field, 'bar');
+        $highlight = new Highlight();
+        $highlight->setHighlighterType($type);
+        $highlight->add(new Field($field));
+
+        $search = $repository->createSearch()
+            ->addQuery($fuzzyLikeThisQuery)
+            ->setHighlight($highlight);
+
+        $result = $repository->execute($search);
+        /** @var HighlightDocument $document */
+        $document = $result[0];
+        $highlightResult = $document->getHighLight();
+        $this->assertNotEmpty($highlightResult[$field]);
     }
 }
