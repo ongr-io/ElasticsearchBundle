@@ -127,4 +127,14 @@ final class Property extends AbstractProperty
      * @var string
      */
     public $format;
+
+    /**
+     * @var string
+     */
+    public $indexOptions;
+
+    /**
+     * @var string
+     */
+    public $termVector;
 }
