@@ -12,157 +12,186 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 /**
- * AbstractResultsIterator class.
+ * Class AbstractResultsIterator.
  */
-abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayAccess
+abstract class AbstractResultsIterator
 {
     /**
-     * @var array Raw documents.
+     * @var array Documents.
      */
-    protected $documents = [];
+    private $documents = [];
 
     /**
-     * @var array Documents casted to objects cache.
+     * @var int
      */
-    protected $converted = [];
+    private $totalCount = 0;
 
     /**
-     * Converts raw array to document.
+     * Constructor.
      *
      * @param array $rawData
+     */
+    public function __construct($rawData)
+    {
+        if (isset($rawData['hits']['hits'])) {
+            $this->setDocuments($rawData['hits']['hits']);
+        }
+        if (isset($rawData['hits']['total'])) {
+            $this->setTotalCount($rawData['hits']['total']);
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount()
+    {
+        return $this->totalCount;
+    }
+
+    /**
+     * @param int $totalCount
      *
-     * @return object|array
+     * @return $this
      */
-    abstract protected function convertDocument($rawData);
-
-    /**
-     * {@inheritdoc}
-     */
-    public function current()
+    protected function setTotalCount($totalCount)
     {
-        return $this->offsetGet($this->key());
+        $this->totalCount = $totalCount;
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $documents
+     *
+     * @return $this
      */
-    public function next()
+    protected function setDocuments(&$documents)
     {
-        next($this->documents);
+        $this->documents = &$documents;
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $document
+     * @param mixed $key
+     *
+     * @return $this
      */
-    public function key()
+    protected function addDocument($document, $key)
     {
-        return key($this->documents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valid()
-    {
-        return $this->key() !== null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rewind()
-    {
-        reset($this->documents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset)
-    {
-        return array_key_exists($offset, $this->documents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        if (!isset($this->converted[$offset])) {
-            if (!isset($this->documents[$offset])) {
-                return null;
-            }
-
-            $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
-
-            // Clear memory.
-            $this->documents[$offset] = null;
+        if ($key === null) {
+            $this->documents[] = $document;
+        } else {
+            $this->documents[$key] = $document;
         }
 
-        return $this->converted[$offset];
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $key
+     *
+     * @return mixed
      */
-    public function offsetSet($offset, $value)
+    protected function getDocument($key)
     {
-        if ($offset === null) {
-            $offset = $this->getKey();
+        return isset($this->documents[$key]) ? $this->documents[$key] : null;
+    }
+
+    /**
+     * Checks whether document exists.
+     *
+     * @param mixed $key
+     *
+     * @return bool
+     */
+    protected function documentExists($key)
+    {
+        return array_key_exists($key, $this->documents);
+    }
+
+    /**
+     * Removes document.
+     *
+     * @param mixed $key
+     *
+     * @return $this
+     */
+    protected function removeDocument($key)
+    {
+        unset($this->documents[$key]);
+
+        return $this;
+    }
+
+    /**
+     * Removes document but leaves it existing.
+     *
+     * @param mixed $key
+     *
+     * @return $this
+     */
+    protected function clearDocument($key)
+    {
+        if (isset($this->documents[$key])) {
+            $this->documents[$key] = null;
         }
 
-        if (is_object($value)) {
-            $this->converted[$offset] = $value;
-            $this->documents[$offset] = null;
-        } elseif (is_array($value)) {
-            $this->documents[$offset] = $value;
-            // Also invalidate converted document.
-            unset($this->converted[$offset]);
-        }
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
-    public function offsetUnset($offset)
-    {
-        unset($this->documents[$offset], $this->converted[$offset]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count()
+    protected function getCount()
     {
         return count($this->documents);
     }
 
     /**
-     * Rewind's the iteration and returns first result.
-     *
-     * @return mixed|null
+     * @return int
      */
-    public function first()
+    protected function getKey()
     {
-        $this->rewind();
-
-        return $this->current();
+        return key($this->documents);
     }
 
     /**
-     * Return an integer key to be used for a new element in array.
+     * Advances key.
      *
-     * @return int
+     * @return $this
      */
-    private function getKey()
+    protected function advanceKey()
     {
-        $currentIntKeys = array_filter(array_keys($this->documents), 'is_int');
-        if (empty($currentIntKeys)) {
-            $offset = 0;
-        } else {
-            $offset = max($currentIntKeys) + 1;
-        }
+        next($this->documents);
 
-        return $offset;
+        return $this;
+    }
+
+    /**
+     * Resets key.
+     *
+     * @return $this
+     */
+    protected function resetKey()
+    {
+        reset($this->documents);
+
+        return $this;
+    }
+
+    /**
+     * Removes set documents.
+     *
+     * @return $this
+     */
+    protected function clean()
+    {
+        $this->documents = [];
+        $this->resetKey();
+
+        return $this;
     }
 }

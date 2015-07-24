@@ -11,123 +11,53 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Service\Repository;
-
 /**
- * DocumentScanIterator class.
+ * Class DocumentScanIterator.
  */
-class DocumentScanIterator extends DocumentIterator
+class DocumentScanIterator extends AbstractConvertibleResultIterator implements \Iterator, \Countable
 {
-    /**
-     * @var Repository
-     */
-    private $repository;
+    use CountableTrait;
+    use ScrollableTrait;
+    use ConverterAwareTrait;
 
     /**
-     * @var string
+     * @var array
      */
-    private $scrollDuration;
+    private $typesMapping;
 
     /**
-     * @var string
+     * @var array
      */
-    private $scrollId;
+    private $bundlesMapping;
 
     /**
-     * @var int
-     */
-    private $key = 0;
-
-    /**
-     * @param Repository $repository
+     * Constructor.
      *
-     * @return DocumentScanIterator
+     * @param array $rawData
+     * @param array $typesMapping
+     * @param array $bundlesMapping
      */
-    public function setRepository($repository)
+    public function __construct($rawData, $typesMapping, $bundlesMapping)
     {
-        $this->repository = $repository;
+        parent::__construct($rawData);
 
-        return $this;
+        $this->typesMapping = $typesMapping;
+        $this->bundlesMapping = $bundlesMapping;
     }
 
     /**
-     * @param string $scrollDuration
-     *
-     * @return DocumentScanIterator
+     * @return array
      */
-    public function setScrollDuration($scrollDuration)
+    protected function getTypesMapping()
     {
-        $this->scrollDuration = $scrollDuration;
-
-        return $this;
+        return $this->typesMapping;
     }
 
     /**
-     * @param string $scrollId
-     *
-     * @return DocumentScanIterator
+     * @return array
      */
-    public function setScrollId($scrollId)
+    protected function getBundlesMapping()
     {
-        $this->scrollId = $scrollId;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getScrollId()
-    {
-        return $this->scrollId;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count()
-    {
-        return $this->getTotalCount();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rewind()
-    {
-        $this->key = 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valid()
-    {
-        if (array_key_exists($this->key, $this->documents)) {
-            return true;
-        }
-
-        $raw = $this->repository->scan($this->scrollId, $this->scrollDuration, Repository::RESULTS_RAW);
-        $this->setScrollId($raw['_scroll_id']);
-
-        $this->documents = array_merge($this->documents, $raw['hits']['hits']);
-
-        return isset($this->documents[$this->key]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function key()
-    {
-        return $this->key;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function next()
-    {
-        $this->key++;
+        return $this->bundlesMapping;
     }
 }

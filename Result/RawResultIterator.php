@@ -12,45 +12,11 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 /**
- * This class is able to iterate over raw result.
+ * Class RawResultIterator.
  */
-class RawResultIterator extends AbstractResultsIterator
+class RawResultIterator extends AbstractResultsIterator implements \Iterator, \Countable, \ArrayAccess
 {
-    /**
-     * @var array
-     */
-    protected $rawData;
-
-    /**
-     * Constructor.
-     *
-     * @param array $rawData
-     */
-    public function __construct($rawData)
-    {
-        $this->rawData = $rawData;
-
-        // Alias documents to have shorter path.
-        if (isset($rawData['hits']['hits'])) {
-            $this->documents = &$rawData['hits']['hits'];
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function convertDocument($rawData)
-    {
-        return $rawData;
-    }
-
-    /**
-     * Returns count of records found by given query.
-     *
-     * @return int
-     */
-    public function getTotalCount()
-    {
-        return $this->rawData['hits']['total'];
-    }
+    use IteratorTrait;
+    use CountableTrait;
+    use ArrayAccessTrait;
 }
