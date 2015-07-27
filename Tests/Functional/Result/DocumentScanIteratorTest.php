@@ -11,12 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
+use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
+use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
-use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
 {
@@ -102,13 +102,12 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
             'content_3',
         ];
 
-        // Iterate multiple times to see if it's cached correctly.
+        $data = $this->iterateThrough($iterator);
+
         if ($isSorted) {
-            $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
-            $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
+            $this->assertEquals($expectedHeaders, $data);
         } else {
-            $this->assertEmpty(array_diff($expectedHeaders, $this->iterateThrough($iterator)));
-            $this->assertEmpty(array_diff($expectedHeaders, $this->iterateThrough($iterator)));
+            $this->assertEmpty(array_diff($expectedHeaders, $data));
         }
     }
 

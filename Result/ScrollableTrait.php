@@ -191,7 +191,7 @@ trait ScrollableTrait
         $this->setOffset($this->getOffset() + $this->getKey());
         $this->clean();
 
-            $raw = $this->repository->scan($this->getScrollId(), $this->getScrollDuration(), Repository::RESULTS_RAW);
+        $raw = $this->repository->scan($this->getScrollId(), $this->getScrollDuration(), Repository::RESULTS_RAW);
         $this->setScrollId($raw['_scroll_id']);
         $this->setDocuments($raw['hits']['hits']);
 
