@@ -39,8 +39,10 @@ class ObjectIterator extends AbstractConvertibleResultIterator implements \Array
      */
     public function __construct($converter, $rawData, $alias)
     {
-        parent::__construct($rawData);
+        parent::__construct([]);
 
+        $this->setDocuments($rawData);
+        $this->setTotalCount(count($rawData));
         $this->converter = $converter;
         $this->alias = $alias;
     }
