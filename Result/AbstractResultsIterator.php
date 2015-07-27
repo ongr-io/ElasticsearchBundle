@@ -194,4 +194,16 @@ abstract class AbstractResultsIterator
 
         return $this;
     }
+
+    /**
+     * Rewind's the iteration and returns first result.
+     *
+     * @return mixed|null
+     */
+    public function first()
+    {
+        $this->resetKey();
+
+        return $this->getDocument($this->getKey());
+    }
 }
