@@ -13,15 +13,15 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchDSL\Query\TermsQuery;
-use ONGR\ElasticsearchDSL\Search;
-use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
 use ONGR\ElasticsearchBundle\Result\IndicesResult;
 use ONGR\ElasticsearchBundle\Result\RawResultIterator;
 use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
+use ONGR\ElasticsearchDSL\Query\TermsQuery;
+use ONGR\ElasticsearchDSL\Search;
+use ONGR\ElasticsearchDSL\Sort\Sort;
 
 /**
  * Repository class.
@@ -79,6 +79,46 @@ class Repository
         }
 
         return $types;
+    }
+
+    /**
+     * Returns FQNs of documents in repository.
+     *
+     * Can be filtered by providing array of desired repositories:
+     *
+     * Providing empty array will get all class names.
+     * Providing array will get class names of those repositories; result will be array of class names.
+     * Providing a single repository name will return class name of that repository`s document or null if not exists.
+     * Providing null will return first class name in repository.
+     *
+     * @param string[]|string|null $repositories
+     *
+     * @return string[]|string|null
+     */
+    public function getDocumentsClass($repositories = [])
+    {
+        $meta = $this->getManager()->getBundlesMapping($this->namespaces);
+
+        if ($repositories === null) {
+            return reset($meta)->getNamespace();
+        }
+        if (!is_array($repositories)) {
+            return isset($meta[$repositories]) ? $meta[$repositories]->getNamespace() : null;
+        }
+
+        $classes = [];
+
+        if (!empty($repositories)) {
+            foreach ($repositories as $name) {
+                $classes[$name] = isset($meta[$name]) ? $meta[$name]->getNamespace() : null;
+            }
+        } else {
+            foreach ($meta as $namespace => $metadata) {
+                $classes[$namespace] = $metadata->getNamespace();
+            }
+        }
+
+        return $classes;
     }
 
     /**
