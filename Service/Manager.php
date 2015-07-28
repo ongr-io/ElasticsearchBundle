@@ -15,6 +15,7 @@ use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Event\ElasticsearchCommitEvent;
 use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistEvent;
+use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistRawEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
 use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
@@ -129,6 +130,32 @@ class Manager
         $this->dispatchEvent(
             Events::POST_PERSIST,
             new ElasticsearchPersistEvent($this->getConnection(), $document)
+        );
+    }
+
+    /**
+     * Adds raw document to next flush.
+     *
+     * @param array  $document
+     * @param string $documentClass
+     */
+    public function persistRaw(array $document, $documentClass)
+    {
+        $this->dispatchEvent(
+            Events::PRE_PERSIST,
+            new ElasticsearchPersistRawEvent($this->getConnection(), $document)
+        );
+
+        $mappings = $this->getBundlesMapping([$documentClass]);
+        $this->getConnection()->bulk(
+            'index',
+            $mappings[$documentClass]->getType(),
+            $document
+        );
+
+        $this->dispatchEvent(
+            Events::POST_PERSIST,
+            new ElasticsearchPersistRawEvent($this->getConnection(), $document)
         );
     }
 
