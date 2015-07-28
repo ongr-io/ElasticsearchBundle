@@ -381,9 +381,16 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $indices
             ->expects(in_array('refresh', $options) ? $this->once() : $this->never())
             ->method('refresh');
-        $indices
-            ->expects(in_array('flush', $options) ? $this->once() : $this->never())
-            ->method('flush');
+
+        if (isset($options['flush'])) {
+            $indices
+                ->expects($this->exactly($options['flush']))
+                ->method('flush');
+        } else {
+            $indices
+                ->expects(in_array('flush', $options) ? $this->once() : $this->never())
+                ->method('flush');
+        }
 
         $client = $this
             ->getMockBuilder('Elasticsearch\Client')
@@ -395,5 +402,28 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($indices));
 
         return $client;
+    }
+
+    /**
+     * Tests autocommit functionality.
+     */
+    public function testAutocommit()
+    {
+        $client = $this->getClient(['flush' => 4]);
+        $client->expects($this->exactly(4))->method('bulk');
+        $connection = new Connection($client, ['index' => 'foo']);
+        $connection->setAutocommit(25);
+        $operations = ['index', 'create', 'update', 'delete'];
+
+        // 3 commits.
+        for ($i = 0; $i < 99; $i++) {
+            $connection->bulk($operations[array_rand($operations)], [], []);
+        }
+        // Fourth commit.
+        $connection->commit();
+        // No commits.
+        for ($i = 0; $i < 24; $i++) {
+            $connection->bulk($operations[array_rand($operations)], [], []);
+        }
     }
 }

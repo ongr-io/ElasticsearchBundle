@@ -103,6 +103,11 @@ class Configuration implements ConfigurationInterface
                         ->info('Sets index settings for connection.')
                         ->prototype('variable')->end()
                     ->end()
+                    ->integerNode('autocommit')
+                        ->min(0)
+                        ->defaultValue(0)
+                        ->info('Sets number of bulk queries after which to do commit. 0 disables autocommit.')
+                    ->end()
                 ->end()
             ->end();
 

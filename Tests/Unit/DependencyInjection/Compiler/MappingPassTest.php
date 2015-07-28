@@ -88,6 +88,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                     'username' => 'user',
                     'password' => 'pass',
                 ],
+                'autocommit' => 0,
             ],
             'bar' => [
                 'hosts' => ['127.0.0.1:9200'],
@@ -96,6 +97,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                     'refresh_interval' => -1,
                     'number_of_replicas' => 1,
                 ],
+                'autocommit' => 0,
             ],
         ];
 
@@ -183,6 +185,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                     'refresh_interval' => -1,
                     'number_of_replicas' => 0,
                 ],
+                'autocommit' => 0,
             ],
         ];
         $expectedManagers = [
