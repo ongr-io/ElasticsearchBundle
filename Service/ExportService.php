@@ -30,13 +30,26 @@ class ExportService
      *
      * @param Manager         $manager
      * @param string          $filename
+     * @param array           $types
      * @param int             $chunkSize
      * @param OutputInterface $output
      */
-    public function exportIndex(Manager $manager, $filename, $chunkSize, OutputInterface $output)
+    public function exportIndex(Manager $manager, $filename, $types, $chunkSize, OutputInterface $output)
     {
-        $types = $manager->getTypesMapping();
-        $repo = $manager->getRepository($types);
+        $typesMapping = $manager->getTypesMapping();
+        if ($types) {
+            $typesToExport = [];
+            foreach ($types as $type) {
+                if (!array_key_exists($type, $typesMapping)) {
+                    throw new \InvalidArgumentException(sprintf('Type "%s" does not exist.', $type));
+                }
+                $typesToExport[] = $typesMapping[$type];
+            }
+        } else {
+            $typesToExport = $typesMapping;
+        }
+
+        $repo = $manager->getRepository($typesToExport);
 
         $results = $this->getResults($repo, $chunkSize);
 
