@@ -15,6 +15,7 @@ use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchDSL\Query\TermsQuery;
 use ONGR\ElasticsearchDSL\Search;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
@@ -151,7 +152,7 @@ class Repository
         }
 
         foreach ($orderBy as $field => $direction) {
-            $search->addSort(new Sort($field, strcasecmp($direction, 'asc') == 0 ? Sort::ORDER_ASC : Sort::ORDER_DESC));
+            $search->addSort(new FieldSort($field, ['order' => $direction]));
         }
 
         return $this->execute($search, $resultType);
@@ -176,7 +177,7 @@ class Repository
         }
 
         foreach ($orderBy as $field => $direction) {
-            $search->addSort(new Sort($field, strcasecmp($direction, 'asc') == 0 ? Sort::ORDER_ASC : Sort::ORDER_DESC));
+            $search->addSort(new FieldSort($field, ['order' => $direction]));
         }
 
         $result = $this
