@@ -67,7 +67,7 @@ class SubAggregationTest extends AbstractElasticsearchTestCase
         $topHitsAgg->setSort(
             new FieldSort(
                 'price',
-                ['order' => 'desc']
+                FieldSort::DESC
             )
         );
         $rangeAgg->addAggregation($topHitsAgg);

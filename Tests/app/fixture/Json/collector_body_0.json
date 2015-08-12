@@ -1,9 +1,7 @@
 {
     "query": {
         "term": {
-            "title": {
-                "value": "pizza"
-            }
+            "title": "pizza"
         }
     },
     "fields": [

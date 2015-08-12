@@ -83,8 +83,7 @@ class TopHitsAggregationTest extends AbstractElasticsearchTestCase
         ];
 
         // Case #1 top hits aggregation with sort.
-        $priceSort = new FieldSort('price', ['order' => 'asc']);
-        $titleSort = new FieldSort('title', ['order' => 'desc']);
+        $priceSort = new FieldSort('price', FieldSort::ASC);
 
         $aggregation = new TopHitsAggregation('test-top_hits', null, null, $priceSort);
         $expectedHits = [1, 2, 3];
@@ -184,7 +183,7 @@ class TopHitsAggregationTest extends AbstractElasticsearchTestCase
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
         $search = $repo->createSearch()->addAggregation($termAggregation)
-            ->addSort(new FieldSort('_id', ['order' => 'asc']));
+            ->addSort(new FieldSort('_id', FieldSort::ASC));
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $this->assertTrue(isset($results['aggregations']['agg_test_term']['buckets'][0]['agg_test-top_hits']['hits']));

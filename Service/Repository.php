@@ -152,7 +152,7 @@ class Repository
         }
 
         foreach ($orderBy as $field => $direction) {
-            $search->addSort(new FieldSort($field, ['order' => $direction]));
+            $search->addSort(new FieldSort($field, $direction));
         }
 
         return $this->execute($search, $resultType);
@@ -177,7 +177,7 @@ class Repository
         }
 
         foreach ($orderBy as $field => $direction) {
-            $search->addSort(new FieldSort($field, ['order' => $direction]));
+            $search->addSort(new FieldSort($field, $direction));
         }
 
         $result = $this

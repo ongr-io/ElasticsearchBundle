@@ -137,7 +137,7 @@ class BoolTestWithFuzzyQueryAndSortFilterTest extends AbstractElasticsearchTestC
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $FuzzyQuery = new FuzzyQuery($field, $value, $parameters);
-        $SortFilter = new FieldSort($sort_field, ['order' => 'asc']);
+        $SortFilter = new FieldSort($sort_field, FieldSort::ASC);
         $search = $repo->createSearch()->addQuery($FuzzyQuery)->addSort($SortFilter);
 
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
