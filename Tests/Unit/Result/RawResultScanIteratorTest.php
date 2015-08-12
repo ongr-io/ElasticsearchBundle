@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -55,7 +55,6 @@ class RawResultScanIteratorTest extends \PHPUnit_Framework_TestCase
             ->setScrollDuration('5m');
 
         $this->assertCount(2, $iterator);
-        $iterator->rewind();
 
         $data = [];
         $expectedData = [
