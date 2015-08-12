@@ -53,25 +53,16 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test for index export command.
+     * Data provider for testIndexExport().
+     *
+     * @return array
      */
-    public function testIndexExport()
+    public function getIndexExportData()
     {
-        $app = new Application();
-        $app->add($this->getExportCommand());
+        $out = [];
 
-        vfsStream::setup('tmp');
-
-        $command = $app->find('ongr:es:index:export');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(
-            [
-                'command' => $command->getName(),
-                'filename' => vfsStream::url('tmp/test.json'),
-                '--chunk' => 1,
-            ]
-        );
-
+        // Case 1: chunk specified.
+        $options = ['--chunk' => 1];
         $expectedResults = [
             [
                 '_id' => '1',
@@ -105,7 +96,62 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
             ],
         ];
 
-        $results = $this->parseResult(vfsStream::url('tmp/test.json'), 4);
+        $out[] = [$options, $expectedResults];
+
+        // Case 1: types specified.
+        $options = ['--types' => ['product']];
+        $expectedResults = [
+            [
+                '_id' => '1',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'foo',
+                    'price' => 10.45,
+                ],
+            ],
+            [
+                '_id' => '2',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'bar',
+                    'price' => 32,
+                ],
+            ],
+        ];
+
+        $out[] = [$options, $expectedResults];
+
+        return $out;
+    }
+
+    /**
+     * Test for index export command.
+     *
+     * @param array $options
+     * @param array $expectedResults
+     *
+     * @dataProvider getIndexExportData()
+     */
+    public function testIndexExport($options, $expectedResults)
+    {
+        $app = new Application();
+        $app->add($this->getExportCommand());
+
+        vfsStream::setup('tmp');
+
+        $command = $app->find('ongr:es:index:export');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            array_merge(
+                [
+                    'command' => $command->getName(),
+                    'filename' => vfsStream::url('tmp/test.json'),
+                ],
+                $options
+            )
+        );
+
+        $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
         $this->assertEquals($expectedResults, $results, null, 0.05);
     }
 
