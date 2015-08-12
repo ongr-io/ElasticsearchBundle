@@ -16,10 +16,9 @@ use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\TopHitsAggregation;
 use ONGR\ElasticsearchDSL\Query\FunctionScoreQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchDSL\Sort\Sort;
-use ONGR\ElasticsearchDSL\Sort\Sorts;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 
 /**
  * Function test for top hits aggregation.
@@ -84,10 +83,10 @@ class TopHitsAggregationTest extends AbstractElasticsearchTestCase
         ];
 
         // Case #1 top hits aggregation with sort.
-        $sorts = new Sorts();
-        $sorts->addSort(new Sort('price', Sort::ORDER_ASC));
-        $sorts->addSort(new Sort('title', Sort::ORDER_DESC));
-        $aggregation = new TopHitsAggregation('test-top_hits', null, null, $sorts);
+        $priceSort = new FieldSort('price', ['order' => 'asc']);
+        $titleSort = new FieldSort('title', ['order' => 'desc']);
+
+        $aggregation = new TopHitsAggregation('test-top_hits', null, null, $priceSort);
         $expectedHits = [1, 2, 3];
         $out[] = [
             'aggregation' => $aggregation,
@@ -184,7 +183,8 @@ class TopHitsAggregationTest extends AbstractElasticsearchTestCase
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
 
-        $search = $repo->createSearch()->addAggregation($termAggregation)->addSort(new Sort('_id', Sort::ORDER_ASC));
+        $search = $repo->createSearch()->addAggregation($termAggregation)
+            ->addSort(new FieldSort('_id', ['order' => 'asc']));
         $results = $repo->execute($search, Repository::RESULTS_RAW);
 
         $this->assertTrue(isset($results['aggregations']['agg_test_term']['buckets'][0]['agg_test-top_hits']['hits']));

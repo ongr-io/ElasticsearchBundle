@@ -109,7 +109,7 @@ class BoolFilterTest extends AbstractElasticsearchTestCase
             ->addFilter($mustFilter, BoolFilter::MUST)
             ->addFilter($mustNotFilter, BoolFilter::MUST_NOT)
             ->addFilter($shouldFilter, BoolFilter::SHOULD)
-            ->setBoolFilterParameters($parameters);
+            ->setFilterParameters($parameters);
         $results = $repository->execute($search, Repository::RESULTS_ARRAY);
         sort($results);
         $this->assertEquals($expected, $results);

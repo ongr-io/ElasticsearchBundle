@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Complex;
 
 use ONGR\ElasticsearchDSL\Query\FuzzyQuery;
-use ONGR\ElasticsearchDSL\Sort\Sort;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
@@ -137,9 +137,9 @@ class BoolTestWithFuzzyQueryAndSortFilterTest extends AbstractElasticsearchTestC
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
         $FuzzyQuery = new FuzzyQuery($field, $value, $parameters);
-        $SortFilter = new Sort($sort_field);
-        $search = $repo->createSearch()->addQuery($FuzzyQuery);
-        $search->addSort($SortFilter);
+        $SortFilter = new FieldSort($sort_field, ['order' => 'asc']);
+        $search = $repo->createSearch()->addQuery($FuzzyQuery)->addSort($SortFilter);
+
         $results = $repo->execute($search, Repository::RESULTS_ARRAY);
         $this->assertEquals($expected, $results);
     }

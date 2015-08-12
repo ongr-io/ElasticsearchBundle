@@ -16,6 +16,7 @@ use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchDSL\Filter\RangeFilter;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\SearchEndpoint\PostFilterEndpoint;
 
 class PostFilterAndAggregationTest extends AbstractElasticsearchTestCase
 {
@@ -80,15 +81,14 @@ class PostFilterAndAggregationTest extends AbstractElasticsearchTestCase
         $search->addPostFilter($rangeFilter);
 
         $name = 'foo';
+
         $TermsAgg = new TermsAggregation($name);
         $TermsAgg->setField('title');
         $TermsAgg->addParameter('include', $name);
 
-        $filterAgg = new FilterAggregation($name . '-filter');
-
         $filters = $search->getPostFilters();
+        $filterAgg = new FilterAggregation($name . '-filter');
         $filterAgg->setFilter($filters);
-
         $filterAgg->addAggregation($TermsAgg);
 
         $search->addAggregation($filterAgg);

@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
+use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
@@ -133,8 +135,8 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
     /**
      * Aggregation test.
      *
-     * @param string $path
-     * @param array  $expected
+     * @param string                $path
+     * @param AggregationIterator   $expected
      *
      * @dataProvider getTestIterationData
      */
@@ -146,10 +148,17 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
         $search = $repository
             ->createSearch()
             ->addAggregation($this->buildAggregation());
-        $results = $repository->execute($search);
-        $result = $results->getAggregations()->find($path);
+        $results = $repository->execute($search, Repository::RESULTS_OBJECT);
+        $aggs = $results->getAggregations()->find($path);
 
-        $this->assertEquals($expected, $result, '', 0.1);
+        /**
+         * @var string              $aggKey
+         * @var ValueAggregation $agg
+         */
+        foreach ($aggs as $aggKey => $agg) {
+            $value = $agg->getValue();
+            $this->assertEquals($expected->offsetGet($aggKey)->getValue(), $value);
+        }
     }
 
     /**

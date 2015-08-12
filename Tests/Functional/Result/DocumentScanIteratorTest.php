@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Search;
-use ONGR\ElasticsearchDSL\Sort\Sort;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -25,12 +25,13 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
      */
     protected function getDataArray()
     {
-        $documents = ['default' => ['fooContent' => []]];
+        $documents = ['default' => ['product' => []]];
 
         for ($i = 0; $i < 4; $i++) {
-            $documents['default']['fooContent'][] = [
-                '_id' => 'someId_' . $i,
-                'header' => 'content_' . $i,
+            $documents['default']['product'][] = [
+                '_id' => $i,
+                'title' => 'content_' . $i,
+                'price' => $i,
             ];
         }
 
@@ -50,7 +51,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
         $search = new Search();
         $search->setSize(2);
         $search->setScroll('1m');
-        $search->addSort(new Sort('header'));
+        $search->addSort(new FieldSort('price'));
         $search->addQuery(new MatchAllQuery());
 
         $out[] = ['search' => $search, true];
@@ -60,7 +61,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
         $search->setSize(2);
         $search->setScroll('1m');
         $search->setSearchType('scan');
-        $search->addSort(new Sort('header'));
+        $search->addSort(new FieldSort('price'));
         $search->addQuery(new MatchAllQuery());
 
         $out[] = ['search' => $search, false];
@@ -69,7 +70,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
         $search = new Search();
         $search->setSize(1);
         $search->setScroll('1m');
-        $search->addSort(new Sort('header'));
+        $search->addSort(new FieldSort('price'));
         $search->addQuery(new MatchAllQuery());
 
         $out[] = ['search' => $search, true];
@@ -89,7 +90,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
     {
         $iterator = $this
             ->getManager()
-            ->getRepository('AcmeTestBundle:Content')
+            ->getRepository('AcmeTestBundle:Product')
             ->execute($search, Repository::RESULTS_OBJECT);
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentScanIterator', $iterator);
@@ -123,7 +124,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
     {
         $data = [];
         foreach ($iterator as $result) {
-            $data[] = $result->header;
+            $data[] = $result->title;
         }
 
         return $data;

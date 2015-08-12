@@ -14,10 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\DSL\Aggregation;
 use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\TopHitsAggregation;
 use ONGR\ElasticsearchDSL\Search;
-use ONGR\ElasticsearchDSL\Sort\Sort;
-use ONGR\ElasticsearchDSL\Sort\Sorts;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 
 class SubAggregationTest extends AbstractElasticsearchTestCase
 {
@@ -66,14 +65,11 @@ class SubAggregationTest extends AbstractElasticsearchTestCase
 
         $topHitsAgg = new TopHitsAggregation('top_hits');
         $topHitsAgg->setSort(
-            new Sorts(
-                new Sort(
-                    'price',
-                    Sort::ORDER_DESC
-                )
+            new FieldSort(
+                'price',
+                ['order' => 'desc']
             )
         );
-
         $rangeAgg->addAggregation($topHitsAgg);
 
         $search->addAggregation($rangeAgg);
