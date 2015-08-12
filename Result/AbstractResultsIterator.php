@@ -12,129 +12,187 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 /**
- * AbstractResultsIterator class.
+ * Class AbstractResultsIterator.
  */
-abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayAccess
+abstract class AbstractResultsIterator
 {
     /**
-     * @var array Raw documents.
+     * @var array Documents.
      */
-    protected $documents = [];
+    private $documents = [];
 
     /**
-     * @var array Documents casted to objects cache.
+     * @var int
      */
-    protected $converted = [];
+    private $totalCount = 0;
 
     /**
-     * Converts raw array to document.
+     * Constructor.
      *
      * @param array $rawData
+     */
+    public function __construct($rawData)
+    {
+        if (isset($rawData['hits']['hits'])) {
+            $this->setDocuments($rawData['hits']['hits']);
+        }
+        if (isset($rawData['hits']['total'])) {
+            $this->setTotalCount($rawData['hits']['total']);
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount()
+    {
+        return $this->totalCount;
+    }
+
+    /**
+     * @param int $totalCount
      *
-     * @return object|array
+     * @return $this
      */
-    abstract protected function convertDocument($rawData);
-
-    /**
-     * {@inheritdoc}
-     */
-    public function current()
+    protected function setTotalCount($totalCount)
     {
-        return $this->offsetGet($this->key());
+        $this->totalCount = $totalCount;
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $documents
+     *
+     * @return $this
      */
-    public function next()
+    protected function setDocuments(&$documents)
     {
-        next($this->documents);
+        $this->documents = &$documents;
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $document
+     * @param mixed $key
+     *
+     * @return $this
      */
-    public function key()
+    protected function addDocument($document, $key)
+    {
+        if ($key === null) {
+            $this->documents[] = $document;
+        } else {
+            $this->documents[$key] = $document;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    protected function getDocument($key)
+    {
+        return isset($this->documents[$key]) ? $this->documents[$key] : null;
+    }
+
+    /**
+     * Checks whether document exists.
+     *
+     * @param mixed $key
+     *
+     * @return bool
+     */
+    protected function documentExists($key)
+    {
+        return array_key_exists($key, $this->documents);
+    }
+
+    /**
+     * Removes document.
+     *
+     * @param mixed $key
+     *
+     * @return $this
+     */
+    protected function removeDocument($key)
+    {
+        unset($this->documents[$key]);
+
+        return $this;
+    }
+
+    /**
+     * Removes document but leaves it existing.
+     *
+     * @param mixed $key
+     *
+     * @return $this
+     */
+    protected function clearDocument($key)
+    {
+        if (isset($this->documents[$key])) {
+            $this->documents[$key] = null;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getCount()
+    {
+        return count($this->documents);
+    }
+
+    /**
+     * @return int
+     */
+    protected function getKey()
     {
         return key($this->documents);
     }
 
     /**
-     * {@inheritdoc}
+     * Advances key.
+     *
+     * @return $this
      */
-    public function valid()
+    protected function advanceKey()
     {
-        return $this->key() !== null;
+        next($this->documents);
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Resets key.
+     *
+     * @return $this
      */
-    public function rewind()
+    protected function resetKey()
     {
         reset($this->documents);
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Removes set documents.
+     *
+     * @return $this
      */
-    public function offsetExists($offset)
+    protected function clean()
     {
-        return array_key_exists($offset, $this->documents);
-    }
+        $this->documents = [];
+        $this->resetKey();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        if (!isset($this->converted[$offset])) {
-            if (!isset($this->documents[$offset])) {
-                return null;
-            }
-
-            $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
-
-            // Clear memory.
-            $this->documents[$offset] = null;
-        }
-
-        return $this->converted[$offset];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value)
-    {
-        if ($offset === null) {
-            $offset = $this->getKey();
-        }
-
-        if (is_object($value)) {
-            $this->converted[$offset] = $value;
-            $this->documents[$offset] = null;
-        } elseif (is_array($value)) {
-            $this->documents[$offset] = $value;
-            // Also invalidate converted document.
-            unset($this->converted[$offset]);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->documents[$offset], $this->converted[$offset]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count()
-    {
-        return count($this->documents);
+        return $this;
     }
 
     /**
@@ -144,25 +202,8 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
      */
     public function first()
     {
-        $this->rewind();
+        $this->resetKey();
 
-        return $this->current();
-    }
-
-    /**
-     * Return an integer key to be used for a new element in array.
-     *
-     * @return int
-     */
-    private function getKey()
-    {
-        $currentIntKeys = array_filter(array_keys($this->documents), 'is_int');
-        if (empty($currentIntKeys)) {
-            $offset = 0;
-        } else {
-            $offset = max($currentIntKeys) + 1;
-        }
-
-        return $offset;
+        return $this->getDocument($this->getKey());
     }
 }

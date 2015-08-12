@@ -14,8 +14,12 @@ namespace ONGR\ElasticsearchBundle\Result;
 /**
  * ObjectIterator class.
  */
-class ObjectIterator extends AbstractResultsIterator
+class ObjectIterator extends AbstractConvertibleResultIterator implements \ArrayAccess, \Iterator, \Countable
 {
+    use ArrayAccessTrait;
+    use IteratorTrait;
+    use CountableTrait;
+
     /**
      * @var array Aliases information.
      */
@@ -35,12 +39,12 @@ class ObjectIterator extends AbstractResultsIterator
      */
     public function __construct($converter, $rawData, $alias)
     {
+        parent::__construct([]);
+
+        $this->setDocuments($rawData);
+        $this->setTotalCount(count($rawData));
         $this->converter = $converter;
         $this->alias = $alias;
-        $this->converted = [];
-
-        // Alias documents to have shorter path.
-        $this->documents = &$rawData;
     }
 
     /**

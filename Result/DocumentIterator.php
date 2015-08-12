@@ -11,19 +11,23 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
+use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
- * This class is able to iterate over Elasticsearch result documents while casting data into models.
+ * Class DocumentIterator.
  */
-class DocumentIterator extends AbstractResultsIterator
+class DocumentIterator extends AbstractConvertibleResultIterator implements \Countable, \ArrayAccess, \Iterator
 {
+    use CountableTrait;
+    use ArrayAccessTrait;
+    use IteratorTrait;
+    use ConverterAwareTrait;
+
     /**
      * @var array
      */
-    private $rawData;
+    private $typesMapping;
 
     /**
      * @var array
@@ -33,7 +37,7 @@ class DocumentIterator extends AbstractResultsIterator
     /**
      * @var array
      */
-    private $typesMapping;
+    private $rawAggregations;
 
     /**
      * @var AggregationIterator
@@ -41,9 +45,9 @@ class DocumentIterator extends AbstractResultsIterator
     private $aggregations;
 
     /**
-     * @var Converter
+     * @var array
      */
-    private $converter;
+    private $rawSuggestions;
 
     /**
      * Constructor.
@@ -54,62 +58,34 @@ class DocumentIterator extends AbstractResultsIterator
      */
     public function __construct($rawData, $typesMapping, $bundlesMapping)
     {
-        $this->rawData = $rawData;
+        parent::__construct($rawData);
+
         $this->typesMapping = $typesMapping;
         $this->bundlesMapping = $bundlesMapping;
 
-        // Alias documents to have shorter path.
-        if (isset($rawData['hits']['hits'])) {
-            $this->documents = &$rawData['hits']['hits'];
+        if (isset($rawData['aggregations'])) {
+            $this->rawAggregations = &$rawData['aggregations'];
+        }
+
+        if (isset($rawData['suggest'])) {
+            $this->rawSuggestions = &$rawData['suggest'];
         }
     }
 
     /**
-     * Returns a converter.
-     *
-     * @return Converter
+     * @return array
      */
-    protected function getConverter()
+    protected function getTypesMapping()
     {
-        if ($this->converter === null) {
-            $this->converter = new Converter($this->typesMapping, $this->bundlesMapping);
-        }
-
-        return $this->converter;
+        return $this->typesMapping;
     }
 
     /**
-     * Converts raw array to document.
-     *
-     * @param array $rawData
-     *
-     * @return DocumentInterface
-     *
-     * @throws \LogicException
+     * @return array
      */
-    protected function convertDocument($rawData)
+    protected function getBundlesMapping()
     {
-        return $this->getConverter()->convertToDocument($rawData);
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return mixed
-     */
-    protected function getMapByType($type)
-    {
-        return $this->bundlesMapping[$this->typesMapping[$type]];
-    }
-
-    /**
-     * Returns count of records found by given query.
-     *
-     * @return int
-     */
-    public function getTotalCount()
-    {
-        return $this->rawData['hits']['total'];
+        return $this->bundlesMapping;
     }
 
     /**
@@ -119,15 +95,15 @@ class DocumentIterator extends AbstractResultsIterator
      */
     public function getAggregations()
     {
-        if (isset($this->rawData['aggregations'])) {
+        if (isset($this->rawAggregations)) {
             $data = [];
 
-            foreach ($this->rawData['aggregations'] as $key => $value) {
+            foreach ($this->rawAggregations as $key => $value) {
                 $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
                 $data[$realKey] = $value;
             }
 
-            unset($this->rawData['aggregations']);
+            unset($this->rawAggregations);
             $this->aggregations = new AggregationIterator($data, $this->getConverter());
         } elseif ($this->aggregations === null) {
             $this->aggregations = new AggregationIterator([]);
