@@ -67,6 +67,16 @@ class Connection
     private $readOnly;
 
     /**
+     * @var int
+     */
+    private $autocommit = 0;
+
+    /**
+     * @var int
+     */
+    private $actions = 0;
+
+    /**
      * Construct.
      *
      * @param Client $client   Elasticsearch client.
@@ -133,6 +143,8 @@ class Connection
                 // Do nothing.
                 break;
         }
+
+        $this->doAutocommit();
     }
 
     /**
@@ -158,6 +170,7 @@ class Connection
         $this->flush();
 
         $this->bulkQueries = [];
+        $this->actions = 0;
     }
 
     /**
@@ -752,5 +765,44 @@ class Connection
         }
 
         return [];
+    }
+
+    /**
+     * Commits changes if needed.
+     */
+    private function doAutocommit()
+    {
+        $autocommit = $this->getAutocommit();
+        $this->actions++;
+        if (!$autocommit) {
+            return;
+        }
+        if ($this->actions >= $autocommit) {
+            $this->commit();
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getAutocommit()
+    {
+        return $this->autocommit;
+    }
+
+    /**
+     * Sets number of bulk actions after which changes will be committed automatically.
+     *
+     * Value of 0 disables autocommit.
+     *
+     * @param int $autocommit
+     *
+     * @return $this
+     */
+    public function setAutocommit($autocommit)
+    {
+        $this->autocommit = $autocommit;
+
+        return $this;
     }
 }

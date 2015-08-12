@@ -32,6 +32,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                     'index_name' => 'acme',
                     'hosts' => ['127.0.0.1:9200'],
                     'settings' => [],
+                    'autocommit' => 0,
                 ],
             ],
             'managers' => [

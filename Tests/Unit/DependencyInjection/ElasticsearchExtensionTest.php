@@ -53,6 +53,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'index_name' => 'test',
                 'hosts' => ['127.0.0.1:9200'],
                 'settings' => [],
+                'autocommit' => 0,
             ],
         ];
 
