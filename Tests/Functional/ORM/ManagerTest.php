@@ -11,21 +11,17 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
 
-use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
-use ONGR\ElasticsearchDSL\Search;
-use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationSuggesting;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationContext;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Search;
 
 /**
  * Functional tests for orm manager.
@@ -322,5 +318,20 @@ class ManagerTest extends AbstractElasticsearchTestCase
         }
 
         return $this->converter->convertToArray($document);
+    }
+
+    /**
+     * Tests if raw documents are persisted correctly.
+     */
+    public function testPersistRaw()
+    {
+        $document = ['_id' => 1, 'title' => 'test 1'];
+        $manager = $this->getManager();
+        $manager->persistRaw($document, 'AcmeTestBundle:Product');
+        $manager->commit();
+        $document = $manager->getRepository('AcmeTestBundle:Product')->find(1);
+        $expected = new Product();
+        $expected->setId(1)->title = 'test 1';
+        $this->assertEquals($expected, $document);
     }
 }
