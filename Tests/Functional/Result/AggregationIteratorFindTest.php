@@ -135,8 +135,8 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
     /**
      * Aggregation test.
      *
-     * @param string                $path
-     * @param AggregationIterator   $expected
+     * @param string              $path
+     * @param AggregationIterator $expected
      *
      * @dataProvider getTestIterationData
      */
