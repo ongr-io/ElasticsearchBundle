@@ -31,11 +31,42 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->append($this->getConnectionsNode())
-                ->append($this->getManagersNode())
+            ->append($this->getAnalysisNode())
+            ->append($this->getConnectionsNode())
+            ->append($this->getManagersNode())
             ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * Analysis configuration node.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
+    private function getAnalysisNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('analysis');
+
+        $node
+            ->info('Defines analyzers, tokenizers and filters')
+            ->children()
+                ->arrayNode('tokenizer')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
+                ->arrayNode('filter')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
+                ->arrayNode('analyzer')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
+            ->end();
+
+        return $node;
     }
 
     /**
@@ -102,6 +133,14 @@ class Configuration implements ConfigurationInterface
                         ->defaultValue([])
                         ->info('Sets index settings for connection.')
                         ->prototype('variable')->end()
+                    ->end()
+                    ->arrayNode('analysis')
+                        ->info('Sets index analysis settings for connection.')
+                        ->children()
+                            ->arrayNode('tokenizer')->prototype('scalar')->end()->end()
+                            ->arrayNode('filter')->prototype('scalar')->end()->end()
+                            ->arrayNode('analyzer')->prototype('scalar')->end()->end()
+                        ->end()
                     ->end()
                 ->end()
             ->end();
