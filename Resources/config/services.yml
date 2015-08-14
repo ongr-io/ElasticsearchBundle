@@ -3,6 +3,15 @@ parameters:
     es.export.class: ONGR\ElasticsearchBundle\Service\ExportService
     es.import.class: ONGR\ElasticsearchBundle\Service\ImportService
     es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Client\IndexSuffixFinder
+    es.document_finder.class: ONGR\ElasticsearchBundle\Mapping\DocumentFinder
+    es.document_parser.class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
+    es.metadata_collector.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
+    es.logger.collection_handler.class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
+    es.profiler.class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
+    es.metadata_cache.class: ONGR\ElasticsearchBundle\Mapping\MetadataCache
+    es.doctrine.filesystem_cache.class: Doctrine\Common\Cache\FilesystemCache
+
+    es.profiler.template: ONGRElasticsearchBundle:Profiler:profiler.html.twig
 
 services:
     es.export:
@@ -13,3 +22,46 @@ services:
 
     es.client.index_suffix_finder:
         class: %es.client.index_suffix_finder.class%
+
+    es.cache_engine:
+        class: %es.doctrine.filesystem_cache.class%
+        arguments: ["%kernel.cache_dir%/ongr", ".ongr.data"]
+
+    annotations.cached_reader:
+        class: %annotations.cached_reader.class%
+        arguments: [@annotations.reader, @es.cache_engine, %kernel.debug%]
+
+    es.document_finder:
+        class: %es.document_finder.class%
+        arguments: [%kernel.bundles%]
+        public: false
+
+    es.document_parser:
+        class: %es.document_parser.class%
+        arguments: [@annotations.cached_reader, @es.document_finder]
+        public: false
+
+    es.metadata_collector:
+        class: %es.metadata_collector.class%
+        arguments: [@es.document_finder, @es.document_parser]
+
+    es.logger.collection_handler:
+        class: %es.logger.collection_handler.class%
+        public: false
+
+    es.logger.ongr:
+        class: %monolog.logger.class%
+        arguments: ['ongr']
+        calls:
+            - [pushHandler, [@es.logger.collection_handler]]
+
+    es.metadata_cache:
+        class: %es.metadata_cache.class%
+
+    es.profiler:
+        class: %es.profiler.class%
+        calls:
+            - [setManagers, [%es.managers%]]
+            - [addLogger, [@es.logger.ongr]]
+        tags:
+            - {name: data_collector, template: %es.profiler.template%, id: ongr}
