@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Logger\Handler;
+namespace ONGR\ElasticsearchBundle\Profiler\Handler;
 
 use Monolog\Handler\AbstractProcessingHandler;
 
