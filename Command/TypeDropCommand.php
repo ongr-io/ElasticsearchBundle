@@ -29,7 +29,7 @@ class TypeDropCommand extends AbstractManagerAwareCommand
 
         $this
             ->setName('ongr:es:type:drop')
-            ->setDescription('Updates elasticsearch index mappings.')
+            ->setDescription('Drops elasticsearch index mappings.')
             ->addOption(
                 'type',
                 't',
