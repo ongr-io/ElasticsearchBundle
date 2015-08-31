@@ -27,7 +27,7 @@ abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
     {
         $this->addOption(
             'manager',
-            null,
+            'mng',
             InputOption::VALUE_REQUIRED,
             'Manager name',
             'default'

@@ -31,9 +31,9 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         $this
             ->setName('ongr:es:index:create')
             ->setDescription('Creates elasticsearch index.')
-            ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to new index name')
+            ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to the new index name')
             ->addOption('with-warmers', 'w', InputOption::VALUE_NONE, 'Puts warmers into index')
-            ->addOption('no-mapping', 'm', InputOption::VALUE_NONE, 'Do not include mapping');
+            ->addOption('no-mapping', 'nm', InputOption::VALUE_NONE, 'Do not include mapping');
     }
 
     /**
@@ -48,6 +48,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             $finder = $this->getContainer()->get('es.client.index_suffix_finder');
             $finder->setNextFreeIndex($connection);
         }
+
         $connection->createIndex($input->getOption('with-warmers'), $input->getOption('no-mapping') ? true : false);
         $output->writeln(
             sprintf(
