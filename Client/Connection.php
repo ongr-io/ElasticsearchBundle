@@ -78,7 +78,6 @@ class Connection
         $this->settings = $settings;
         $this->bulkQueries = [];
         $this->bulkParams = [];
-        $this->warmers = new WarmersContainer();
     }
 
     /**
@@ -572,6 +571,9 @@ class Connection
      */
     public function addWarmer(WarmerInterface $warmer)
     {
+        if (!$this->warmers) {
+            $this->warmers = new WarmersContainer();
+        }
         $this->warmers->addWarmer($warmer);
     }
 
