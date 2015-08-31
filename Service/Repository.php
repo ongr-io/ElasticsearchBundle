@@ -16,7 +16,6 @@ use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchDSL\Query\TermsQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
-use ONGR\ElasticsearchDSL\Sort\Sort;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
@@ -42,7 +41,7 @@ class Repository
     /**
      * @var array
      */
-    private $namespaces = [];
+    private $repositories = [];
 
     /**
      * @var array
@@ -63,7 +62,7 @@ class Repository
     public function __construct($manager, $repositories)
     {
         $this->manager = $manager;
-        $this->namespaces = $repositories;
+        $this->repositories = $repositories;
         $this->types = $this->getTypes();
     }
 
@@ -73,7 +72,7 @@ class Repository
     public function getTypes()
     {
         $types = [];
-        $meta = $this->getManager()->getBundlesMapping($this->namespaces);
+        $meta = $this->getManager()->getBundlesMapping($this->repositories);
 
         foreach ($meta as $namespace => $metadata) {
             $types[] = $metadata->getType();
@@ -310,7 +309,7 @@ class Repository
 
         // Checks if cache is loaded.
         if (empty($this->fieldsCache)) {
-            foreach ($this->getManager()->getBundlesMapping($this->namespaces) as $ns => $properties) {
+            foreach ($this->getManager()->getBundlesMapping($this->repositories) as $ns => $properties) {
                 $this->fieldsCache = array_unique(
                     array_merge(
                         $this->fieldsCache,
@@ -420,7 +419,7 @@ class Repository
     }
 
     /**
-     * Returns elasticsearch manager used in this repository for getting/setting documents.
+     * Returns elasticsearch manager used in the repository.
      *
      * @return Manager
      */
