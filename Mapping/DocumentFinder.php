@@ -56,7 +56,7 @@ class DocumentFinder
     }
 
     /**
-     * Returns bundle class namesapce else throws an exception.
+     * Returns bundle class namespace else throws an exception.
      *
      * @param string $name
      *

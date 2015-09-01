@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Mapping;
 
+use Doctrine\Common\Cache\CacheProvider;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 
 /**
@@ -29,18 +30,97 @@ class MetadataCollector
     private $parser;
 
     /**
-     * @var array Contains mappings gathered from bundle documents.
+     * @var CacheProvider
      */
-    private $documents = [];
+    private $cache;
 
     /**
      * @param DocumentFinder $finder For finding documents.
      * @param DocumentParser $parser For reading document annotations.
+     * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
      */
-    public function __construct($finder, $parser)
+    public function __construct($finder, $parser, $cache)
     {
         $this->finder = $finder;
         $this->parser = $parser;
+        $this->cache = $cache;
+    }
+
+    /**
+     * Fetches bundles mapping from manager.
+     *
+     * @param array $manager Elasticsearch manager config. You can get bundles list from 'mappings' node.
+     * @return array
+     */
+    public function getMappings(array $manager)
+    {
+        $output = [];
+        foreach ($manager['mappings'] as $bundle) {
+            $output = array_merge($output, $this->getBundleMapping($bundle));
+        }
+
+        return $output;
+    }
+
+    /**
+     * Searches for documents in the bundle and tries to read them.
+     *
+     * @param string $bundle
+     *
+     * @return array Empty array on containing zero documents.
+     */
+    public function getBundleMapping($bundle)
+    {
+        $mappings = [];
+        $bundleNamespace = $this->finder->getBundleClass($bundle);
+        $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
+
+        // Checks if is mapped document or bundle.
+        if (strpos($bundle, ':') !== false) {
+            $documents = [];
+        } else {
+            $documents = $this->finder->getBundleDocumentPaths($bundle);
+        }
+
+        // Loop through documents found in bundle.
+        foreach ($documents as $document) {
+            $documentReflection = new \ReflectionClass(
+                $bundleNamespace .
+                '\\' . DocumentFinder::DOCUMENT_DIR .
+                '\\' . pathinfo($document, PATHINFO_FILENAME)
+            );
+
+            $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
+            if ($documentMapping !== null) {
+                $mappings = array_replace_recursive($mappings, $documentMapping);
+            }
+        }
+
+        return $mappings;
+    }
+
+    /**
+     * Gathers annotation data from class.
+     *
+     * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
+     *
+     * @return array|null
+     */
+    private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
+    {
+        return $this->parser->parse($reflectionClass);
+    }
+
+    /**
+     * @param array $manager
+     *
+     * @return array
+     */
+    public function getManagerTypes($manager)
+    {
+        $mapping = $this->getMappings($manager);
+
+        return array_keys($mapping);
     }
 
     /**
@@ -51,16 +131,17 @@ class MetadataCollector
      *
      * @return array
      */
-    public function getClientMapping($namespace, $force = false)
+    public function getClientMapping($manager)
     {
-        if (!$force && array_key_exists($namespace, $this->documents)) {
-            return $this->documents[$namespace];
-        }
+        /** @var array $typesMapping Array of filtered mappings for the elasticsearch client*/
+        $typesMapping = [];
 
-        $mappings = [];
-        foreach ($this->getMapping($namespace) as $type => $mapping) {
+        /** @var array $mappings All mapping info */
+        $mappings = $this->getMappings($manager);
+
+        foreach ($mappings as $type => $mapping) {
             if (!empty($mapping['properties'])) {
-                $mappings[$type] = array_filter(
+                $typesMapping[$type] = array_filter(
                     array_merge(
                         ['properties' => $mapping['properties']],
                         $mapping['fields']
@@ -72,10 +153,13 @@ class MetadataCollector
             }
         }
 
-        $this->documents[$namespace] = $mappings;
-
-        return $this->documents[$namespace];
+        return $typesMapping;
     }
+
+
+
+
+
 
     /**
      * Retrieves document mapping by namespace.
@@ -116,48 +200,5 @@ class MetadataCollector
         $mapping = $this->getMappingByNamespace($namespace);
 
         return $mapping === null ? [] : $mapping;
-    }
-
-    /**
-     * Searches for documents in bundle and tries to read them.
-     *
-     * @param string $bundle
-     *
-     * @return array Empty array on containing zero documents.
-     */
-    public function getBundleMapping($bundle)
-    {
-        $mappings = [];
-        $this->proxyPaths = [];
-        $bundleNamespace = $this->finder->getBundleClass($bundle);
-        $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
-
-        // Loop through documents found in bundle.
-        foreach ($this->finder->getBundleDocumentPaths($bundle) as $document) {
-            $documentReflection = new \ReflectionClass(
-                $bundleNamespace .
-                '\\' . DocumentFinder::DOCUMENT_DIR .
-                '\\' . pathinfo($document, PATHINFO_FILENAME)
-            );
-
-            $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-            if ($documentMapping !== null) {
-                $mappings = array_replace_recursive($mappings, $documentMapping);
-            }
-        }
-
-        return $mappings;
-    }
-
-    /**
-     * Gathers annotation data from class.
-     *
-     * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
-     *
-     * @return array|null
-     */
-    private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
-    {
-        return $this->parser->parse($reflectionClass);
     }
 }
