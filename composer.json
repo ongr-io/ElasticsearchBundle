@@ -11,13 +11,13 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.5",
         "symfony/framework-bundle": "~2.7",
         "symfony/console": "~2.7",
         "symfony/expression-language": "~2.7",
         "doctrine/annotations": "~1.2",
         "doctrine/inflector": "~1.0",
-        "elasticsearch/elasticsearch": "~1.0",
+        "elasticsearch/elasticsearch": "~2.0",
         "ongr/elasticsearch-dsl": "dev-master"
     },
     "require-dev": {
