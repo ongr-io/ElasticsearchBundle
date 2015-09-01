@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Client;
+namespace ONGR\ElasticsearchBundle\Service;
 
 /**
  * Constructs index name with date's suffix.
