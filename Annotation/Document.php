@@ -22,11 +22,6 @@ use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
 final class Document implements DumperInterface
 {
     /**
-     * @var bool
-     */
-    public $create = true;
-
-    /**
      * @var string
      */
     public $type;
