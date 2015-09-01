@@ -1,5 +1,8 @@
 parameters:
     es.logging.path: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
+    es.manager.class: ONGR\ElasticsearchBundle\Service\Manager
+    es.repository.class: ONGR\ElasticsearchBundle\Service\Repository
+    es.manager_factory.class: ONGR\ElasticsearchBundle\Service\ManagerFactory
     es.export.class: ONGR\ElasticsearchBundle\Service\ExportService
     es.import.class: ONGR\ElasticsearchBundle\Service\ImportService
     es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Client\IndexSuffixFinder
@@ -8,9 +11,8 @@ parameters:
     es.metadata_collector.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
     es.logger.collection_handler.class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
     es.profiler.class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
-    es.metadata_cache.class: ONGR\ElasticsearchBundle\Mapping\MetadataCache
     es.doctrine.filesystem_cache.class: Doctrine\Common\Cache\FilesystemCache
-
+    es.result_converter.class: ONGR\ElasticsearchBundle\Result\Converter
     es.profiler.template: ONGRElasticsearchBundle:Profiler:profiler.html.twig
 
 services:
@@ -43,7 +45,7 @@ services:
 
     es.metadata_collector:
         class: %es.metadata_collector.class%
-        arguments: [@es.document_finder, @es.document_parser]
+        arguments: [@es.document_finder, @es.document_parser, @es.cache_engine]
 
     es.logger.collection_handler:
         class: %es.logger.collection_handler.class%
@@ -55,9 +57,6 @@ services:
         calls:
             - [pushHandler, [@es.logger.collection_handler]]
 
-    es.metadata_cache:
-        class: %es.metadata_cache.class%
-
     es.profiler:
         class: %es.profiler.class%
         calls:
@@ -65,3 +64,11 @@ services:
             - [addLogger, [@es.logger.ongr]]
         tags:
             - {name: data_collector, template: %es.profiler.template%, id: ongr}
+
+    es.result_converter:
+        class: %es.result_converter.class%
+        arguments: [@es.metadata_collector]
+
+    es.manager_factory:
+        class: %es.manager_factory.class%
+        arguments: [@es.metadata_collector, @es.cache_engine]
