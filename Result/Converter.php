@@ -12,8 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyInterface;
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -22,15 +21,8 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
  */
 class Converter
 {
-    /**
-     * @var array
-     */
-    private $typesMapping;
 
-    /**
-     * @var array
-     */
-    private $bundlesMapping;
+    private $collector;
 
     /**
      * @var PropertyAccessor
@@ -40,13 +32,11 @@ class Converter
     /**
      * Constructor.
      *
-     * @param array $typesMapping
-     * @param array $bundlesMapping
+     * @param MetadataCollector $collector
      */
-    public function __construct($typesMapping, $bundlesMapping)
+    public function __construct($collector)
     {
-        $this->typesMapping = $typesMapping;
-        $this->bundlesMapping = $bundlesMapping;
+        $this->collector = $collector;
     }
 
     /**
