@@ -11,13 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
+use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Event\ElasticsearchCommitEvent;
-use ONGR\ElasticsearchBundle\Event\ElasticsearchPersistEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
-use ONGR\ElasticsearchBundle\Mapping\ClassMetadata;
-use ONGR\ElasticsearchBundle\Mapping\ClassMetadataCollection;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -28,14 +26,9 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class Manager
 {
     /**
-     * @var Connection Elasticsearch connection.
+     * @var Client
      */
-    private $connection;
-
-    /**
-     * @var ClassMetadataCollection
-     */
-    private $classMetadataCollection;
+    private $client;
 
     /**
      * @var Converter
@@ -48,31 +41,43 @@ class Manager
     private $eventDispatcher;
 
     /**
-     * @param Connection              $connection
-     * @param ClassMetadataCollection $classMetadataCollection
+     * @var bool
      */
-    public function __construct($connection, $classMetadataCollection)
+    private $readOnly;
+
+    /**
+     * @var array Container for bulk queries.
+     */
+    private $bulkQueries;
+
+    /**
+     * @var array Holder for consistency, refresh and replication parameters.
+     */
+    private $bulkParams;
+
+    /**
+     * @var array
+     */
+    private $indexSettings;
+
+    /**
+     * @param Client $client
+     * @param array  $indexSettings
+     */
+    public function __construct($client, $indexSettings)
     {
-        $this->connection = $connection;
-        $this->classMetadataCollection = $classMetadataCollection;
+        $this->client = $client;
+        $this->indexSettings = $indexSettings;
     }
 
     /**
      * Returns Elasticsearch connection.
      *
-     * @return Connection
+     * @return Client
      */
-    public function getConnection()
+    public function getClient()
     {
-        return $this->connection;
-    }
-
-    /**
-     * @param EventDispatcher $eventDispatcher
-     */
-    public function setEventDispatcher($eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
+        return $this->client;
     }
 
     /**
@@ -106,154 +111,219 @@ class Manager
     }
 
     /**
+     * #TODO add actions with bulk
      * Adds document to next flush.
      *
      * @param DocumentInterface $document
      */
     public function persist(DocumentInterface $document)
     {
-        $this->dispatchEvent(
-            Events::PRE_PERSIST,
-            new ElasticsearchPersistEvent($this->getConnection(), $document)
-        );
-
-        $mapping = $this->getDocumentMapping($document);
-        $documentArray = $this->getConverter()->convertToArray($document);
-
-        $this->getConnection()->bulk(
-            'index',
-            $mapping->getType(),
-            $documentArray
-        );
-
-        $this->dispatchEvent(
-            Events::POST_PERSIST,
-            new ElasticsearchPersistEvent($this->getConnection(), $document)
-        );
-    }
-
-    /**
-     * Commits bulk batch to elasticsearch index.
-     */
-    public function commit()
-    {
-        $this->dispatchEvent(
-            Events::PRE_COMMIT,
-            new ElasticsearchCommitEvent($this->getConnection())
-        );
-
-        $this->getConnection()->commit();
-
-        $this->dispatchEvent(
-            Events::POST_COMMIT,
-            new ElasticsearchCommitEvent($this->getConnection())
-        );
+        $documentArray = $this->converter->convertToArray($document);
     }
 
     /**
      * Flushes elasticsearch index.
      */
-    public function flush()
+    public function flush($params)
     {
-        $this->getConnection()->flush();
+        $this->client->indices()->flush($params);
     }
 
     /**
      * Refreshes elasticsearch index.
      */
-    public function refresh()
+    public function refresh($params)
     {
-        $this->getConnection()->refresh();
+        $this->client->indices()->refresh($params);
     }
 
     /**
-     * Returns repository metadata for document.
+     * Adds query to bulk queries container.
      *
-     * @param object $document
-     *
-     * @return ClassMetadata|null
-     */
-    public function getDocumentMapping($document)
-    {
-        foreach ($this->getBundlesMapping() as $repository) {
-            if (get_class($document) == $repository->getNamespace()) {
-                return $repository;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns bundles mapping.
-     *
-     * @param array $repositories
-     *
-     * @return ClassMetadata[]
-     */
-    public function getBundlesMapping($repositories = [])
-    {
-        return $this->classMetadataCollection->getMetadata($repositories);
-    }
-
-    /**
-     * @return array
-     */
-    public function getTypesMapping()
-    {
-        return $this->classMetadataCollection->getTypesMap();
-    }
-
-    /**
-     * Checks if specified repository and type is defined, throws exception otherwise.
-     *
-     * @param string $type
+     * @param string       $operation One of: index, update, delete, create.
+     * @param string|array $type      Elasticsearch type name.
+     * @param array        $query     DSL to execute.
      *
      * @throws \InvalidArgumentException
      */
-    private function checkRepositoryType(&$type)
+    public function bulk($operation, $type, array $query)
     {
-        $mapping = $this->getBundlesMapping();
+        $this->isReadOnly('Bulk');
 
-        if (array_key_exists($type, $mapping)) {
-            return;
+        if (!in_array($operation, ['index', 'create', 'update', 'delete'])) {
+            throw new \InvalidArgumentException('Wrong bulk operation selected');
         }
 
-        if (array_key_exists($type . 'Document', $mapping)) {
-            $type .= 'Document';
+        $this->bulkQueries['body'][] = [
+            $operation => array_filter(
+                [
+                    '_index' => $this->getIndexName(),
+                    '_type' => $type,
+                    '_id' => isset($query['_id']) ? $query['_id'] : null,
+                    '_ttl' => isset($query['_ttl']) ? $query['_ttl'] : null,
+                    '_parent' => isset($query['_parent']) ? $query['_parent'] : null,
+                ]
+            ),
+        ];
+        unset($query['_id'], $query['_ttl'], $query['_parent']);
 
-            return;
+        switch ($operation) {
+            case 'index':
+            case 'create':
+                $this->bulkQueries['body'][] = $query;
+                break;
+            case 'update':
+                $this->bulkQueries['body'][] = ['doc' => $query];
+                break;
+            case 'delete':
+                // Body for delete operation is not needed to apply.
+            default:
+                // Do nothing.
+                break;
         }
-
-        $exceptionMessage = "Undefined repository `{$type}`, valid repositories are: `" .
-            join('`, `', array_keys($this->getBundlesMapping())) . '`.';
-        throw new \InvalidArgumentException($exceptionMessage);
     }
 
     /**
-     * Returns converter instance.
+     * Optional setter to change bulk query params.
      *
-     * @return Converter
+     * @param array $params Possible keys:
+     *                      ['consistency'] = (enum) Explicit write consistency setting for the operation.
+     *                      ['refresh']     = (boolean) Refresh the index after performing the operation.
+     *                      ['replication'] = (enum) Explicitly set the replication type.
      */
-    private function getConverter()
+    public function setBulkParams(array $params)
     {
-        if (!$this->converter) {
-            $this->converter = new Converter($this->getTypesMapping(), $this->getBundlesMapping());
-        }
-
-        return $this->converter;
+        $this->bulkParams = $params;
     }
 
     /**
-     * Dispatches an event, if eventDispatcher is set.
+     * Creates fresh elasticsearch index.
      *
-     * @param string $eventName
-     * @param Event  $event
+     * @param bool $noMapping Determines if mapping should be included.
      */
-    private function dispatchEvent($eventName, Event $event)
+    public function createIndex($noMapping = false)
     {
-        if ($this->eventDispatcher !== null) {
-            $this->eventDispatcher->dispatch($eventName, $event);
+        $this->isReadOnly('Create index');
+
+        if ($noMapping) {
+            unset($this->indexSettings['body']['mappings']);
+        }
+        $this->getClient()->indices()->create($this->indexSettings);
+    }
+
+    /**
+     * Drops elasticsearch index.
+     */
+    public function dropIndex()
+    {
+        $this->isReadOnly('Drop index');
+
+        $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Tries to drop and create fresh elasticsearch index.
+     *
+     * @param bool $noMapping Determines if mapping should be included.
+     */
+    public function dropAndCreateIndex($noMapping = false)
+    {
+        try {
+            $this->dropIndex();
+        } catch (\Exception $e) {
+            // Do nothing, our target is to create new index.
+        }
+
+        $this->createIndex($noMapping);
+    }
+
+    /**
+     * Puts mapping into elasticsearch client.
+     *
+     * @param array $types Specific types to put.
+     *
+     * @return int
+     */
+    public function updateMapping(array $types = [], $force)
+    {
+        $this->isReadOnly('Create types');
+
+        $mapping = $this->getMapping($types);
+        if (empty($mapping)) {
+            return 0;
+        }
+
+        $mapping = array_diff_key($mapping, $this->getMappingFromIndex($types));
+        if (empty($mapping)) {
+            return -1;
+        }
+
+        $this->loadMappingArray($mapping);
+
+        return 1;
+    }
+
+    /**
+     * Checks if connection index is already created.
+     *
+     * @return bool
+     */
+    public function indexExists()
+    {
+        return $this->getClient()->indices()->exists(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Returns index name this connection is attached to.
+     *
+     * @return string
+     */
+    public function getIndexName()
+    {
+        return $this->indexSettings['index_name'];
+    }
+
+    /**
+     * Returns Elasticsearch version number.
+     *
+     * @return string
+     */
+    public function getVersionNumber()
+    {
+        return $this->client->info()['version']['number'];
+    }
+
+    /**
+     * Clears elasticsearch client cache.
+     */
+    public function clearCache()
+    {
+        $this->isReadOnly('Clear cache');
+
+        $this->getClient()->indices()->clearCache(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Set connection to read only state.
+     *
+     * @param bool $readOnly
+     */
+    public function setReadOnly($readOnly)
+    {
+        $this->readOnly = $readOnly;
+    }
+
+    /**
+     * Checks if connection is read only.
+     *
+     * @param string $message Error message.
+     *
+     * @throws Forbidden403Exception
+     */
+    public function isReadOnly($message = '')
+    {
+        if ($this->readOnly) {
+            throw new Forbidden403Exception("Manager is readonly! {$message} operation is not permitted.");
         }
     }
 }
