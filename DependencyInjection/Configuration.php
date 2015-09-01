@@ -89,23 +89,8 @@ class Configuration implements ConfigurationInterface
                 ->children()
                     ->arrayNode('hosts')
                         ->info('Defines hosts to connect to.')
-                        ->requiresAtLeastOneElement()
                         ->defaultValue(['127.0.0.1:9200'])
-                        ->prototype('scalar')
-                            ->beforeNormalization()
-                                ->ifArray()
-                                ->then(
-                                    function ($value) {
-                                        if (!array_key_exists('host', $value)) {
-                                            throw new InvalidConfigurationException(
-                                                'Host must be configured under hosts configuration tree.'
-                                            );
-                                        }
-
-                                        return $value['host'];
-                                    }
-                                )
-                            ->end()
+                        ->prototype('scalar')->end()
                         ->end()
                     ->end()
                     ->arrayNode('auth')
@@ -195,6 +180,10 @@ class Configuration implements ConfigurationInterface
                                 ->ifNotInArray((new \ReflectionClass('Psr\Log\LogLevel'))->getConstants())
                                     ->thenInvalid('Invalid Psr log level.')
                                 ->end()
+                            ->end()
+                            ->scalarNode('log_file_name')
+                                ->info('Log filename, by default it is manager name')
+                                ->defaultValue(null)
                             ->end()
                         ->end()
                     ->end()
