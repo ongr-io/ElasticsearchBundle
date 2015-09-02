@@ -35,6 +35,11 @@ class MetadataCollector
     private $cache;
 
     /**
+     * @var array
+     */
+    private $types = [];
+
+    /**
      * @param DocumentFinder $finder For finding documents.
      * @param DocumentParser $parser For reading document annotations.
      * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
@@ -47,15 +52,15 @@ class MetadataCollector
     }
 
     /**
-     * Fetches bundles mapping from manager.
+     * Fetches bundles mapping from documents.
      *
-     * @param array $manager Elasticsearch manager config. You can get bundles list from 'mappings' node.
+     * @param array $bundles Elasticsearch manager config. You can get bundles list from 'mappings' node.
      * @return array
      */
-    public function getMappings(array $manager)
+    public function getMappings(array $bundles)
     {
         $output = [];
-        foreach ($manager['mappings'] as $bundle) {
+        foreach ($bundles as $bundle) {
             $output = array_merge($output, $this->getBundleMapping($bundle));
         }
 
@@ -100,34 +105,49 @@ class MetadataCollector
     }
 
     /**
-     * Gathers annotation data from class.
-     *
-     * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
-     *
-     * @return array|null
-     */
-    private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
-    {
-        return $this->parser->parse($reflectionClass);
-    }
-
-    /**
      * @param array $manager
      *
      * @return array
      */
     public function getManagerTypes($manager)
     {
-        $mapping = $this->getMappings($manager);
+        $mapping = $this->getMappings($manager['mappings']);
 
         return array_keys($mapping);
     }
 
     /**
+     * Resolves document elasticsearch type, use format: SomeBarBundle:AcmeDocument.
+     *
+     * @param string $document
+     *
+     * @return string
+     */
+    public function getDocumentType($document)
+    {
+        $mapping = $this->getMappingByNamespace($document);
+
+        $type = array_shift(array_keys($mapping));
+
+        return $type;
+    }
+
+    /**
+     * Retrieves document mapping by namespace.
+     *
+     * @param string $namespace Document namespace.
+     *
+     * @return array|null
+     */
+    public function getMappingByNamespace($namespace)
+    {
+        return $this->getDocumentReflectionMapping(new \ReflectionClass($this->finder->getNamespace($namespace)));
+    }
+
+    /**
      * Retrieves mapping from local cache otherwise runs through bundle files.
      *
-     * @param string $namespace Bundle name to retrieve mappings from.
-     * @param bool   $force     Forces to rescan bundles and skip local cache.
+     * @param array $manager Manager config.
      *
      * @return array
      */
@@ -137,7 +157,7 @@ class MetadataCollector
         $typesMapping = [];
 
         /** @var array $mappings All mapping info */
-        $mappings = $this->getMappings($manager);
+        $mappings = $this->getMappings($manager['mappings']);
 
         foreach ($mappings as $type => $mapping) {
             if (!empty($mapping['properties'])) {
@@ -156,22 +176,25 @@ class MetadataCollector
         return $typesMapping;
     }
 
-
-
-
-
-
     /**
-     * Retrieves document mapping by namespace.
+     * Gathers annotation data from class.
      *
-     * @param string $namespace Document namespace.
+     * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
      *
      * @return array|null
      */
-    public function getMappingByNamespace($namespace)
+    private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
     {
-        return $this->getDocumentReflectionMapping(new \ReflectionClass($this->finder->getNamespace($namespace)));
+        return $this->parser->parse($reflectionClass);
     }
+
+
+
+
+
+
+
+
 
     /**
      * Retrieves mapping from document.
