@@ -21,7 +21,9 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
  */
 class Converter
 {
-
+    /**
+     * @var MetadataCollector
+     */
     private $collector;
 
     /**
@@ -176,10 +178,6 @@ class Converter
             $value = $this->getPropertyAccessor()->getValue($rawResponse, $path);
 
             if ($value !== null) {
-                if (strpos($path, 'highlight') !== false) {
-                    $value = new DocumentHighlight($value);
-                }
-
                 $this->getPropertyAccessor()->setValue($object, $this->getPropertyToAccess($field), $value);
             }
         }
