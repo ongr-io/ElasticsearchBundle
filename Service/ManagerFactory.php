@@ -74,7 +74,7 @@ class ManagerFactory
             ],
         ];
 
-        $manager = new Manager($client->build(), $indexSettings);
+        $manager = new Manager($client->build(), $indexSettings, $this->metadataCollector);
 
         return $manager;
     }

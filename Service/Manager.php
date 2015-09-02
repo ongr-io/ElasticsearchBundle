@@ -14,8 +14,7 @@ namespace ONGR\ElasticsearchBundle\Service;
 use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Event\ElasticsearchCommitEvent;
-use ONGR\ElasticsearchBundle\Event\Events;
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -61,13 +60,20 @@ class Manager
     private $indexSettings;
 
     /**
-     * @param Client $client
-     * @param array  $indexSettings
+     * @var MetadataCollector
      */
-    public function __construct($client, $indexSettings)
+    private $metadataCollector;
+
+    /**
+     * @param Client            $client
+     * @param array             $indexSettings
+     * @param MetadataCollector $metadataCollector
+     */
+    public function __construct($client, $indexSettings, $metadataCollector)
     {
         $this->client = $client;
         $this->indexSettings = $indexSettings;
+        $this->metadataCollector = $metadataCollector;
     }
 
     /**
@@ -91,11 +97,15 @@ class Manager
     {
         $type = is_array($type) ? $type : [$type];
 
-        foreach ($type as &$selectedType) {
-            $this->checkRepositoryType($selectedType);
-        }
-
         return $this->createRepository($type);
+    }
+
+    /**
+     * @return MetadataCollector
+     */
+    public function getMetadataCollector()
+    {
+        return $this->metadataCollector;
     }
 
     /**

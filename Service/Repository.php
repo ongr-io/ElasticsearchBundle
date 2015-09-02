@@ -41,11 +41,6 @@ class Repository
     /**
      * @var array
      */
-    private $repositories = [];
-
-    /**
-     * @var array
-     */
     private $types = [];
 
     /**
@@ -59,23 +54,22 @@ class Repository
      * @param Manager $manager
      * @param array   $repositories
      */
-    public function __construct($manager, $repositories)
+    public function __construct($manager, array $repositories)
     {
         $this->manager = $manager;
-        $this->repositories = $repositories;
-        $this->types = $this->getTypes();
+        $this->types = $this->getTypes($repositories);
     }
 
     /**
+     * @param array $repositories
+     *
      * @return array
      */
-    public function getTypes()
+    private function getTypes($repositories)
     {
         $types = [];
-        $meta = $this->getManager()->getBundlesMapping($this->repositories);
-
-        foreach ($meta as $namespace => $metadata) {
-            $types[] = $metadata->getType();
+        foreach ($repositories as $repository) {
+            $types[] = $this->getManager()->getMetadataCollector()->getDocumentType($repository);
         }
 
         return $types;
@@ -98,13 +92,13 @@ class Repository
         }
 
         $params = [
-            'index' => $this->getManager()->getConnection()->getIndexName(),
+            'index' => $this->getManager()->getIndexName(),
             'type' => $this->types[0],
             'id' => $id,
         ];
 
         try {
-            $result = $this->getManager()->getConnection()->getClient()->get($params);
+            $result = $this->getManager()->getClient()->get($params);
         } catch (Missing404Exception $e) {
             return null;
         }
