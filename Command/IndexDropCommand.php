@@ -44,7 +44,7 @@ class IndexDropCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
-            $this->getManager($input->getOption('manager'))->getConnection()->dropIndex();
+            $this->getManager($input->getOption('manager'))->dropIndex();
 
             $output->writeln(
                 sprintf(

@@ -60,7 +60,6 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
 
         $result = $this
             ->getManager($input->getOption('manager'))
-            ->getConnection()
             ->updateTypes($types);
 
         $typesOutput = empty($types) ? 'all' : implode('</comment><info>`, `</info><comment>', $types);

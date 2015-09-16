@@ -38,7 +38,6 @@ class CacheClearCommand extends AbstractManagerAwareCommand
     {
         $this
             ->getManager($input->getOption('manager'))
-            ->getConnection()
             ->clearCache();
         $output->writeln(
             sprintf(
