@@ -39,6 +39,11 @@ class Repository
     private $manager;
 
     /**
+     * @var Converter
+     */
+    private $converter;
+
+    /**
      * @var array
      */
     private $types = [];
@@ -51,13 +56,15 @@ class Repository
     /**
      * Constructor.
      *
-     * @param Manager $manager
-     * @param array   $repositories
+     * @param Manager   $manager
+     * @param array     $repositories
+     * @param Converter $converter
      */
-    public function __construct($manager, array $repositories)
+    public function __construct($manager, array $repositories, $converter)
     {
         $this->manager = $manager;
         $this->types = $this->getTypes($repositories);
+        $this->converter = $converter;
     }
 
     /**
@@ -175,7 +182,6 @@ class Repository
 
         $result = $this
             ->getManager()
-            ->getConnection()
             ->search($this->types, $this->checkFields($search->toArray()), $search->getQueryParams());
 
         if ($resultType === self::RESULTS_OBJECT) {
@@ -217,8 +223,7 @@ class Repository
     {
         $results = $this
             ->getManager()
-            ->getConnection()
-            ->search($this->types, $this->checkFields($search->toArray()), $search->getQueryParams());
+            ->search($this->types, $search->toArray(), $search->getQueryParams());
 
         return $this->parseResult($results, $resultsType, $search->getScroll());
     }
@@ -285,48 +290,6 @@ class Repository
         } else {
             throw new \LogicException('Only one type must be specified for the find() method');
         }
-    }
-
-    /**
-     * Checks if all required fields are added.
-     *
-     * @param array $searchArray
-     * @param array $fields
-     *
-     * @return array
-     */
-    private function checkFields($searchArray, $fields = ['_parent', '_ttl'])
-    {
-        if (empty($fields)) {
-            return $searchArray;
-        }
-
-        // Checks if cache is loaded.
-        if (empty($this->fieldsCache)) {
-            foreach ($this->getManager()->getBundlesMapping($this->repositories) as $ns => $properties) {
-                $this->fieldsCache = array_unique(
-                    array_merge(
-                        $this->fieldsCache,
-                        array_keys($properties->getFields())
-                    )
-                );
-            }
-        }
-
-        // Adds cached fields to fields array.
-        foreach (array_intersect($this->fieldsCache, $fields) as $field) {
-            $searchArray['fields'][] = $field;
-        }
-
-        // Removes duplicates and checks if its needed to add _source.
-        if (!empty($searchArray['fields'])) {
-            $searchArray['fields'] = array_unique($searchArray['fields']);
-            if (array_diff($searchArray['fields'], $fields) === []) {
-                $searchArray['fields'][] = '_source';
-            }
-        }
-
-        return $searchArray;
     }
 
     /**
