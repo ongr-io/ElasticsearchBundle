@@ -90,7 +90,7 @@ class Configuration implements ConfigurationInterface
                     ->arrayNode('hosts')
                         ->info('Defines hosts to connect to.')
                         ->defaultValue(['127.0.0.1:9200'])
-                        ->prototype('scalar')->end()
+                        ->prototype('scalar')
                         ->end()
                     ->end()
                     ->arrayNode('auth')
