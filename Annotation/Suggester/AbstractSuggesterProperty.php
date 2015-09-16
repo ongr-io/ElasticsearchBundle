@@ -35,7 +35,7 @@ abstract class AbstractSuggesterProperty extends AbstractProperty
      *
      * @Required
      */
-     public $objectName;
+    public $objectName;
 
     /**
      * @var string
