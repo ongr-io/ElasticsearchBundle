@@ -11,10 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-
 use Doctrine\Common\Cache\CacheProvider;
 use Elasticsearch\ClientBuilder;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\Result\Converter;
 
 /**
  * Elasticsearch Manager factory class.
@@ -32,20 +32,27 @@ class ManagerFactory
     private $cache;
 
     /**
+     * @var Converter
+     */
+    private $converter;
+
+    /**
      * @param MetadataCollector $metadataCollector Metadata collector service.
      * @param CacheProvider     $cache             Cache provider to save some data.
+     * @param Converter         $converter         Converter service to transform arrays to objects and visa versa.
      */
-    public function __construct($metadataCollector, $cache)
+    public function __construct($metadataCollector, $cache, $converter)
     {
         $this->metadataCollector = $metadataCollector;
         $this->cache = $cache;
+        $this->converter = $converter;
     }
 
     /**
      * Factory function to create a manager instance.
      *
      * @param string $managerName   Manager name.
-     * @param array  $connection    Conenction configuration.
+     * @param array  $connection    Connection configuration.
      * @param array  $analysis      Analyzers, filters and tokenizers config.
      * @param array  $managerConfig Manager configuration.
      *
@@ -74,7 +81,13 @@ class ManagerFactory
             ],
         ];
 
-        $manager = new Manager($client->build(), $indexSettings, $this->metadataCollector);
+        $manager = new Manager(
+            $managerName,
+            $client->build(),
+            $indexSettings,
+            $this->metadataCollector,
+            $this->converter
+        );
 
         return $manager;
     }
