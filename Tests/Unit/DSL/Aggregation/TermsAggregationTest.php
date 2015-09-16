@@ -57,7 +57,7 @@ class TermsAggregationTest extends \PHPUnit_Framework_TestCase
         // Case #2 terms aggregation with zero size.
         $aggregation = new TermsAggregation('test_agg');
         $aggregation->setField('test_field');
-        $aggregation->setSize(0);
+        $aggregation->addParameter('size', 0);
 
         $result = [
             'agg_test_agg' => [
