@@ -5,7 +5,7 @@ parameters:
     es.manager_factory.class: ONGR\ElasticsearchBundle\Service\ManagerFactory
     es.export.class: ONGR\ElasticsearchBundle\Service\ExportService
     es.import.class: ONGR\ElasticsearchBundle\Service\ImportService
-    es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Client\IndexSuffixFinder
+    es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
     es.document_finder.class: ONGR\ElasticsearchBundle\Mapping\DocumentFinder
     es.document_parser.class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
     es.metadata_collector.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
@@ -71,4 +71,4 @@ services:
 
     es.manager_factory:
         class: %es.manager_factory.class%
-        arguments: [@es.metadata_collector, @es.cache_engine]
+        arguments: [@es.metadata_collector, @es.cache_engine, @es.result_converter]
