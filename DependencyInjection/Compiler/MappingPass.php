@@ -32,6 +32,8 @@ class MappingPass implements CompilerPassInterface
         $connections = $container->getParameter('es.connections');
         $managers = $container->getParameter('es.managers');
 
+        $collector = $container->get('es.metadata_collector');
+
         foreach ($managers as $managerName => $manager) {
             if (!isset($connections[$manager['connection']])) {
                 throw new InvalidConfigurationException(
@@ -65,14 +67,14 @@ class MappingPass implements CompilerPassInterface
                 $container->setAlias('es.manager', 'es.manager.default');
             }
 
-            $repositories = $this->getRepositories($container, $manager);
+            $mappings = $collector->getMappings($manager['mappings']);
 
             // Building repository services.
             /** @var Definition $data */
-            foreach ($repositories as $repository) {
+            foreach ($mappings as $repositoryType => $repositoryDetails) {
                 $repositoryDefinition = new Definition(
                     $container->getParameter('es.repository.class'),
-                    [$repository]
+                    [$repositoryDetails['bundle'].':'.$repositoryDetails['class']]
                 );
                 $repositoryDefinition->setFactory(
                     [
@@ -81,11 +83,11 @@ class MappingPass implements CompilerPassInterface
                     ]
                 );
 
-                $repositoryId = sprintf('es.manager.%s.%s', $managerName, $repository);
+                $repositoryId = sprintf('es.manager.%s.%s', $managerName, $repositoryType);
 
-                if (strtolower(substr($repository, -8)) === 'document') {
+                if (strtolower(substr($repositoryType, -8)) === 'document') {
                     $container->setAlias(
-                        sprintf('es.manager.%s.%s', $managerName, substr($repository, 0, strlen($repository) - 8)),
+                        sprintf('es.manager.%s.%s', $managerName, substr($repositoryType, 0, strlen($repositoryType) - 8)),
                         $repositoryId
                     );
                 }
@@ -93,22 +95,5 @@ class MappingPass implements CompilerPassInterface
                 $container->setDefinition($repositoryId, $repositoryDefinition);
             }
         }
-    }
-
-    /**
-     * Fetches bundles elasticsearch types from metadata for specific manager.
-     *
-     * @param ContainerBuilder $container
-     * @param array            $manager
-     *
-     * @return array
-     */
-    private function getRepositories($container, $manager)
-    {
-        /** @var MetadataCollector $collector */
-        $collector = $container->get('es.metadata_collector');
-        $types = $collector->getManagerTypes($manager);
-
-        return $types;
     }
 }
