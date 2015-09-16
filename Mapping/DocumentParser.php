@@ -75,7 +75,7 @@ class DocumentParser
      *
      * @param \ReflectionClass $document
      *
-     * @return array|null
+     * @return array
      */
     public function parse(\ReflectionClass $document)
     {
@@ -100,23 +100,22 @@ class DocumentParser
             }
 
             return [
-                $documentType => [
-                    'properties' => $properties,
-                    'fields' => array_filter(
-                        array_merge(
-                            $class->dump(),
-                            ['_parent' => $parent === null ? null : ['type' => $parent]]
-                        )
-                    ),
-                    'aliases' => $this->getAliases($document),
-                    'objects' => $this->getObjects(),
-                    'namespace' => $document->getName(),
-                    'class' => $document->getShortName(),
-                ],
+                'type' => $documentType,
+                'properties' => $properties,
+                'fields' => array_filter(
+                    array_merge(
+                        $class->dump(),
+                        ['_parent' => $parent === null ? null : ['type' => $parent]]
+                    )
+                ),
+                'aliases' => $this->getAliases($document),
+                'objects' => $this->getObjects(),
+                'namespace' => $document->getName(),
+                'class' => $document->getShortName(),
             ];
         }
 
-        return null;
+        return [];
     }
 
     /**
@@ -216,7 +215,7 @@ class DocumentParser
     /**
      * Returns document type.
      *
-     * @param string $document Format must be like AcmeBundle:Document
+     * @param string $document Format must be like AcmeBundle:Document.
      *
      * @return string
      */
