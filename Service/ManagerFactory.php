@@ -83,6 +83,7 @@ class ManagerFactory
 
         $manager = new Manager(
             $managerName,
+            $managerConfig,
             $client->build(),
             $indexSettings,
             $this->metadataCollector,

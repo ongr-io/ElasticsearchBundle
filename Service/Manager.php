@@ -30,6 +30,11 @@ class Manager
     private $name;
 
     /**
+     * @var array Managers name.
+     */
+    private $config = [];
+
+    /**
      * @var Client
      */
     private $client;
@@ -71,14 +76,22 @@ class Manager
 
     /**
      * @param string            $name              Managers name.
+     * @param array             $config            Managers configuration.
      * @param Client            $client
      * @param array             $indexSettings
      * @param MetadataCollector $metadataCollector
      * @param Converter         $converter
      */
-    public function __construct($name, $client, $indexSettings, $metadataCollector, $converter)
-    {
+    public function __construct(
+        $name,
+        array $config,
+        $client,
+        array $indexSettings,
+        $metadataCollector,
+        $converter
+    ) {
         $this->name = $name;
+        $this->config = $config;
         $this->client = $client;
         $this->indexSettings = $indexSettings;
         $this->metadataCollector = $metadataCollector;
@@ -93,6 +106,22 @@ class Manager
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     /**
@@ -115,6 +144,14 @@ class Manager
     public function getMetadataCollector()
     {
         return $this->metadataCollector;
+    }
+
+    /**
+     * @return Converter
+     */
+    public function getConverter()
+    {
+        return $this->converter;
     }
 
     /**

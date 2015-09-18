@@ -39,11 +39,6 @@ class Repository
     private $manager;
 
     /**
-     * @var Converter
-     */
-    private $converter;
-
-    /**
      * @var array
      */
     private $types = [];
@@ -323,8 +318,9 @@ class Repository
 
                 return new DocumentIterator(
                     $raw,
-                    $this->getManager()->getTypesMapping(),
-                    $this->getManager()->getBundlesMapping()
+                    $this->getManager()->getConfig(),
+                    $this->getManager()->getMetadataCollector(),
+                    $this->getManager()->getConverter()
                 );
             case self::RESULTS_ARRAY:
                 return $this->convertToNormalizedArray($raw);
