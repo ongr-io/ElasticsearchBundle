@@ -11,82 +11,17 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
  * Class DocumentIterator.
  */
-class DocumentIterator extends AbstractConvertibleResultIterator implements \Countable, \ArrayAccess, \Iterator
+class DocumentIterator extends AbstractResultsIterator implements \Countable, \Iterator
 {
-    use CountableTrait;
-    use ArrayAccessTrait;
     use IteratorTrait;
-    use ConverterAwareTrait;
-
-    /**
-     * @var array
-     */
-    private $typesMapping;
-
-    /**
-     * @var array
-     */
-    private $bundlesMapping;
-
-    /**
-     * @var array
-     */
-    private $rawAggregations;
-
-    /**
-     * @var AggregationIterator
-     */
-    private $aggregations;
-
-    /**
-     * @var array
-     */
-    private $rawSuggestions;
-
-    /**
-     * Constructor.
-     *
-     * @param array $rawData
-     * @param array $typesMapping
-     * @param array $bundlesMapping
-     */
-    public function __construct($rawData, $typesMapping, $bundlesMapping)
-    {
-        parent::__construct($rawData);
-
-        $this->typesMapping = $typesMapping;
-        $this->bundlesMapping = $bundlesMapping;
-
-        if (isset($rawData['aggregations'])) {
-            $this->rawAggregations = &$rawData['aggregations'];
-        }
-
-        if (isset($rawData['suggest'])) {
-            $this->rawSuggestions = &$rawData['suggest'];
-        }
-    }
-
-    /**
-     * @return array
-     */
-    protected function getTypesMapping()
-    {
-        return $this->typesMapping;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getBundlesMapping()
-    {
-        return $this->bundlesMapping;
-    }
 
     /**
      * Returns aggregations.
@@ -95,20 +30,22 @@ class DocumentIterator extends AbstractConvertibleResultIterator implements \Cou
      */
     public function getAggregations()
     {
-        if (isset($this->rawAggregations)) {
-            $data = [];
+        $aggregations = parent::getAggregations();
 
-            foreach ($this->rawAggregations as $key => $value) {
-                $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
-                $data[$realKey] = $value;
-            }
-
-            unset($this->rawAggregations);
-            $this->aggregations = new AggregationIterator($data, $this->getConverter());
-        } elseif ($this->aggregations === null) {
-            $this->aggregations = new AggregationIterator([]);
+        foreach ($aggregations as $key => $value) {
+            $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
+            $data[$realKey] = $value;
         }
 
-        return $this->aggregations;
+        return new AggregationIterator($aggregations, $this->getConverter());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function convertDocument(array $document)
+    {
+        #TODO Check additionally if mappings are set, otherwise throw exception.
+        return $this->getConverter()->convertToDocument($document, $this->getManagerConfig()['mappings']);
     }
 }
