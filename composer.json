@@ -18,7 +18,7 @@
         "doctrine/annotations": "~1.2",
         "doctrine/inflector": "~1.0",
         "elasticsearch/elasticsearch": "~2.0",
-        "ongr/elasticsearch-dsl": "dev-master"
+        "ongr/elasticsearch-dsl": "~1.0"
     },
     "require-dev": {
         "symfony/finder": "~2.7",
