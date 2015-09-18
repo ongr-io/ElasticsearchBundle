@@ -11,6 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+
 /**
  * Class AbstractResultsIterator.
  */
@@ -24,84 +27,108 @@ abstract class AbstractResultsIterator
     /**
      * @var int
      */
-    private $totalCount = 0;
+    private $count = 0;
+
+    /**
+     * @var array
+     */
+    private $aggregations = [];
+
+    /**
+     * @var MetadataCollector
+     */
+    private $metaDataCollector;
+
+    /**
+     * @var Converter
+     */
+    private $converter;
+
+    /**
+     * Elasticsearch manager configuration.
+     *
+     * @var array
+     */
+    private $managerConfig = [];
 
     /**
      * Constructor.
      *
-     * @param array $rawData
+     * @param array             $rawData
+     * @param array             $managerConfig
+     * @param MetadataCollector $metaDataCollector
+     * @param Converter         $converter
      */
-    public function __construct($rawData)
+    public function __construct($rawData, $managerConfig, MetadataCollector $metaDataCollector, Converter $converter)
     {
+        $this->metaDataCollector = $metaDataCollector;
+        $this->converter = $converter;
+        $this->managerConfig = $managerConfig;
+
+        if (isset($rawData['aggregations'])) {
+            $this->aggregations = &$rawData['aggregations'];
+        }
+
         if (isset($rawData['hits']['hits'])) {
-            $this->setDocuments($rawData['hits']['hits']);
+            $this->documents = $rawData['hits']['hits'];
         }
         if (isset($rawData['hits']['total'])) {
-            $this->setTotalCount($rawData['hits']['total']);
+            $this->count = $rawData['hits']['total'];
         }
     }
 
     /**
+     * Returns total count of documents.
+     *
      * @return int
      */
-    public function getTotalCount()
+    public function count()
     {
-        return $this->totalCount;
+        return $this->count;
     }
 
     /**
-     * @param int $totalCount
-     *
-     * @return $this
+     * @return array
      */
-    protected function setTotalCount($totalCount)
+    protected function getManagerConfig()
     {
-        $this->totalCount = $totalCount;
-
-        return $this;
+        return $this->managerConfig;
     }
 
     /**
-     * @param array $documents
-     *
-     * @return $this
+     * @return Converter
      */
-    protected function setDocuments(&$documents)
+    protected function getConverter()
     {
-        $this->documents = &$documents;
-
-        return $this;
+        return $this->converter;
     }
 
     /**
-     * @param mixed $document
-     * @param mixed $key
+     * Gets document array from the container.
      *
-     * @return $this
-     */
-    protected function addDocument($document, $key)
-    {
-        if ($key === null) {
-            $this->documents[] = $document;
-        } else {
-            $this->documents[$key] = $document;
-        }
-
-        return $this;
-    }
-
-    /**
      * @param mixed $key
      *
      * @return mixed
      */
     protected function getDocument($key)
     {
-        return isset($this->documents[$key]) ? $this->documents[$key] : null;
+        if (!$this->documentExists($key)) {
+            return null;
+        }
+
+        return $this->convertDocument($this->documents[$key]);
     }
 
     /**
-     * Checks whether document exists.
+     * @return array
+     */
+    protected function getAggregations()
+    {
+        return $this->aggregations;
+    }
+
+    /**
+     * Checks whether document exists in the container.
      *
      * @param mixed $key
      *
@@ -110,44 +137,6 @@ abstract class AbstractResultsIterator
     protected function documentExists($key)
     {
         return array_key_exists($key, $this->documents);
-    }
-
-    /**
-     * Removes document.
-     *
-     * @param mixed $key
-     *
-     * @return $this
-     */
-    protected function removeDocument($key)
-    {
-        unset($this->documents[$key]);
-
-        return $this;
-    }
-
-    /**
-     * Removes document but leaves it existing.
-     *
-     * @param mixed $key
-     *
-     * @return $this
-     */
-    protected function clearDocument($key)
-    {
-        if (isset($this->documents[$key])) {
-            $this->documents[$key] = null;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    protected function getCount()
-    {
-        return count($this->documents);
     }
 
     /**
@@ -206,4 +195,13 @@ abstract class AbstractResultsIterator
 
         return $this->getDocument($this->getKey());
     }
+
+    /**
+     * Converts raw array to document object or array, depends on iterator type.
+     *
+     * @param array $document
+     *
+     * @return DocumentInterface|array
+     */
+    abstract protected function convertDocument(array $document);
 }
