@@ -24,7 +24,7 @@ class Converter
     /**
      * @var MetadataCollector
      */
-    private $collector;
+    private $metadataCollector;
 
     /**
      * @var PropertyAccessor
@@ -34,37 +34,39 @@ class Converter
     /**
      * Constructor.
      *
-     * @param MetadataCollector $collector
+     * @param MetadataCollector $metadataCollector
      */
-    public function __construct($collector)
+    public function __construct($metadataCollector)
     {
-        $this->collector = $collector;
+        $this->metadataCollector = $metadataCollector;
     }
 
     /**
      * Converts raw array to document.
      *
      * @param array $rawData
+     * @param array $mappings Manager mappings to tell converter which types belongs to which objects.
      *
      * @return DocumentInterface
      *
      * @throws \LogicException
      */
-    public function convertToDocument($rawData)
+    public function convertToDocument($rawData, array $mappings = [])
     {
-        if (!isset($this->typesMapping[$rawData['_type']])) {
+        $types = $this->metadataCollector->getMappings($mappings);
+
+        if (isset($types[$rawData['_type']])) {
+            $metadata = $types[$rawData['_type']];
+        } else {
             throw new \LogicException("Got document of unknown type '{$rawData['_type']}'.");
         }
 
-        /** @var ClassMetadata $metadata */
-        $metadata = $this->bundlesMapping[$this->typesMapping[$rawData['_type']]];
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
-        $namespace = $metadata->getNamespace();
 
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject($data, new $namespace(), $metadata->getAliases());
+        $object = $this->assignArrayToObject($data, new $metadata['namespace'](), $metadata['aliases']);
 
-        $this->setObjectFields($object, $rawData, ['_id', '_score', 'highlight', 'fields _parent', 'fields _ttl']);
+        $this->setObjectFields($object, $rawData, ['_id', '_score', 'fields _parent', 'fields _ttl']);
 
         return $object;
     }
@@ -283,11 +285,9 @@ class Converter
     private function getAlias($document)
     {
         $class = get_class($document);
-
-        foreach ($this->bundlesMapping as $repository) {
-            if ($class == $repository->getNamespace()) {
-                return $repository->getAliases();
-            }
+        $documentMapping = $this->collector->getDocumentMapping($document);
+        if (is_array($documentMapping) && isset($documentMapping['aliases'])) {
+            return $documentMapping['aliases'];
         }
 
         throw new \DomainException("Aliases could not be found for {$class} document.");
