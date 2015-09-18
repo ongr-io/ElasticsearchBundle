@@ -35,11 +35,6 @@ class MetadataCollector
     private $cache;
 
     /**
-     * @var array
-     */
-    private $types = [];
-
-    /**
      * @param DocumentFinder $finder For finding documents.
      * @param DocumentParser $parser For reading document annotations.
      * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
@@ -96,9 +91,8 @@ class MetadataCollector
             );
 
             $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-            if ($documentMapping !== null) {
-                $mappings = array_replace_recursive($mappings, $documentMapping);
-            }
+            $documentMapping['bundle'] = $bundle;
+            $mappings = array_replace_recursive($mappings, [$documentMapping['type'] => $documentMapping]);
         }
 
         return $mappings;
@@ -127,9 +121,7 @@ class MetadataCollector
     {
         $mapping = $this->getMappingByNamespace($document);
 
-        $type = array_shift(array_keys($mapping));
-
-        return $type;
+        return $mapping['type'];
     }
 
     /**
@@ -187,14 +179,6 @@ class MetadataCollector
     {
         return $this->parser->parse($reflectionClass);
     }
-
-
-
-
-
-
-
-
 
     /**
      * Retrieves mapping from document.
