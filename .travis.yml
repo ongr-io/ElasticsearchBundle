@@ -15,11 +15,6 @@ matrix:
   allow_failures:
     - php: hhvm
 
-install:
-  - "echo 'script.disable_dynamic: false' | tee -a /etc/elasticsearch/elasticsearch.yml"
-  - "echo 'index.warmer.enabled: true' | tee -a /etc/elasticsearch/elasticsearch.yml"
-  - service elasticsearch restart
-
 before_script:
   - composer install --no-interaction
 
