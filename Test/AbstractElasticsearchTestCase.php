@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Test;
 
 use Elasticsearch\Common\Exceptions\ElasticsearchException;
-use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -55,8 +54,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
                 }
             }
         }
-
-        throw $e;
     }
 
     /**
@@ -79,7 +76,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     }
 
     /**
-     * Can be overwritten in child class to populate elasticsearch index with data.
+     * Can be overwritten in child class to populate elasticsearch index with the data.
      *
      * Example:
      *      "managername" =>
@@ -126,11 +123,11 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * Ignores version specified.
      *
-     * @param Connection $connection
+     * @param Manager $manager
      */
-    protected function ignoreVersions(Connection $connection)
+    protected function ignoreVersions(Manager $manager)
     {
-        $currentVersion = $connection->getVersionNumber();
+        $currentVersion = $manager->getVersionNumber();
         $ignore = null;
 
         foreach ($this->getIgnoredVersions() as $ignoredVersion) {
@@ -158,7 +155,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     protected function removeManager($name)
     {
         if (isset($this->managers[$name])) {
-            $this->managers[$name]->getConnection()->dropIndex();
+            $this->managers[$name]->dropIndex();
             unset($this->managers[$name]);
         }
     }
@@ -174,7 +171,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         if (!empty($data)) {
             foreach ($data as $type => $documents) {
                 foreach ($documents as $document) {
-                    $manager->getConnection()->bulk('index', $type, $document);
+                    $manager->bulk('index', $type, $document);
                 }
             }
             $manager->commit();
@@ -190,7 +187,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
 
         foreach ($this->managers as $name => $manager) {
             try {
-                $manager->getConnection()->dropIndex();
+                $manager->dropIndex();
             } catch (\Exception $e) {
                 // Do nothing.
             }
@@ -243,20 +240,16 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
             throw new \LogicException(sprintf("Manager '%s' does not exist", $name));
         }
 
-        $connection = $manager->getConnection();
+        $this->ignoreVersions($manager);
 
-        if ($connection instanceof Connection) {
-            $this->ignoreVersions($connection);
+        // Drops and creates index.
+        if ($createIndex) {
+            $manager->dropAndCreateIndex();
         }
 
         // Updates settings.
         if (!empty($customMapping)) {
-            $connection->updateSettings(['body' => ['mappings' => $customMapping]]);
-        }
-
-        // Drops and creates index.
-        if ($createIndex) {
-            $connection->dropAndCreateIndex();
+            $manager->updateMapping($customMapping);
         }
 
         // Populates elasticsearch index with data.
