@@ -1,5 +1,7 @@
 parameters:
     es.logging.path: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
+    es.profiler.template: ONGRElasticsearchBundle:Profiler:profiler.html.twig
+
     es.manager.class: ONGR\ElasticsearchBundle\Service\Manager
     es.repository.class: ONGR\ElasticsearchBundle\Service\Repository
     es.manager_factory.class: ONGR\ElasticsearchBundle\Service\ManagerFactory
@@ -13,7 +15,7 @@ parameters:
     es.profiler.class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
     es.doctrine.filesystem_cache.class: Doctrine\Common\Cache\FilesystemCache
     es.result_converter.class: ONGR\ElasticsearchBundle\Result\Converter
-    es.profiler.template: ONGRElasticsearchBundle:Profiler:profiler.html.twig
+    es.logger.ongr.class: Monolog\Logger
 
 services:
     es.export:
@@ -52,8 +54,9 @@ services:
         public: false
 
     es.logger.ongr:
-        class: %monolog.logger.class%
+        class: %es.logger.ongr.class%
         arguments: ['ongr']
+        lazy: true
         calls:
             - [pushHandler, [@es.logger.collection_handler]]
 
