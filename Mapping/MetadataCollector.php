@@ -91,8 +91,10 @@ class MetadataCollector
             );
 
             $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-            $documentMapping['bundle'] = $bundle;
-            $mappings = array_replace_recursive($mappings, [$documentMapping['type'] => $documentMapping]);
+            if (is_array($documentMapping) && isset($documentMapping['type'])) {
+                $documentMapping['bundle'] = $bundle;
+                $mappings = array_replace_recursive($mappings, [$documentMapping['type'] => $documentMapping]);
+            }
         }
 
         return $mappings;
