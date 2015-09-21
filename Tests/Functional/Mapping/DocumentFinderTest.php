@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
 
 use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DependencyInjection\Container;
 
 class DocumentFinderTest extends WebTestCase
 {
@@ -22,25 +23,25 @@ class DocumentFinderTest extends WebTestCase
     public function testGetBundleDocumentPaths()
     {
         $finder = new DocumentFinder($this->getContainer()->getParameter('kernel.bundles'));
-        $this->assertGreaterThan(0, count($finder->getBundleDocumentPaths('AcmeTestBundle')));
+        $this->assertGreaterThan(0, count($finder->getBundleDocumentPaths('AcmeBarBundle')));
     }
 
     /**
      * Tests if exception is thrown for unregistered bundle.
      *
      * @expectedException \LogicException
-     * @expectedExceptionMessage Bundle 'DemoBundle' does not exist.
+     * @expectedExceptionMessage Bundle 'NotExistingBundle' does not exist.
      */
     public function testGetBundleClassException()
     {
         $finder = new DocumentFinder($this->getContainer()->getParameter('kernel.bundles'));
-        $finder->getBundleClass('DemoBundle');
+        $finder->getBundleClass('NotExistingBundle');
     }
 
     /**
      * Returns service container.
      *
-     * @return object
+     * @return Container
      */
     public function getContainer()
     {
