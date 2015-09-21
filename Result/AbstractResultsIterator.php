@@ -13,16 +13,17 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 /**
  * Class AbstractResultsIterator.
  */
-abstract class AbstractResultsIterator
+abstract class AbstractResultsIterator implements \Countable, \Iterator
 {
     /**
      * @var array Documents.
      */
-    private $documents = [];
+    protected $documents = [];
 
     /**
      * @var int
@@ -45,6 +46,11 @@ abstract class AbstractResultsIterator
     private $converter;
 
     /**
+     * @var Repository
+     */
+    private $repository;
+
+    /**
      * Elasticsearch manager configuration.
      *
      * @var array
@@ -52,18 +58,41 @@ abstract class AbstractResultsIterator
     private $managerConfig = [];
 
     /**
-     * Constructor.
-     *
-     * @param array             $rawData
-     * @param array             $managerConfig
-     * @param MetadataCollector $metaDataCollector
-     * @param Converter         $converter
+     * @var string If value is not null then results are scrollable.
      */
-    public function __construct($rawData, $managerConfig, MetadataCollector $metaDataCollector, Converter $converter)
-    {
-        $this->metaDataCollector = $metaDataCollector;
-        $this->converter = $converter;
-        $this->managerConfig = $managerConfig;
+    private $scrollId;
+
+    /**
+     * @var string Scroll duration.
+     */
+    private $scrollDuration;
+
+    /**
+     * @var int Offset for key modification when results are scrollable.
+     */
+    private $offset = 0;
+
+    private $key = 0;
+
+    /**
+     * @param array      $rawData
+     * @param Repository $repository
+     * @param array      $scroll
+     */
+    public function __construct(
+        array $rawData,
+        Repository $repository,
+        array $scroll = []
+    ) {
+        $this->repository = $repository;
+        $this->metaDataCollector = $repository->getManager()->getMetadataCollector();
+        $this->converter = $repository->getManager()->getConverter();
+        $this->managerConfig = $repository->getManager()->getConfig();
+
+        if (isset($scroll['_scroll_id']) && isset($scroll['duration'])) {
+            $this->scrollId = $scroll['_scroll_id'];
+            $this->scrollDuration = $scroll['duration'];
+        }
 
         if (isset($rawData['aggregations'])) {
             $this->aggregations = &$rawData['aggregations'];
@@ -78,6 +107,22 @@ abstract class AbstractResultsIterator
     }
 
     /**
+     * @return array
+     */
+    protected function getAggregations()
+    {
+        return $this->aggregations;
+    }
+
+    /**
+     * @return Repository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
      * Returns total count of documents.
      *
      * @return int
@@ -85,6 +130,67 @@ abstract class AbstractResultsIterator
     public function count()
     {
         return $this->count;
+    }
+
+    /**
+     * Return the current element.
+     *
+     * @return mixed
+     */
+    public function current()
+    {
+        return $this->getDocument($this->key());
+    }
+
+    /**
+     * Move forward to next element.
+     */
+    public function next()
+    {
+        $this->advanceKey();
+    }
+
+    /**
+     * Return the key of the current element.
+     *
+     * @return mixed
+     */
+    public function key()
+    {
+        return $this->key;
+    }
+
+    /**
+     * Checks if current position is valid.
+     *
+     * @return bool
+     */
+    public function valid()
+    {
+        $valid = $this->documentExists($this->key());
+        if ($valid) {
+            return true;
+        }
+
+        $this->page();
+
+        return $this->documentExists($this->key());
+    }
+
+    /**
+     * Rewind the Iterator to the first element.
+     */
+    public function rewind()
+    {
+        $this->key = 0;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isScrollable()
+    {
+        return !empty($this->scrollId);
     }
 
     /**
@@ -120,14 +226,6 @@ abstract class AbstractResultsIterator
     }
 
     /**
-     * @return array
-     */
-    protected function getAggregations()
-    {
-        return $this->aggregations;
-    }
-
-    /**
      * Checks whether document exists in the container.
      *
      * @param mixed $key
@@ -140,46 +238,19 @@ abstract class AbstractResultsIterator
     }
 
     /**
-     * @return int
-     */
-    protected function getKey()
-    {
-        return key($this->documents);
-    }
-
-    /**
      * Advances key.
      *
      * @return $this
      */
     protected function advanceKey()
     {
-        next($this->documents);
-
-        return $this;
-    }
-
-    /**
-     * Resets key.
-     *
-     * @return $this
-     */
-    protected function resetKey()
-    {
-        reset($this->documents);
-
-        return $this;
-    }
-
-    /**
-     * Removes set documents.
-     *
-     * @return $this
-     */
-    protected function clean()
-    {
-        $this->documents = [];
-        $this->resetKey();
+        $end = end($this->documents);
+        $current = current($this->documents);
+        if ($this->isScrollable() && ($this->documents[$this->key()] == end($this->documents))) {
+            $this->page();
+        } else {
+            $this->key++;
+        }
 
         return $this;
     }
@@ -191,9 +262,28 @@ abstract class AbstractResultsIterator
      */
     public function first()
     {
-        $this->resetKey();
+        $this->rewind();
 
-        return $this->getDocument($this->getKey());
+        return $this->getDocument($this->key());
+    }
+
+    /**
+     * Advances scan page.
+     *
+     * @return $this
+     */
+    protected function page()
+    {
+        if ($this->key() == $this->count() || !$this->isScrollable()) {
+            return $this;
+        }
+
+        $raw = $this->repository->scroll($this->scrollId, $this->scrollDuration, Repository::RESULTS_RAW);
+        $this->rewind();
+        $this->scrollId = $raw['_scroll_id'];
+        $this->documents = $raw['hits']['hits'];
+
+        return $this;
     }
 
     /**

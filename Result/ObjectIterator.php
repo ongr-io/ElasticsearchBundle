@@ -14,12 +14,8 @@ namespace ONGR\ElasticsearchBundle\Result;
 /**
  * ObjectIterator class.
  */
-class ObjectIterator extends AbstractConvertibleResultIterator implements \ArrayAccess, \Iterator, \Countable
+class ObjectIterator extends AbstractResultsIterator
 {
-    use ArrayAccessTrait;
-    use IteratorTrait;
-    use CountableTrait;
-
     /**
      * @var array Aliases information.
      */
@@ -28,32 +24,29 @@ class ObjectIterator extends AbstractConvertibleResultIterator implements \Array
     /**
      * @var Converter
      */
-    private $converter;
+    private $objectConverter;
 
     /**
-     * Constructor.
+     * Using part of abstract iterator functionality only.
      *
      * @param Converter $converter
-     * @param array     $rawData
+     * @param array     $documents
      * @param array     $alias
      */
-    public function __construct($converter, $rawData, $alias)
+    public function __construct($converter, $documents, $alias)
     {
-        parent::__construct([]);
-
-        $this->setDocuments($rawData);
-        $this->setTotalCount(count($rawData));
-        $this->converter = $converter;
+        $this->documents = $documents;
         $this->alias = $alias;
+        $this->objectConverter = $converter;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function convertDocument($rawData)
+    protected function convertDocument(array $document)
     {
-        return $this->converter->assignArrayToObject(
-            $rawData,
+        return $this->objectConverter->assignArrayToObject(
+            $document,
             new $this->alias['namespace'](),
             $this->alias['aliases']
         );

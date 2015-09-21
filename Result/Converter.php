@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\Service\Repository;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -45,15 +46,15 @@ class Converter
      * Converts raw array to document.
      *
      * @param array $rawData
-     * @param array $mappings Manager mappings to tell converter which types belongs to which objects.
+     * @param Repository $repository
      *
      * @return DocumentInterface
      *
      * @throws \LogicException
      */
-    public function convertToDocument($rawData, array $mappings = [])
+    public function convertToDocument($rawData, $repository)
     {
-        $types = $this->metadataCollector->getMappings($mappings);
+        $types = $this->metadataCollector->getMappings($repository->getManager()->getConfig()['mappings']);
 
         if (isset($types[$rawData['_type']])) {
             $metadata = $types[$rawData['_type']];
@@ -64,7 +65,7 @@ class Converter
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
 
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject($data, new $metadata['namespace'](), $metadata['aliases']);
+        $object = $this->assignArrayToObject($data, new $metadata['namespace'](), $metadata['aliases'], $repository);
 
         $this->setObjectFields($object, $rawData, ['_id', '_score', 'fields _parent', 'fields _ttl']);
 
@@ -74,9 +75,10 @@ class Converter
     /**
      * Assigns all properties to object.
      *
-     * @param array  $array
-     * @param object $object
-     * @param array  $aliases
+     * @param array      $array
+     * @param object     $object
+     * @param array      $aliases
+     * @param Repository $repository
      *
      * @return object
      */
@@ -137,6 +139,7 @@ class Converter
 
         // Variable $name defined in client.
         foreach ($aliases as $name => $alias) {
+
             $value = $this->getPropertyAccessor()->getValue($object, $alias['propertyName']);
 
             if (isset($value)) {
@@ -285,7 +288,7 @@ class Converter
     private function getAlias($document)
     {
         $class = get_class($document);
-        $documentMapping = $this->collector->getDocumentMapping($document);
+        $documentMapping = $this->metadataCollector->getDocumentMapping($document);
         if (is_array($documentMapping) && isset($documentMapping['aliases'])) {
             return $documentMapping['aliases'];
         }

@@ -11,30 +11,22 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
  * Class DocumentIterator.
  */
-class DocumentIterator extends AbstractResultsIterator
+class RawIterator extends AbstractResultsIterator
 {
     /**
      * Returns aggregations.
      *
-     * @return AggregationIterator
+     * @return array
      */
     public function getAggregations()
     {
-        $aggregations = parent::getAggregations();
-
-        foreach ($aggregations as $key => $value) {
-            $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
-            $data[$realKey] = $value;
-        }
-
-        return new AggregationIterator($aggregations, $this->getConverter());
+        return parent::getAggregations();
     }
 
     /**
@@ -42,7 +34,7 @@ class DocumentIterator extends AbstractResultsIterator
      */
     protected function convertDocument(array $document)
     {
-        return $this->getConverter()->convertToDocument($document, $this->getRepository());
+        return $document;
     }
 
     /**
@@ -50,6 +42,6 @@ class DocumentIterator extends AbstractResultsIterator
      */
     protected function getScrollResultsType()
     {
-        return Repository::RESULTS_OBJECT;
+        return Repository::RESULTS_RAW_ITERATOR;
     }
 }
