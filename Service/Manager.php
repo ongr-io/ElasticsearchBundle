@@ -338,25 +338,17 @@ class Manager
      *
      * @param array $types Specific types to put.
      *
-     * @return int
+     * @return array
      */
-    public function updateMapping(array $types = [], $force)
+    public function updateMapping(array $types = [])
     {
-        $this->isReadOnly('Create types');
+        $this->isReadOnly('Mapping update');
 
-        $mapping = $this->getMapping($types);
-        if (empty($mapping)) {
-            return 0;
-        }
+        $params['index'] = $this->getIndexName();
+        $params['types'] = array_keys($types);
+        $params['body'] = $types;
 
-        $mapping = array_diff_key($mapping, $this->getMappingFromIndex($types));
-        if (empty($mapping)) {
-            return -1;
-        }
-
-        $this->loadMappingArray($mapping);
-
-        return 1;
+        return $this->client->indices()->putMapping($params);
     }
 
     /**
