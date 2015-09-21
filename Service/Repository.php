@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
+use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchDSL\Query\TermsQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
@@ -58,16 +60,18 @@ class Repository
     public function __construct($manager, array $repositories, $converter)
     {
         $this->manager = $manager;
-        $this->types = $this->getTypes($repositories);
+        $this->types = $this->resolveTypes($repositories);
         $this->converter = $converter;
     }
 
     /**
+     * Resolves elasticsearch types from documents.
+     *
      * @param array $repositories
      *
      * @return array
      */
-    private function getTypes($repositories)
+    private function resolveTypes($repositories)
     {
         $types = [];
         foreach ($repositories as $repository) {
@@ -75,6 +79,14 @@ class Repository
         }
 
         return $types;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTypes()
+    {
+        return $this->types;
     }
 
     /**
@@ -210,7 +222,7 @@ class Repository
      * @param Search $search
      * @param string $resultsType
      *
-     * @return DocumentIterator|DocumentScanIterator|RawResultIterator|array
+     * @return DocumentIterator|RawIterator|array
      *
      * @throws \Exception
      */
@@ -234,7 +246,7 @@ class Repository
     {
         $results = $this
             ->getManager()
-            ->getConnection()
+            ->getClient()
             ->deleteByQuery($this->types, $search->toArray());
 
         return new IndicesResult($results);
@@ -247,16 +259,16 @@ class Repository
      * @param string $scrollDuration
      * @param string $resultsType
      *
-     * @return array|DocumentScanIterator
+     * @return AbstractResultsIterator
      *
      * @throws \Exception
      */
-    public function scan(
+    public function scroll(
         $scrollId,
         $scrollDuration = '5m',
         $resultsType = self::RESULTS_OBJECT
     ) {
-        $results = $this->getManager()->getConnection()->scroll($scrollId, $scrollDuration);
+        $results = $this->getManager()->getClient()->scroll(['scroll_id' => $scrollId, 'scroll' => $scrollDuration]);
 
         return $this->parseResult($results, $resultsType, $scrollDuration);
     }
@@ -294,50 +306,27 @@ class Repository
      * @param string $resultsType
      * @param string $scrollDuration
      *
-     * @return DocumentIterator|DocumentScanIterator|RawResultIterator|array
+     * @return DocumentIterator|RawIterator|array
      *
      * @throws \Exception
      */
-    private function parseResult($raw, $resultsType, $scrollDuration)
+    private function parseResult($raw, $resultsType, $scrollDuration = null)
     {
+        $scrollConfig = [];
+        if (isset($raw['_scroll_id'])) {
+            $scrollConfig['_scroll_id'] = $raw['_scroll_id'];
+            $scrollConfig['duration'] = $scrollDuration;
+        }
+
         switch ($resultsType) {
             case self::RESULTS_OBJECT:
-                if (isset($raw['_scroll_id'])) {
-                    $iterator = new DocumentScanIterator(
-                        $raw,
-                        $this->getManager()->getTypesMapping(),
-                        $this->getManager()->getBundlesMapping()
-                    );
-                    $iterator
-                        ->setRepository($this)
-                        ->setScrollDuration($scrollDuration)
-                        ->setScrollId($raw['_scroll_id']);
-
-                    return $iterator;
-                }
-
-                return new DocumentIterator(
-                    $raw,
-                    $this->getManager()->getConfig(),
-                    $this->getManager()->getMetadataCollector(),
-                    $this->getManager()->getConverter()
-                );
+                return new DocumentIterator($raw, $this, $scrollConfig);
             case self::RESULTS_ARRAY:
                 return $this->convertToNormalizedArray($raw);
             case self::RESULTS_RAW:
                 return $raw;
             case self::RESULTS_RAW_ITERATOR:
-                if (isset($raw['_scroll_id'])) {
-                    $iterator = new RawResultScanIterator($raw);
-                    $iterator
-                        ->setRepository($this)
-                        ->setScrollDuration($scrollDuration)
-                        ->setScrollId($raw['_scroll_id']);
-
-                    return $iterator;
-                }
-
-                return new RawResultIterator($raw);
+                return new RawIterator($raw, $this, $scrollConfig);
             default:
                 throw new \Exception('Wrong results type selected');
         }
