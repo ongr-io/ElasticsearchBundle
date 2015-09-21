@@ -1,3 +1,5 @@
+sudo: false
+
 language: php
 
 php:
@@ -6,24 +8,17 @@ php:
   - 7.0
   - hhvm
 
-env:
-  - ELASTICSEARCH="1.5.2"
-  - ELASTICSEARCH="1.6.2"
-  - ELASTICSEARCH="1.7.2"
+services:
+  - elasticsearch
 
 matrix:
   allow_failures:
-    - php: 7.0
     - php: hhvm
 
-before_install:
- - curl -O https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ELASTICSEARCH}.deb
- - sudo dpkg -i elasticsearch-${ELASTICSEARCH}.deb
-
 install:
-  - "echo 'script.disable_dynamic: false' | sudo tee -a /etc/elasticsearch/elasticsearch.yml"
-  - "echo 'index.warmer.enabled: true' | sudo tee -a /etc/elasticsearch/elasticsearch.yml"
-  - sudo service elasticsearch restart
+  - "echo 'script.disable_dynamic: false' | tee -a /etc/elasticsearch/elasticsearch.yml"
+  - "echo 'index.warmer.enabled: true' | tee -a /etc/elasticsearch/elasticsearch.yml"
+  - service elasticsearch restart
 
 before_script:
   - composer install --no-interaction
