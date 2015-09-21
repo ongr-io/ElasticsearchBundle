@@ -25,7 +25,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     protected function getDataArray()
     {
         return [
-            'default' => [
+            'foo' => [
                 'product' => [
                     [
                         '_id' => 1,
@@ -37,15 +37,20 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
                         'title' => 'bar',
                         'price' => 32,
                     ],
+                    [
+                        '_id' => 3,
+                        'title' => 'acme',
+                        'price' => 20,
+                    ],
                 ],
-                'fooContent' => [
+                'customer' => [
                     [
                         '_id' => 1,
-                        'header' => 'test_1',
+                        'name' => 'foo',
                     ],
                     [
                         '_id' => 2,
-                        'header' => 'test_2',
+                        'name' => 'acme',
                     ],
                 ],
             ],
@@ -62,20 +67,20 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $out = [];
 
         // Case 1: chunk specified.
-        $options = ['--chunk' => 1];
+        $options = ['--chunk' => 1, '--manager' => 'foo'];
         $expectedResults = [
             [
                 '_id' => '1',
-                '_type' => 'fooContent',
+                '_type' => 'customer',
                 '_source' => [
-                    'header' => 'test_1',
+                    'name' => 'foo',
                 ],
             ],
             [
                 '_id' => '2',
-                '_type' => 'fooContent',
+                '_type' => 'customer',
                 '_source' => [
-                    'header' => 'test_2',
+                    'name' => 'acme',
                 ],
             ],
             [
@@ -92,6 +97,14 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
                 '_source' => [
                     'title' => 'bar',
                     'price' => 32,
+                ],
+            ],
+            [
+                '_id' => '3',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'acme',
+                    'price' => 20,
                 ],
             ],
         ];
@@ -99,7 +112,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $out[] = [$options, $expectedResults];
 
         // Case 1: types specified.
-        $options = ['--types' => ['product']];
+        $options = ['--types' => ['product'], '--manager' => 'foo'];
         $expectedResults = [
             [
                 '_id' => '1',
@@ -115,6 +128,14 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
                 '_source' => [
                     'title' => 'bar',
                     'price' => 32,
+                ],
+            ],
+            [
+                '_id' => '3',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'acme',
+                    'price' => 20,
                 ],
             ],
         ];
@@ -134,6 +155,8 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     public function testIndexExport($options, $expectedResults)
     {
+        $this->getManager($options['--manager']);
+
         $app = new Application();
         $app->add($this->getExportCommand());
 
@@ -152,6 +175,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         );
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
+
         $this->assertEquals($expectedResults, $results, null, 0.05);
     }
 

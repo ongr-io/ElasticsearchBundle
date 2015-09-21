@@ -26,10 +26,9 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     {
         return [
             [
-                'bar',
+                'foo',
                 [
                     'timestamp' => false,
-                    'warm' => false,
                     'noMapping' => true,
                 ],
             ],
@@ -37,15 +36,13 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
                 'default',
                 [
                     'timestamp' => false,
-                    'warm' => true,
                     'noMapping' => false,
                 ],
             ],
             [
-                'default',
+                'readonly',
                 [
                     'timestamp' => false,
-                    'warm' => true,
                     'noMapping' => true,
                 ],
             ],
@@ -62,11 +59,10 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
      */
     public function testExecute($argument, $options)
     {
-        $manager = $this->getManager($argument, false);
+        $manager = $this->getManager($argument);
 
-        $connection = $manager->getConnection();
-        if ($connection->indexExists()) {
-            $connection->dropIndex();
+        if ($manager->indexExists()) {
+            $manager->dropIndex();
         }
 
         $app = new Application();
@@ -82,17 +78,12 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         if ($options['timestamp']) {
             $arguments['--time'] = null;
         }
-        if ($options['warm']) {
-            $arguments['--with-warmers'] = null;
-        }
         if ($options['noMapping']) {
             $arguments['--no-mapping'] = null;
         }
         $commandTester->execute($arguments);
-        $mapping = $connection->getMappingFromIndex();
-        $this->assertEquals($options['noMapping'], empty($mapping));
-        $this->assertTrue($connection->indexExists(), 'Index should exist.');
-        $connection->dropIndex();
+        $this->assertTrue($manager->indexExists(), 'Index should exist.');
+        $manager->dropIndex();
     }
 
     /**

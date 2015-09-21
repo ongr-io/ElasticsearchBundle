@@ -54,13 +54,13 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             [
                 'command' => $command->getName(),
                 '--raw' => true,
-                'filename' => __DIR__ . '/../../app/fixture/Json/' . $filename,
+                'filename' => __DIR__ . '/../../app/fixture/data/' . $filename,
                 '--bulk-size' => $bulkSize,
             ]
         );
 
         $manager = $this->getManager('default', false);
-        $repo = $manager->getRepository('AcmeTestBundle:Product');
+        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery())
