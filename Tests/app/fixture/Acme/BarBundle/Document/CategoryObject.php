@@ -9,21 +9,25 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * CdnObject document for testing.
+ * Category document for testing.
  *
  * @ES\Object
  */
-class CdnObject
+class CategoryObject
 {
     /**
-     * @var string
-     *
-     * @ES\Property(name="cdn_url", type="string")
+     * @var string Field without ESB annotation, should not be indexed.
      */
-    public $cdn_url;
+    public $withoutAnnotation;
+
+    /**
+     * @var string
+     * @ES\Property(name="title", index="not_analyzed")
+     */
+    public $title;
 }

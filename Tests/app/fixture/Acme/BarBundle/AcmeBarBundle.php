@@ -9,16 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle;
 
-use ONGR\ElasticsearchBundle\Annotation as ES;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Category document for testing.
- *
- * @ES\Object
+ * AcmeTestBundle for testing.
  */
-class Category
+class AcmeBarBundle extends Bundle
 {
-    public $hiddenField;
 }

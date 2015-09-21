@@ -17,9 +17,9 @@ use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 /**
  * Testing document for representing media.
  *
- * @ES\Document();
+ * @ES\Document(type="customer");
  */
-class Media extends AbstractDocument
+class CustomerDocument extends AbstractDocument
 {
     /**
      * @var string

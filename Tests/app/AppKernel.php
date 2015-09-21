@@ -27,7 +27,7 @@ class AppKernel extends Kernel
         return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
-            new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle(),
+            new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle(),
             new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\AcmeFooBundle(),
         ];
     }
@@ -53,17 +53,18 @@ class AppKernel extends Kernel
 
         if ('test' !== $this->getEnvironment()) {
             parent::initializeContainer();
+
             return;
         }
 
         $debug = $this->debug;
 
         if (!$first) {
-            // disable debug mode on all but the first initialization
+            // Disable debug mode on all but the first initialization.
             $this->debug = false;
         }
 
-        // will not work with --process-isolation
+        // Will not work with --process-isolation.
         $first = false;
 
         try {
