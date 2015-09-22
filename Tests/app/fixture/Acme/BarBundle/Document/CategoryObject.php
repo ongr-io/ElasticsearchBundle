@@ -27,7 +27,7 @@ class CategoryObject
 
     /**
      * @var string
-     * @ES\Property(name="title", index="not_analyzed")
+     * @ES\Property(type="string", name="title", index="not_analyzed")
      */
     public $title;
 }
