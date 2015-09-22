@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
+use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
@@ -90,10 +90,10 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
     {
         $iterator = $this
             ->getManager()
-            ->getRepository('AcmeTestBundle:Product')
+            ->getRepository('AcmeBarBundle:ProductDocument')
             ->execute($search, Repository::RESULTS_OBJECT);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentScanIterator', $iterator);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
         $this->assertCount(4, $iterator);
 
         $expectedHeaders = [
@@ -115,7 +115,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
     /**
      * Returns relevant data by iterating through.
      *
-     * @param DocumentScanIterator $iterator
+     * @param DocumentIterator $iterator
      *
      * @return array
      */
