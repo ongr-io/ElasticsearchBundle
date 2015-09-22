@@ -86,9 +86,6 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
             $this->aggregations[$offset] = new ValueAggregation($this->rawData[$offset], $this->converter);
         }
 
-        // Clear memory.
-        $this->rawData[$offset] = null;
-
         return $this->aggregations[$offset];
     }
 
