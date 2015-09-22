@@ -20,10 +20,6 @@ use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
-use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
-use ONGR\ElasticsearchBundle\Result\IndicesResult;
-use ONGR\ElasticsearchBundle\Result\RawResultIterator;
-use ONGR\ElasticsearchBundle\Result\RawResultScanIterator;
 
 /**
  * Repository class.
@@ -44,11 +40,6 @@ class Repository
      * @var array
      */
     private $types = [];
-
-    /**
-     * @var array
-     */
-    private $fieldsCache = [];
 
     /**
      * Constructor.
@@ -118,7 +109,7 @@ class Repository
         }
 
         if ($resultType === self::RESULTS_OBJECT) {
-            return (new Converter($this->getManager()->getMetadataCollector()))->convertToDocument($result, $this);
+            return $this->converter->convertToDocument($result, $this);
         }
 
         return $this->parseResult($result, $resultType, '');
@@ -186,7 +177,7 @@ class Repository
 
         $result = $this
             ->getManager()
-            ->search($this->types, $this->checkFields($search->toArray()), $search->getQueryParams());
+            ->search($this->types, $search->toArray(), $search->getQueryParams());
 
         if ($resultType === self::RESULTS_OBJECT) {
             $rawData = $result['hits']['hits'];
@@ -194,10 +185,7 @@ class Repository
                 return null;
             }
 
-            return (new Converter(
-                $this->getManager()->getTypesMapping(),
-                $this->getManager()->getBundlesMapping()
-            ))->convertToDocument($rawData[0]);
+            return $this->converter->convertToDocument($rawData[0], $this);
         }
 
         return $this->parseResult($result, $resultType, '');
@@ -241,12 +229,16 @@ class Repository
      */
     public function deleteByQuery(Search $search)
     {
-        $results = $this
+        $params = [
+            'index' => $this->getManager()->getIndexName(),
+            'type' => $this->types,
+            'body' => $search->toArray(),
+        ];
+
+        return $this
             ->getManager()
             ->getClient()
-            ->deleteByQuery($this->types, $search->toArray());
-
-        return new IndicesResult($results);
+            ->deleteByQuery($params);
     }
 
     /**
@@ -283,12 +275,12 @@ class Repository
     {
         if (count($this->types) == 1) {
             $params = [
-                'index' => $this->getManager()->getConnection()->getIndexName(),
+                'index' => $this->getManager()->getIndexName(),
                 'type' => $this->types[0],
                 'id' => $id,
             ];
 
-            $response = $this->getManager()->getConnection()->delete($params);
+            $response = $this->getManager()->getClient()->delete($params);
 
             return $response;
         } else {
