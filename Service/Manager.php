@@ -96,6 +96,8 @@ class Manager
         $this->indexSettings = $indexSettings;
         $this->metadataCollector = $metadataCollector;
         $this->converter = $converter;
+
+        $this->setReadOnly($config['readonly']);
     }
 
     /**
@@ -227,6 +229,7 @@ class Manager
      */
     public function commit()
     {
+        $this->isReadOnly('Commit');
         $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
         $this->client->bulk($this->bulkQueries);
         $this->flush();
