@@ -118,10 +118,7 @@ class Repository
         }
 
         if ($resultType === self::RESULTS_OBJECT) {
-            return (new Converter(
-                $this->getManager()->getTypesMapping(),
-                $this->getManager()->getBundlesMapping()
-            ))->convertToDocument($result);
+            return (new Converter($this->getManager()->getMetadataCollector()))->convertToDocument($result, $this);
         }
 
         return $this->parseResult($result, $resultType, '');
