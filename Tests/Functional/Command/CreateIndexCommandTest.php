@@ -39,13 +39,6 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
                     'noMapping' => false,
                 ],
             ],
-            [
-                'readonly',
-                [
-                    'timestamp' => false,
-                    'noMapping' => true,
-                ],
-            ],
         ];
     }
 
@@ -84,6 +77,18 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $commandTester->execute($arguments);
         $this->assertTrue($manager->indexExists(), 'Index should exist.');
         $manager->dropIndex();
+    }
+
+    /**
+     * Tests if right exception is thrown when manager is read only.
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
+     * @expectedExceptionMessage Manager is readonly! Create index operation is not permitted.
+     */
+    public function testCreateIndexWhenManagerIsReadOnly()
+    {
+        $manager = $this->getContainer()->get('es.manager.readonly');
+        $manager->createIndex();
     }
 
     /**

@@ -54,7 +54,7 @@ class CacheClearCommandTest extends AbstractElasticsearchTestCase
         $tester->execute(
             [
                 'command' => $command->getName(),
-                '--manager' => 'foo',
+                '--manager' => 'notexistingmanager',
             ]
         );
     }
