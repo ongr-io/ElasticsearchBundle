@@ -64,16 +64,6 @@ final class Property extends AbstractProperty
     public $boost;
 
     /**
-     * @var bool
-     */
-    public $payloads;
-
-    /**
-     * @var bool
-     */
-    public $enabled;
-
-    /**
      * @var array<\ONGR\ElasticsearchBundle\Annotation\MultiField>
      */
     public $fields;
@@ -94,26 +84,6 @@ final class Property extends AbstractProperty
      * @var bool OneToOne or OneToMany.
      */
     public $multiple;
-
-    /**
-     * @var int
-     */
-    public $ignoreAbove;
-
-    /**
-     * @var bool
-     */
-    public $store;
-
-    /**
-     * @var string
-     */
-    public $indexName;
-
-    /**
-     * @var string
-     */
-    public $format;
 
     /**
      * @var array
