@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\DataCollector;
+namespace ONGR\ElasticsearchBundle\Tests\Functional\Profiler;
 
-use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ElasticsearchDataCollectorTest extends AbstractElasticsearchTestCase
+class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -53,7 +53,7 @@ class ElasticsearchDataCollectorTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $document = new Product();
+        $document = new ProductDocument();
         $document->title = 'tuna';
 
         $manager->persist($document);
@@ -69,7 +69,7 @@ class ElasticsearchDataCollectorTest extends AbstractElasticsearchTestCase
     public function testGetTime()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $repository->find(3);
 
         $this->assertGreaterThan(0.0, $this->getCollector()->getTime(), 'Time should be greater than 0ms');
@@ -81,11 +81,11 @@ class ElasticsearchDataCollectorTest extends AbstractElasticsearchTestCase
     public function testGetQueries()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $repository->find(2);
         $queries = $this->getCollector()->getQueries();
 
-        $lastQuery = end($queries[ElasticsearchDataCollector::UNDEFINED_ROUTE]);
+        $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
         $this->checkQueryParameters($lastQuery);
 
         $this->assertEquals(
@@ -108,19 +108,19 @@ class ElasticsearchDataCollectorTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $search = $repository
             ->createSearch()
             ->addQuery(new TermQuery('title', 'pizza'));
         $result = $repository->execute($search, Repository::RESULTS_OBJECT);
 
         $queries = $this->getCollector()->getQueries();
-        $lastQuery = end($queries[ElasticsearchDataCollector::UNDEFINED_ROUTE]);
+        $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
         $this->checkQueryParameters($lastQuery);
 
         $this->assertEquals(
             [
-                'body' => $this->getFileContents('collector_body_0.json'),
+                'body' => [],
                 'method' => 'POST',
                 'httpParameters' => [],
                 'scheme' => 'http',
@@ -152,31 +152,13 @@ class ElasticsearchDataCollectorTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * @return ElasticsearchDataCollector
+     * @return ElasticsearchProfiler
      */
     private function getCollector()
     {
-        $collector = $this->getContainer()->get('es.collector');
+        $collector = $this->getContainer()->get('es.profiler');
         $collector->collect(new Request(), new Response());
 
         return $collector;
-    }
-
-    /**
-     * Returns file contents from fixture.
-     *
-     * @param string $filename
-     *
-     * @return string
-     */
-    private function getFileContents($filename)
-    {
-        $contents = file_get_contents(__DIR__ . '/../../app/fixture/Json/' . $filename);
-        // Checks for new line at the end of file.
-        if (substr($contents, -1) == "\n") {
-            $contents = substr($contents, 0, -1);
-        }
-
-        return $contents;
     }
 }
