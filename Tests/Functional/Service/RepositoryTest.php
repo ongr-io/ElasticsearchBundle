@@ -21,9 +21,7 @@ use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Result\IndicesResult;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
 
 class RepositoryTest extends AbstractElasticsearchTestCase
 {
@@ -312,7 +310,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     public function testFindInMultiTypeRepo()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository(['AcmeBarBundle:Product', 'AcmeFooBundle:CustomerDocument']);
+        $repo = $this->getManager()->getRepository(['AcmeBarBundle:ProductDocument', 'AcmeFooBundle:CustomerDocument']);
 
         $repo->find(1);
     }
@@ -379,7 +377,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     public function testDocumentUpdate()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
+        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
 
         $document = new ProductDocument;
 
@@ -453,41 +451,19 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $query->addQuery($term);
 
         $expectedResults = [
-            'failed' => [$index => 0],
-            'successful' => [$index => 5],
-            'total' => [$index => 5],
+            'failed' => 0,
+            'successful' => 5,
+            'total' => 5,
         ];
-        /** @var IndicesResult $result */
+
         $result = $repository->deleteByQuery($query);
-        $this->assertEquals($expectedResults['failed'], $result->getFailed());
-        $this->assertEquals($expectedResults['successful'], $result->getSuccessful());
-        $this->assertEquals($expectedResults['total'], $result->getTotal());
+        $this->assertEquals($expectedResults['failed'], $result['_indices'][$index]['_shards']['failed']);
+        $this->assertEquals($expectedResults['successful'], $result['_indices'][$index]['_shards']['successful']);
+        $this->assertEquals($expectedResults['total'], $result['_indices'][$index]['_shards']['total']);
 
         $search = $repository->createSearch()->addQuery($all);
         $results = $repository->execute($search)->count();
         $this->assertEquals(2, $results);
-    }
-
-    /**
-     * Tests finding object with enabled property set to false.
-     */
-    public function testFindWithDisabledProperty()
-    {
-        $repository = $this
-            ->getManager()
-            ->getRepository('AcmeTestBundle:Color');
-
-        $search = $repository
-            ->createSearch()
-            ->addQuery(new TermQuery('disabled_cdn.cdn_url', 'foo'));
-
-        $this->assertCount(0, $repository->execute($search));
-
-        $search = $repository
-            ->createSearch()
-            ->addQuery(new TermQuery('enabled_cdn.cdn_url', 'foo'));
-
-        $this->assertCount(1, $repository->execute($search));
     }
 
     /**
@@ -497,28 +473,21 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
         $index = $manager->getIndexName();
-        $repository = $manager->getRepository('AcmeTestBundle:Color');
+        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $document = $repository->find(1, Repository::RESULTS_RAW);
         $expected = [
             '_index' => $index,
-            '_type' => 'color',
             '_id' => 1,
+            '_type' => 'product',
             '_version' => 1,
-            'found' => 1,
+            'found' => true,
             '_source' => [
-                'enabled_cdn' => [
-                    [
-                        'cdn_url' => 'foo',
-                    ],
-                ],
-                'disabled_cdn' => [
-                    [
-                        'cdn_url' => 'foo',
-                    ],
-                ],
+                'title' => 'foo',
+                'price' => 10,
+                'description' => 'goo Lorem',
             ],
         ];
-        $this->assertEquals($expected, $document);
+        $this->assertEquals(asort($expected), asort($document));
     }
 
     /**
@@ -530,16 +499,9 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $document = $repository->find(1, Repository::RESULTS_ARRAY);
         $expected = [
-            'enabled_cdn' => [
-                [
-                    'cdn_url' => 'foo',
-                ],
-            ],
-            'disabled_cdn' => [
-                [
-                    'cdn_url' => 'foo',
-                ],
-            ],
+            'title' => 'foo',
+            'price' => 10,
+            'description' => 'goo Lorem',
         ];
         $this->assertEquals($expected, $document);
     }
@@ -552,6 +514,6 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
         $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $document = $repository->find(1, Repository::RESULTS_RAW_ITERATOR);
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawResultIterator', $document);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $document);
     }
 }
