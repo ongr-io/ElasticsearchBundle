@@ -9,23 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\ORM;
+namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\ColorDocument;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Comment;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CompletionSuggesting;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationSuggesting;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\PriceLocationContext;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject;
 
 /**
  * Functional tests for orm manager.
@@ -33,9 +27,17 @@ use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObjec
 class ManagerTest extends AbstractElasticsearchTestCase
 {
     /**
-     * @var Converter
+     * @var Repository
      */
-    private $converter;
+    private $repository;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        $this->repository = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+    }
 
     /**
      * Check if persisted objects are flushed.
@@ -43,93 +45,55 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testPersist()
     {
         /** @var Manager $manager */
-        $manager = $this->getManager();
+        $manager = $this->repository->getManager();
 
-        // CDN for first url.
-        $cdn = new CdnObject();
-        $cdn->cdn_url = 'test_cd';
-
-        // New urls.
-        $url = new UrlObject();
-        $url->url = 'test_url';
-        $url->cdn = $cdn;
-        $url2 = new UrlObject();
-        $url2->url = 'test_url2';
+        $category = new CategoryObject();
+        $category->title = 'acme';
 
         // Multiple urls.
-        $product = new Product();
+        $product = new ProductDocument();
+        $product->setId(1);
         $product->title = 'test';
-        $product->links = [
-            $url,
-            $url2,
-        ];
+        $product->category = $category;
 
         $manager->persist($product);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
-        /** @var Product[] $actualProduct */
-        $actualProducts = $repository->execute($repository->createSearch());
-        $this->assertCount(1, $actualProducts);
+        /** @var ProductDocument $actualProduct */
+        $actualProduct = $this->repository->find(1);
+        $this->assertInstanceOf(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
+            $actualProduct
+        );
 
-        /** @var Product $actualProduct */
-        $actualProduct = $actualProducts->current();
         $this->assertEquals($product->title, $actualProduct->title);
 
-        /** @var UrlObject[] $actualUrl */
-        $actualUrl = iterator_to_array($actualProduct->links);
-        $this->assertEquals(2, count($actualUrl));
-        $this->assertEquals($url->url, $actualUrl[0]->url);
-        $this->assertEquals($url2->url, $actualUrl[1]->url);
+        /** @var CategoryObject $category */
+        $category = $actualProduct->category;
+        $this->assertEquals($category->title, $category->title);
 
-        $this->assertEquals($cdn->cdn_url, $actualUrl[0]->cdn->cdn_url);
+        $this->assertNull($actualProduct->limited);
 
-        // Update links, as object.
-        $url3 = new UrlObject();
-        $url3->url = 'test_url3';
-        $actualProduct->links[] = $url3;
+        $actualProduct->limited = true;
         $manager->persist($actualProduct);
         $manager->commit();
 
-        $actualProduct = $repository->execute($repository->createSearch())[0];
-        $this->assertEquals(3, count($actualProduct->links));
-        $this->assertEquals('test_url3', $actualProduct->links[2]->url);
+        $actualProduct = $this->repository->find(1);
 
-        // Update links, as array.
-        $actualProduct->links[] = ['url' => 'test_url4'];
-        $manager->persist($actualProduct);
-        $manager->commit();
-
-        $actualProduct = $repository->execute($repository->createSearch())[0];
-        $this->assertEquals(4, count($actualProduct->links));
-        $this->assertEquals('test_url4', $actualProduct->links[3]->url);
-
-        // Update links, existing using foreach.
-        foreach ($actualProduct->links as $link) {
-            if ($link->url === 'test_url2') {
-                $link->url = 'updated_test_url2';
-            }
-        }
-
-        $manager->persist($actualProduct);
-        $manager->commit();
-
-        $actualProduct = $repository->execute($repository->createSearch())[0];
-        $this->assertEquals(4, count($actualProduct->links));
-        $this->assertEquals('updated_test_url2', $actualProduct->links[1]->url);
+        $this->assertTrue($actualProduct->limited);
     }
 
     /**
      * Test if exception is thrown on read only manager.
      *
      * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
-     * @expectedExceptionMessage Manager is readonly! Bulk operation not permitted.
+     * @expectedExceptionMessage Manager is readonly! Bulk operation is not permitted.
      */
     public function testPersistReadOnlyManager()
     {
         $manager = $this->getContainer()->get('es.manager.readonly');
 
-        $product = new Product();
+        $product = new ProductDocument();
         $product->title = 'test';
 
         $manager->persist($product);
@@ -146,53 +110,56 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $out = [];
 
         // Case #0: multiple cdns are put into url object, although it isn't a multiple field.
-        $url = new UrlObject();
-        $url->cdn = [new CdnObject(), new CdnObject()];
+        $category = new ProductDocument();
+        $product = new ProductDocument;
+        $product->category = $category;
 
-        $product = new Product();
-        $product->links = [$url];
-        $out[] = [$product, 'Expected variable of type object, got array.'];
-
-        // Case #1: a single link is set, although field is set to multiple.
-        $product = new Product();
-        $product->links = new UrlObject();
-        $out[] = [$product, "Variable isn't traversable, although field is set to multiple."];
-
-        // Case #2: invalid type of object is set in multiple field.
-        $product = new Product();
-        $product->links = new \ArrayIterator([new UrlObject(), new CdnObject()]);
         $out[] = [
             $product,
-            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject, ' .
-            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject.',
+            'Expected object of type ' .
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject, ' .
+            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument.',
+        ];
+
+        // Case #1: a single link is set, although field is set to multiple.
+        $product = new ProductDocument();
+        $product->relatedCategories = new CategoryObject();
+        $out[] = [$product, "Variable isn't traversable, although field is set to multiple."];
+
+        // Case #2: invalid type of object is set to the field.
+        $product = new ProductDocument;
+        $product->category = new \stdClass();
+        $out[] = [
+            $product,
+            'Expected object of type ' .
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject, got stdClass.',
         ];
 
         // Case #3: invalid type of object is set in single field.
-        $url = new UrlObject();
-        $url->cdn = new UrlObject();
-
-        $product = new Product();
-        $product->links = [$url];
+        $product = new ProductDocument;
+        $product->category = [new CategoryObject()];
         $out[] = [
             $product,
-            'Expected object of type ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\CdnObject, ' .
-            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject.',
+            'Expected variable of type object, got array. (field isn\'t multiple)',
         ];
 
         return $out;
     }
 
     /**
-     * Check if expected exceptions are thrown while trying to persisnt an invalid object.
+     * Check if expected exceptions are thrown while trying to persist an invalid object.
      *
-     * @param Product $product
-     * @param string  $exceptionMessage
-     * @param string  $exception
+     * @param ProductDocument $product
+     * @param string          $exceptionMessage
+     * @param string          $exception
      *
      * @dataProvider getPersistExceptionsData()
      */
-    public function testPersistExceptions(Product $product, $exceptionMessage, $exception = 'InvalidArgumentException')
-    {
+    public function testPersistExceptions(
+        ProductDocument $product,
+        $exceptionMessage,
+        $exception = 'InvalidArgumentException'
+    ) {
         $this->setExpectedException($exception, $exceptionMessage);
 
         /** @var Manager $manager */
@@ -207,27 +174,21 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testPersistSpecialFields()
     {
         /** @var Manager $manager */
-        $manager = $this->getManager();
+        $manager = $this->repository->getManager();
 
-        $comment = new Comment();
-        $comment->setId('testId');
-        $comment->setTtl(500000);
-        $comment->setScore('1.0');
-        $comment->setParent('parentId');
-        $comment->userName = 'testUser';
+        $product = new ProductDocument();
+        $product->setId('testId');
+        $product->setTtl(500000);
+        $product->setScore('1.0');
+        $product->title = 'acme';
 
-        $manager->persist($comment);
+        $manager->persist($product);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Comment');
-        $search = $repository->createSearch();
-        $results = $repository->execute($search);
-        /** @var DocumentInterface $actualProduct */
-        $actualProduct = $results[0];
+        $actualProduct = $this->repository->find('testId');
 
-        $this->assertEquals($comment->getId(), $actualProduct->getId());
-        $this->assertEquals($comment->getParent(), $actualProduct->getParent());
-        $this->assertLessThan($comment->getTtl(), $actualProduct->getTtl());
+        $this->assertEquals($product->getId(), $actualProduct->getId());
+        $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
     }
 
     /**
@@ -236,22 +197,18 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testPersistDateField()
     {
         /** @var Manager $manager */
-        $manager = $this->getManager();
+        $manager = $this->repository->getManager();
 
-        $comment = new Comment();
-        $comment->setId('testId');
-        $comment->setParent('parentId');
-        $comment->setCreatedAt(new \DateTime('2100-01-02 03:04:05.889342'));
+        $product = new ProductDocument();
+        $product->setId('testId');
+        $product->released = new \DateTime('2100-01-02 03:04:05.889342');
 
-        $manager->persist($comment);
+        $manager->persist($product);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Comment');
-        $results = $repository->execute($repository->createSearch());
-        /** @var DocumentInterface $actualProduct */
-        $actualProduct = $results[0];
+        $actualProduct = $this->repository->find('testId');
 
-        $this->assertGreaterThan(time(), $actualProduct->getCreatedAt()->getTimestamp());
+        $this->assertGreaterThan(time(), $actualProduct->released->getTimestamp());
     }
 
     /**
@@ -259,22 +216,21 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testPersistTokenCountField()
     {
-        $manager = $this->getManager();
-        $colorDocument = new ColorDocument();
-        $colorDocument->piecesCount = 't e s t';
-        $manager->persist($colorDocument);
+        $manager = $this->repository->getManager();
+        $product = new ProductDocument();
+        $product->tokenPiecesCount = 't e s t';
+        $manager->persist($product);
         $manager->commit();
-        $repository = $manager->getRepository('AcmeTestBundle:ColorDocument');
 
         // Analyzer is whitespace, so there are four tokens.
         $search = new Search();
         $search->addQuery(new TermQuery('pieces_count.count', '4'));
-        $this->assertEquals(1, $repository->execute($search)->getTotalCount());
+        $this->assertEquals(1, $this->repository->execute($search)->count());
 
         // Test with invalid count.
         $search = new Search();
         $search->addQuery(new TermQuery('pieces_count.count', '6'));
-        $this->assertEquals(0, $repository->execute($search)->getTotalCount());
+        $this->assertEquals(0, $this->repository->execute($search)->count());
     }
 
     /**
@@ -282,45 +238,26 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testCloningDocuments()
     {
-        $manager = $this->getManager();
+        $manager = $this->repository->getManager();
 
-        $document = new Product();
+        $document = new ProductDocument();
         $document->setId('tuna_id');
         $document->title = 'tuna';
 
         $manager->persist($document);
         $manager->commit();
 
-        $repository = $manager->getRepository('AcmeTestBundle:Product');
-        $document = $repository->find('tuna_id');
+        $document = $this->repository->find('tuna_id');
         $clone = clone $document;
 
         $this->assertNull($clone->getId(), 'Id should be null\'ed.');
         $manager->persist($clone);
         $manager->commit();
 
-        $search = $repository
+        $search = $this->repository
             ->createSearch()
             ->addQuery(new TermQuery('title', 'tuna'));
 
-        $this->assertCount(2, $repository->execute($search), '2 Results should be found.');
-    }
-
-    /**
-     * Converts document to array.
-     *
-     * @param DocumentInterface $document
-     *
-     * @return array
-     */
-    private function convertToArray($document)
-    {
-        $manager = $this->getManager();
-
-        if (!$this->converter) {
-            $this->converter = new Converter($manager->getTypesMapping(), $manager->getBundlesMapping());
-        }
-
-        return $this->converter->convertToArray($document);
+        $this->assertCount(2, $this->repository->execute($search), '2 Results should be found.');
     }
 }
