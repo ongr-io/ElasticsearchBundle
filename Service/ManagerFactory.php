@@ -15,6 +15,7 @@ use Doctrine\Common\Cache\CacheProvider;
 use Elasticsearch\ClientBuilder;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
+use Psr\Log\LoggerInterface;
 
 /**
  * Elasticsearch Manager factory class.
@@ -37,15 +38,29 @@ class ManagerFactory
     private $converter;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $tracer;
+
+    /**
      * @param MetadataCollector $metadataCollector Metadata collector service.
      * @param CacheProvider     $cache             Cache provider to save some data.
      * @param Converter         $converter         Converter service to transform arrays to objects and visa versa.
+     * @param LoggerInterface   $tracer
+     * @param LoggerInterface   $logger
      */
-    public function __construct($metadataCollector, $cache, $converter)
+    public function __construct($metadataCollector, $cache, $converter, $tracer = null, $logger = null)
     {
         $this->metadataCollector = $metadataCollector;
         $this->cache = $cache;
         $this->converter = $converter;
+        $this->tracer = $tracer;
+        $this->logger = $logger;
     }
 
     /**
@@ -72,6 +87,14 @@ class ManagerFactory
         $client = ClientBuilder::create();
 
         $client->setHosts($connection['hosts']);
+
+        if ($this->tracer && $managerConfig['profiler']) {
+            $client->setTracer($this->tracer);
+        }
+
+        if ($this->logger && $managerConfig['logger']['enabled']) {
+            $client->setLogger($this->logger);
+        }
 
         $indexSettings = [
             'index' => $connection['index_name'],

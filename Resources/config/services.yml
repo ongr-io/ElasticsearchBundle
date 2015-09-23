@@ -15,7 +15,7 @@ parameters:
     es.profiler.class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
     es.doctrine.filesystem_cache.class: Doctrine\Common\Cache\FilesystemCache
     es.result_converter.class: ONGR\ElasticsearchBundle\Result\Converter
-    es.logger.ongr.class: Monolog\Logger
+    es.tracer.class: Monolog\Logger
 
 services:
     es.export:
@@ -53,10 +53,9 @@ services:
         class: %es.logger.collection_handler.class%
         public: false
 
-    es.logger.ongr:
-        class: %es.logger.ongr.class%
+    es.tracer:
+        class: %es.tracer.class%
         arguments: ['ongr']
-        lazy: true
         calls:
             - [pushHandler, [@es.logger.collection_handler]]
 
@@ -64,7 +63,7 @@ services:
         class: %es.profiler.class%
         calls:
             - [setManagers, [%es.managers%]]
-            - [addLogger, [@es.logger.ongr]]
+            - [addLogger, [@es.tracer]]
         tags:
             - {name: data_collector, template: %es.profiler.template%, id: ongr}
 
@@ -74,4 +73,4 @@ services:
 
     es.manager_factory:
         class: %es.manager_factory.class%
-        arguments: [@es.metadata_collector, @es.cache_engine, @es.result_converter]
+        arguments: [@es.metadata_collector, @es.cache_engine, @es.result_converter, @es.tracer]
