@@ -118,10 +118,12 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
         $this->checkQueryParameters($lastQuery);
 
+        $lastQuery['body'] = trim(preg_replace('/\s+/', '', $lastQuery['body']));
+
         $this->assertEquals(
             [
-                'body' => [],
-                'method' => 'POST',
+                'body' => '{"query":{"term":{"title":"pizza"}}}',
+                'method' => 'GET',
                 'httpParameters' => [],
                 'scheme' => 'http',
                 'port' => 9200,
