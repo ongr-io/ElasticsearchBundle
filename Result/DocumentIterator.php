@@ -34,7 +34,7 @@ class DocumentIterator extends AbstractResultsIterator
             $data[$realKey] = $value;
         }
 
-        return new AggregationIterator($aggregations, $this->getConverter());
+        return new AggregationIterator($aggregations, $this->getConverter(), $this->getRepository());
     }
 
     /**
