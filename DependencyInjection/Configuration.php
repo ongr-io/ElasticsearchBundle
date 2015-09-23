@@ -90,7 +90,6 @@ class Configuration implements ConfigurationInterface
                 ->children()
                     ->arrayNode('hosts')
                         ->info('Defines hosts to connect to.')
-                        ->isRequired()
                         ->defaultValue(['127.0.0.1:9200'])
                         ->prototype('scalar')
                         ->end()
