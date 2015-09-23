@@ -18,7 +18,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * Functional tests for type update command.
- * #TODO Fix this test.
  */
 class TypeUpdateCommandTest extends AbstractElasticsearchTestCase
 {

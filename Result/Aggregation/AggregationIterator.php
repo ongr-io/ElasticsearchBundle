@@ -42,8 +42,9 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
     /**
      * Constructor.
      *
-     * @param array $rawData
-     * @param null  $converter
+     * @param array      $rawData
+     * @param null       $converter
+     * @param Repository $repository
      */
     public function __construct($rawData, $converter = null, $repository = null)
     {

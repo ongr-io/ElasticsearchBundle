@@ -75,9 +75,9 @@ class Converter
     /**
      * Assigns all properties to object.
      *
-     * @param array      $array
-     * @param object     $object
-     * @param array      $aliases
+     * @param array  $array
+     * @param object $object
+     * @param array  $aliases
      *
      * @return object
      */
@@ -138,7 +138,6 @@ class Converter
 
         // Variable $name defined in client.
         foreach ($aliases as $name => $alias) {
-
             $value = $this->getPropertyAccessor()->getValue($object, $alias['propertyName']);
 
             if (isset($value)) {

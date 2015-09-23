@@ -33,7 +33,6 @@ class ExportService
      */
     public function exportIndex(Manager $manager, $filename, $types, $chunkSize, OutputInterface $output)
     {
-        // #TODO create get mamanager mappings function in manager.
         $typesMapping = $manager->getMetadataCollector()->getMappings($manager->getConfig()['mappings']);
         $typesToExport = [];
         if ($types) {

@@ -72,6 +72,11 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      */
     private $offset = 0;
 
+    /**
+     * Used to count iteration.
+     *
+     * @var int
+     */
     private $key = 0;
 
     /**
@@ -186,7 +191,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isScrollable()
     {

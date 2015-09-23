@@ -72,6 +72,7 @@ class JsonReader implements \Countable, \Iterator
     {
         $this->manager = $manager;
         $this->filename = $filename;
+        $this->converter = $manager->getConverter();
         $this->convertDocuments = $convertDocuments;
     }
 
@@ -83,6 +84,14 @@ class JsonReader implements \Countable, \Iterator
         if ($this->handle !== null) {
             @fclose($this->handle);
         }
+    }
+
+    /**
+     * @return Manager
+     */
+    public function getManager()
+    {
+        return $this->manager;
     }
 
     /**
@@ -254,13 +263,6 @@ class JsonReader implements \Countable, \Iterator
      */
     protected function getConverter()
     {
-        if (!$this->converter) {
-            $this->converter = new Converter(
-                $this->manager->getTypesMapping(),
-                $this->manager->getBundlesMapping()
-            );
-        }
-
         return $this->converter;
     }
 
@@ -292,6 +294,8 @@ class JsonReader implements \Countable, \Iterator
             return $document;
         }
 
-        return $this->getConverter()->convertToDocument($document);
+        $repository = $this->getManager()->getRepository([]);
+
+        return $this->getConverter()->convertToDocument($document, $repository);
     }
 }
