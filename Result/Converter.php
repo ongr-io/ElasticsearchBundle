@@ -45,7 +45,7 @@ class Converter
     /**
      * Converts raw array to document.
      *
-     * @param array $rawData
+     * @param array      $rawData
      * @param Repository $repository
      *
      * @return DocumentInterface
@@ -65,7 +65,7 @@ class Converter
         $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
 
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject($data, new $metadata['namespace'](), $metadata['aliases'], $repository);
+        $object = $this->assignArrayToObject($data, new $metadata['namespace'](), $metadata['aliases']);
 
         $this->setObjectFields($object, $rawData, ['_id', '_score', 'fields _parent', 'fields _ttl']);
 
@@ -78,7 +78,6 @@ class Converter
      * @param array      $array
      * @param object     $object
      * @param array      $aliases
-     * @param Repository $repository
      *
      * @return object
      */
