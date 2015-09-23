@@ -23,6 +23,12 @@ use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
  */
 class ConverterTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function setUp()
+    {
+
+    }
+
     /**
      * Tests if ConvertToDocument() throws Exception.
      *
@@ -31,8 +37,8 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
      */
     public function testConvertToDocumentException()
     {
-        $converter = new Converter([], []);
-        $converter->convertToDocument(['_type' => 'foo']);
+        $converter = new Converter();
+        $converter->convertToDocument(['_type' => 'foo'], null);
     }
 
     /**
@@ -41,15 +47,9 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
     public function testAssignArrayToObject()
     {
         $stub = $this
-            ->getMockBuilder('\ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Item')
+            ->getMockBuilder('\ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument')
             ->getMock();
 
-        $documentHighlight = new DocumentHighlight([]);
-
-        $stub
-            ->expects($this->once())
-            ->method('setHighlight')
-            ->with($this->identicalTo($documentHighlight));
         $stub
             ->expects($this->once())
             ->method('__set')
@@ -62,13 +62,12 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
             ->method('setPrice')
             ->with($this->equalTo(123));
 
-        $converter = new Converter([], []);
+        $converter = new Converter(null);
 
         $converter->assignArrayToObject(
             [
                 'foo' => 'bar',
                 'price' => (float)123,
-                'highlight' => $documentHighlight,
             ],
             $stub,
             [
@@ -76,24 +75,7 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
                     'propertyName' => 'price',
                     'type' => 'float',
                 ],
-                'highlight' => [
-                    'propertyName' => 'highlight',
-                    'type' => 'DocumentHighlight',
-                ],
             ]
         );
-    }
-
-    /**
-     * Tests if getAlias() throws Exception.
-     *
-     * @expectedException        \DomainException
-     */
-    public function testGetAliasException()
-    {
-        /** @var \ONGR\ElasticsearchBundle\Document\DocumentInterface $stub */
-        $stub = $this->getMockBuilder('\ONGR\ElasticsearchBundle\Document\DocumentInterface')->getMock();
-        $converter = new Converter([], []);
-        $converter->convertToArray($stub);
     }
 }

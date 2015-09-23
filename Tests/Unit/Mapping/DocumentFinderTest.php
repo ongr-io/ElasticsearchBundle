@@ -26,15 +26,15 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
 
         // Case #0.
         $out[] = [
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
-            'AcmeTestBundle:Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
+            'AcmeBarBundle:ProductDocument',
             true,
         ];
 
         // Case #1.
         $out[] = [
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
-            'AcmeTestBundle:Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
+            'AcmeBarBundle:ProductDocument',
         ];
 
         return $out;
@@ -55,7 +55,7 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedNamespace, $finder->getNamespace($document));
         if ($testPath) {
-            $this->assertGreaterThan(0, count($finder->getBundleDocumentPaths('AcmeTestBundle')));
+            $this->assertGreaterThan(0, count($finder->getBundleDocumentPaths('AcmeBarBundle')));
         }
     }
 
@@ -64,6 +64,6 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
      */
     public function getBundles()
     {
-        return ['AcmeTestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\AcmeTestBundle'];
+        return ['AcmeBarBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle'];
     }
 }

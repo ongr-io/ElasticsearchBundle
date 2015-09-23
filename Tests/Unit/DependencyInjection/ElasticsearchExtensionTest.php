@@ -37,7 +37,7 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'test' => [
                         'connection' => 'test2',
-                        'debug' => [
+                        'logger' => [
                             'enabled' => true,
                             'level' => 'warning',
                         ],
@@ -53,15 +53,22 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'index_name' => 'test',
                 'hosts' => ['127.0.0.1:9200'],
                 'settings' => [],
+                'analysis' => [
+                    'tokenizer' => [],
+                    'filter' => [],
+                    'analyzer' => [],
+                ],
             ],
         ];
 
         $expectedManagers = [
             'test' => [
                 'connection' => 'test2',
-                'debug' => [
+                'profiler' => false,
+                'logger' => [
                     'enabled' => true,
                     'level' => 'warning',
+                    'log_file_name' => null,
                 ],
                 'readonly' => false,
                 'mappings' => ['testBundle'],
@@ -82,7 +89,8 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'test' => [
                         'connection' => 'test2',
-                        'debug' => true,
+                        'profiler' => true,
+                        'logger' => true,
                         'readonly' => false,
                         'mappings' => ['testBundle'],
                     ],
@@ -93,9 +101,11 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
         $expectedManagers = [
             'test' => [
                 'connection' => 'test2',
-                'debug' => [
+                'profiler' => true,
+                'logger' => [
                     'enabled' => true,
                     'level' => 'warning',
+                    'log_file_name' => null,
                 ],
                 'readonly' => false,
                 'mappings' => ['testBundle'],
@@ -132,44 +142,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
             $parameters,
             $container
         );
-
-        if ($parameters['elasticsearch']['managers']['test']['debug']) {
-            $reflection = new \ReflectionClass($this);
-            $dir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . DocumentFinder::DOCUMENT_DIR;
-
-            $handler = new Definition('ONGR\ElasticsearchBundle\Logger\Handler\CollectionHandler', []);
-            $logger = new Definition(
-                'Monolog\Logger',
-                [
-                    'tracer',
-                    [$handler],
-                ]
-            );
-
-            $collector = new Definition('ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector');
-            $collector->addMethodCall('setManagers', [new Parameter('es.managers')]);
-            $collector->addMethodCall('addLogger', [new Reference('es.logger.trace')]);
-            $collector->addTag(
-                'data_collector',
-                [
-                    'template' => 'ONGRElasticsearchBundle:Profiler:profiler.html.twig',
-                    'id' => 'es',
-                ]
-            );
-
-            $this->assertEquals(
-                $collector,
-                $container->getDefinition('es.collector')
-            );
-            $this->assertEquals(
-                $logger,
-                $container->getDefinition('es.logger.trace')
-            );
-            $this->assertEquals(
-                new DirectoryResource($dir),
-                $container->getResources()[1]
-            );
-        }
 
         $this->assertEquals(
             $expectedConnections,

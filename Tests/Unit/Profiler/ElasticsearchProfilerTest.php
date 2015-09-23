@@ -11,16 +11,16 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DataCollector;
 
-use ONGR\ElasticsearchBundle\DataCollector\ElasticsearchDataCollector;
+use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
 
-class ElasticsearchDataCollectorTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchProfilerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Tests if correct name is being returned.
      */
     public function testGetName()
     {
-        $collector = new ElasticsearchDataCollector();
+        $collector = new ElasticsearchProfiler();
         $this->assertEquals('es', $collector->getName());
     }
 
@@ -29,7 +29,7 @@ class ElasticsearchDataCollectorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetManagers()
     {
-        $collector = new ElasticsearchDataCollector();
+        $collector = new ElasticsearchProfiler();
         $collector->setManagers([ 'default' => [], 'acme' => [] ]);
 
         $result = $collector->getManagers();
