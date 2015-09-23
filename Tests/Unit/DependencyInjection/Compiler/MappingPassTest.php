@@ -20,7 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class MappingPassTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Before a test method is run, a template method called setUp() is invoked.
      */
