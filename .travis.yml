@@ -1,34 +1,29 @@
 sudo: false
-
 language: php
-
 php:
   - 5.5
   - 5.6
   - 7.0
   - hhvm
-
 services:
   - elasticsearch
-
 matrix:
   allow_failures:
     - php: hhvm
-
 before_script:
   - composer install --no-interaction
-
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
   - vendor/bin/phpcs -p --standard=vendor/ongr/ongr-strict-standard/Ongr --ignore=vendor/,Tests/app/ ./
-
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-
 notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/81e47479feba5ba8dc47
     on_success: change
     on_start: never
+env:
+  global:
+    secure: XfQdHd1RNCo9/0kwbNJi65GRqmbwW4gt+dq4xOflUX/1kFTmXIRI/ucHC5FeCFVNDlk29vlroIpVc1tioaMCqTx5doJBkNI5+W4W+XqVJGijhD/C2cwGh9ILz8aPvc8x891hkV0xz4nV6bhDRB9mxTMpcChtFmaoA5m9WvTxDgA=
