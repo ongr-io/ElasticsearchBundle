@@ -16,6 +16,10 @@ Technical goodies:
 * Registers console commands for index and types management and data import / export.
 * Designed in an extensible way for all your custom needs.
 
+If you have any questions, don't hesitate to ask them on [![Join the chat at https://gitter.im/ongr-io/support](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ongr-io/support?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+ chat, or just come to say Hi ;).
+
+
 [![Build Status](https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master)](https://travis-ci.org/ongr-io/ElasticsearchBundle)
 [![Scrutinizer](https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master)](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master)
 [![Coverage](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master)
