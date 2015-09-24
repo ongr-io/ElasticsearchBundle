@@ -28,9 +28,9 @@ Technical goodies:
 
 ## Documentation
 
-The online documentation of the bundle is [here](Resources\doc\index.md)
+The online documentation of the bundle is [here](Resources/doc/index.md)
 
-For contribution to the documentation you can find it in the [contribute](Resources\doc\contribute.md) topic.
+For contribution to the documentation you can find it in the [contribute](Resources/doc/contribute.md) topic.
 
 ## License
 
