@@ -11,6 +11,7 @@ matrix:
   allow_failures:
     - php: hhvm
 before_script:
+  - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
