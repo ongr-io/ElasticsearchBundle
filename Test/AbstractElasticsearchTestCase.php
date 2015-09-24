@@ -72,7 +72,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      */
     protected function getNumberOfRetries()
     {
-        return 0;
+        return 3;
     }
 
     /**
