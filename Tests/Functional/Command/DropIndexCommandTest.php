@@ -26,7 +26,7 @@ class DropIndexCommandTest extends AbstractCommandTestCase
     {
         return [
             ['default'],
-            ['bar'],
+            ['foo'],
         ];
     }
 
@@ -40,7 +40,7 @@ class DropIndexCommandTest extends AbstractCommandTestCase
     public function testExecute($argument)
     {
         $manager = $this->getManager($argument);
-        $manager->getConnection()->createIndex();
+        $manager->dropAndCreateIndex();
 
         $app = new Application();
         $app->add($this->getDropCommand());
@@ -56,7 +56,6 @@ class DropIndexCommandTest extends AbstractCommandTestCase
         );
         $this->assertTrue(
             $manager
-                ->getConnection()
                 ->indexExists(),
             'Index should still exist.'
         );
@@ -72,7 +71,6 @@ class DropIndexCommandTest extends AbstractCommandTestCase
 
         $this->assertFalse(
             $manager
-                ->getConnection()
                 ->indexExists(),
             'Index should be dropped.'
         );

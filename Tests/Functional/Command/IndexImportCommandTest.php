@@ -12,12 +12,12 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexImportCommand;
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class IndexImportCommandTest extends ElasticsearchTestCase
+class IndexImportCommandTest extends AbstractElasticsearchTestCase
 {
     /**
      * Data provider for testIndexImport.
@@ -54,13 +54,13 @@ class IndexImportCommandTest extends ElasticsearchTestCase
             [
                 'command' => $command->getName(),
                 '--raw' => true,
-                'filename' => __DIR__ . '/../../app/fixture/Json/' . $filename,
+                'filename' => __DIR__ . '/../../app/fixture/data/' . $filename,
                 '--bulk-size' => $bulkSize,
             ]
         );
 
         $manager = $this->getManager('default', false);
-        $repo = $manager->getRepository('AcmeTestBundle:Product');
+        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery())

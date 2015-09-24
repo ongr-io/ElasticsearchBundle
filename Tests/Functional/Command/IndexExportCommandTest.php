@@ -12,12 +12,12 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexExportCommand;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class IndexExportCommandTest extends ElasticsearchTestCase
+class IndexExportCommandTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -25,7 +25,7 @@ class IndexExportCommandTest extends ElasticsearchTestCase
     protected function getDataArray()
     {
         return [
-            'default' => [
+            'foo' => [
                 'product' => [
                     [
                         '_id' => 1,
@@ -37,15 +37,20 @@ class IndexExportCommandTest extends ElasticsearchTestCase
                         'title' => 'bar',
                         'price' => 32,
                     ],
+                    [
+                        '_id' => 3,
+                        'title' => 'acme',
+                        'price' => 20,
+                    ],
                 ],
-                'fooContent' => [
+                'customer' => [
                     [
                         '_id' => 1,
-                        'header' => 'test_1',
+                        'name' => 'foo',
                     ],
                     [
                         '_id' => 2,
-                        'header' => 'test_2',
+                        'name' => 'acme',
                     ],
                 ],
             ],
@@ -53,38 +58,29 @@ class IndexExportCommandTest extends ElasticsearchTestCase
     }
 
     /**
-     * Test for index export command.
+     * Data provider for testIndexExport().
+     *
+     * @return array
      */
-    public function testIndexExport()
+    public function getIndexExportData()
     {
-        $app = new Application();
-        $app->add($this->getExportCommand());
+        $out = [];
 
-        vfsStream::setup('tmp');
-
-        $command = $app->find('ongr:es:index:export');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(
-            [
-                'command' => $command->getName(),
-                'filename' => vfsStream::url('tmp/test.json'),
-                '--chunk' => 1,
-            ]
-        );
-
+        // Case 1: chunk specified.
+        $options = ['--chunk' => 1, '--manager' => 'foo'];
         $expectedResults = [
             [
                 '_id' => '1',
-                '_type' => 'fooContent',
+                '_type' => 'customer',
                 '_source' => [
-                    'header' => 'test_1',
+                    'name' => 'foo',
                 ],
             ],
             [
                 '_id' => '2',
-                '_type' => 'fooContent',
+                '_type' => 'customer',
                 '_source' => [
-                    'header' => 'test_2',
+                    'name' => 'acme',
                 ],
             ],
             [
@@ -103,9 +99,83 @@ class IndexExportCommandTest extends ElasticsearchTestCase
                     'price' => 32,
                 ],
             ],
+            [
+                '_id' => '3',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'acme',
+                    'price' => 20,
+                ],
+            ],
         ];
 
-        $results = $this->parseResult(vfsStream::url('tmp/test.json'), 4);
+        $out[] = [$options, $expectedResults];
+
+        // Case 1: types specified.
+        $options = ['--types' => ['product'], '--manager' => 'foo'];
+        $expectedResults = [
+            [
+                '_id' => '1',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'foo',
+                    'price' => 10.45,
+                ],
+            ],
+            [
+                '_id' => '2',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'bar',
+                    'price' => 32,
+                ],
+            ],
+            [
+                '_id' => '3',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'acme',
+                    'price' => 20,
+                ],
+            ],
+        ];
+
+        $out[] = [$options, $expectedResults];
+
+        return $out;
+    }
+
+    /**
+     * Test for index export command.
+     *
+     * @param array $options
+     * @param array $expectedResults
+     *
+     * @dataProvider getIndexExportData()
+     */
+    public function testIndexExport($options, $expectedResults)
+    {
+        $this->getManager($options['--manager']);
+
+        $app = new Application();
+        $app->add($this->getExportCommand());
+
+        vfsStream::setup('tmp');
+
+        $command = $app->find('ongr:es:index:export');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            array_merge(
+                [
+                    'command' => $command->getName(),
+                    'filename' => vfsStream::url('tmp/test.json'),
+                ],
+                $options
+            )
+        );
+
+        $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
+
         $this->assertEquals($expectedResults, $results, null, 0.05);
     }
 

@@ -51,12 +51,8 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getOption('force')) {
-            $output->writeln(
-                '<error>ATTENTION:</error> This action should not be used in production environment.'
-                . "\n\nOption --force has to be used to drop type(s)."
-            );
-
-            return 1;
+            $output->writeln('<error>ATTENTION:</error> This action should not be used in the production environment.');
+            $output->writeln('<error>"Option --force is mandatory to change type(s) mapping."</error> ');
         }
 
         $managerName = $input->getOption('manager');
@@ -64,7 +60,6 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
 
         $result = $this
             ->getManager($input->getOption('manager'))
-            ->getConnection()
             ->updateTypes($types);
 
         $typesOutput = empty($types) ? 'all' : implode('</comment><info>`, `</info><comment>', $types);
@@ -72,16 +67,16 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
         switch ($result) {
             case 1:
                 $message = sprintf(
-                    '<info>`</info><comment>%s</comment><info>` type(s) have been updated for manager'
-                    . ' named `</info><comment>%s</comment><info>`.</info>',
+                    '<info>`</info><comment>%s</comment><info>` type(s) have been updated for the '
+                    . '`</info><comment>%s</comment><info> manager`.</info>',
                     $typesOutput,
                     $managerName
                 );
                 break;
             case 0:
                 $message = sprintf(
-                    '<info>`</info><comment>%s</comment><info>` type(s) are already up to date for manager'
-                    . ' named `</info><comment>%s</comment><info>`.</info>',
+                    '<info>`</info><comment>%s</comment><info>` type(s) are already up to date for the '
+                    . '`</info><comment>%s</comment> manager<info>`.</info>',
                     $typesOutput,
                     $managerName
                 );
@@ -99,7 +94,5 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
         }
 
         $output->writeln($message);
-
-        return 0;
     }
 }

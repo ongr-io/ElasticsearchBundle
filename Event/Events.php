@@ -31,6 +31,20 @@ final class Events
     const POST_PERSIST = 'es.post_persist';
 
     /**
+     * Event dispatched before data are added to the bulk.
+     *
+     * The event listener receives an ElasticsearchBulkEvent instance.
+     */
+    const PRE_ADD_TO_BULK = 'es.pre_add_to_bulk';
+
+    /**
+     * Event dispatched after data are added to the bulk.
+     *
+     * The event listener receives an ElasticsearchBulkEvent instance.
+     */
+    const POST_ADD_TO_BULK = 'es.post_add_to_bulk';
+
+    /**
      * Event dispatched before data are committed.
      *
      * The event listener receives an ElasticsearchCommitEvent instance.

@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Command;
 
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -27,7 +27,7 @@ abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
     {
         $this->addOption(
             'manager',
-            null,
+            'mng',
             InputOption::VALUE_REQUIRED,
             'Manager name',
             'default'

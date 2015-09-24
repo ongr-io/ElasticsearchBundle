@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
 use ONGR\ElasticsearchBundle\Result\Converter;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 /**
  * This class hold aggregations from Elasticsearch result.
@@ -34,16 +35,23 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
     private $converter;
 
     /**
+     * @var Repository
+     */
+    private $repository;
+
+    /**
      * Constructor.
      *
-     * @param array $rawData
-     * @param null  $converter
+     * @param array      $rawData
+     * @param null       $converter
+     * @param Repository $repository
      */
-    public function __construct($rawData, $converter = null)
+    public function __construct($rawData, $converter = null, $repository = null)
     {
         $this->rawData = $rawData;
         $this->aggregations = [];
         $this->converter = $converter;
+        $this->repository = $repository;
     }
 
     /**
@@ -80,14 +88,12 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
             }
             $this->aggregations[$offset] = new HitsAggregationIterator(
                 $this->rawData[$offset]['hits'],
-                $this->converter
+                $this->converter,
+                $this->repository
             );
         } else {
             $this->aggregations[$offset] = new ValueAggregation($this->rawData[$offset], $this->converter);
         }
-
-        // Clear memory.
-        $this->rawData[$offset] = null;
 
         return $this->aggregations[$offset];
     }

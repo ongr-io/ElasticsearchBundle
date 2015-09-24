@@ -64,16 +64,6 @@ final class Property extends AbstractProperty
     public $boost;
 
     /**
-     * @var bool
-     */
-    public $payloads;
-
-    /**
-     * @var bool
-     */
-    public $enabled;
-
-    /**
      * @var array<\ONGR\ElasticsearchBundle\Annotation\MultiField>
      */
     public $fields;
@@ -81,7 +71,7 @@ final class Property extends AbstractProperty
     /**
      * @var array
      */
-    public $fielddata;
+    public $fieldData;
 
     /**
      * @var string Object name to map.
@@ -89,42 +79,14 @@ final class Property extends AbstractProperty
     public $objectName;
 
     /**
+     * Defines if related object will have one or multiple values.
+     *
      * @var bool OneToOne or OneToMany.
      */
     public $multiple;
 
     /**
-     * @var int
+     * @var array
      */
-    public $ignoreAbove;
-
-    /**
-     * @var bool
-     */
-    public $store;
-
-    /**
-     * @var string
-     */
-    public $indexName;
-
-    /**
-     * @var bool
-     */
-    public $geohash;
-
-    /**
-     * @var bool
-     */
-    public $geohashPrefix;
-
-    /**
-     * @var string
-     */
-    public $geohashPrecision;
-
-    /**
-     * @var string
-     */
-    public $format;
+    public $raw;
 }

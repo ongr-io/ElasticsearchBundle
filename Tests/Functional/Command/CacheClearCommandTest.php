@@ -12,11 +12,11 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\CacheClearCommand;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CacheClearCommandTest extends ElasticsearchTestCase
+class CacheClearCommandTest extends AbstractElasticsearchTestCase
 {
     /**
      * Tests if command is being executed.
@@ -54,7 +54,7 @@ class CacheClearCommandTest extends ElasticsearchTestCase
         $tester->execute(
             [
                 'command' => $command->getName(),
-                '--manager' => 'foo',
+                '--manager' => 'notexistingmanager',
             ]
         );
     }

@@ -11,130 +11,253 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\Service\Repository;
+
 /**
- * AbstractResultsIterator class.
+ * Class AbstractResultsIterator.
  */
-abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayAccess
+abstract class AbstractResultsIterator implements \Countable, \Iterator
 {
     /**
-     * @var array Raw documents.
+     * @var array Documents.
      */
     protected $documents = [];
 
     /**
-     * @var array Documents casted to objects cache.
+     * @var int
      */
-    protected $converted = [];
+    private $count = 0;
 
     /**
-     * Converts raw array to document.
+     * @var array
+     */
+    private $aggregations = [];
+
+    /**
+     * @var MetadataCollector
+     */
+    private $metaDataCollector;
+
+    /**
+     * @var Converter
+     */
+    private $converter;
+
+    /**
+     * @var Repository
+     */
+    private $repository;
+
+    /**
+     * Elasticsearch manager configuration.
      *
-     * @param array $rawData
+     * @var array
+     */
+    private $managerConfig = [];
+
+    /**
+     * @var string If value is not null then results are scrollable.
+     */
+    private $scrollId;
+
+    /**
+     * @var string Scroll duration.
+     */
+    private $scrollDuration;
+
+    /**
+     * @var int Offset for key modification when results are scrollable.
+     */
+    private $offset = 0;
+
+    /**
+     * Used to count iteration.
      *
-     * @return object|array
+     * @var int
      */
-    abstract protected function convertDocument($rawData);
+    private $key = 0;
 
     /**
-     * {@inheritdoc}
+     * @param array      $rawData
+     * @param Repository $repository
+     * @param array      $scroll
      */
-    public function current()
-    {
-        return $this->offsetGet($this->key());
-    }
+    public function __construct(
+        array $rawData,
+        Repository $repository,
+        array $scroll = []
+    ) {
+        $this->repository = $repository;
+        $this->metaDataCollector = $repository->getManager()->getMetadataCollector();
+        $this->converter = $repository->getManager()->getConverter();
+        $this->managerConfig = $repository->getManager()->getConfig();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function next()
-    {
-        next($this->documents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function key()
-    {
-        return key($this->documents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valid()
-    {
-        return $this->key() !== null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rewind()
-    {
-        reset($this->documents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset)
-    {
-        return array_key_exists($offset, $this->documents);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        if (!isset($this->converted[$offset])) {
-            if (!isset($this->documents[$offset])) {
-                return null;
-            }
-
-            $this->converted[$offset] = $this->convertDocument($this->documents[$offset]);
-
-            // Clear memory.
-            $this->documents[$offset] = null;
+        if (isset($scroll['_scroll_id']) && isset($scroll['duration'])) {
+            $this->scrollId = $scroll['_scroll_id'];
+            $this->scrollDuration = $scroll['duration'];
         }
 
-        return $this->converted[$offset];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value)
-    {
-        if ($offset === null) {
-            $offset = $this->getKey();
+        if (isset($rawData['aggregations'])) {
+            $this->aggregations = &$rawData['aggregations'];
         }
 
-        if (is_object($value)) {
-            $this->converted[$offset] = $value;
-            $this->documents[$offset] = null;
-        } elseif (is_array($value)) {
-            $this->documents[$offset] = $value;
-            // Also invalidate converted document.
-            unset($this->converted[$offset]);
+        if (isset($rawData['hits']['hits'])) {
+            $this->documents = $rawData['hits']['hits'];
+        }
+        if (isset($rawData['hits']['total'])) {
+            $this->count = $rawData['hits']['total'];
         }
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    public function offsetUnset($offset)
+    protected function getAggregations()
     {
-        unset($this->documents[$offset], $this->converted[$offset]);
+        return $this->aggregations;
     }
 
     /**
-     * {@inheritdoc}
+     * @return Repository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
+     * Returns total count of documents.
+     *
+     * @return int
      */
     public function count()
     {
-        return count($this->documents);
+        return $this->count;
+    }
+
+    /**
+     * Return the current element.
+     *
+     * @return mixed
+     */
+    public function current()
+    {
+        return $this->getDocument($this->key());
+    }
+
+    /**
+     * Move forward to next element.
+     */
+    public function next()
+    {
+        $this->advanceKey();
+    }
+
+    /**
+     * Return the key of the current element.
+     *
+     * @return mixed
+     */
+    public function key()
+    {
+        return $this->key;
+    }
+
+    /**
+     * Checks if current position is valid.
+     *
+     * @return bool
+     */
+    public function valid()
+    {
+        $valid = $this->documentExists($this->key());
+        if ($valid) {
+            return true;
+        }
+
+        $this->page();
+
+        return $this->documentExists($this->key());
+    }
+
+    /**
+     * Rewind the Iterator to the first element.
+     */
+    public function rewind()
+    {
+        $this->key = 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isScrollable()
+    {
+        return !empty($this->scrollId);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getManagerConfig()
+    {
+        return $this->managerConfig;
+    }
+
+    /**
+     * @return Converter
+     */
+    protected function getConverter()
+    {
+        return $this->converter;
+    }
+
+    /**
+     * Gets document array from the container.
+     *
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    protected function getDocument($key)
+    {
+        if (!$this->documentExists($key)) {
+            return null;
+        }
+
+        return $this->convertDocument($this->documents[$key]);
+    }
+
+    /**
+     * Checks whether document exists in the container.
+     *
+     * @param mixed $key
+     *
+     * @return bool
+     */
+    protected function documentExists($key)
+    {
+        return array_key_exists($key, $this->documents);
+    }
+
+    /**
+     * Advances key.
+     *
+     * @return $this
+     */
+    protected function advanceKey()
+    {
+        $end = end($this->documents);
+        $current = current($this->documents);
+        if ($this->isScrollable() && ($this->documents[$this->key()] == end($this->documents))) {
+            $this->page();
+        } else {
+            $this->key++;
+        }
+
+        return $this;
     }
 
     /**
@@ -146,23 +269,34 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator, \ArrayA
     {
         $this->rewind();
 
-        return $this->current();
+        return $this->getDocument($this->key());
     }
 
     /**
-     * Return an integer key to be used for a new element in array.
+     * Advances scan page.
      *
-     * @return int
+     * @return $this
      */
-    private function getKey()
+    protected function page()
     {
-        $currentIntKeys = array_filter(array_keys($this->documents), 'is_int');
-        if (empty($currentIntKeys)) {
-            $offset = 0;
-        } else {
-            $offset = max($currentIntKeys) + 1;
+        if ($this->key() == $this->count() || !$this->isScrollable()) {
+            return $this;
         }
 
-        return $offset;
+        $raw = $this->repository->scroll($this->scrollId, $this->scrollDuration, Repository::RESULTS_RAW);
+        $this->rewind();
+        $this->scrollId = $raw['_scroll_id'];
+        $this->documents = $raw['hits']['hits'];
+
+        return $this;
     }
+
+    /**
+     * Converts raw array to document object or array, depends on iterator type.
+     *
+     * @param array $document
+     *
+     * @return DocumentInterface|array
+     */
+    abstract protected function convertDocument(array $document);
 }

@@ -11,9 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Mapping;
 
+use Doctrine\Common\Cache\CacheProvider;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyLoader;
 
 /**
  * DocumentParser wrapper for getting bundle documents mapping.
@@ -31,64 +30,100 @@ class MetadataCollector
     private $parser;
 
     /**
-     * @var ProxyLoader
+     * @var CacheProvider
      */
-    private $proxyLoader;
+    private $cache;
 
     /**
-     * @var array
+     * @param DocumentFinder $finder For finding documents.
+     * @param DocumentParser $parser For reading document annotations.
+     * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
      */
-    private $proxyPaths = [];
-
-    /**
-     * @var array Contains mappings gathered from bundle documents.
-     */
-    private $documents = [];
-
-    /**
-     * @param DocumentFinder $finder      For finding documents.
-     * @param DocumentParser $parser      For reading document annotations.
-     * @param ProxyLoader    $proxyLoader For creating proxy documents.
-     */
-    public function __construct($finder, $parser, $proxyLoader)
+    public function __construct($finder, $parser, $cache)
     {
         $this->finder = $finder;
         $this->parser = $parser;
-        $this->proxyLoader = $proxyLoader;
+        $this->cache = $cache;
     }
 
     /**
-     * Retrieves mapping from local cache otherwise runs through bundle files.
+     * Fetches bundles mapping from documents.
      *
-     * @param string $namespace Bundle name to retrieve mappings from.
-     * @param bool   $force     Forces to rescan bundles and skip local cache.
-     *
+     * @param array $bundles Elasticsearch manager config. You can get bundles list from 'mappings' node.
      * @return array
      */
-    public function getClientMapping($namespace, $force = false)
+    public function getMappings(array $bundles)
     {
-        if (!$force && array_key_exists($namespace, $this->documents)) {
-            return $this->documents[$namespace];
+        $output = [];
+        foreach ($bundles as $bundle) {
+            $output = array_merge($output, $this->getBundleMapping($bundle));
         }
 
+        return $output;
+    }
+
+    /**
+     * Searches for documents in the bundle and tries to read them.
+     *
+     * @param string $bundle
+     *
+     * @return array Empty array on containing zero documents.
+     */
+    public function getBundleMapping($bundle)
+    {
         $mappings = [];
-        foreach ($this->getMapping($namespace) as $type => $mapping) {
-            if (!empty($mapping['properties'])) {
-                $mappings[$type] = array_filter(
-                    array_merge(
-                        ['properties' => $mapping['properties']],
-                        $mapping['fields']
-                    ),
-                    function ($value) {
-                        return (bool)$value || is_bool($value);
-                    }
-                );
+        $bundleNamespace = $this->finder->getBundleClass($bundle);
+        $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
+
+        // Checks if is mapped document or bundle.
+        if (strpos($bundle, ':') !== false) {
+            $documents = [];
+        } else {
+            $documents = $this->finder->getBundleDocumentPaths($bundle);
+        }
+
+        // Loop through documents found in bundle.
+        foreach ($documents as $document) {
+            $documentReflection = new \ReflectionClass(
+                $bundleNamespace .
+                '\\' . DocumentFinder::DOCUMENT_DIR .
+                '\\' . pathinfo($document, PATHINFO_FILENAME)
+            );
+
+            $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
+            if (is_array($documentMapping) && isset($documentMapping['type'])) {
+                $documentMapping['bundle'] = $bundle;
+                $mappings = array_replace_recursive($mappings, [$documentMapping['type'] => $documentMapping]);
             }
         }
 
-        $this->documents[$namespace] = $mappings;
+        return $mappings;
+    }
 
-        return $this->documents[$namespace];
+    /**
+     * @param array $manager
+     *
+     * @return array
+     */
+    public function getManagerTypes($manager)
+    {
+        $mapping = $this->getMappings($manager['mappings']);
+
+        return array_keys($mapping);
+    }
+
+    /**
+     * Resolves document elasticsearch type, use format: SomeBarBundle:AcmeDocument.
+     *
+     * @param string $document
+     *
+     * @return string
+     */
+    public function getDocumentType($document)
+    {
+        $mapping = $this->getMappingByNamespace($document);
+
+        return $mapping['type'];
     }
 
     /**
@@ -101,6 +136,50 @@ class MetadataCollector
     public function getMappingByNamespace($namespace)
     {
         return $this->getDocumentReflectionMapping(new \ReflectionClass($this->finder->getNamespace($namespace)));
+    }
+
+    /**
+     * Retrieves mapping from local cache otherwise runs through bundle files.
+     *
+     * @param array $manager Manager config.
+     *
+     * @return array
+     */
+    public function getClientMapping($manager)
+    {
+        /** @var array $typesMapping Array of filtered mappings for the elasticsearch client*/
+        $typesMapping = [];
+
+        /** @var array $mappings All mapping info */
+        $mappings = $this->getMappings($manager['mappings']);
+
+        foreach ($mappings as $type => $mapping) {
+            if (!empty($mapping['properties'])) {
+                $typesMapping[$type] = array_filter(
+                    array_merge(
+                        ['properties' => $mapping['properties']],
+                        $mapping['fields']
+                    ),
+                    function ($value) {
+                        return (bool)$value || is_bool($value);
+                    }
+                );
+            }
+        }
+
+        return $typesMapping;
+    }
+
+    /**
+     * Gathers annotation data from class.
+     *
+     * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
+     *
+     * @return array|null
+     */
+    private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
+    {
+        return $this->parser->parse($reflectionClass);
     }
 
     /**
@@ -130,75 +209,5 @@ class MetadataCollector
         $mapping = $this->getMappingByNamespace($namespace);
 
         return $mapping === null ? [] : $mapping;
-    }
-
-    /**
-     * Searches for documents in bundle and tries to read them.
-     *
-     * @param string $bundle
-     *
-     * @return array Empty array on containing zero documents.
-     */
-    public function getBundleMapping($bundle)
-    {
-        $mappings = [];
-        $this->proxyPaths = [];
-        $bundleNamespace = $this->finder->getBundleClass($bundle);
-        $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
-        $documentDir = str_replace('/', '\\', $this->finder->getDocumentDir());
-
-        // Loop through documents found in bundle.
-        foreach ($this->finder->getBundleDocumentPaths($bundle) as $document) {
-            $documentReflection = new \ReflectionClass(
-                $bundleNamespace .
-                '\\' . $documentDir .
-                '\\' . pathinfo($document, PATHINFO_FILENAME)
-            );
-
-            $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-            if ($documentMapping !== null) {
-                $mappings = array_replace_recursive($mappings, $documentMapping);
-            }
-        }
-
-        return $mappings;
-    }
-
-    /**
-     * Returns document proxy paths.
-     *
-     * @return array
-     */
-    public function getProxyPaths()
-    {
-        return $this->proxyPaths;
-    }
-
-    /**
-     * Gathers annotation data from class.
-     *
-     * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
-     *
-     * @return array|null
-     */
-    private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
-    {
-        $mapping = $this->parser->parse($reflectionClass);
-
-        if ($mapping !== null) {
-            $type = key($mapping);
-            $this->proxyPaths[$mapping[$type]['proxyNamespace']] = $this->proxyLoader->load($reflectionClass);
-
-            foreach ($mapping[$type]['objects'] as $namespace) {
-                $objectReflection = new \ReflectionClass($namespace);
-                $proxyObject = ProxyFactory::getProxyNamespace($objectReflection);
-
-                if (!array_key_exists($proxyObject, $this->proxyPaths)) {
-                    $this->proxyPaths[$proxyObject] = $this->proxyLoader->load($objectReflection);
-                }
-            }
-        }
-
-        return $mapping;
     }
 }

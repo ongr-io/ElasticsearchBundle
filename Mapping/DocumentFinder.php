@@ -24,7 +24,7 @@ class DocumentFinder
     /**
      * @var string Directory in bundle to load documents from.
      */
-    private $documentDir = 'Document';
+    const DOCUMENT_DIR = 'Document';
 
     /**
      * Constructor.
@@ -49,14 +49,14 @@ class DocumentFinder
             list($bundle, $document) = explode(':', $namespace);
             $bundle = $this->getBundleClass($bundle);
             $namespace = substr($bundle, 0, strrpos($bundle, '\\')) . '\\' .
-                str_replace('/', '\\', $this->getDocumentDir()) . '\\' . $document;
+                self::DOCUMENT_DIR . '\\' . $document;
         }
 
         return $namespace;
     }
 
     /**
-     * Returns bundle class namesapce else throws an exception.
+     * Returns bundle class namespace else throws an exception.
      *
      * @param string $name
      *
@@ -74,26 +74,6 @@ class DocumentFinder
     }
 
     /**
-     * Document directory in bundle to load documents from.
-     *
-     * @param string $documentDir
-     */
-    public function setDocumentDir($documentDir)
-    {
-        $this->documentDir = $documentDir;
-    }
-
-    /**
-     * Returns directory name in which documents should be put.
-     *
-     * @return string
-     */
-    public function getDocumentDir()
-    {
-        return $this->documentDir;
-    }
-
-    /**
      * Returns bundle document paths.
      *
      * @param string $bundle
@@ -106,8 +86,10 @@ class DocumentFinder
 
         return glob(
             dirname($bundleReflection->getFileName()) .
-            DIRECTORY_SEPARATOR . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $this->getDocumentDir()) .
-            DIRECTORY_SEPARATOR . '*.php'
+            DIRECTORY_SEPARATOR .
+            self::DOCUMENT_DIR .
+            DIRECTORY_SEPARATOR .
+            '*.php'
         );
     }
 }

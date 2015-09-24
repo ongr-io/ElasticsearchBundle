@@ -24,33 +24,30 @@ class ObjectIterator extends AbstractResultsIterator
     /**
      * @var Converter
      */
-    private $converter;
+    private $objectConverter;
 
     /**
-     * Constructor.
+     * Using part of abstract iterator functionality only.
      *
      * @param Converter $converter
-     * @param array     $rawData
+     * @param array     $documents
      * @param array     $alias
      */
-    public function __construct($converter, $rawData, $alias)
+    public function __construct($converter, $documents, $alias)
     {
-        $this->converter = $converter;
+        $this->documents = $documents;
         $this->alias = $alias;
-        $this->converted = [];
-
-        // Alias documents to have shorter path.
-        $this->documents = &$rawData;
+        $this->objectConverter = $converter;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function convertDocument($rawData)
+    protected function convertDocument(array $document)
     {
-        return $this->converter->assignArrayToObject(
-            $rawData,
-            new $this->alias['proxyNamespace'](),
+        return $this->objectConverter->assignArrayToObject(
+            $document,
+            new $this->alias['namespace'](),
             $this->alias['aliases']
         );
     }

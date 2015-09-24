@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
 use ONGR\ElasticsearchBundle\Result\Converter;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 /**
  * HitsAggregationIterator class.
@@ -29,15 +30,22 @@ class HitsAggregationIterator implements \ArrayAccess, \Iterator, \Countable
     private $converter;
 
     /**
+     * @var Repository
+     */
+    private $repository;
+
+    /**
      * Constructor.
      *
-     * @param array     $raw
-     * @param Converter $converter
+     * @param array      $raw
+     * @param Converter  $converter
+     * @param Repository $repository
      */
-    public function __construct($raw, $converter)
+    public function __construct($raw, $converter, $repository)
     {
         $this->raw = $raw;
         $this->converter = $converter;
+        $this->repository;
     }
 
     /**
@@ -45,7 +53,7 @@ class HitsAggregationIterator implements \ArrayAccess, \Iterator, \Countable
      */
     public function current()
     {
-        return $this->converter->convertToDocument(current($this->raw['hits']));
+        return $this->converter->convertToDocument(current($this->raw['hits']), $this->repository);
     }
 
     /**

@@ -12,6 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result\Aggregation;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\HitsAggregationIterator;
+use ONGR\ElasticsearchBundle\Result\Converter;
+use ONGR\ElasticsearchBundle\Service\Repository;
 
 class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,7 +24,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testOffsetSet()
     {
-        $hits = new HitsAggregationIterator([], null);
+        $hits = new HitsAggregationIterator([], null, null);
         $hits['foo'] = 'test';
     }
 
@@ -33,7 +35,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testOffsetUnset()
     {
-        $hits = new HitsAggregationIterator([], null);
+        $hits = new HitsAggregationIterator([], null, null);
         unset($hits['foo']);
     }
 
@@ -91,7 +93,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteration($raw, $expected)
     {
-        $hits = new HitsAggregationIterator($raw, $this->getConverterMock());
+        $hits = new HitsAggregationIterator($raw, $this->getConverterMock(), null);
 
         $ids = [];
         foreach ($hits as $doc) {
@@ -106,7 +108,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testCount()
     {
-        $hits = new HitsAggregationIterator(['total' => 4], null);
+        $hits = new HitsAggregationIterator(['total' => 4], null, null);
         $this->assertEquals(4, $hits->count());
     }
 
@@ -119,6 +121,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
             [
                 'hits' => [[]],
             ],
+            null,
             null
         );
 
@@ -127,30 +130,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests OffsetGet method.
-     */
-    public function testOffsetGet()
-    {
-        $hits = new HitsAggregationIterator(
-            [
-                'hits' => [
-                    [
-                        '_id' => 'foo',
-                        '_source' => [],
-                    ],
-                ],
-            ],
-            $this->getConverterMock()
-        );
-
-        $expected = new \stdClass();
-        $expected->_id = 'foo';
-
-        $this->assertEquals($expected, $hits[0]);
-    }
-
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return Converter|\PHPUnit_Framework_MockObject_MockObject
      */
     private function getConverterMock()
     {
@@ -172,5 +152,18 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
             );
 
         return $converterMock;
+    }
+
+    /**
+     * @return Repository|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getRepositoryMock()
+    {
+        $repositoryMock = $this
+            ->getMockBuilder('ONGR\ElasticsearchBundle\Service\Repository')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $repositoryMock;
     }
 }

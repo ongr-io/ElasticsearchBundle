@@ -23,35 +23,19 @@ class ElasticsearchExtensionTest extends WebTestCase
         return [
             [
                 'es.manager',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
                 'es.manager.default',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
-                'es.manager.bar',
-                'ONGR\ElasticsearchBundle\ORM\Manager',
+                'es.manager.foo',
+                'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
                 'es.manager.default.product',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
-            ],
-            [
-                'es.manager.default.bar',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
-            ],
-            [
-                'es.manager.default.color',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
-            ],
-            [
-                'es.manager.default.colordocument',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
-            ],
-            [
-                'es.manager.default.media',
-                'ONGR\ElasticsearchBundle\ORM\Repository',
+                'ONGR\ElasticsearchBundle\Service\Repository',
             ],
             [
                 'es.metadata_collector',
@@ -72,7 +56,7 @@ class ElasticsearchExtensionTest extends WebTestCase
     {
         $container = static::createClient()->getContainer();
 
-        $this->assertTrue($container->has($id), 'Container should have setted id.');
+        $this->assertTrue($container->has($id), 'Container should have set id.');
         $this->assertInstanceOf($instance, $container->get($id), 'Container has wrong instance set to id.');
     }
 
@@ -83,57 +67,9 @@ class ElasticsearchExtensionTest extends WebTestCase
     {
         $container = $this->createClient()->getContainer();
 
-        $expectedConnections = [
-            'default' => [
-                'settings' => [
-                    'refresh_interval' => -1,
-                    'number_of_replicas' => 0,
-                ],
-            ],
-            'bar' => [
-                'settings' => [
-                    'refresh_interval' => -1,
-                    'number_of_replicas' => 1,
-                ],
-            ],
-        ];
-        $actualConnections = $container->getParameter('es.connections');
-
-        $expectedManagers = [
-            'default' => [
-                'connection' => 'default',
-                'debug' => [
-                    'enabled' => true,
-                    'level' => 'warning',
-                ],
-                'readonly' => false,
-                'mappings' => [
-                    'AcmeTestBundle',
-                    'AcmeFooBundle:Media',
-                ],
-            ],
-            'bar' => [
-                'connection' => 'bar',
-                'debug' => [
-                    'enabled' => false,
-                    'level' => 'warning',
-                ],
-                'readonly' => false,
-                'mappings' => ['ONGRElasticsearchBundle'],
-            ],
-            'readonly' => [
-                'connection' => 'default',
-                'debug' => [
-                    'enabled' => true,
-                    'level' => 'warning',
-                ],
-                'readonly' => true,
-                'mappings' => ['AcmeTestBundle'],
-            ],
-        ];
+        $expectedManagers = ['default', 'foo', 'readonly'];
         $actualManagers = $container->getParameter('es.managers');
 
-        $this->assertArraySubset($expectedConnections, $actualConnections);
-        $this->assertEquals($expectedManagers, $actualManagers);
+        $this->assertEquals($expectedManagers, array_keys($actualManagers));
     }
 }

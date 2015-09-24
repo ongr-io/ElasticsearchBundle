@@ -37,6 +37,11 @@ class IndexExportCommand extends AbstractManagerAwareCommand
                 InputArgument::REQUIRED,
                 'Select file to store output'
             )->addOption(
+                'types',
+                null,
+                InputOption::VALUE_REQUIRED + InputOption::VALUE_IS_ARRAY,
+                'Export specific types only'
+            )->addOption(
                 'chunk',
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -54,7 +59,13 @@ class IndexExportCommand extends AbstractManagerAwareCommand
 
         /** @var ExportService $exportService */
         $exportService = $this->getContainer()->get('es.export');
-        $exportService->exportIndex($manager, $input->getArgument('filename'), $input->getOption('chunk'), $output);
+        $exportService->exportIndex(
+            $manager,
+            $input->getArgument('filename'),
+            $input->getOption('types'),
+            $input->getOption('chunk'),
+            $output
+        );
 
         $output->writeln('<info>Data export completed!</info>');
     }

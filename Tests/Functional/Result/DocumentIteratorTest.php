@@ -11,11 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
-class DocumentIteratorTest extends ElasticsearchTestCase
+class DocumentIteratorTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
@@ -28,24 +28,21 @@ class DocumentIteratorTest extends ElasticsearchTestCase
                     [
                         '_id' => 'doc1',
                         'title' => 'Foo Product',
-                        'url' => [
+                        'related_categories' => [
                             [
-                                'url' => 'bar.com',
-                                'key' => 'bar_key',
-                            ],
-                            [
-                                'url' => 'acme.com',
-                                'key' => 'acme_key',
+                                'title' => 'Acme',
                             ],
                         ],
                     ],
                     [
                         '_id' => 'doc2',
                         'title' => 'Bar Product',
-                        'url' => [
+                        'related_categories' => [
                             [
-                                'url' => 'foo.com',
-                                'key' => 'foo_key',
+                                'title' => 'Acme',
+                            ],
+                            [
+                                'title' => 'Bar',
                             ],
                         ],
                     ],
@@ -60,7 +57,7 @@ class DocumentIteratorTest extends ElasticsearchTestCase
     public function testIteration()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
         $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
@@ -68,18 +65,18 @@ class DocumentIteratorTest extends ElasticsearchTestCase
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
         foreach ($iterator as $document) {
-            $urls = $document->links;
+            $categories = $document->relatedCategories;
 
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
                 $document
             );
-            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $urls);
+            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $categories);
 
-            foreach ($urls as $url) {
+            foreach ($categories as $category) {
                 $this->assertInstanceOf(
-                    'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\TestBundle\Document\UrlObject',
-                    $url
+                    'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject',
+                    $category
                 );
             }
         }
@@ -90,7 +87,7 @@ class DocumentIteratorTest extends ElasticsearchTestCase
      */
     public function testCurrentWithEmptyIterator()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Content');
+        $repo = $this->getManager('foo')->getRepository('AcmeFooBundle:CustomerDocument');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());
@@ -104,7 +101,7 @@ class DocumentIteratorTest extends ElasticsearchTestCase
      */
     public function testIteratorFirst()
     {
-        $repo = $this->getManager()->getRepository('AcmeTestBundle:Product');
+        $repo = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());

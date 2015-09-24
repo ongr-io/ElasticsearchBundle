@@ -11,13 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\ORM\Manager;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Result\RawResultIterator;
+use ONGR\ElasticsearchBundle\Result\RawIterator;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\ProgressHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -30,28 +27,38 @@ class ExportService
      *
      * @param Manager         $manager
      * @param string          $filename
+     * @param array           $types
      * @param int             $chunkSize
      * @param OutputInterface $output
      */
-    public function exportIndex(Manager $manager, $filename, $chunkSize, OutputInterface $output)
+    public function exportIndex(Manager $manager, $filename, $types, $chunkSize, OutputInterface $output)
     {
-        $types = $manager->getTypesMapping();
-        $repo = $manager->getRepository($types);
+        $typesMapping = $manager->getMetadataCollector()->getMappings($manager->getConfig()['mappings']);
+        $typesToExport = [];
+        if ($types) {
+            foreach ($types as $type) {
+                if (!array_key_exists($type, $typesMapping)) {
+                    throw new \InvalidArgumentException(sprintf('Type "%s" does not exist.', $type));
+                }
+
+                $typesToExport[] = $typesMapping[$type]['bundle'].':'.$typesMapping[$type]['class'];
+            }
+        } else {
+            foreach ($typesMapping as $type => $typeConfig) {
+                $typesToExport[] = $typeConfig['bundle'].':'.$typeConfig['class'];
+            }
+        }
+
+        $repo = $manager->getRepository($typesToExport);
 
         $results = $this->getResults($repo, $chunkSize);
 
-        if (class_exists('\Symfony\Component\Console\Helper\ProgressBar')) {
-            $progress = new ProgressBar($output, $results->getTotalCount());
-            $progress->setRedrawFrequency(100);
-            $progress->start();
-        } else {
-            $progress = new ProgressHelper();
-            $progress->setRedrawFrequency(100);
-            $progress->start($output, $results->getTotalCount());
-        }
+        $progress = new ProgressBar($output, $results->count());
+        $progress->setRedrawFrequency(100);
+        $progress->start();
 
         $metadata = [
-            'count' => $results->getTotalCount(),
+            'count' => $results->count(),
             'date' => date(\DateTime::ISO8601),
         ];
 
@@ -89,7 +96,7 @@ class ExportService
      * @param Repository $repository
      * @param int        $chunkSize
      *
-     * @return RawResultIterator
+     * @return RawIterator
      */
     protected function getResults(Repository $repository, $chunkSize)
     {

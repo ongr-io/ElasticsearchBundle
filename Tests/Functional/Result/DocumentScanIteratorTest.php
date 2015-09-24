@@ -11,26 +11,27 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\DSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\DSL\Search;
-use ONGR\ElasticsearchBundle\DSL\Sort\Sort;
-use ONGR\ElasticsearchBundle\ORM\Repository;
-use ONGR\ElasticsearchBundle\Result\DocumentScanIterator;
-use ONGR\ElasticsearchBundle\Test\ElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Result\DocumentIterator;
+use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Search;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 
-class DocumentScanIteratorTest extends ElasticsearchTestCase
+class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
 {
     /**
      * {@inheritdoc}
      */
     protected function getDataArray()
     {
-        $documents = ['default' => ['fooContent' => []]];
+        $documents = ['default' => ['product' => []]];
 
         for ($i = 0; $i < 4; $i++) {
-            $documents['default']['fooContent'][] = [
-                '_id' => 'someId_' . $i,
-                'header' => 'content_' . $i,
+            $documents['default']['product'][] = [
+                '_id' => $i,
+                'title' => 'content_' . $i,
+                'price' => $i,
             ];
         }
 
@@ -50,7 +51,7 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
         $search = new Search();
         $search->setSize(2);
         $search->setScroll('1m');
-        $search->addSort(new Sort('header'));
+        $search->addSort(new FieldSort('price'));
         $search->addQuery(new MatchAllQuery());
 
         $out[] = ['search' => $search, true];
@@ -60,7 +61,7 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
         $search->setSize(2);
         $search->setScroll('1m');
         $search->setSearchType('scan');
-        $search->addSort(new Sort('header'));
+        $search->addSort(new FieldSort('price'));
         $search->addQuery(new MatchAllQuery());
 
         $out[] = ['search' => $search, false];
@@ -69,7 +70,7 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
         $search = new Search();
         $search->setSize(1);
         $search->setScroll('1m');
-        $search->addSort(new Sort('header'));
+        $search->addSort(new FieldSort('price'));
         $search->addQuery(new MatchAllQuery());
 
         $out[] = ['search' => $search, true];
@@ -89,10 +90,10 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
     {
         $iterator = $this
             ->getManager()
-            ->getRepository('AcmeTestBundle:Content')
+            ->getRepository('AcmeBarBundle:ProductDocument')
             ->execute($search, Repository::RESULTS_OBJECT);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentScanIterator', $iterator);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
         $this->assertCount(4, $iterator);
 
         $expectedHeaders = [
@@ -102,20 +103,19 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
             'content_3',
         ];
 
-        // Iterate multiple times to see if it's cached correctly.
+        $data = $this->iterateThrough($iterator);
+
         if ($isSorted) {
-            $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
-            $this->assertEquals($expectedHeaders, $this->iterateThrough($iterator));
+            $this->assertEquals($expectedHeaders, $data);
         } else {
-            $this->assertEmpty(array_diff($expectedHeaders, $this->iterateThrough($iterator)));
-            $this->assertEmpty(array_diff($expectedHeaders, $this->iterateThrough($iterator)));
+            $this->assertEmpty(array_diff($expectedHeaders, $data));
         }
     }
 
     /**
      * Returns relevant data by iterating through.
      *
-     * @param DocumentScanIterator $iterator
+     * @param DocumentIterator $iterator
      *
      * @return array
      */
@@ -123,7 +123,7 @@ class DocumentScanIteratorTest extends ElasticsearchTestCase
     {
         $data = [];
         foreach ($iterator as $result) {
-            $data[] = $result->header;
+            $data[] = $result->title;
         }
 
         return $data;

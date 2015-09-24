@@ -18,22 +18,21 @@ class DocumentTest extends AbstractElasticsearchTestCase
     /**
      * Test document mapping.
      */
-    public function testDocumentMappingWithAllFieldSetToFalse()
+    public function testDocumentMapping()
     {
-        $document = 'AcmeTestBundle:ColorDocument';
         $manager = $this->getManager();
-        $mapping = $manager->getBundlesMapping([$document]);
-        $result = $mapping[$document]->getFields();
-        $expectedResult = [
-            '_parent' => null,
-            '_ttl' => null,
-            'enabled' => null,
-            '_all' => ['enabled' => false],
-            'dynamic' => null,
-            'transform' => null,
-            'dynamic_date_formats' => null,
-            'dynamic_templates' => null,
-        ];
-        $this->assertEquals($expectedResult, $result);
+        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
+
+        $type = $repo->getTypes()[0];
+        $mappings = $manager->getClient()->indices()->getMapping(['index' => $manager->getIndexName()]);
+
+        $this->assertArrayHasKey($type, $mappings[$manager->getIndexName()]['mappings']);
+
+        $managerMappings = $manager->getMetadataCollector()->getMapping('AcmeBarBundle:ProductDocument');
+
+        $this->assertEquals(
+            sort($managerMappings['properties']),
+            sort($mappings[$manager->getIndexName()]['mappings'][$type])
+        );
     }
 }

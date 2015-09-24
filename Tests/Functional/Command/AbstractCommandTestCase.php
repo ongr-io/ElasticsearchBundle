@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**

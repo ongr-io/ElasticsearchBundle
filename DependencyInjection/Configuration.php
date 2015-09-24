@@ -31,15 +31,43 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('document_dir')
-                    ->info("Sets directory name from which documents will be loaded from bundles.'Document' by default")
-                    ->defaultValue('Document')
-                ->end()
-                ->append($this->getConnectionsNode())
-                ->append($this->getManagersNode())
+            ->append($this->getAnalysisNode())
+            ->append($this->getConnectionsNode())
+            ->append($this->getManagersNode())
             ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * Analysis configuration node.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
+    private function getAnalysisNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('analysis');
+
+        $node
+            ->info('Defines analyzers, tokenizers and filters')
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->arrayNode('tokenizer')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
+                ->arrayNode('filter')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
+                ->arrayNode('analyzer')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
+            ->end();
+
+        return $node;
     }
 
     /**
@@ -62,23 +90,8 @@ class Configuration implements ConfigurationInterface
                 ->children()
                     ->arrayNode('hosts')
                         ->info('Defines hosts to connect to.')
-                        ->requiresAtLeastOneElement()
                         ->defaultValue(['127.0.0.1:9200'])
                         ->prototype('scalar')
-                            ->beforeNormalization()
-                                ->ifArray()
-                                ->then(
-                                    function ($value) {
-                                        if (!array_key_exists('host', $value)) {
-                                            throw new InvalidConfigurationException(
-                                                'Host must be configured under hosts configuration tree.'
-                                            );
-                                        }
-
-                                        return $value['host'];
-                                    }
-                                )
-                            ->end()
                         ->end()
                     ->end()
                     ->arrayNode('auth')
@@ -107,6 +120,15 @@ class Configuration implements ConfigurationInterface
                         ->info('Sets index settings for connection.')
                         ->prototype('variable')->end()
                     ->end()
+                    ->arrayNode('analysis')
+                        ->addDefaultsIfNotSet()
+                        ->info('Sets index analysis settings for connection.')
+                        ->children()
+                            ->arrayNode('tokenizer')->prototype('scalar')->defaultValue([])->end()->end()
+                            ->arrayNode('filter')->prototype('scalar')->defaultValue([])->end()->end()
+                            ->arrayNode('analyzer')->prototype('scalar')->defaultValue([])->end()->end()
+                        ->end()
+                    ->end()
                 ->end()
             ->end();
 
@@ -133,7 +155,11 @@ class Configuration implements ConfigurationInterface
                         ->isRequired()
                         ->info('Sets connection for manager.')
                     ->end()
-                    ->arrayNode('debug')
+                    ->booleanNode('profiler')
+                        ->info('Enables elasticsearch profiler in the sf web profiler toolbar.')
+                        ->defaultFalse()
+                    ->end()
+                    ->arrayNode('logger')
                         ->info('Enables logging')
                         ->addDefaultsIfNotSet()
                         ->beforeNormalization()
@@ -160,6 +186,10 @@ class Configuration implements ConfigurationInterface
                                 ->ifNotInArray((new \ReflectionClass('Psr\Log\LogLevel'))->getConstants())
                                     ->thenInvalid('Invalid Psr log level.')
                                 ->end()
+                            ->end()
+                            ->scalarNode('log_file_name')
+                                ->info('Log filename, by default it is manager name')
+                                ->defaultValue(null)
                             ->end()
                         ->end()
                     ->end()

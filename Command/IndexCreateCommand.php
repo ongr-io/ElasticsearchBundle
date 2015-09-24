@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Command;
 
-use ONGR\ElasticsearchBundle\Client\IndexSuffixFinder;
+use ONGR\ElasticsearchBundle\Service\IndexSuffixFinder;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,9 +31,9 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         $this
             ->setName('ongr:es:index:create')
             ->setDescription('Creates elasticsearch index.')
-            ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to new index name')
+            ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to the new index name')
             ->addOption('with-warmers', 'w', InputOption::VALUE_NONE, 'Puts warmers into index')
-            ->addOption('no-mapping', 'm', InputOption::VALUE_NONE, 'Do not include mapping');
+            ->addOption('no-mapping', 'nm', InputOption::VALUE_NONE, 'Do not include mapping');
     }
 
     /**
@@ -41,14 +41,15 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $connection = $this->getManager($input->getOption('manager'))->getConnection();
+        $manager = $this->getManager($input->getOption('manager'));
 
         if ($input->getOption('time')) {
             /** @var IndexSuffixFinder $finder */
             $finder = $this->getContainer()->get('es.client.index_suffix_finder');
-            $finder->setNextFreeIndex($connection);
+            $finder->setNextFreeIndex($manager);
         }
-        $connection->createIndex($input->getOption('with-warmers'), $input->getOption('no-mapping') ? true : false);
+
+        $manager->createIndex($input->getOption('with-warmers'), $input->getOption('no-mapping') ? true : false);
         $output->writeln(
             sprintf(
                 '<info>Created index for manager named `</info><comment>%s</comment><info>`</info>',

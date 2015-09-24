@@ -18,8 +18,6 @@ use ONGR\ElasticsearchBundle\Annotation\Inherit;
 use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Annotation\Skip;
-use ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty;
-use ONGR\ElasticsearchBundle\Mapping\Proxy\ProxyFactory;
 
 /**
  * Document parser used for reading document annotations.
@@ -29,12 +27,12 @@ class DocumentParser
     /**
      * @const string
      */
-    const SUGGESTER_PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Suggester\AbstractSuggesterProperty';
+    const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
 
     /**
      * @const string
      */
-    const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
+    const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
 
     /**
      * @var Reader Used to read document annotations.
@@ -75,57 +73,61 @@ class DocumentParser
     /**
      * Parses documents by used annotations and returns mapping for elasticsearch with some extra metadata.
      *
-     * @param \ReflectionClass $reflectionClass
+     * @param \ReflectionClass $document
      *
-     * @return array|null
+     * @return array
      */
-    public function parse(\ReflectionClass $reflectionClass)
+    public function parse(\ReflectionClass $document)
     {
         /** @var Document $class */
         $class = $this
             ->reader
-            ->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
+            ->getClassAnnotation($document, self::DOCUMENT_ANNOTATION);
 
-        if ($class !== null && $class->create) {
+        if ($class !== null) {
             if ($class->parent !== null) {
-                $parent = $this->getDocumentParentType(
-                    new \ReflectionClass($this->finder->getNamespace($class->parent))
-                );
+                $parent = $this->getDocumentType($class->parent);
             } else {
                 $parent = null;
             }
-            $type = $this->getDocumentType($reflectionClass, $class);
-            $inherit = $this->getInheritedProperties($reflectionClass);
 
-            $properties = $this->getProperties(
-                $reflectionClass,
-                array_merge($inherit, $this->getSkippedProperties($reflectionClass))
-            );
+            $properties = $this->getProperties($document);
 
-            if (!empty($inherit)) {
-                $properties = array_merge(
-                    $properties,
-                    $this->getProperties($reflectionClass->getParentClass(), $inherit, true)
-                );
+            if ($class->type) {
+                $documentType = $class->type;
+            } else {
+                $documentType = $document->getShortName();
             }
 
             return [
-                $type => [
-                    'properties' => $properties,
-                    'fields' => array_merge(
+                'type' => $documentType,
+                'properties' => $properties,
+                'fields' => array_filter(
+                    array_merge(
                         $class->dump(),
                         ['_parent' => $parent === null ? null : ['type' => $parent]]
-                    ),
-                    'aliases' => $this->getAliases($reflectionClass),
-                    'objects' => $this->getObjects(),
-                    'proxyNamespace' => ProxyFactory::getProxyNamespace($reflectionClass, true),
-                    'namespace' => $reflectionClass->getName(),
-                    'class' => $reflectionClass->getShortName(),
-                ],
+                    )
+                ),
+                'aliases' => $this->getAliases($document),
+                'objects' => $this->getObjects(),
+                'namespace' => $document->getName(),
+                'class' => $document->getShortName(),
             ];
         }
 
-        return null;
+        return [];
+    }
+
+    /**
+     * Returns document annotation data from reader.
+     *
+     * @param \ReflectionClass $document
+     *
+     * @return Property
+     */
+    public function getDocumentAnnotationData($document)
+    {
+        return $this->reader->getClassAnnotation($document, self::DOCUMENT_ANNOTATION);
     }
 
     /**
@@ -133,16 +135,11 @@ class DocumentParser
      *
      * @param \ReflectionProperty $property
      *
-     * @return AbstractSuggesterProperty|Property
+     * @return Property
      */
     public function getPropertyAnnotationData($property)
     {
-        $type = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
-        if ($type === null) {
-            $type = $this->reader->getPropertyAnnotation($property, self::SUGGESTER_PROPERTY_ANNOTATION);
-        }
-
-        return $type;
+        return $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
     }
 
     /**
@@ -185,7 +182,6 @@ class DocumentParser
                         [
                             'multiple' => $type instanceof Property ? $type->multiple : false,
                             'aliases' => $this->getAliases($child),
-                            'proxyNamespace' => ProxyFactory::getProxyNamespace($child, true),
                             'namespace' => $child->getName(),
                         ]
                     );
@@ -209,12 +205,6 @@ class DocumentParser
             'Object',
             'Nested',
             'MultiField',
-            'Inherit',
-            'Skip',
-            'Suggester/CompletionSuggesterProperty',
-            'Suggester/ContextSuggesterProperty',
-            'Suggester/Context/CategoryContext',
-            'Suggester/Context/GeoLocationContext',
         ];
 
         foreach ($annotations as $annotation) {
@@ -223,56 +213,18 @@ class DocumentParser
     }
 
     /**
-     * Returns document parent.
-     *
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return string|null
-     */
-    private function getDocumentParentType(\ReflectionClass $reflectionClass)
-    {
-        /** @var Document $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Document');
-
-        return $class ? $this->getDocumentType($reflectionClass, $class) : null;
-    }
-
-    /**
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array
-     */
-    private function getSkippedProperties(\ReflectionClass $reflectionClass)
-    {
-        /** @var Skip $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Skip');
-
-        return $class === null ? [] : $class->value;
-    }
-
-    /**
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array
-     */
-    private function getInheritedProperties(\ReflectionClass $reflectionClass)
-    {
-        /** @var Inherit $class */
-        $class = $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Inherit');
-
-        return $class === null ? [] : $class->value;
-    }
-
-    /**
      * Returns document type.
      *
-     * @param \ReflectionClass $reflectionClass
-     * @param Document         $document
+     * @param string $document Format must be like AcmeBundle:Document.
      *
      * @return string
      */
-    private function getDocumentType(\ReflectionClass $reflectionClass, Document $document)
+    private function getDocumentType($document)
     {
+        $namespace = $this->finder->getNamespace($document);
+        $reflectionClass = new \ReflectionClass($namespace);
+        $document = $this->getDocumentAnnotationData($reflectionClass);
+
         return empty($document->type) ? $reflectionClass->getShortName() : $document->type;
     }
 
@@ -350,9 +302,11 @@ class DocumentParser
                 $maps['fields'] = $fieldsMap;
             }
 
-            // Suggestions.
-            if ($type instanceof AbstractSuggesterProperty) {
-                $this->getObjectMapping($type->objectName);
+            // If there is set some Raw options, it will override current ones.
+            if (isset($maps['raw'])) {
+                $raw = $maps['raw'];
+                unset($maps['raw']);
+                $maps = array_merge($maps, $raw);
             }
 
             $mapping[$type->name] = $maps;

@@ -44,23 +44,17 @@ class IndexDropCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
-            $this->getManager($input->getOption('manager'))->getConnection()->dropIndex();
+            $this->getManager($input->getOption('manager'))->dropIndex();
 
             $output->writeln(
                 sprintf(
-                    '<info>Dropped index for manager named</info> <comment>`%s`</comment>',
+                    '<info>Dropped index for the </info> <comment>`%s`</comment> manager',
                     $input->getOption('manager')
                 )
             );
         } else {
-            $output->writeln(
-                '<error>ATTENTION:</error> This action should not be used in production environment.'
-                . "\n\nOption --force has to be used to drop type(s)."
-            );
-
-            return 1;
+            $output->writeln('<error>ATTENTION:</error> This action should not be used in the production environment.');
+            $output->writeln('<error>"Option --force is mandatory to drop type(s)."</error> ');
         }
-
-        return 0;
     }
 }

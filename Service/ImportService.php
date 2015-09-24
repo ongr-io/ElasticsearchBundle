@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use ONGR\ElasticsearchBundle\ORM\Manager;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Service\Json\JsonReader;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\ProgressHelper;
@@ -54,21 +54,15 @@ class ImportService
     {
         $reader = $this->getReader($manager, $filename, false);
 
-        if (class_exists('\Symfony\Component\Console\Helper\ProgressBar')) {
-            $progress = new ProgressBar($output, $reader->count());
-            $progress->setRedrawFrequency(100);
-            $progress->start();
-        } else {
-            $progress = new ProgressHelper();
-            $progress->setRedrawFrequency(100);
-            $progress->start($output, $reader->count());
-        }
+        $progress = new ProgressBar($output, $reader->count());
+        $progress->setRedrawFrequency(100);
+        $progress->start();
 
         foreach ($reader as $key => $document) {
             $data = $document['_source'];
             $data['_id'] = $document['_id'];
 
-            $manager->getConnection()->bulk('index', $document['_type'], $data);
+            $manager->bulk('index', $document['_type'], $data);
 
             if (($key + 1) % $bulkSize == 0) {
                 $manager->commit();

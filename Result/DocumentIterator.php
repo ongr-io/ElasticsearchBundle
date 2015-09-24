@@ -11,113 +11,15 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\DSL\Aggregation\AbstractAggregation;
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
-use ONGR\ElasticsearchBundle\Result\Suggestion\SuggestionIterator;
+use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
- * This class is able to iterate over Elasticsearch result documents while casting data into models.
+ * Class DocumentIterator.
  */
 class DocumentIterator extends AbstractResultsIterator
 {
-    /**
-     * @var array
-     */
-    private $rawData;
-
-    /**
-     * @var array
-     */
-    private $bundlesMapping;
-
-    /**
-     * @var array
-     */
-    private $typesMapping;
-
-    /**
-     * @var AggregationIterator
-     */
-    private $aggregations;
-
-    /**
-     * @var SuggestionIterator
-     */
-    private $suggestions;
-
-    /**
-     * @var Converter
-     */
-    private $converter;
-
-    /**
-     * Constructor.
-     *
-     * @param array $rawData
-     * @param array $typesMapping
-     * @param array $bundlesMapping
-     */
-    public function __construct($rawData, $typesMapping, $bundlesMapping)
-    {
-        $this->rawData = $rawData;
-        $this->typesMapping = $typesMapping;
-        $this->bundlesMapping = $bundlesMapping;
-
-        // Alias documents to have shorter path.
-        if (isset($rawData['hits']['hits'])) {
-            $this->documents = &$rawData['hits']['hits'];
-        }
-    }
-
-    /**
-     * Returns a converter.
-     *
-     * @return Converter
-     */
-    protected function getConverter()
-    {
-        if ($this->converter === null) {
-            $this->converter = new Converter($this->typesMapping, $this->bundlesMapping);
-        }
-
-        return $this->converter;
-    }
-
-    /**
-     * Converts raw array to document.
-     *
-     * @param array $rawData
-     *
-     * @return DocumentInterface
-     *
-     * @throws \LogicException
-     */
-    protected function convertDocument($rawData)
-    {
-        return $this->getConverter()->convertToDocument($rawData);
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return mixed
-     */
-    protected function getMapByType($type)
-    {
-        return $this->bundlesMapping[$this->typesMapping[$type]];
-    }
-
-    /**
-     * Returns count of records found by given query.
-     *
-     * @return int
-     */
-    public function getTotalCount()
-    {
-        return $this->rawData['hits']['total'];
-    }
-
     /**
      * Returns aggregations.
      *
@@ -125,37 +27,29 @@ class DocumentIterator extends AbstractResultsIterator
      */
     public function getAggregations()
     {
-        if (isset($this->rawData['aggregations'])) {
-            $data = [];
+        $aggregations = parent::getAggregations();
 
-            foreach ($this->rawData['aggregations'] as $key => $value) {
-                $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
-                $data[$realKey] = $value;
-            }
-
-            unset($this->rawData['aggregations']);
-            $this->aggregations = new AggregationIterator($data, $this->getConverter());
-        } elseif ($this->aggregations === null) {
-            $this->aggregations = new AggregationIterator([]);
+        foreach ($aggregations as $key => $value) {
+            $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
+            $data[$realKey] = $value;
         }
 
-        return $this->aggregations;
+        return new AggregationIterator($aggregations, $this->getConverter(), $this->getRepository());
     }
 
     /**
-     * Returns suggestions.
-     *
-     * @return SuggestionIterator
+     * {@inheritdoc}
      */
-    public function getSuggestions()
+    protected function convertDocument(array $document)
     {
-        if (isset($this->rawData['suggest'])) {
-            $this->suggestions = new SuggestionIterator($this->rawData['suggest']);
+        return $this->getConverter()->convertToDocument($document, $this->getRepository());
+    }
 
-            // Clear memory.
-            unset($this->rawData['suggest']);
-        }
-
-        return $this->suggestions;
+    /**
+     * {@inheritdoc}
+     */
+    protected function getScrollResultsType()
+    {
+        return Repository::RESULTS_OBJECT;
     }
 }
