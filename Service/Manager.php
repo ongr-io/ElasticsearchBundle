@@ -299,6 +299,8 @@ class Manager
      * Creates fresh elasticsearch index.
      *
      * @param bool $noMapping Determines if mapping should be included.
+     *
+     * @return array
      */
     public function createIndex($noMapping = false)
     {
@@ -307,7 +309,8 @@ class Manager
         if ($noMapping) {
             unset($this->indexSettings['body']['mappings']);
         }
-        $this->getClient()->indices()->create($this->indexSettings);
+
+        return $this->getClient()->indices()->create($this->indexSettings);
     }
 
     /**
@@ -317,13 +320,15 @@ class Manager
     {
         $this->isReadOnly('Drop index');
 
-        $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
+        return $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
     }
 
     /**
      * Tries to drop and create fresh elasticsearch index.
      *
      * @param bool $noMapping Determines if mapping should be included.
+     *
+     * @return null|array
      */
     public function dropAndCreateIndex($noMapping = false)
     {
@@ -331,9 +336,10 @@ class Manager
             $this->dropIndex();
         } catch (\Exception $e) {
             // Do nothing, our target is to create new index.
+            return null;
         }
 
-        $this->createIndex($noMapping);
+        return $this->createIndex($noMapping);
     }
 
     /**
