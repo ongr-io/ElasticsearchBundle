@@ -75,42 +75,45 @@ class Converter
     /**
      * Assigns all properties to object.
      *
-     * @param array  $array
-     * @param object $object
-     * @param array  $aliases
+     * @param array            $array
+     * @param \ReflectionClass $object
+     * @param array            $aliases
      *
      * @return object
      */
     public function assignArrayToObject(array $array, $object, array $aliases)
     {
         foreach ($array as $name => $value) {
-            if (!array_key_exists($name, $aliases) || $value === null) {
-                $object->{$name} = $value;
-                continue;
-            }
 
-            if ($aliases[$name]['type'] === 'date') {
-                $newValue = \DateTime::createFromFormat(
-                    isset($aliases[$name]['format']) ? $aliases[$name]['format'] : \DateTime::ISO8601,
-                    $value
-                );
-                
-                $value = $newValue === false ? $value : $newValue;
-            }
-
-            if (array_key_exists('aliases', $aliases[$name])) {
-                if ($aliases[$name]['multiple']) {
-                    $value = new ObjectIterator($this, $value, $aliases[$name]);
-                } else {
-                    $value = $this->assignArrayToObject(
-                        $value,
-                        new $aliases[$name]['namespace'](),
-                        $aliases[$name]['aliases']
+            switch ($aliases[$name]['type']) {
+                case 'date':
+                    $value = \DateTime::createFromFormat(
+                        isset($aliases[$name]['format']) ? $aliases[$name]['format'] : \DateTime::ISO8601,
+                        $value
                     );
-                }
+                    break;
+                case 'object':
+                case 'nested':
+                    if ($aliases[$name]['multiple']) {
+                        $value = new ObjectIterator($this, $value, $aliases[$name]);
+                    } else {
+                        $value = $this->assignArrayToObject(
+                            $value,
+                            new $aliases[$name]['namespace'](),
+                            $aliases[$name]['aliases']
+                        );
+                    }
+                    break;
+                default:
+                    // Do nothing here. Default cas is required by our code style standard.
+                    break;
             }
 
-            $this->getPropertyAccessor()->setValue($object, $aliases[$name]['propertyName'], $value);
+            if ($aliases[$name]['propertyType'] == 'private') {
+                $object->{$aliases[$name]['methods']['setter']}($value);
+            } else {
+                $object->{$aliases[$name]['property']} = $value;
+            }
         }
 
         return $object;
