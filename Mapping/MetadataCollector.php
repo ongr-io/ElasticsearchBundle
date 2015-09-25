@@ -35,6 +35,21 @@ class MetadataCollector
     private $cache;
 
     /**
+     * Bundles mappings config for local cache. Could be stored as the whole bundle or as single document.
+     * e.g. AcmeDemoBundle, AcmeDemoBundle:Product.
+     *
+     * @var array
+     */
+    private $mappings = [];
+
+    /**
+     * Maps elasticsearch types to the mapping config.
+     *
+     * @var array
+     */
+    private $map = [];
+
+    /**
      * @param DocumentFinder $finder For finding documents.
      * @param DocumentParser $parser For reading document annotations.
      * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
@@ -44,6 +59,7 @@ class MetadataCollector
         $this->finder = $finder;
         $this->parser = $parser;
         $this->cache = $cache;
+        $this->mappings = $this->cache->fetch('mappings');
     }
 
     /**
@@ -56,7 +72,12 @@ class MetadataCollector
     {
         $output = [];
         foreach ($bundles as $bundle) {
-            $output = array_merge($output, $this->getBundleMapping($bundle));
+            if (isset($this->mappings[$bundle])) {
+                $output = array_merge($output, $this->mappings[$bundle]);
+                continue;
+            }
+            $this->mappings[$bundle] = $this->getBundleMapping($bundle);
+            $this->cache->save('mappings', $this->mappings);
         }
 
         return $output;
