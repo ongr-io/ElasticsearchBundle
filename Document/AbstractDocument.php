@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Document;
 
-use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
-
 /**
  * Document abstraction which introduces mandatory fields for the document.
  */
@@ -37,11 +35,6 @@ abstract class AbstractDocument implements DocumentInterface
      * @var string
      */
     private $ttl;
-
-    /**
-     * @var DocumentHighlight
-     */
-    private $highlight;
 
     /**
      * Legacy property support.
@@ -181,32 +174,6 @@ abstract class AbstractDocument implements DocumentInterface
     public function hasParent()
     {
         return $this->parent !== null;
-    }
-
-    /**
-     * Sets highlight.
-     *
-     * @param DocumentHighlight $highlight
-     */
-    public function setHighlight(DocumentHighlight $highlight)
-    {
-        $this->highlight = $highlight;
-    }
-
-    /**
-     * Returns highlight.
-     *
-     * @throws \UnderflowException
-     *
-     * @return DocumentHighlight
-     */
-    public function getHighLight()
-    {
-        if ($this->highlight === null) {
-            throw new \UnderflowException('Highlight not set.');
-        }
-
-        return $this->highlight;
     }
 
     /**
