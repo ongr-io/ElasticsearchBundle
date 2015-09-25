@@ -165,7 +165,7 @@ class Manager
      */
     private function createRepository(array $types)
     {
-        return new Repository($this, $types, $this->converter);
+        return new Repository($this, $types);
     }
 
     /**
