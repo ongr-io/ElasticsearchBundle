@@ -21,30 +21,30 @@ class IndexSuffixFinder
      *
      * E.g. 2022.03.22-5 (if 4 indexes exists already for given date)
      *
-     * @param Connection     $connection Connection to act upon.
-     * @param null|\DateTime $time       Date for which the suffix will be based on.
-     *                                   Current date if null.
+     * @param Manager        $manager Connection to act upon.
+     * @param null|\DateTime $time    Date for which the suffix will be based on.
+     *                                Current date if null.
      *
      * @return string
      */
-    public function setNextFreeIndex(Connection $connection, \DateTime $time = null)
+    public function setNextFreeIndex(Manager $manager, \DateTime $time = null)
     {
         if ($time === null) {
             $time = new \DateTime();
         }
 
         $date = $time->format('Y.m.d');
-        $indexName = $connection->getIndexName();
+        $indexName = $manager->getIndexName();
 
         $nameBase = $indexName . '-' . $date;
         $name = $nameBase;
         $i = 0;
-        $connection->setIndexName($name);
+        $manager->setIndexName($name);
 
-        while ($connection->indexExists()) {
+        while ($manager->indexExists()) {
             $i++;
             $name = "{$nameBase}-{$i}";
-            $connection->setIndexName($name);
+            $manager->setIndexName($name);
         }
 
         return $name;
