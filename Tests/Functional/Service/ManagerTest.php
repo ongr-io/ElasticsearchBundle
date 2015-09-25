@@ -260,4 +260,18 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         $this->assertCount(2, $this->repository->execute($search), '2 Results should be found.');
     }
+
+    /**
+     * Tests setter and getter of index name.
+     */
+    public function testIndexName()
+    {
+        $uniqueIndexName = 'test_index_' . uniqid();
+
+        $manager = $this->repository->getManager();
+        $this->assertNotEquals($uniqueIndexName, $manager->getIndexName());
+
+        $manager->setIndexName($uniqueIndexName);
+        $this->assertEquals($uniqueIndexName, $manager->getIndexName());
+    }
 }

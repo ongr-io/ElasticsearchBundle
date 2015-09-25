@@ -375,6 +375,16 @@ class Manager
     }
 
     /**
+     * Sets index name for this connection.
+     *
+     * @param string $name
+     */
+    public function setIndexName($name)
+    {
+        $this->indexSettings['index'] = $name;
+    }
+
+    /**
      * Returns Elasticsearch version number.
      *
      * @return string
