@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Event;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
+use ONGR\ElasticsearchBundle\Service\Manager;
 
 /**
  * Event to be dispatched before and after persisting a document.
@@ -25,12 +25,12 @@ class ElasticsearchPersistEvent extends AbstractElasticsearchEvent
     protected $document;
 
     /**
-     * @param Connection        $connection
+     * @param Manager           $manager
      * @param DocumentInterface $document
      */
-    public function __construct(Connection $connection, DocumentInterface $document)
+    public function __construct(Manager $manager, DocumentInterface $document)
     {
-        parent::__construct($connection);
+        parent::__construct($manager);
 
         $this->document = $document;
     }
