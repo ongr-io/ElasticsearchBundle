@@ -45,11 +45,6 @@ class Manager
     private $converter;
 
     /**
-     * @var EventDispatcher
-     */
-    private $eventDispatcher;
-
-    /**
      * @var bool
      */
     private $readOnly;
@@ -208,32 +203,43 @@ class Manager
      * Flushes elasticsearch index.
      *
      * @param array $params
+     *
+     * @return array
      */
     public function flush(array $params = [])
     {
-        $this->client->indices()->flush($params);
+        return $this->client->indices()->flush($params);
     }
 
     /**
      * Refreshes elasticsearch index.
      *
      * @param array $params
+     *
+     * @return array
      */
     public function refresh(array $params = [])
     {
-        $this->client->indices()->refresh($params);
+        return $this->client->indices()->refresh($params);
     }
 
     /**
      * Flushes the current query container to the index, used for bulk queries execution.
+     *
+     * @return null|array
      */
     public function commit()
     {
         $this->isReadOnly('Commit');
-        $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
-        $this->client->bulk($this->bulkQueries);
-        $this->flush();
-        $this->bulkQueries = [];
+
+        if (!empty($this->bulkQueries)) {
+            $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
+            $this->bulkQueries = [];
+
+            return $this->client->bulk($this->bulkQueries);
+        }
+
+        return null;
     }
 
     /**
