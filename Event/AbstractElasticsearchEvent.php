@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Event;
 
-use ONGR\ElasticsearchBundle\Client\Connection;
+use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -20,25 +20,25 @@ use Symfony\Component\EventDispatcher\Event;
 abstract class AbstractElasticsearchEvent extends Event
 {
     /**
-     * @var Connection
+     * @var Manager
      */
-    protected $connection;
+    protected $manager;
 
     /**
-     * @param Connection $connection
+     * @param Manager $manager
      */
-    public function __construct(Connection $connection)
+    public function __construct(Manager $manager)
     {
-        $this->connection = $connection;
+        $this->manager = $manager;
     }
 
     /**
-     * Returns connection associated with the event.
+     * Returns manager associated with the event.
      *
-     * @return Connection
+     * @return Manager
      */
-    public function getConnection()
+    public function getManager()
     {
-        return $this->connection;
+        return $this->manager;
     }
 }
