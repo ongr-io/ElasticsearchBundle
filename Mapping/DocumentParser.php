@@ -167,6 +167,7 @@ class DocumentParser
         }
 
         $alias = [];
+        $methods = $reflectionClass->getMethods();
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
@@ -175,6 +176,41 @@ class DocumentParser
                     'propertyName' => $name,
                     'type' => $type->type,
                 ];
+                switch (true) {
+                    case $property->isPublic():
+                        $propertyType = 'public';
+                        break;
+                    case $property->isProtected():
+                    case $property->isPrivate():
+                        $propertyType = 'private';
+
+                        $camelCaseName = ucfirst(Caser::camel($name));
+                        if ($reflectionClass->hasMethod('get'.$camelCaseName) && $reflectionClass->hasMethod('set'.$camelCaseName)) {
+                            $alias[$type->name]['methods'] = [
+                                'getter' => 'get'.$camelCaseName,
+                                'setter' => 'set'.$camelCaseName,
+                            ];
+                        } else {
+                            $message = sprintf(
+                                'Missing %s() method in %s class. Add it, or change property to public.',
+                                $name,
+                                $reflectionName
+                            );
+                            throw new \LogicException($message);
+                        }
+                        break;
+                    default:
+                        $message = sprintf(
+                            'Wrong property %s type of %s class types cannot '.
+                            'be static or abstract.',
+                            $name,
+                            $reflectionName
+                        );
+                        throw new \LogicException($message);
+                }
+                $alias[$type->name]['propertyType'] = $propertyType;
+
+
                 if ($type->objectName) {
                     $child = new \ReflectionClass($this->finder->getNamespace($type->objectName));
                     $alias[$type->name] = array_merge(
