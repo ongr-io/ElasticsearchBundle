@@ -48,6 +48,8 @@ services:
     es.metadata_collector:
         class: %es.metadata_collector.class%
         arguments: [@es.document_finder, @es.document_parser, @es.cache_engine]
+        calls:
+            - [setEnableCache, [%es.cache%]]
 
     es.logger.collection_handler:
         class: %es.logger.collection_handler.class%
