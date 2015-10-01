@@ -27,6 +27,8 @@ final class Document implements DumperInterface
     public $type;
 
     /**
+     * Document parent type.
+     *
      * @var string
      */
     public $parent;
@@ -64,7 +66,12 @@ final class Document implements DumperInterface
     /**
      * @var array
      */
-    public $dynamicDateFormats;
+    public $dateFormat;
+
+    /**
+     * @var array
+     */
+    public $timestamp;
 
     /**
      * {@inheritdoc}
@@ -75,11 +82,12 @@ final class Document implements DumperInterface
             [
                 '_ttl' => $this->ttl,
                 '_all' => $this->all,
+                '_timestamp' => $this->timestamp,
                 'enabled' => $this->enabled,
                 'dynamic' => $this->dynamic,
                 'dynamic_templates' => $this->dynamicTemplates,
                 'transform' => $this->transform,
-                'dynamic_date_formats' => $this->dynamicDateFormats,
+                'dynamic_date_formats' => $this->dateFormat,
             ],
             $exclude
         );
