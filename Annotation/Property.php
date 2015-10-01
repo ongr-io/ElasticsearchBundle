@@ -10,6 +10,7 @@
  */
 
 namespace ONGR\ElasticsearchBundle\Annotation;
+use Doctrine\Common\Annotations\Annotation\Enum;
 
 /**
  * Annotation used to check mapping type during the parsing process.
@@ -30,48 +31,14 @@ final class Property extends AbstractProperty
      * @var string
      *
      * @Required
+     * @Enum('string', 'integer', 'float', 'date', 'object', 'nested', 'multi_field', 'geo_point', 'geo_shape', 'ip')
      */
     public $type;
-
-    /**
-     * @var string
-     */
-    public $index;
-
-    /**
-     * @var string
-     */
-    public $analyzer;
-
-    /**
-     * @var string
-     */
-    public $indexAnalyzer;
-
-    /**
-     * @var string
-     */
-    public $searchAnalyzer;
-
-    /**
-     * @var bool
-     */
-    public $includeInAll;
-
-    /**
-     * @var float
-     */
-    public $boost;
 
     /**
      * @var array<\ONGR\ElasticsearchBundle\Annotation\MultiField>
      */
     public $fields;
-
-    /**
-     * @var array
-     */
-    public $fieldData;
 
     /**
      * @var string Object name to map.
@@ -80,13 +47,10 @@ final class Property extends AbstractProperty
 
     /**
      * Defines if related object will have one or multiple values.
+     * If this value is set to true, in the result ObjectIterator will be provided,
+     * otherwise you will get Document object
      *
-     * @var bool OneToOne or OneToMany.
+     * @var bool DocumentInterface or ObjectIterator.
      */
     public $multiple;
-
-    /**
-     * @var array
-     */
-    public $raw;
 }
