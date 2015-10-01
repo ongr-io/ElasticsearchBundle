@@ -32,6 +32,7 @@ class ONGRElasticsearchExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
 
+        $container->setParameter('es.cache', $config['cache']);
         $container->setParameter('es.analysis', $config['analysis']);
         $container->setParameter('es.connections', $config['connections']);
         $container->setParameter('es.managers', $config['managers']);

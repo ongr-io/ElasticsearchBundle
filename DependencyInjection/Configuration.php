@@ -31,6 +31,13 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+            ->booleanNode('cache')
+                ->info(
+                    'Enables cache handler to store metadata and other data to the cache. '.
+                    'Default is false, we recommend to enable it in the production.'
+                )
+                ->defaultFalse()
+            ->end()
             ->append($this->getAnalysisNode())
             ->append($this->getConnectionsNode())
             ->append($this->getManagersNode())

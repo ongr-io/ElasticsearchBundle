@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -70,7 +69,6 @@ class MappingPass implements CompilerPassInterface
             $mappings = $collector->getMappings($manager['mappings']);
 
             // Building repository services.
-            /** @var Definition $data */
             foreach ($mappings as $repositoryType => $repositoryDetails) {
                 $repositoryDefinition = new Definition(
                     $container->getParameter('es.repository.class'),
