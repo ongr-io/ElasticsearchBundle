@@ -240,7 +240,6 @@ class DocumentParser
             'Property',
             'Object',
             'Nested',
-            'MultiField',
         ];
 
         foreach ($annotations as $annotation) {
@@ -321,31 +320,21 @@ class DocumentParser
                 continue;
             }
 
-            $maps = $type->dump();
+            $map = $type->dump();
 
             // Object.
             if (in_array($type->type, ['object', 'nested']) && !empty($type->objectName)) {
-                $maps = array_replace_recursive($maps, $this->getObjectMapping($type->objectName));
-            }
-
-            // MultiField.
-            if (isset($maps['fields']) && !in_array($type->type, ['object', 'nested'])) {
-                $fieldsMap = [];
-                /** @var MultiField $field */
-                foreach ($maps['fields'] as $field) {
-                    $fieldsMap[$field->name] = $field->dump();
-                }
-                $maps['fields'] = $fieldsMap;
+                $map = array_replace_recursive($map, $this->getObjectMapping($type->objectName));
             }
 
             // If there is set some Raw options, it will override current ones.
-            if (isset($maps['raw'])) {
-                $raw = $maps['raw'];
-                unset($maps['raw']);
-                $maps = array_merge($maps, $raw);
+            if (isset($map['options'])) {
+                $options = $map['options'];
+                unset($map['options']);
+                $map = array_merge($map, $options);
             }
 
-            $mapping[$type->name] = $maps;
+            $mapping[$type->name] = $map;
         }
 
         return $mapping;
