@@ -21,14 +21,14 @@ class DocumentTest extends AbstractElasticsearchTestCase
     public function testDocumentMapping()
     {
         $manager = $this->getManager();
-        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
 
         $type = $repo->getTypes()[0];
         $mappings = $manager->getClient()->indices()->getMapping(['index' => $manager->getIndexName()]);
 
         $this->assertArrayHasKey($type, $mappings[$manager->getIndexName()]['mappings']);
 
-        $managerMappings = $manager->getMetadataCollector()->getMapping('AcmeBarBundle:ProductDocument');
+        $managerMappings = $manager->getMetadataCollector()->getMapping('AcmeBarBundle:Product');
 
         $this->assertEquals(
             sort($managerMappings['properties']),

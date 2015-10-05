@@ -26,15 +26,15 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
 
         // Case #0.
         $out[] = [
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
-            'AcmeBarBundle:ProductDocument',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            'AcmeBarBundle:Product',
             true,
         ];
 
         // Case #1.
         $out[] = [
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
-            'AcmeBarBundle:ProductDocument',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            'AcmeBarBundle:Product',
         ];
 
         return $out;

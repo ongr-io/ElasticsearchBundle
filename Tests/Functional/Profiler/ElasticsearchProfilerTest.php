@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Profiler;
 
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -53,7 +53,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $document = new ProductDocument();
+        $document = new Product();
         $document->title = 'tuna';
 
         $manager->persist($document);
@@ -69,7 +69,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     public function testGetTime()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $repository->find(3);
 
         $this->assertGreaterThan(0.0, $this->getCollector()->getTime(), 'Time should be greater than 0ms');
@@ -81,7 +81,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     public function testGetQueries()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $repository->find(2);
         $queries = $this->getCollector()->getQueries();
 
@@ -108,7 +108,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repository
             ->createSearch()
             ->addQuery(new TermQuery('title', 'pizza'));

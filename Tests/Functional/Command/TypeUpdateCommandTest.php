@@ -41,7 +41,7 @@ class TypeUpdateCommandTest extends AbstractElasticsearchTestCase
 
         // Set up custom document to test mapping with.
         $this->documentDir = $this->getContainer()->get('kernel')->locateResource('@AcmeBarBundle/Document/');
-        $this->file = $this->documentDir . 'ProductDocument.php';
+        $this->file = $this->documentDir . 'Product.php';
     }
 
     /**

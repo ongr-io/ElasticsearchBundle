@@ -19,7 +19,7 @@ use ONGR\ElasticsearchBundle\Document\AbstractDocument;
  *
  * @ES\Document(type="product")
  */
-class ProductDocument extends AbstractDocument
+class Product extends AbstractDocument
 {
     /**
      * @var string

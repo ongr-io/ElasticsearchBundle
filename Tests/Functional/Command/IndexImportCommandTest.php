@@ -60,7 +60,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
         );
 
         $manager = $this->getManager('default', false);
-        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery())

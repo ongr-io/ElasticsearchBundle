@@ -19,14 +19,14 @@ use ONGR\ElasticsearchBundle\Document\AbstractDocument;
  *
  * @ES\Document(type="customer");
  */
-class CustomerDocument extends AbstractDocument
+class Customer extends AbstractDocument
 {
     /**
      * Test adding raw mapping.
      *
      * @var string
      *
-     * @ES\Property(name="name", type="string", index="not_analyzed", raw={"null_value":"data"})
+     * @ES\Property(name="name", type="string", options={"index"="not_analyzed"})
      */
     public $name;
 }

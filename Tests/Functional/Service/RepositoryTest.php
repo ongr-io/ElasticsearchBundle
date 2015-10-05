@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Filter\MissingFilter;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
@@ -171,7 +171,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
      */
     public function testFindBy($expectedResults, $criteria, $orderBy = [], $limit = null, $offset = null)
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
 
         $fullResults = $repo->findBy($criteria, $orderBy, $limit, $offset);
 
@@ -259,7 +259,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
      */
     public function testFindOneBy($expectedResult, $criteria, $orderBy = [])
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
 
         $result = $repo->findOneBy($criteria, $orderBy);
 
@@ -278,14 +278,14 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $product = new ProductDocument;
+        $product = new Product;
         $product->setId('123');
         $product->title = 'foo';
 
         $manager->persist($product);
         $manager->commit();
 
-        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
 
         $result = $repo->find(123);
 
@@ -297,7 +297,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
      */
     public function testFindNull()
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
 
         $this->assertNull($repo->find(123));
     }
@@ -310,7 +310,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     public function testFindInMultiTypeRepo()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository(['AcmeBarBundle:ProductDocument', 'AcmeFooBundle:CustomerDocument']);
+        $repo = $this->getManager()->getRepository(['AcmeBarBundle:Product', 'AcmeFooBundle:Customer']);
 
         $repo->find(1);
     }
@@ -322,7 +322,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
 
         $response = $repo->remove(3);
 
@@ -339,7 +339,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repo = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
 
         $repo->remove(500);
     }
@@ -349,7 +349,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
      */
     public function testRepositoryExecuteWhenZeroResult()
     {
-        $repository = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $this->getManager()->getRepository('AcmeBarBundle:Product');
 
         $search = $repository
             ->createSearch()
@@ -377,9 +377,9 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     public function testDocumentUpdate()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
 
-        $document = new ProductDocument;
+        $document = new Product;
 
         $document->setId(5);
         $document->title = 'acme';
@@ -388,7 +388,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $manager->commit();
 
         // Creates document.
-        /** @var ProductDocument $document */
+        /** @var Product $document */
         $document = $repository->find(5);
         $this->assertEquals(
             [
@@ -428,7 +428,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     public function testGetManager()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $this->assertEquals($manager, $repository->getManager());
     }
 
@@ -441,7 +441,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $all = new MatchAllQuery();
         $manager = $this->getManager();
         $index = $manager->getIndexName();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repository->createSearch()->addQuery($all);
         $results = $repository->execute($search)->count();
         $this->assertEquals(4, $results);
@@ -473,7 +473,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
         $index = $manager->getIndexName();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $document = $repository->find(1, Repository::RESULTS_RAW);
         $expected = [
             '_index' => $index,
@@ -496,7 +496,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     public function testFindArray()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $document = $repository->find(1, Repository::RESULTS_ARRAY);
         $expected = [
             'title' => 'foo',
@@ -512,7 +512,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     public function testFindArrayIterator()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:ProductDocument');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
         $document = $repository->find(1, Repository::RESULTS_RAW_ITERATOR);
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $document);
     }
