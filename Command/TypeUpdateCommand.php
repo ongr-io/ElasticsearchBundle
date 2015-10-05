@@ -28,20 +28,29 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:type:update')
+            ->setName('ongr:es:mapping:update')
             ->setDescription('Updates elasticsearch index mappings.')
             ->addOption(
                 'force',
                 'f',
                 InputOption::VALUE_NONE,
-                'Set this parameter to execute this command'
+                'This is mandatory parameter to execute this command.'
             )
             ->addOption(
-                'type',
+                'types',
                 't',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Set this parameter to update only a specific types',
+                'Set this parameter to update only a specific document types. ' .
+                'The syntax of definition is with bundle: AcmeBundle:SomeDocument. ' .
+                'If no value is provided, it will update all mapping provided in the manager mapping.',
                 []
+            )
+            ->addOption(
+                'enable-warnings',
+                'w',
+                InputOption::VALUE_NONE,
+                'By setting this option you will enable elasticsearch merge conflicts warnings. '.
+                'It will add `ignore_conflicts` with false option in the client call.'
             );
     }
 
@@ -50,49 +59,30 @@ class TypeUpdateCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$input->getOption('force')) {
-            $output->writeln('<error>ATTENTION:</error> This action should not be used in the production environment.');
-            $output->writeln('<error>"Option --force is mandatory to change type(s) mapping."</error> ');
-        }
+        if ($input->getOption('force')) {
+            $managerName = $input->getOption('manager');
+            $types = $input->getOption('types');
 
-        $managerName = $input->getOption('manager');
-        $types = $input->getOption('type');
+            // Doing bool value reverse.
+            $ignoreConflicts = $input->getOption('enable-warnings') ? false : true;
 
-        $result = $this
-            ->getManager($input->getOption('manager'))
-            ->updateTypes($types);
+            $this
+                ->getManager($input->getOption('manager'))
+                ->updateMapping($types, $ignoreConflicts);
 
-        $typesOutput = empty($types) ? 'all' : implode('</comment><info>`, `</info><comment>', $types);
+            $typesOutput = empty($types) ? 'All' : implode('</comment><info>`, `</info><comment>', $types);
 
-        switch ($result) {
-            case 1:
-                $message = sprintf(
-                    '<info>`</info><comment>%s</comment><info>` type(s) have been updated for the '
+            $output->writeln(
+                sprintf(
+                    '<info>`</info><comment>%s</comment><info>` document(s) type(s) have been updated for the '
                     . '`</info><comment>%s</comment><info> manager`.</info>',
                     $typesOutput,
                     $managerName
-                );
-                break;
-            case 0:
-                $message = sprintf(
-                    '<info>`</info><comment>%s</comment><info>` type(s) are already up to date for the '
-                    . '`</info><comment>%s</comment> manager<info>`.</info>',
-                    $typesOutput,
-                    $managerName
-                );
-                break;
-            case -1:
-                $message = sprintf(
-                    '<info>No mapping was found%s in </info>`<comment>%s</comment>`<info> manager.</info>',
-                    empty($types) ? '' : sprintf(' for `</info><comment>%s</comment><info>` types', $typesOutput),
-                    $managerName
-                );
-                break;
-            default:
-                $message = 'Message not found.';
-                break;
+                )
+            );
+        } else {
+            $output->writeln('<error>ATTENTION:</error> This action should not be used in the production environment.');
+            $output->writeln('<error>"Option --force is mandatory to change type(s) mapping."</error> ');
         }
-
-        $output->writeln($message);
     }
 }

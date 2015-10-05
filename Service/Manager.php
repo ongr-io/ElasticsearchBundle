@@ -351,19 +351,21 @@ class Manager
     /**
      * Puts mapping into elasticsearch client.
      *
-     * @param array $types Specific types to put.
-     *
-     * @return array
+     * @param array $types           Specific types to put.
+     * @param bool  $ignoreConflicts Ignore elasticsearch merge conflicts.
      */
-    public function updateMapping(array $types = [])
+    public function updateMapping(array $types = [], $ignoreConflicts = true)
     {
         $this->isReadOnly('Mapping update');
-
         $params['index'] = $this->getIndexName();
-        $params['types'] = array_keys($types);
-        $params['body'] = $types;
-
-        return $this->client->indices()->putMapping($params);
+        foreach ($types as $type) {
+            $mapping = $this->getMetadataCollector()->getClientMapping([$type]);
+            $type = $this->getMetadataCollector()->getDocumentType($type);
+            $params['type'] = $type;
+            $params['body'] = $mapping;
+            $params['ignore_conflicts'] = $ignoreConflicts;
+            $this->client->indices()->putMapping(array_filter($params));
+        }
     }
 
     /**

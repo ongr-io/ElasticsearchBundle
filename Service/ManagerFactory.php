@@ -82,7 +82,7 @@ class ManagerFactory
         }
         unset($connection['analysis']);
 
-        $mappings = $this->metadataCollector->getClientMapping($managerConfig);
+        $mappings = $this->metadataCollector->getClientMapping($managerConfig['mappings']);
 
         $client = ClientBuilder::create();
 
