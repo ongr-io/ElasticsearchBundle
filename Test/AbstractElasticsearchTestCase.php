@@ -62,7 +62,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     protected function setUp()
     {
         $this->getContainer();
-        $this->getManager();
     }
 
     /**
