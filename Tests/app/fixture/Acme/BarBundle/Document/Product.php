@@ -23,7 +23,16 @@ class Product extends AbstractDocument
 {
     /**
      * @var string
-     * @ES\Property(type="string", name="title", fields={@ES\MultiField(name="raw", type="string")})
+     * @ES\Property(
+     *  type="string",
+     *  name="title",
+     *  options={
+     *    "fields"={
+     *        "raw"={"type"="string", "index"="not_analyzed"},
+     *        "title"={"type"="string"}
+     *    }
+     *  }
+     * )
      */
     public $title;
 
@@ -75,7 +84,11 @@ class Product extends AbstractDocument
      * @ES\Property(
      *     type="string",
      *     name="pieces_count",
-     *     fields={@ES\MultiField(name="count", type="token_count", analyzer="whitespace")}
+     *     options={
+     *        "fields"={
+     *          "count"={"type"="token_count", "analyzer"="whitespace"}
+     *        }
+     *     }
      * )
      */
     public $tokenPiecesCount;
