@@ -113,6 +113,9 @@ class ManagerFactory
             $this->converter
         );
 
+        $manager->setCommitMode($managerConfig['commit_mode']);
+        $manager->setBulkCommitSize($managerConfig['bulk_size']);
+
         return $manager;
     }
 }
