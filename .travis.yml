@@ -14,11 +14,10 @@ before_script:
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction
 script:
-  - vendor/bin/phpunit --coverage-clover=coverage.clover
+  - vendor/bin/phpunit --coverage-clover=coveralls.clover
   - vendor/bin/phpcs -p --standard=vendor/ongr/ongr-strict-standard/Ongr --ignore=vendor/,Tests/app/ ./
 after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - vendor/bin/coveralls
 notifications:
   webhooks:
     urls:

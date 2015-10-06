@@ -29,7 +29,8 @@
         "mikey179/vfsStream": "~1.4",
         "phpunit/phpunit": "~4.4",
         "squizlabs/php_codesniffer": "~2.0",
-        "ongr/ongr-strict-standard": "~2.0"
+        "ongr/ongr-strict-standard": "~2.0",
+        "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
         "psr-4": { "ONGR\\ElasticsearchBundle\\": "" }
