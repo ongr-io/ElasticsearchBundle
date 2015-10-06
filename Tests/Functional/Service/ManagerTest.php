@@ -150,8 +150,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
      * Check if expected exceptions are thrown while trying to persist an invalid object.
      *
      * @param Product $product
-     * @param string          $exceptionMessage
-     * @param string          $exception
+     * @param string  $exceptionMessage
+     * @param string  $exception
      *
      * @dataProvider getPersistExceptionsData()
      */
