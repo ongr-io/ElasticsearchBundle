@@ -69,7 +69,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
 
         $ids = [];
         foreach ($results as $doc) {
-            $ids[] = substr($doc->_id, 3);
+            $ids[] = substr($doc->getId(), 3);
         }
         sort($ids);
         $data = range(1, $realSize);

@@ -72,6 +72,8 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 ],
                 'readonly' => false,
                 'mappings' => ['testBundle'],
+                'bulk_size' => 100,
+                'commit_mode' => 'refresh',
             ],
         ];
 
@@ -109,6 +111,8 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 ],
                 'readonly' => false,
                 'mappings' => ['testBundle'],
+                'bulk_size' => 100,
+                'commit_mode' => 'refresh',
             ],
         ];
 
