@@ -84,7 +84,6 @@ class Converter
     public function assignArrayToObject(array $array, $object, array $aliases)
     {
         foreach ($array as $name => $value) {
-
             switch ($aliases[$name]['type']) {
                 case 'date':
                     $value = \DateTime::createFromFormat(
@@ -112,7 +111,7 @@ class Converter
             if ($aliases[$name]['propertyType'] == 'private') {
                 $object->{$aliases[$name]['methods']['setter']}($value);
             } else {
-                $object->{$aliases[$name]['property']} = $value;
+                $object->{$aliases[$name]['propertyName']} = $value;
             }
         }
 
