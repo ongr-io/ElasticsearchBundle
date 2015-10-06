@@ -185,7 +185,9 @@ class DocumentParser
                         $propertyType = 'private';
 
                         $camelCaseName = ucfirst(Caser::camel($name));
-                        if ($reflectionClass->hasMethod('get'.$camelCaseName) && $reflectionClass->hasMethod('set'.$camelCaseName)) {
+                        if ($reflectionClass->hasMethod('get'.$camelCaseName)
+                            && $reflectionClass->hasMethod('set'.$camelCaseName)
+                        ) {
                             $alias[$type->name]['methods'] = [
                                 'getter' => 'get'.$camelCaseName,
                                 'setter' => 'set'.$camelCaseName,
