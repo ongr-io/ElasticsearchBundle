@@ -70,6 +70,28 @@ class Manager
     private $metadataCollector;
 
     /**
+     * After commit to make data available the refresh or flush operation is needed
+     * so one of those methods has to be defined, the default is refresh.
+     *
+     * @var string
+     */
+    private $commitMode = 'refresh';
+
+    /**
+     * The size that defines after how much document inserts call commit function.
+     *
+     * @var int
+     */
+    private $bulkCommitSize = 100;
+
+    /**
+     * Container to count how many documents was passed to the bulk query.
+     *
+     * @var int
+     */
+    private $bulkCount = 0;
+
+    /**
      * @param string            $name              Managers name.
      * @param array             $config            Managers configuration.
      * @param Client            $client
@@ -152,6 +174,42 @@ class Manager
     }
 
     /**
+     * @return string
+     */
+    public function getCommitMode()
+    {
+        return $this->commitMode;
+    }
+
+    /**
+     * @param string $commitMode
+     */
+    public function setCommitMode($commitMode)
+    {
+        if ($commitMode === 'refresh' || $commitMode === 'flush') {
+            $this->commitMode = $commitMode;
+        } else {
+            throw new \LogicException('The commit method must be either refresh or flush.');
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getBulkCommitSize()
+    {
+        return $this->bulkCommitSize;
+    }
+
+    /**
+     * @param int $bulkCommitSize
+     */
+    public function setBulkCommitSize($bulkCommitSize)
+    {
+        $this->bulkCommitSize = $bulkCommitSize;
+    }
+
+    /**
      * Creates a repository.
      *
      * @param array $types
@@ -224,19 +282,33 @@ class Manager
     }
 
     /**
-     * Flushes the current query container to the index, used for bulk queries execution.
+     * Inserts the current query container to the index, used for bulk queries execution.
+     *
+     * @param array $params Parameters that will be passed to the flush or refresh queries.
      *
      * @return null|array
      */
-    public function commit()
+    public function commit(array $params = [])
     {
         $this->isReadOnly('Commit');
 
         if (!empty($this->bulkQueries)) {
-            $this->bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
+            $bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
             $this->bulkQueries = [];
 
-            return $this->client->bulk($this->bulkQueries);
+            $bulkResponse = $this->client->bulk($bulkQueries);
+
+            switch ($this->getCommitMode()) {
+                case 'flush':
+                    $this->flush();
+                    break;
+                case 'refresh':
+                default:
+                    $this->refresh();
+                    break;
+            }
+
+            $this->refresh();
         }
 
         return null;
@@ -286,6 +358,14 @@ class Manager
                 // Do nothing.
                 break;
         }
+
+        // We are using counter because there is to difficult to resolve this from bulkQueries array.
+        $this->bulkCount++;
+
+        if ($this->bulkCommitSize === $this->bulkCount) {
+            $this->commit();
+            $this->bulkCount = 0;
+        }
     }
 
     /**
@@ -334,7 +414,7 @@ class Manager
      *
      * @param bool $noMapping Determines if mapping should be included.
      *
-     * @return null|array
+     * @return array
      */
     public function dropAndCreateIndex($noMapping = false)
     {
@@ -342,7 +422,6 @@ class Manager
             $this->dropIndex();
         } catch (\Exception $e) {
             // Do nothing, our target is to create new index.
-            return null;
         }
 
         return $this->createIndex($noMapping);
@@ -358,13 +437,35 @@ class Manager
     {
         $this->isReadOnly('Mapping update');
         $params['index'] = $this->getIndexName();
+
+        if (empty($types)) {
+            $map = $this->getConfig()['mappings'];
+            foreach ($map as $bundle) {
+                if (strpos($bundle, ':')) {
+                    $types[] = $bundle;
+                } else {
+                    $bundleMappings = $this->getMetadataCollector()->getMappings([$bundle]);
+                    foreach ($bundleMappings as $document) {
+                        $types[] = $document['bundle'].':'.$document['class'];
+                    }
+                }
+            }
+        }
+
         foreach ($types as $type) {
-            $mapping = $this->getMetadataCollector()->getClientMapping([$type]);
-            $type = $this->getMetadataCollector()->getDocumentType($type);
-            $params['type'] = $type;
-            $params['body'] = $mapping;
-            $params['ignore_conflicts'] = $ignoreConflicts;
-            $this->client->indices()->putMapping(array_filter($params));
+            try {
+                $mapping = $this->getMetadataCollector()->getClientMapping([$type]);
+                $type = $this->getMetadataCollector()->getDocumentType($type);
+                $params['type'] = $type;
+                $params['body'] = $mapping;
+                $params['ignore_conflicts'] = $ignoreConflicts;
+                $this->client->indices()->putMapping(array_filter($params));
+            } catch (\Exception $e) {
+                throw new \LogicException(
+                    'Only the documents[] can be passed to the type update command. ' .
+                    'Maybe you added only a bundle. Please check if a document is mapped in the manager.'
+                );
+            }
         }
     }
 

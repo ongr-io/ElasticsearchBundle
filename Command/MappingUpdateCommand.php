@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to update mapping.
  */
-class TypeUpdateCommand extends AbstractManagerAwareCommand
+class MappingUpdateCommand extends AbstractManagerAwareCommand
 {
     /**
      * {@inheritdoc}
