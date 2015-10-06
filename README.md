@@ -23,7 +23,7 @@ If you have any questions, don't hesitate to ask them on [![Join the chat at htt
 [![Build Status](https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master)](https://travis-ci.org/ongr-io/ElasticsearchBundle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master)
 [![Coverage Status](https://coveralls.io/repos/ongr-io/ElasticsearchBundle/badge.svg?branch=master&service=github)](https://coveralls.io/github/ongr-io/ElasticsearchBundle?branch=master)
-[![Sensio labs](https://insight.sensiolabs.com/projects/931d899c-663d-4ee4-9ec2-d971a9a06b9b/mini.png)](https://insight.sensiolabs.com/projects/931d899c-663d-4ee4-9ec2-d971a9a06b9b)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/3ebe6515-f946-49a3-8d9c-e5fc8d6ce5c2/mini.png)](https://insight.sensiolabs.com/projects/3ebe6515-f946-49a3-8d9c-e5fc8d6ce5c2)
 [![Latest Stable Version](https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable)](https://packagist.org/packages/ongr/elasticsearch-bundle)
 [![Total Downloads](https://poser.pugx.org/ongr/elasticsearch-bundle/downloads)](https://packagist.org/packages/ongr/elasticsearch-bundle)
 [![Latest Unstable Version](https://poser.pugx.org/ongr/elasticsearch-bundle/v/unstable)](https://packagist.org/packages/ongr/elasticsearch-bundle)
