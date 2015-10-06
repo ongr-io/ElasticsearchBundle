@@ -39,7 +39,7 @@ final class Property
      * @var string
      *
      * @Required
-     * @Enum({"string", "integer", "float", "date", "object", "nested", "multi_field", "geo_point", "geo_shape", "ip"})
+     * @Enum({"string", "boolean", "integer", "float", "date", "object", "nested", "geo_point", "geo_shape", "ip"})
      */
     public $type;
 
