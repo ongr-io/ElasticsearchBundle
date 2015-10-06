@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Document;
 
-use ONGR\ElasticsearchBundle\Result\DocumentHighlight;
-
 /**
  * Document abstraction which introduces mandatory fields for the document.
  */
@@ -21,27 +19,30 @@ abstract class AbstractDocument implements DocumentInterface
     /**
      * @var string
      */
-    private $id;
+    public $id;
 
     /**
      * @var string
      */
-    private $score;
+    public $score;
 
     /**
      * @var string
      */
-    private $parent;
+    public $parent;
 
     /**
      * @var string
      */
-    private $ttl;
+    public $ttl;
 
     /**
-     * @var DocumentHighlight
+     * When document is cloned id is set to null.
      */
-    private $highlight;
+    public function __clone()
+    {
+        $this->setId(null);
+    }
 
     /**
      * Legacy property support.
@@ -54,13 +55,13 @@ abstract class AbstractDocument implements DocumentInterface
     {
         switch ($property) {
             case '_id':
-                return $this->id;
+                return $this->getId();
             case '_score':
-                return $this->score;
+                return $this->getScore();
             case '_ttl':
-                return $this->ttl;
+                return $this->getTtl();
             case '_parent':
-                return $this->parent;
+                return $this->getParent();
             default:
                 return null;
         }
@@ -88,17 +89,9 @@ abstract class AbstractDocument implements DocumentInterface
                 $this->setParent($value);
                 break;
             default:
-                // Required default case.
+                // Required default case for ONGR code style standard.
                 break;
         }
-    }
-
-    /**
-     * When document is cloned id is set to null.
-     */
-    public function __clone()
-    {
-        $this->setId(null);
     }
 
     /**
@@ -181,32 +174,6 @@ abstract class AbstractDocument implements DocumentInterface
     public function hasParent()
     {
         return $this->parent !== null;
-    }
-
-    /**
-     * Sets highlight.
-     *
-     * @param DocumentHighlight $highlight
-     */
-    public function setHighlight(DocumentHighlight $highlight)
-    {
-        $this->highlight = $highlight;
-    }
-
-    /**
-     * Returns highlight.
-     *
-     * @throws \UnderflowException
-     *
-     * @return DocumentHighlight
-     */
-    public function getHighLight()
-    {
-        if ($this->highlight === null) {
-            throw new \UnderflowException('Highlight not set.');
-        }
-
-        return $this->highlight;
     }
 
     /**

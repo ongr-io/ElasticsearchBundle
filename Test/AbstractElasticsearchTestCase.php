@@ -62,7 +62,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     protected function setUp()
     {
         $this->getContainer();
-        $this->getManager();
     }
 
     /**
@@ -175,6 +174,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
                 }
             }
             $manager->commit();
+            $manager->refresh();
         }
     }
 
@@ -215,15 +215,15 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * Returns manager instance with injected connection if does not exist creates new one.
      *
-     * @param string $name          Manager name.
-     * @param bool   $createIndex   Create index or not.
-     * @param array  $customMapping Custom index mapping config.
+     * @param string $name        Manager name.
+     * @param bool   $createIndex Create index or not.
+     * @param bool   $noMapping   Create index with mapping or not.
      *
      * @return Manager
      *
      * @throws \LogicException
      */
-    protected function getManager($name = 'default', $createIndex = true, array $customMapping = [])
+    protected function getManager($name = 'default', $createIndex = true, $noMapping = false)
     {
         $serviceName = sprintf('es.manager.%s', $name);
 
@@ -244,12 +244,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
 
         // Drops and creates index.
         if ($createIndex) {
-            $manager->dropAndCreateIndex();
-        }
-
-        // Updates settings.
-        if (!empty($customMapping)) {
-            $manager->updateMapping($customMapping);
+            $manager->dropAndCreateIndex($noMapping);
         }
 
         // Populates elasticsearch index with data.

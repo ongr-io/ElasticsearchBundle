@@ -68,7 +68,7 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
 
         $repository = $this
             ->getManager()
-            ->getRepository('AcmeBarBundle:ProductDocument');
+            ->getRepository('AcmeBarBundle:Product');
         $search = $repository
             ->createSearch()
             ->addAggregation($this->buildAggregation());

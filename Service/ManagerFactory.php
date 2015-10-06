@@ -82,7 +82,7 @@ class ManagerFactory
         }
         unset($connection['analysis']);
 
-        $mappings = $this->metadataCollector->getClientMapping($managerConfig);
+        $mappings = $this->metadataCollector->getClientMapping($managerConfig['mappings']);
 
         $client = ClientBuilder::create();
 
@@ -112,6 +112,9 @@ class ManagerFactory
             $this->metadataCollector,
             $this->converter
         );
+
+        $manager->setCommitMode($managerConfig['commit_mode']);
+        $manager->setBulkCommitSize($managerConfig['bulk_size']);
 
         return $manager;
     }

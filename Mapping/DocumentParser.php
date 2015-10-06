@@ -167,6 +167,7 @@ class DocumentParser
         }
 
         $alias = [];
+        $methods = $reflectionClass->getMethods();
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
@@ -175,6 +176,43 @@ class DocumentParser
                     'propertyName' => $name,
                     'type' => $type->type,
                 ];
+                switch (true) {
+                    case $property->isPublic():
+                        $propertyType = 'public';
+                        break;
+                    case $property->isProtected():
+                    case $property->isPrivate():
+                        $propertyType = 'private';
+
+                        $camelCaseName = ucfirst(Caser::camel($name));
+                        if ($reflectionClass->hasMethod('get'.$camelCaseName)
+                            && $reflectionClass->hasMethod('set'.$camelCaseName)
+                        ) {
+                            $alias[$type->name]['methods'] = [
+                                'getter' => 'get'.$camelCaseName,
+                                'setter' => 'set'.$camelCaseName,
+                            ];
+                        } else {
+                            $message = sprintf(
+                                'Missing %s() method in %s class. Add it, or change property to public.',
+                                $name,
+                                $reflectionName
+                            );
+                            throw new \LogicException($message);
+                        }
+                        break;
+                    default:
+                        $message = sprintf(
+                            'Wrong property %s type of %s class types cannot '.
+                            'be static or abstract.',
+                            $name,
+                            $reflectionName
+                        );
+                        throw new \LogicException($message);
+                }
+                $alias[$type->name]['propertyType'] = $propertyType;
+
+
                 if ($type->objectName) {
                     $child = new \ReflectionClass($this->finder->getNamespace($type->objectName));
                     $alias[$type->name] = array_merge(
@@ -204,7 +242,6 @@ class DocumentParser
             'Property',
             'Object',
             'Nested',
-            'MultiField',
         ];
 
         foreach ($annotations as $annotation) {
@@ -285,31 +322,21 @@ class DocumentParser
                 continue;
             }
 
-            $maps = $type->dump();
+            $map = $type->dump();
 
             // Object.
             if (in_array($type->type, ['object', 'nested']) && !empty($type->objectName)) {
-                $maps = array_replace_recursive($maps, $this->getObjectMapping($type->objectName));
-            }
-
-            // MultiField.
-            if (isset($maps['fields']) && !in_array($type->type, ['object', 'nested'])) {
-                $fieldsMap = [];
-                /** @var MultiField $field */
-                foreach ($maps['fields'] as $field) {
-                    $fieldsMap[$field->name] = $field->dump();
-                }
-                $maps['fields'] = $fieldsMap;
+                $map = array_replace_recursive($map, $this->getObjectMapping($type->objectName));
             }
 
             // If there is set some Raw options, it will override current ones.
-            if (isset($maps['raw'])) {
-                $raw = $maps['raw'];
-                unset($maps['raw']);
-                $maps = array_merge($maps, $raw);
+            if (isset($map['options'])) {
+                $options = $map['options'];
+                unset($map['options']);
+                $map = array_merge($map, $options);
             }
 
-            $mapping[$type->name] = $maps;
+            $mapping[$type->name] = $map;
         }
 
         return $mapping;

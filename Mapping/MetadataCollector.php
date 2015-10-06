@@ -35,6 +35,19 @@ class MetadataCollector
     private $cache;
 
     /**
+     * @var bool
+     */
+    private $enableCache = false;
+
+    /**
+     * Bundles mappings local cache container. Could be stored as the whole bundle or as single document.
+     * e.g. AcmeDemoBundle, AcmeDemoBundle:Product.
+     *
+     * @var array
+     */
+    private $mappings = [];
+
+    /**
      * @param DocumentFinder $finder For finding documents.
      * @param DocumentParser $parser For reading document annotations.
      * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
@@ -44,12 +57,23 @@ class MetadataCollector
         $this->finder = $finder;
         $this->parser = $parser;
         $this->cache = $cache;
+        $this->mappings = $this->cache->fetch('ongr.metadata.mappings');
+    }
+
+    /**
+     * Enables metadata caching.
+     *
+     * @param bool $enableCache
+     */
+    public function setEnableCache($enableCache)
+    {
+        $this->enableCache = $enableCache;
     }
 
     /**
      * Fetches bundles mapping from documents.
      *
-     * @param array $bundles Elasticsearch manager config. You can get bundles list from 'mappings' node.
+     * @param string[] $bundles Elasticsearch manager config. You can get bundles list from 'mappings' node.
      * @return array
      */
     public function getMappings(array $bundles)
@@ -65,22 +89,43 @@ class MetadataCollector
     /**
      * Searches for documents in the bundle and tries to read them.
      *
-     * @param string $bundle
+     * @param string $name
      *
      * @return array Empty array on containing zero documents.
      */
-    public function getBundleMapping($bundle)
+    public function getBundleMapping($name)
     {
+        if (!is_scalar($name)) {
+            throw new \LogicException('getBundleMapping() in the Metadata collector expects a string argument only!');
+        }
+
+        if (isset($this->mappings[$name])) {
+            return $this->mappings[$name];
+        }
+
+        // Checks if is mapped document or bundle.
+        if (strpos($name, ':') !== false) {
+            $bundleInfo = explode(':', $name);
+            $bundle = $bundleInfo[0];
+            $documentClass = $bundleInfo[1];
+
+            $documents = $this->finder->getBundleDocumentPaths($bundle);
+            $documents = array_filter(
+                $documents,
+                function ($document) use ($documentClass) {
+                    if (pathinfo($document, PATHINFO_FILENAME) == $documentClass) {
+                        return true;
+                    }
+                }
+            );
+        } else {
+            $documents = $this->finder->getBundleDocumentPaths($name);
+            $bundle = $name;
+        }
+
         $mappings = [];
         $bundleNamespace = $this->finder->getBundleClass($bundle);
         $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
-
-        // Checks if is mapped document or bundle.
-        if (strpos($bundle, ':') !== false) {
-            $documents = [];
-        } else {
-            $documents = $this->finder->getBundleDocumentPaths($bundle);
-        }
 
         // Loop through documents found in bundle.
         foreach ($documents as $document) {
@@ -96,6 +141,8 @@ class MetadataCollector
                 $mappings = array_replace_recursive($mappings, [$documentMapping['type'] => $documentMapping]);
             }
         }
+
+        $this->cacheBundle($name, $mappings);
 
         return $mappings;
     }
@@ -135,23 +182,30 @@ class MetadataCollector
      */
     public function getMappingByNamespace($namespace)
     {
-        return $this->getDocumentReflectionMapping(new \ReflectionClass($this->finder->getNamespace($namespace)));
+        if (isset($this->mappings[$namespace])) {
+            return $this->mappings[$namespace];
+        }
+
+        $mapping = $this->getDocumentReflectionMapping(new \ReflectionClass($this->finder->getNamespace($namespace)));
+        $this->cacheBundle($namespace, $mapping);
+
+        return $mapping;
     }
 
     /**
-     * Retrieves mapping from local cache otherwise runs through bundle files.
+     * Retrieves prepared mapping to sent to the elasticsearch client.
      *
-     * @param array $manager Manager config.
+     * @param array $bundles Manager config.
      *
      * @return array
      */
-    public function getClientMapping($manager)
+    public function getClientMapping(array $bundles)
     {
         /** @var array $typesMapping Array of filtered mappings for the elasticsearch client*/
         $typesMapping = [];
 
         /** @var array $mappings All mapping info */
-        $mappings = $this->getMappings($manager['mappings']);
+        $mappings = $this->getMappings($bundles);
 
         foreach ($mappings as $type => $mapping) {
             if (!empty($mapping['properties'])) {
@@ -209,5 +263,19 @@ class MetadataCollector
         $mapping = $this->getMappingByNamespace($namespace);
 
         return $mapping === null ? [] : $mapping;
+    }
+
+    /**
+     * Adds metadata information to the cache storage.
+     *
+     * @param string $bundle
+     * @param array  $mapping
+     */
+    private function cacheBundle($bundle, array $mapping)
+    {
+        if ($this->enableCache) {
+            $this->mappings[$bundle] = $mapping;
+            $this->cache->save('ongr.metadata.mappings', $this->mappings);
+        }
     }
 }

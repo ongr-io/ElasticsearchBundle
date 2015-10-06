@@ -44,15 +44,13 @@ class Repository
     /**
      * Constructor.
      *
-     * @param Manager   $manager
-     * @param array     $repositories
-     * @param Converter $converter
+     * @param Manager $manager
+     * @param array   $repositories
      */
-    public function __construct($manager, array $repositories, $converter)
+    public function __construct($manager, array $repositories)
     {
         $this->manager = $manager;
         $this->types = $this->resolveTypes($repositories);
-        $this->converter = $converter;
     }
 
     /**
@@ -109,7 +107,7 @@ class Repository
         }
 
         if ($resultType === self::RESULTS_OBJECT) {
-            return $this->converter->convertToDocument($result, $this);
+            return $this->getManager()->getConverter()->convertToDocument($result, $this);
         }
 
         return $this->parseResult($result, $resultType, '');
@@ -185,7 +183,7 @@ class Repository
                 return null;
             }
 
-            return $this->converter->convertToDocument($rawData[0], $this);
+            return $this->getManager()->getConverter()->convertToDocument($rawData[0], $this);
         }
 
         return $this->parseResult($result, $resultType, '');

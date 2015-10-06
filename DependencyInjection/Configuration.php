@@ -31,6 +31,13 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+            ->booleanNode('cache')
+                ->info(
+                    'Enables cache handler to store metadata and other data to the cache. '.
+                    'Default is false, we recommend to enable it in the production.'
+                )
+                ->defaultFalse()
+            ->end()
             ->append($this->getAnalysisNode())
             ->append($this->getConnectionsNode())
             ->append($this->getManagersNode())
@@ -154,6 +161,21 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('connection')
                         ->isRequired()
                         ->info('Sets connection for manager.')
+                    ->end()
+                    ->integerNode('bulk_size')
+                        ->min(0)
+                        ->defaultValue(100)
+                        ->info(
+                            'Maximum documents size in the bulk container. ' .
+                            'When the limit is reached it will auto-commit.'
+                        )
+                    ->end()
+                    ->enumNode('commit_mode')
+                        ->values(['refresh', 'flush'])
+                        ->defaultValue('refresh')
+                        ->info(
+                            'The type of commit to the elasticsearch'
+                        )
                     ->end()
                     ->booleanNode('profiler')
                         ->info('Enables elasticsearch profiler in the sf web profiler toolbar.')

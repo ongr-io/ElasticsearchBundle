@@ -41,18 +41,4 @@ class AbstractDocumentTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('123', $stub->getScore());
         $this->assertTrue($stub->hasParent());
     }
-
-    /**
-     * Tests if getHighlight() throws Exception.
-     *
-     * @expectedException        \UnderflowException
-     * @expectedExceptionMessage Highlight not set.
-     */
-    public function testGetHighlightException()
-    {
-        /** @var \ONGR\ElasticsearchBundle\Document\AbstractDocument $stub */
-        $stub = $this->getMockForAbstractClass('\ONGR\ElasticsearchBundle\Document\AbstractDocument');
-        $stub->__set('highlight', null);
-        $stub->getHighLight();
-    }
 }

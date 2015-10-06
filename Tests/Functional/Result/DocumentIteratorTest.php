@@ -57,7 +57,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
     public function testIteration()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
         $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
@@ -68,7 +68,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
             $categories = $document->relatedCategories;
 
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
                 $document
             );
             $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $categories);
@@ -87,7 +87,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
      */
     public function testCurrentWithEmptyIterator()
     {
-        $repo = $this->getManager('foo')->getRepository('AcmeFooBundle:CustomerDocument');
+        $repo = $this->getManager('foo')->getRepository('AcmeFooBundle:Customer');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());
@@ -101,7 +101,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
      */
     public function testIteratorFirst()
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());

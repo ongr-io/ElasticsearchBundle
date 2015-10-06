@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
@@ -36,7 +36,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function setUp()
     {
-        $this->repository = $this->getManager()->getRepository('AcmeBarBundle:ProductDocument');
+        $this->repository = $this->getManager()->getRepository('AcmeBarBundle:Product');
     }
 
     /**
@@ -51,7 +51,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $category->title = 'acme';
 
         // Multiple urls.
-        $product = new ProductDocument();
+        $product = new Product();
         $product->setId(1);
         $product->title = 'test';
         $product->category = $category;
@@ -59,10 +59,10 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        /** @var ProductDocument $actualProduct */
+        /** @var Product $actualProduct */
         $actualProduct = $this->repository->find(1);
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
             $actualProduct
         );
 
@@ -93,7 +93,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getContainer()->get('es.manager.readonly');
 
-        $product = new ProductDocument();
+        $product = new Product();
         $product->title = 'test';
 
         $manager->persist($product);
@@ -110,24 +110,24 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $out = [];
 
         // Case #0: multiple cdns are put into url object, although it isn't a multiple field.
-        $category = new ProductDocument();
-        $product = new ProductDocument;
+        $category = new Product();
+        $product = new Product;
         $product->category = $category;
 
         $out[] = [
             $product,
             'Expected object of type ' .
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject, ' .
-            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\ProductDocument.',
+            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product.',
         ];
 
         // Case #1: a single link is set, although field is set to multiple.
-        $product = new ProductDocument();
+        $product = new Product();
         $product->relatedCategories = new CategoryObject();
         $out[] = [$product, "Variable isn't traversable, although field is set to multiple."];
 
         // Case #2: invalid type of object is set to the field.
-        $product = new ProductDocument;
+        $product = new Product;
         $product->category = new \stdClass();
         $out[] = [
             $product,
@@ -136,7 +136,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         ];
 
         // Case #3: invalid type of object is set in single field.
-        $product = new ProductDocument;
+        $product = new Product;
         $product->category = [new CategoryObject()];
         $out[] = [
             $product,
@@ -149,14 +149,14 @@ class ManagerTest extends AbstractElasticsearchTestCase
     /**
      * Check if expected exceptions are thrown while trying to persist an invalid object.
      *
-     * @param ProductDocument $product
-     * @param string          $exceptionMessage
-     * @param string          $exception
+     * @param Product $product
+     * @param string  $exceptionMessage
+     * @param string  $exception
      *
      * @dataProvider getPersistExceptionsData()
      */
     public function testPersistExceptions(
-        ProductDocument $product,
+        Product $product,
         $exceptionMessage,
         $exception = 'InvalidArgumentException'
     ) {
@@ -176,7 +176,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         /** @var Manager $manager */
         $manager = $this->repository->getManager();
 
-        $product = new ProductDocument();
+        $product = new Product();
         $product->setId('testId');
         $product->setTtl(500000);
         $product->setScore('1.0');
@@ -199,7 +199,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         /** @var Manager $manager */
         $manager = $this->repository->getManager();
 
-        $product = new ProductDocument();
+        $product = new Product();
         $product->setId('testId');
         $product->released = new \DateTime('2100-01-02 03:04:05.889342');
 
@@ -217,7 +217,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testPersistTokenCountField()
     {
         $manager = $this->repository->getManager();
-        $product = new ProductDocument();
+        $product = new Product();
         $product->tokenPiecesCount = 't e s t';
         $manager->persist($product);
         $manager->commit();
@@ -240,7 +240,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->repository->getManager();
 
-        $document = new ProductDocument();
+        $document = new Product();
         $document->setId('tuna_id');
         $document->title = 'tuna';
 
