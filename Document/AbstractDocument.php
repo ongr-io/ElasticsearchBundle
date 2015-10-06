@@ -45,6 +45,56 @@ abstract class AbstractDocument implements DocumentInterface
     }
 
     /**
+     * Legacy property support.
+     *
+     * @param string $property
+     *
+     * @return null|string
+     */
+    public function __get($property)
+    {
+        switch ($property) {
+            case '_id':
+                return $this->getId();
+            case '_score':
+                return $this->getScore();
+            case '_ttl':
+                return $this->getTtl();
+            case '_parent':
+                return $this->getParent();
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Legacy property support and some special properties.
+     *
+     * @param string $property
+     * @param mixed  $value
+     */
+    public function __set($property, $value)
+    {
+        switch ($property) {
+            case '_id':
+                $this->setId($value);
+                break;
+            case '_score':
+                $this->setScore($value);
+                break;
+            case '_ttl':
+                $this->setTtl($value);
+                break;
+            case '_parent':
+                $this->setParent($value);
+                break;
+            default:
+                // Required default case for ONGR code style standard.
+                break;
+        }
+    }
+
+    /**
      * Sets document unique id.
      *
      * @param string $documentId
