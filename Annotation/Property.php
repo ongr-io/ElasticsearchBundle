@@ -12,8 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
-use Doctrine\Common\Annotations\Annotation\Enum;
-use Doctrine\Common\Annotations\Annotation\Required;
 use ONGR\ElasticsearchBundle\Mapping\Caser;
 
 /**

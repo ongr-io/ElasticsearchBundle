@@ -14,10 +14,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
-use ONGR\ElasticsearchBundle\Annotation\Inherit;
-use ONGR\ElasticsearchBundle\Annotation\MultiField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Annotation\Skip;
 
 /**
  * Document parser used for reading document annotations.
@@ -167,7 +164,6 @@ class DocumentParser
         }
 
         $alias = [];
-        $methods = $reflectionClass->getMethods();
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
@@ -245,7 +241,7 @@ class DocumentParser
         ];
 
         foreach ($annotations as $annotation) {
-            AnnotationRegistry::registerFile(__DIR__ . "/../Annotation/{$annotation}.php");
+            AnnotationRegistry::registerFile(getcwd() . "/Annotation/{$annotation}.php");
         }
     }
 
