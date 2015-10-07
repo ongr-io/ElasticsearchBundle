@@ -36,11 +36,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     private $aggregations = [];
 
     /**
-     * @var MetadataCollector
-     */
-    private $metaDataCollector;
-
-    /**
      * @var Converter
      */
     private $converter;
@@ -66,11 +61,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      * @var string Scroll duration.
      */
     private $scrollDuration;
-
-    /**
-     * @var int Offset for key modification when results are scrollable.
-     */
-    private $offset = 0;
 
     /**
      * Used to count iteration.
@@ -249,8 +239,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      */
     protected function advanceKey()
     {
-        $end = end($this->documents);
-        $current = current($this->documents);
         if ($this->isScrollable() && ($this->documents[$this->key()] == end($this->documents))) {
             $this->page();
         } else {

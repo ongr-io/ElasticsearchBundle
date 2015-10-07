@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
  * Class DocumentIterator.

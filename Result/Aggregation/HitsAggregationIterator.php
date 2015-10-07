@@ -41,11 +41,11 @@ class HitsAggregationIterator implements \ArrayAccess, \Iterator, \Countable
      * @param Converter  $converter
      * @param Repository $repository
      */
-    public function __construct($raw, $converter, $repository)
+    public function __construct($raw, Converter $converter, Repository $repository)
     {
         $this->raw = $raw;
         $this->converter = $converter;
-        $this->repository;
+        $this->repository = $repository;
     }
 
     /**

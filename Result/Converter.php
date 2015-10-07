@@ -52,7 +52,7 @@ class Converter
      *
      * @throws \LogicException
      */
-    public function convertToDocument($rawData, $repository)
+    public function convertToDocument($rawData, Repository $repository)
     {
         $types = $this->metadataCollector->getMappings($repository->getManager()->getConfig()['mappings']);
 
