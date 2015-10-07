@@ -24,7 +24,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testOffsetSet()
     {
-        $hits = new HitsAggregationIterator([], null, null);
+        $hits = new HitsAggregationIterator([], $this->getConverterMock(), $this->getRepositoryMock());
         $hits['foo'] = 'test';
     }
 
@@ -35,7 +35,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testOffsetUnset()
     {
-        $hits = new HitsAggregationIterator([], null, null);
+        $hits = new HitsAggregationIterator([], $this->getConverterMock(), $this->getRepositoryMock());
         unset($hits['foo']);
     }
 
@@ -93,7 +93,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testIteration($raw, $expected)
     {
-        $hits = new HitsAggregationIterator($raw, $this->getConverterMock(), null);
+        $hits = new HitsAggregationIterator($raw, $this->getConverterMock(), $this->getRepositoryMock());
 
         $ids = [];
         foreach ($hits as $doc) {
@@ -108,7 +108,7 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testCount()
     {
-        $hits = new HitsAggregationIterator(['total' => 4], null, null);
+        $hits = new HitsAggregationIterator(['total' => 4], $this->getConverterMock(), $this->getRepositoryMock());
         $this->assertEquals(4, $hits->count());
     }
 
@@ -121,8 +121,8 @@ class HitsAggregationIteratorTest extends \PHPUnit_Framework_TestCase
             [
                 'hits' => [[]],
             ],
-            null,
-            null
+            $this->getConverterMock(),
+            $this->getRepositoryMock()
         );
 
         $this->assertTrue(isset($hits[0]), 'First offset should be set.');
