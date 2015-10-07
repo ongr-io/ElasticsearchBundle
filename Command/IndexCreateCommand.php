@@ -32,6 +32,12 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             ->setName('ongr:es:index:create')
             ->setDescription('Creates elasticsearch index.')
             ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to the new index name')
+            ->addOption(
+                'alias',
+                'a',
+                InputOption::VALUE_NONE,
+                'If the time suffix is used, its nice to create an alias to the configured index name.'
+            )
             ->addOption('with-warmers', 'w', InputOption::VALUE_NONE, 'Puts warmers into index')
             ->addOption('no-mapping', 'nm', InputOption::VALUE_NONE, 'Do not include mapping');
     }
@@ -42,6 +48,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $manager = $this->getManager($input->getOption('manager'));
+        $originalIndexName = $manager->getIndexName();
 
         if ($input->getOption('time')) {
             /** @var IndexSuffixFinder $finder */
@@ -49,12 +56,62 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             $finder->setNextFreeIndex($manager);
         }
 
-        $manager->createIndex($input->getOption('with-warmers'), $input->getOption('no-mapping') ? true : false);
+        $manager->createIndex($input->getOption('no-mapping'));
+
         $output->writeln(
             sprintf(
-                '<info>Created index for manager named `</info><comment>%s</comment><info>`</info>',
+                '<info>Created `<comment>%s</comment>` index for the `<comment>%s</comment>` manager.</info>',
+                $manager->getIndexName(),
                 $input->getOption('manager')
             )
         );
+
+        if ($input->getOption('alias') && $originalIndexName != $manager->getIndexName()) {
+            $manager->getClient()->indices()->putAlias(
+                [
+                    'index' => $manager->getIndexName(),
+                    'name' => $originalIndexName,
+                ]
+            );
+
+            $output->writeln(
+                sprintf(
+                    '<info>Created an alias `<comment>%s</comment>` for the `<comment>%s</comment>` index.</info>',
+                    $originalIndexName,
+                    $manager->getIndexName()
+                )
+            );
+
+            if ($manager->getClient()->indices()->existsAlias(['name' => $originalIndexName])) {
+                $currentAlias = $manager->getClient()->indices()->getAlias(
+                    [
+                        'name' => $originalIndexName,
+                    ]
+                );
+
+                if (isset($currentAlias[$manager->getIndexName()])) {
+                    unset($currentAlias[$manager->getIndexName()]);
+                }
+
+                $indexesToRemoveAliases = implode(',', array_keys($currentAlias));
+                if (!empty($indexesToRemoveAliases)) {
+                    $manager->getClient()->indices()->deleteAlias(
+                        [
+                            'index' => $indexesToRemoveAliases,
+                            'name' => $originalIndexName,
+                        ]
+                    );
+
+                    $output->writeln(
+                        sprintf(
+                            '<info>Removed `<comment>%s</comment>` alias from `<comment>%s</comment>`' .
+                            'index(es).</info>',
+                            $originalIndexName,
+                            $indexesToRemoveAliases
+                        )
+                    );
+                }
+            }
+        }
     }
 }

@@ -28,16 +28,14 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
             [
                 'foo',
                 [
-                    'timestamp' => false,
-                    'noMapping' => true,
+                    '--no-mapping' => null,
                 ],
+                [],
             ],
             [
                 'default',
-                [
-                    'timestamp' => false,
-                    'noMapping' => false,
-                ],
+                [],
+                [],
             ],
         ];
     }
@@ -45,36 +43,22 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     /**
      * Tests creating index. Configuration from tests yaml.
      *
-     * @param string $argument
+     * @param string $managerName
+     * @param array  $arguments
      * @param array  $options
      *
      * @dataProvider getTestExecuteData
      */
-    public function testExecute($argument, $options)
+    public function testExecute($managerName, $arguments, $options)
     {
-        $manager = $this->getManager($argument);
+        $manager = $this->getManager($managerName);
 
         if ($manager->indexExists()) {
             $manager->dropIndex();
         }
 
-        $app = new Application();
-        $app->add($this->getCreateCommand());
+        $this->runIndexCreateCommand($managerName, $arguments, $options);
 
-        // Creates index.
-        $command = $app->find('ongr:es:index:create');
-        $commandTester = new CommandTester($command);
-        $arguments = [
-            'command' => $command->getName(),
-            '--manager' => $argument,
-        ];
-        if ($options['timestamp']) {
-            $arguments['--time'] = null;
-        }
-        if ($options['noMapping']) {
-            $arguments['--no-mapping'] = null;
-        }
-        $commandTester->execute($arguments);
         $this->assertTrue($manager->indexExists(), 'Index should exist.');
         $manager->dropIndex();
     }
@@ -89,6 +73,58 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     {
         $manager = $this->getContainer()->get('es.manager.readonly');
         $manager->createIndex();
+    }
+
+    /**
+     * Testing if creating index with alias option will switch alias correctly to the new index.
+     */
+    public function testAliasIsCreatedCorrectly()
+    {
+        $manager = $this->getManager();
+
+        $aliasName = $manager->getIndexName();
+        $finder = $this->getContainer()->get('es.client.index_suffix_finder');
+        $finder->setNextFreeIndex($manager);
+        $oldIndexName = $manager->getIndexName();
+        $manager->createIndex();
+
+        $this->assertTrue($manager->indexExists());
+        $this->assertFalse($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
+
+        $this->runIndexCreateCommand($manager->getName(), ['--time' => null, '--alias' => null], []);
+
+        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
+        $newIndexNames = array_keys($aliases);
+
+        $this->assertCount(1, $newIndexNames);
+        $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
+        $this->assertNotEquals($manager->getIndexName(), $newIndexNames);
+
+        $manager->setIndexName($newIndexNames[0]);
+        $manager->dropIndex();
+        $manager->setIndexName($oldIndexName);
+        $manager->dropIndex();
+    }
+
+    /**
+     * Runs the index create command.
+     *
+     * @param string $managerName
+     * @param array  $arguments
+     * @param array  $options
+     */
+    protected function runIndexCreateCommand($managerName, array $arguments = [], array $options = [])
+    {
+        $app = new Application();
+        $app->add($this->getCreateCommand());
+
+        // Creates index.
+        $command = $app->find('ongr:es:index:create');
+        $commandTester = new CommandTester($command);
+        $arguments['command'] = $command->getName();
+        $arguments['--manager'] = $managerName;
+
+        $commandTester->execute($arguments, $options);
     }
 
     /**
