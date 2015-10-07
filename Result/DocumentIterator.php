@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
  * Class DocumentIterator.
@@ -28,11 +27,6 @@ class DocumentIterator extends AbstractResultsIterator
     public function getAggregations()
     {
         $aggregations = parent::getAggregations();
-//
-//        foreach ($aggregations as $key => $value) {
-//            $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
-//            $data[$realKey] = $value;
-//        }
 
         return new AggregationIterator($aggregations, $this->getConverter(), $this->getRepository());
     }
