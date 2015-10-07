@@ -28,11 +28,6 @@ class ManagerFactory
     private $metadataCollector;
 
     /**
-     * @var CacheProvider
-     */
-    private $cache;
-
-    /**
      * @var Converter
      */
     private $converter;
@@ -49,15 +44,13 @@ class ManagerFactory
 
     /**
      * @param MetadataCollector $metadataCollector Metadata collector service.
-     * @param CacheProvider     $cache             Cache provider to save some data.
      * @param Converter         $converter         Converter service to transform arrays to objects and visa versa.
      * @param LoggerInterface   $tracer
      * @param LoggerInterface   $logger
      */
-    public function __construct($metadataCollector, $cache, $converter, $tracer = null, $logger = null)
+    public function __construct($metadataCollector, $converter, $tracer = null, $logger = null)
     {
         $this->metadataCollector = $metadataCollector;
-        $this->cache = $cache;
         $this->converter = $converter;
         $this->tracer = $tracer;
         $this->logger = $logger;

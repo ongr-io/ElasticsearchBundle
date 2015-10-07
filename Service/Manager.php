@@ -16,8 +16,6 @@ use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Manager class.
@@ -300,15 +298,15 @@ class Manager
 
             switch ($this->getCommitMode()) {
                 case 'flush':
-                    $this->flush();
+                    $this->flush($params);
                     break;
                 case 'refresh':
                 default:
-                    $this->refresh();
+                    $this->refresh($params);
                     break;
             }
 
-            $this->refresh();
+            return $bulkResponse;
         }
 
         return null;

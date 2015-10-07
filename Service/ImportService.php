@@ -11,10 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Service\Json\JsonReader;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\ProgressHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
