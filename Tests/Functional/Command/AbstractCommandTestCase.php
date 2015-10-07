@@ -32,7 +32,7 @@ class AbstractCommandTestCase extends WebTestCase
      *
      * @return Manager
      */
-    protected function getManager($name)
+    protected function getManager($name = 'default')
     {
         $manager = ($name == 'default') || (empty($name)) ? 'es.manager' : sprintf('es.manager.%s', $name);
 
