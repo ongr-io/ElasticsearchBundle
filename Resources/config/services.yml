@@ -75,4 +75,4 @@ services:
 
     es.manager_factory:
         class: %es.manager_factory.class%
-        arguments: [@es.metadata_collector, @es.cache_engine, @es.result_converter, @es.tracer]
+        arguments: [@es.metadata_collector, @es.result_converter, @es.tracer]
