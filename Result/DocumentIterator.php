@@ -28,11 +28,11 @@ class DocumentIterator extends AbstractResultsIterator
     public function getAggregations()
     {
         $aggregations = parent::getAggregations();
-
-        foreach ($aggregations as $key => $value) {
-            $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
-            $data[$realKey] = $value;
-        }
+//
+//        foreach ($aggregations as $key => $value) {
+//            $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
+//            $data[$realKey] = $value;
+//        }
 
         return new AggregationIterator($aggregations, $this->getConverter(), $this->getRepository());
     }

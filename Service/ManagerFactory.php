@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Elasticsearch\ClientBuilder;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;

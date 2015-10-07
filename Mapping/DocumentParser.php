@@ -241,7 +241,7 @@ class DocumentParser
         ];
 
         foreach ($annotations as $annotation) {
-            AnnotationRegistry::registerFile(getcwd() . "/Annotation/{$annotation}.php");
+            AnnotationRegistry::registerFile(__DIR__ . "/../Annotation/{$annotation}.php");
         }
     }
 

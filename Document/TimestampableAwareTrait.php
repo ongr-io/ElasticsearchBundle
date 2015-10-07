@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Document;
 
-use ONGR\ElasticsearchBundle\Annotation as ES;
-
 /**
  * Timestampable trait.
  */
@@ -21,14 +19,14 @@ trait TimestampableAwareTrait
     /**
      * @var \DateTime
      *
-     * @ES\Property(name="updatedAt", type="date")
+     * @ONGR\ElasticsearchBundle\Annotation\ES\Property(name="updatedAt", type="date")
      */
     public $updatedAt;
 
     /**
      * @var \DateTime
      *
-     * @ES\Property(name="createdAt", type="date")
+     * @ONGR\ElasticsearchBundle\Annotation\ES\Property(name="createdAt", type="date")
      */
     public $createdAt;
 

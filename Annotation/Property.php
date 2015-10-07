@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation;
 use ONGR\ElasticsearchBundle\Mapping\Caser;
+use Doctrine\Common\Annotations\Annotation\Enum;
 
 /**
  * Annotation used to check mapping type during the parsing process.
