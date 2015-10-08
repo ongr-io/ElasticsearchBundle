@@ -11,8 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
-use ONGR\ElasticsearchBundle\Result\Converter;
-use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
  * This class hold aggregations from Elasticsearch result.
@@ -25,33 +24,23 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
     private $rawData;
 
     /**
-     * @var array
-     */
-    private $aggregations;
-
-    /**
-     * @var Converter
-     */
-    private $converter;
-
-    /**
-     * @var Repository
-     */
-    private $repository;
-
-    /**
      * Constructor.
      *
-     * @param array      $rawData
-     * @param null       $converter
-     * @param Repository $repository
+     * @param array $rawData
      */
-    public function __construct($rawData, $converter = null, $repository = null)
+    public function __construct($rawData)
     {
         $this->rawData = $rawData;
-        $this->aggregations = [];
-        $this->converter = $converter;
-        $this->repository = $repository;
+    }
+
+    /**
+     * Returns the raw data which was passed from the iterator.
+     *
+     * @return array
+     */
+    public function getRawData()
+    {
+        return $this->rawData;
     }
 
     /**
@@ -59,7 +48,7 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
      */
     public function offsetExists($offset)
     {
-        return isset($this->rawData[$offset]) || isset($this->aggregations[$offset]);
+        return isset($this->rawData[$offset]);
     }
 
     /**
@@ -71,31 +60,19 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
             return null;
         }
 
-        if (isset($this->aggregations[$offset])) {
-            return $this->aggregations[$offset];
+        switch (true) {
+            case isset($this->rawData[$offset]['buckets']):
+                $result = new AggregationIterator($this->rawData[$offset]['buckets']);
+                break;
+            case isset($this->rawData[$offset]['hits']):
+                $result = '';
+                break;
+            default:
+                $result = new ValueAggregation($this->rawData[$offset]);
+                break;
         }
 
-        if (isset($this->rawData[$offset]['buckets'])) {
-            $this->aggregations[$offset] = new AggregationIterator(
-                $this->rawData[$offset]['buckets'],
-                $this->converter
-            );
-        } elseif (isset($this->rawData[$offset]['hits'])) {
-            if (!$this->converter) {
-                throw new \InvalidArgumentException(
-                    'Too get tophit aggregation converter must be passed though constructor or choose raw results.'
-                );
-            }
-            $this->aggregations[$offset] = new HitsAggregationIterator(
-                $this->rawData[$offset]['hits'],
-                $this->converter,
-                $this->repository
-            );
-        } else {
-            $this->aggregations[$offset] = new ValueAggregation($this->rawData[$offset], $this->converter);
-        }
-
-        return $this->aggregations[$offset];
+        return $result;
     }
 
     /**
@@ -168,11 +145,12 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
             $currentPath = $path;
         }
 
-        if ($this->offsetExists($currentPath)) {
+        if ($this->offsetExists(AbstractAggregation::PREFIX.$currentPath)) {
             if (!strstr($path, '.')) {
-                return $this->offsetGet($currentPath);
+                return $this->offsetGet(AbstractAggregation::PREFIX.$currentPath);
             } else {
-                return $this->offsetGet($currentPath)->find(substr($path, strlen($currentPath) + 1));
+                return $this->offsetGet(AbstractAggregation::PREFIX.$currentPath)
+                    ->find(substr($path, strlen($currentPath) + 1));
             }
         }
 

@@ -30,11 +30,6 @@ class ValueAggregation
     private $value;
 
     /**
-     * @var AggregationIterator
-     */
-    private $aggregations;
-
-    /**
      * @var Converter
      */
     private $converter;
@@ -49,6 +44,16 @@ class ValueAggregation
     {
         $this->rawData = $rawData;
         $this->converter = $converter;
+    }
+
+    /**
+     * Returns the raw data which was passed from the iterator.
+     *
+     * @return array
+     */
+    public function getRawData()
+    {
+        return $this->rawData;
     }
 
     /**
@@ -67,8 +72,6 @@ class ValueAggregation
         foreach ($this->rawData as $key => $value) {
             if (strpos($key, AbstractAggregation::PREFIX) !== 0) {
                 $this->value[$key] = $value;
-                // Clear memory.
-                unset($this->rawData[$key]);
             }
         }
 
@@ -82,24 +85,15 @@ class ValueAggregation
      */
     public function getAggregations()
     {
-        if ($this->aggregations !== null) {
-            return $this->aggregations;
-        }
-
-        $data = [];
+        $rawAggregations = [];
 
         foreach ($this->rawData as $key => $value) {
             if (strpos($key, AbstractAggregation::PREFIX) === 0) {
-                $realKey = substr($key, strlen(AbstractAggregation::PREFIX));
-                $data[$realKey] = $value;
-                // Clear memory.
-                unset($this->rawData[$key]);
+                $rawAggregations[$key] = $value;
             }
         }
 
-        $this->aggregations = new AggregationIterator($data, $this->converter);
-
-        return $this->aggregations;
+        return new AggregationIterator($rawAggregations);
     }
 
     /**

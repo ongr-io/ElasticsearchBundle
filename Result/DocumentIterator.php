@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
+use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 use ONGR\ElasticsearchBundle\Service\Repository;
 
 /**
@@ -28,7 +29,19 @@ class DocumentIterator extends AbstractResultsIterator
     {
         $aggregations = parent::getAggregations();
 
-        return new AggregationIterator($aggregations, $this->getConverter(), $this->getRepository());
+        return new AggregationIterator($aggregations);
+    }
+
+    /**
+     * Get a specific aggregation by name. It fetches from the top level only.
+     *
+     * @param string $name
+     *
+     * @return AggregationIterator|ValueAggregation
+     */
+    public function getAggregation($name)
+    {
+        return $this->getAggregations()->find($name);
     }
 
     /**
