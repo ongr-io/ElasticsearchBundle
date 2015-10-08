@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result\Aggregation;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 class ValueAggregationTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,6 +23,7 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
      */
     public function getTestGetValueData()
     {
+        $aggPrefix = AbstractAggregation::PREFIX;
         $cases = [];
 
         // Case #0 Simple aggregation.
@@ -34,7 +36,7 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
         $cases[] = [
             [
                 'doc_count' => 15,
-                'agg_sub-aggregation' => ['doc_count' => 1],
+                $aggPrefix.'sub-aggregation' => ['doc_count' => 1],
             ],
             ['doc_count' => 15],
         ];
@@ -42,7 +44,7 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
         // Case #2 Aggregation without value.
         $cases[] = [
             [
-                'agg_sub-aggregation' => ['doc_count' => 1],
+                $aggPrefix.'sub-aggregation' => ['doc_count' => 1],
             ],
             [],
         ];
@@ -85,15 +87,16 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAggregations()
     {
+        $aggPrefix = AbstractAggregation::PREFIX;
         $rawData = [
             'doc_count' => 15,
-            'agg_foo' => ['doc_count' => 1],
-            'agg_bar' => ['doc_count' => 2],
+            $aggPrefix.'foo' => ['doc_count' => 1],
+            $aggPrefix.'bar' => ['doc_count' => 2],
         ];
 
         $expectedResult = [
-            'foo' => new ValueAggregation($rawData['agg_foo']),
-            'bar' => new ValueAggregation($rawData['agg_bar']),
+            $aggPrefix.'foo' => new ValueAggregation($rawData[$aggPrefix.'foo']),
+            $aggPrefix.'bar' => new ValueAggregation($rawData[$aggPrefix.'bar']),
         ];
 
         $aggregation = new ValueAggregation($rawData);
@@ -107,9 +110,10 @@ class ValueAggregationTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAggregationsCached()
     {
+        $aggPrefix = AbstractAggregation::PREFIX;
         $rawData = [
             'doc_count' => 15,
-            'agg_foo' => ['doc_count' => 1],
+            $aggPrefix.'foo' => ['doc_count' => 1],
         ];
 
         $aggregation = new ValueAggregation($rawData);
