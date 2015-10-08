@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
 use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
-use ONGR\ElasticsearchBundle\Result\Converter;
 
 /**
  * This is the class for plain aggregation result with nested aggregations support.
@@ -28,11 +27,6 @@ class ValueAggregation
      * @var array Extracted aggregation value.
      */
     private $value;
-
-    /**
-     * @var Converter
-     */
-    private $converter;
 
     /**
      * Constructor.
