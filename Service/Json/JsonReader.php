@@ -52,6 +52,11 @@ class JsonReader implements \Countable, \Iterator
     private $converter;
 
     /**
+     * @var Manager
+     */
+    private $manager;
+
+    /**
      * @var OptionsResolver
      */
     private $optionsResolver;
