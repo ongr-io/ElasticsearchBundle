@@ -31,13 +31,11 @@ class ValueAggregation
     /**
      * Constructor.
      *
-     * @param array     $rawData
-     * @param Converter $converter
+     * @param array $rawData
      */
-    public function __construct($rawData, $converter = null)
+    public function __construct($rawData)
     {
         $this->rawData = $rawData;
-        $this->converter = $converter;
     }
 
     /**
