@@ -79,7 +79,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
         array $scroll = []
     ) {
         $this->repository = $repository;
-        $this->metaDataCollector = $repository->getManager()->getMetadataCollector();
         $this->converter = $repository->getManager()->getConverter();
         $this->managerConfig = $repository->getManager()->getConfig();
 
