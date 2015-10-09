@@ -43,9 +43,9 @@ class MetadataCollector
      * Bundles mappings local cache container. Could be stored as the whole bundle or as single document.
      * e.g. AcmeDemoBundle, AcmeDemoBundle:Product.
      *
-     * @var array
+     * @var mixed
      */
-    private $mappings = [];
+    private $mappings;
 
     /**
      * @param DocumentFinder $finder For finding documents.
