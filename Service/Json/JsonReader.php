@@ -42,7 +42,7 @@ class JsonReader implements \Countable, \Iterator
     private $currentLine;
 
     /**
-     * @var array
+     * @var mixed
      */
     private $metadata;
 
