@@ -120,7 +120,7 @@ class DocumentParser
      *
      * @param \ReflectionClass $document
      *
-     * @return Property
+     * @return Document|null
      */
     public function getDocumentAnnotationData($document)
     {
@@ -132,7 +132,7 @@ class DocumentParser
      *
      * @param \ReflectionProperty $property
      *
-     * @return Property
+     * @return Property|null
      */
     public function getPropertyAnnotationData($property)
     {
