@@ -69,9 +69,7 @@ class ImportService
             $progress->advance();
         }
 
-        if (($key + 1) % $bulkSize != 0) {
-            $manager->commit();
-        }
+        $manager->commit();
 
         $progress->finish();
         $output->writeln('');
