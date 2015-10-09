@@ -73,7 +73,7 @@ class ValueAggregation
     /**
      * Returns sub-aggregations.
      *
-     * @return AggregationIterator
+     * @return null|AggregationIterator|ValueAggregation
      */
     public function getAggregations()
     {
@@ -93,7 +93,7 @@ class ValueAggregation
      *
      * @param string $path
      *
-     * @return AggregationIterator
+     * @return null|AggregationIterator|ValueAggregation
      */
     public function find($path)
     {

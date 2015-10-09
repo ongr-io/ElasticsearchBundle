@@ -37,7 +37,7 @@ class DocumentIterator extends AbstractResultsIterator
      *
      * @param string $name
      *
-     * @return AggregationIterator|ValueAggregation
+     * @return null|AggregationIterator|ValueAggregation
      */
     public function getAggregation($name)
     {

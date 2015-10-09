@@ -52,7 +52,10 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
     }
 
     /**
-     * {@inheritdoc}
+     * Offset to retrieve from aggregation container.
+     *
+     * @param mixed $offset
+     * @return null|AggregationIterator|ValueAggregation
      */
     public function offsetGet($offset)
     {
@@ -136,7 +139,7 @@ class AggregationIterator implements \ArrayAccess, \Iterator, \Countable
      *
      * @param string $path
      *
-     * @return AggregationIterator
+     * @return null|AggregationIterator|ValueAggregation
      */
     public function find($path)
     {
