@@ -26,13 +26,6 @@ class Converter
     private $metadataCollector;
 
     /**
-     * Special elasticsearch fields.
-     *
-     * @var array
-     */
-    private $specialFields = [];
-
-    /**
      * Constructor.
      *
      * @param MetadataCollector $metadataCollector
@@ -40,7 +33,6 @@ class Converter
     public function __construct($metadataCollector)
     {
         $this->metadataCollector = $metadataCollector;
-        $this->specialFields = ['_id', '_ttl', '_parent'];
     }
 
     /**
