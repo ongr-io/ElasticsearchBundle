@@ -174,35 +174,6 @@ class Converter
     }
 
     /**
-     * Returns property to access for object used by property accessor.
-     *
-     * @param string $field
-     *
-     * @return string
-     */
-    private function getPropertyToAccess($field)
-    {
-        $deep = strpos($field, ' ');
-        if ($deep !== false) {
-            $field = substr($field, $deep + 1);
-        }
-
-        return $field;
-    }
-
-    /**
-     * Returns property to access for array used by property accessor.
-     *
-     * @param string $field
-     *
-     * @return string
-     */
-    private function getPropertyPathToAccess($field)
-    {
-        return '[' . str_replace(' ', '][', $field) . ']';
-    }
-
-    /**
      * Check if class matches the expected one.
      *
      * @param object $object
