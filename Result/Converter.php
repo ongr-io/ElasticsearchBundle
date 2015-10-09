@@ -14,8 +14,6 @@ namespace ONGR\ElasticsearchBundle\Result;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Service\Repository;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * This class converts array to document object.
@@ -28,9 +26,11 @@ class Converter
     private $metadataCollector;
 
     /**
-     * @var PropertyAccessor
+     * Special elasticsearch fields.
+     *
+     * @var array
      */
-    private $propertyAccessor;
+    private $specialFields = [];
 
     /**
      * Constructor.
@@ -40,6 +40,7 @@ class Converter
     public function __construct($metadataCollector)
     {
         $this->metadataCollector = $metadataCollector;
+        $this->specialFields = ['_id', '_ttl', '_parent'];
     }
 
     /**
@@ -62,12 +63,21 @@ class Converter
             throw new \LogicException("Got document of unknown type '{$rawData['_type']}'.");
         }
 
-        $data = isset($rawData['_source']) ? $rawData['_source'] : array_map('reset', $rawData['fields']);
+        switch (true) {
+            case isset($rawData['_source']):
+                $rawData = array_merge($rawData, $rawData['_source']);
+                break;
+            case isset($rawData['fields']):
+                $rawData = array_merge($rawData, $rawData['fields']);
+                break;
+            default:
+                // Do nothing.
+                break;
+        }
+
 
         /** @var DocumentInterface $object */
-        $object = $this->assignArrayToObject($data, new $metadata['namespace'](), $metadata['aliases']);
-
-        $this->setObjectFields($object, $rawData, ['_id', '_score', 'fields _parent', 'fields _ttl']);
+        $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
 
         return $object;
     }
@@ -84,6 +94,9 @@ class Converter
     public function assignArrayToObject(array $array, $object, array $aliases)
     {
         foreach ($array as $name => $value) {
+            if (!isset($aliases[$name]['type'])) {
+                continue;
+            }
             switch ($aliases[$name]['type']) {
                 case 'date':
                     $value = \DateTime::createFromFormat(
@@ -121,8 +134,8 @@ class Converter
     /**
      * Converts object to an array.
      *
-     * @param DocumentInterface $object
-     * @param array             $aliases
+     * @param mixed $object
+     * @param array $aliases
      *
      * @return array
      */
@@ -133,14 +146,14 @@ class Converter
         }
 
         $array = [];
-        // Special fields.
-        if ($object instanceof DocumentInterface) {
-            $this->setArrayFields($array, $object, ['_id', '_parent', '_ttl']);
-        }
 
         // Variable $name defined in client.
         foreach ($aliases as $name => $alias) {
-            $value = $this->getPropertyAccessor()->getValue($object, $alias['propertyName']);
+            if ($aliases[$name]['propertyType'] == 'private') {
+                $value = $object->{$aliases[$name]['methods']['getter']}();
+            } else {
+                $value = $object->{$aliases[$name]['propertyName']};
+            }
 
             if (isset($value)) {
                 if (array_key_exists('aliases', $alias)) {
@@ -167,45 +180,6 @@ class Converter
         }
 
         return $array;
-    }
-
-    /**
-     * Sets fields into object from raw response.
-     *
-     * @param object $object      Object to set values to.
-     * @param array  $rawResponse Array to take values from.
-     * @param array  $fields      Values to take.
-     */
-    private function setObjectFields($object, $rawResponse, $fields = [])
-    {
-        foreach ($fields as $field) {
-            $path = $this->getPropertyPathToAccess($field);
-            $value = $this->getPropertyAccessor()->getValue($rawResponse, $path);
-
-            if ($value !== null) {
-                $this->getPropertyAccessor()->setValue($object, $this->getPropertyToAccess($field), $value);
-            }
-        }
-    }
-
-    /**
-     * Sets fields into array from object.
-     *
-     * @param array  $array  To set values to.
-     * @param object $object Take values from.
-     * @param array  $fields Fields to set.
-     */
-    private function setArrayFields(&$array, $object, $fields = [])
-    {
-        foreach ($fields as $field) {
-            $value = $this->getPropertyAccessor()->getValue($object, $this->getPropertyToAccess($field));
-
-            if ($value !== null) {
-                $this
-                    ->getPropertyAccessor()
-                    ->setValue($array, $this->getPropertyPathToAccess($field), $value);
-            }
-        }
     }
 
     /**
@@ -294,21 +268,5 @@ class Converter
         }
 
         throw new \DomainException("Aliases could not be found for {$class} document.");
-    }
-
-    /**
-     * Returns property accessor instance.
-     *
-     * @return PropertyAccessor
-     */
-    private function getPropertyAccessor()
-    {
-        if (!$this->propertyAccessor) {
-            $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
-                ->enableMagicCall()
-                ->getPropertyAccessor();
-        }
-
-        return $this->propertyAccessor;
     }
 }

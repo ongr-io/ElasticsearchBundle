@@ -164,8 +164,11 @@ class DocumentParser
         }
 
         $alias = [];
-        /** @var \ReflectionProperty $property */
-        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
+
+        /** @var \ReflectionProperty[] $properties */
+        $properties = $this->getDocumentPropertiesReflection($reflectionClass);
+
+        foreach ($properties as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
             if ($type !== null) {
                 $alias[$type->name] = [

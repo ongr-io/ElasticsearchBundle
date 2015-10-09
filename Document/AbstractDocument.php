@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Document;
 
+use ONGR\ElasticsearchBundle\Annotation as ES;
+
 /**
  * Document abstraction which introduces mandatory fields for the document.
  */
@@ -18,21 +20,29 @@ abstract class AbstractDocument implements DocumentInterface
 {
     /**
      * @var string
+     *
+     * @ES\Property(type="string", name="_id")
      */
     public $id;
 
     /**
      * @var string
+     *
+     * @ES\Property(type="float", name="_score")
      */
     public $score;
 
     /**
      * @var string
+     *
+     * @ES\Property(type="string", name="_parent")
      */
     public $parent;
 
     /**
      * @var string
+     *
+     * @ES\Property(type="string", name="_ttl")
      */
     public $ttl;
 
@@ -42,56 +52,6 @@ abstract class AbstractDocument implements DocumentInterface
     public function __clone()
     {
         $this->setId(null);
-    }
-
-    /**
-     * Legacy property support.
-     *
-     * @param string $property
-     *
-     * @return null|string
-     */
-    public function __get($property)
-    {
-        switch ($property) {
-            case '_id':
-                return $this->getId();
-            case '_score':
-                return $this->getScore();
-            case '_ttl':
-                return $this->getTtl();
-            case '_parent':
-                return $this->getParent();
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * Legacy property support and some special properties.
-     *
-     * @param string $property
-     * @param mixed  $value
-     */
-    public function __set($property, $value)
-    {
-        switch ($property) {
-            case '_id':
-                $this->setId($value);
-                break;
-            case '_score':
-                $this->setScore($value);
-                break;
-            case '_ttl':
-                $this->setTtl($value);
-                break;
-            case '_parent':
-                $this->setParent($value);
-                break;
-            default:
-                // Required default case for ONGR code style standard.
-                break;
-        }
     }
 
     /**
