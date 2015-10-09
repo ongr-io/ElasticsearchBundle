@@ -67,7 +67,6 @@ class Converter
                 break;
         }
 
-
         /** @var DocumentInterface $object */
         $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
 
