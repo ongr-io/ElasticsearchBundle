@@ -71,7 +71,10 @@ class QueryEndpoint extends AbstractSearchEndpoint implements OrderedNormalizerI
         if ($this->hasReference('filtered_query')) {
             /** @var FilteredQuery $query */
             $query = $this->getReference('filtered_query');
-            $this->addBuilder($query);
+            if ($this->getBuilder()) {
+                $query->setQuery($this->getBuilder());
+            }
+            $this->setBuilder($query);
             $isRelevant = true;
         }
 
