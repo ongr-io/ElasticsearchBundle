@@ -7,7 +7,7 @@ Elasticsearch bundle is installed using [Composer](https://getcomposer.org).
 
 ```
 
-    php composer.phar require ongr/elasticsearch-bundle "~1.0"
+php composer.phar require ongr/elasticsearch-bundle "~1.0"
 
 ```
 
@@ -19,16 +19,16 @@ Enable Elasticsearch bundle in your AppKernel:
 
 ```php
 
-    <?php
-    // app/AppKernel.php
+<?php
+// app/AppKernel.php
 
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ...
-            new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
-        );
-    }
+public function registerBundles()
+{
+    $bundles = array(
+        // ...
+        new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
+    );
+}
 
 ```
 
@@ -41,16 +41,16 @@ Add minimal configuration for Elasticsearch bundle.
 
 ```yaml
 
-    #app/config/config.yml
-    ongr_elasticsearch:
-        connections:
-            default:
-                index_name: acme
-        managers:
-            default:
-                connection: default
-                mappings:
-                    - AcmeDemoBundle
+#app/config/config.yml
+ongr_elasticsearch:
+    connections:
+        default:
+            index_name: acme
+    managers:
+        default:
+            connection: default
+            mappings:
+                - AcmeDemoBundle
 
 ```
 
@@ -67,27 +67,27 @@ Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch
 
 ```php
 
-    <?php
-    namespace Acme\DemoBundle\Document;
+<?php
+namespace Acme\DemoBundle\Document;
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
+/**
+ * @ES\Document
+ */
+class Customer extends AbstractDocument
+{
     /**
-     * @ES\Document
+     * @var string
+     *
+     * @ES\Property(name="name", type="string")
      */
-    class Customer extends AbstractDocument
-    {
-        /**
-         * @var string
-         *
-         * @ES\Property(name="name", type="string")
-         */
-        private $name;
+    private $name;
 
-        // Setters and getters boilerplate follows:
-        // ...
-    }
+    // Setters and getters boilerplate follows:
+    // ...
+}
 
 ```
 

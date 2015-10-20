@@ -48,21 +48,21 @@ In the managers configuration `mappings` is optional. If there are no mappings d
 Lets start with a document class example.
 ```php
 
-    <?php
-    //AcmeDemoBundle:Content
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+<?php
+//AcmeDemoBundle:Content
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
 
+/**
+ * @ES\Document(type="content")
+ */
+class Content extends AbstractContentDocument
+{
     /**
-     * @ES\Document(type="content")
+     * @ES\Property(type="string", name="title")
      */
-    class Content extends AbstractContentDocument
-    {
-        /**
-         * @ES\Property(type="string", name="title")
-         */
-        public $title;
-    }
+    public $title;
+}
 
 ```
 
@@ -95,25 +95,25 @@ To add custom settings to property like analyzer it has to be included in `optio
 
 ```php
 
-    <?php
-    //AcmeDemoBundle:Content
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+<?php
+//AcmeDemoBundle:Content
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
 
+/**
+ * @ES\Document(type="content")
+ */
+class Content extends AbstractContentDocument
+{
     /**
-     * @ES\Document(type="content")
+     * @ES\Property(
+        type="string",
+        name="title",
+        options={"index_analyzer":"incrementalAnalyzer"}
+      )
      */
-    class Content extends AbstractContentDocument
-    {
-        /**
-         * @ES\Property(
-            type="string",
-            name="title",
-            options={"index_analyzer":"incrementalAnalyzer"}
-          )
-         */
-        public $title;
-    }
+    public $title;
+}
 
 ```
 
@@ -124,28 +124,28 @@ It is a little different to define nested and object types. For this user will n
 
 ```php
 
-    <?php
-    //AcmeDemoBundle:Content
-    use ONGR\ElasticsearchBundle\Annotation as ES;
-    use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+<?php
+//AcmeDemoBundle:Content
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+
+/**
+ * @ES\Document(type="content")
+ */
+class Content extends AbstractContentDocument
+{
+    /**
+     * @ES\Property(type="string", name="title")
+     */
+    public $title;
 
     /**
-     * @ES\Document(type="content")
+     * @var ContentMetaObject
+     *
+     * @ES\Property(name="meta", type="object", objectName="AcmeDemoBundle:ContentMetaObject")
      */
-    class Content extends AbstractContentDocument
-    {
-        /**
-         * @ES\Property(type="string", name="title")
-         */
-        public $title;
-
-        /**
-         * @var ContentMetaObject
-         *
-         * @ES\Property(name="meta", type="object", objectName="AcmeDemoBundle:ContentMetaObject")
-         */
-        public $metaObject;
-    }
+    public $metaObject;
+}
 
 ```
 
@@ -153,26 +153,26 @@ And the content object will look like:
 
 ```php
 
-    <?php
-    //AcmeDemoBundle:ContentMetaObject
+<?php
+//AcmeDemoBundle:ContentMetaObject
 
-    use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Annotation as ES;
+
+/**
+ * @ES\Object
+ */
+class ContentMetaObject
+{
+    /**
+     * @ES\Property(type="string")
+     */
+    public $key;
 
     /**
-     * @ES\Object
+     * @ES\Property(type="string")
      */
-    class ContentMetaObject
-    {
-        /**
-         * @ES\Property(type="string")
-         */
-        public $key;
-
-        /**
-         * @ES\Property(type="string")
-         */
-        public $value;
-    }
+    public $value;
+}
 
 ```
 
@@ -181,26 +181,27 @@ As shown in the example, by default only a single object will be saved in the do
 
 ```php
 
-        //....
-        /**
-         * @var ContentMetaObject
-         *
-         * @ES\Property(name="meta", type="object", multiple="true", objectName="AcmeDemoBundle:ContentMetaObject")
-         */
-        public $metaObject;
-        //....
+//....
+/**
+ * @var ContentMetaObject
+ *
+ * @ES\Property(name="meta", type="object", multiple="true", objectName="AcmeDemoBundle:ContentMetaObject")
+ */
+public $metaObject;
+//....
 
 ```
 
 Insert action will look like this:
 ```php
 
-        <?php
-        $content = new Content();
-        $content->properties = [new ContentMetaObject(), new ContentMetaObject()];
+<?php
+$content = new Content();
+$content->properties = [new ContentMetaObject(), new ContentMetaObject()];
 
-        $manager->persist($content);
-        $manager->commit();
+$manager->persist($content);
+$manager->commit();
+
 ```
 To define object or nested fields the same `@ES\Property` annotations could be used. In the objects there is possibility to define other objects also.
 
