@@ -8,17 +8,16 @@ For all steps below we asume that there is an `AcmeDemoBundle` with the `Content
 
 <?php
 //AcmeDemoBundle:Content
-use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use ONGR\ElasticsearchBundle\Annotation as ES; // Alias to make short annotation.
+use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
 /**
  * @ES\Document(type="content")
  */
-class Content extends AbstractContentDocument
+class Content extends AbstractDocument
 {
     /**
-     * @ES\Property(type="string")
+     * @ES\Property(type="string", name="title")
      */
     public $title;
 }
