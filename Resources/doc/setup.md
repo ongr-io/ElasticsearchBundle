@@ -109,4 +109,4 @@ Elasticsearch bundle provides several `CLI` commands. One of them is for creatin
 
 ### Step 5: Enjoy with the Elasticsearch
 
-Usage documentation for the Elasticsearch bundle is [available here](usage.md). And it's up to you what an amazing things you are gonna create :sunglasses:.
+We advice to take a look at [mapping chapter](mapping.md) to configure the index. Search documentation for the Elasticsearch bundle is [available here](search.md). And finally it's up to you what an amazing things you are gonna create :sunglasses:.
