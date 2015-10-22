@@ -9,12 +9,15 @@ Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsea
 * [Mapping explained](mapping.md)
 * [Configuration](configuration.md)
 * [Console commands](commands.md)
-* [How to do a simple operations (CRUD actions)](usage.md)
+* [How to do a simple CRUD actions](crud.md)
+* [Quick find functions](find_functions.md)
 * [How to search the index](search.md)
+* [Scan through the index](scan.md)
 * [Parsing the results](results_parsing.md)
 
 #### Troubleshooting
 * [How to upgrade from the older versions?](upgrade.md)
+* [How to override some parts of the bundle?](overriding_bundle.md)
 
 #### Some news for upcoming versions
 
