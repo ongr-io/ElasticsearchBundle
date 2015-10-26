@@ -52,6 +52,8 @@ It will construct a query:
 
 ```
 
+> Important: by default result size in elasticsearch is 10, if you need more set size to your needs.
+
 For more query and filter examples take a look at the [Elasticsearch DSL library docs](https://github.com/ongr-io/ElasticsearchDSL/blob/master/docs/index.md). We covered all examples that we found in [Elasticsearch Query DSL documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) how to cover in objective oriented way.
 
 > The results parsing is the same like in the find functions.
