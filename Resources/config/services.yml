@@ -67,7 +67,7 @@ services:
             - [setManagers, [%es.managers%]]
             - [addLogger, [@es.tracer]]
         tags:
-            - {name: data_collector, template: %es.profiler.template%, id: ongr}
+            - {name: data_collector, template: %es.profiler.template%, id: ongr.profiler}
 
     es.result_converter:
         class: %es.result_converter.class%

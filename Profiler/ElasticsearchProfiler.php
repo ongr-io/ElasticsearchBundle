@@ -138,7 +138,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     public function getName()
     {
-        return 'es';
+        return 'ongr.profiler';
     }
 
     /**
