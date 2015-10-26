@@ -21,7 +21,7 @@ class ElasticsearchProfilerTest extends \PHPUnit_Framework_TestCase
     public function testGetName()
     {
         $collector = new ElasticsearchProfiler();
-        $this->assertEquals('es', $collector->getName());
+        $this->assertEquals('ongr.profiler', $collector->getName());
     }
 
     /**
