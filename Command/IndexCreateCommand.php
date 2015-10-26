@@ -38,7 +38,6 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                 InputOption::VALUE_NONE,
                 'If the time suffix is used, its nice to create an alias to the configured index name.'
             )
-            ->addOption('with-warmers', 'w', InputOption::VALUE_NONE, 'Puts warmers into index')
             ->addOption('no-mapping', 'nm', InputOption::VALUE_NONE, 'Do not include mapping');
     }
 
