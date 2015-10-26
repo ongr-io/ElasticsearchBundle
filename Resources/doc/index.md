@@ -17,7 +17,7 @@ Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsea
 
 #### Troubleshooting
 * [How to upgrade from the older versions?](upgrade.md)
-* [How to override some parts of the bundle?](overriding_bundle.md)
+* [How to overwrite some parts of the bundle?](overwriting_bundle.md)
 
 #### Some news for upcoming versions
 
