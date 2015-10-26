@@ -15,7 +15,7 @@ use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
-use ONGR\ElasticsearchDSL\Query\TermsQuery;
+use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
@@ -140,7 +140,9 @@ class Repository
         }
 
         foreach ($criteria as $field => $value) {
-            $search->addQuery(new TermsQuery($field, is_array($value) ? $value : [$value]), 'must');
+            $search->addQuery(
+                new QueryStringQuery(is_array($value) ? implode(' OR ', $value) : $value, ['default_field' => $field])
+            );
         }
 
         foreach ($orderBy as $field => $direction) {
@@ -157,35 +159,25 @@ class Repository
      * @param array|null $orderBy    Example: ['name' => 'ASC', 'surname' => 'DESC'].
      * @param string     $resultType Result type returned.
      *
+     * @throws \Exception
+     *
      * @return DocumentInterface|null The object.
      */
     public function findOneBy(array $criteria, array $orderBy = [], $resultType = self::RESULTS_OBJECT)
     {
-        $search = $this->createSearch();
-        $search->setSize(1);
+        $result = $this->findBy($criteria, $orderBy, null, null, $resultType);
 
-        foreach ($criteria as $field => $value) {
-            $search->addQuery(new TermsQuery($field, is_array($value) ? $value : [$value]), 'must');
+        switch ($resultType) {
+            case self::RESULTS_OBJECT:
+            case self::RESULTS_RAW_ITERATOR:
+                return $result->first();
+            case self::RESULTS_ARRAY:
+                return array_shift($result);
+            case self::RESULTS_RAW:
+                return array_shift($result['hits']['hits']);
+            default:
+                throw new \Exception('Wrong results type selected');
         }
-
-        foreach ($orderBy as $field => $direction) {
-            $search->addSort(new FieldSort($field, $direction));
-        }
-
-        $result = $this
-            ->getManager()
-            ->search($this->types, $search->toArray(), $search->getQueryParams());
-
-        if ($resultType === self::RESULTS_OBJECT) {
-            $rawData = $result['hits']['hits'];
-            if (!count($rawData)) {
-                return null;
-            }
-
-            return $this->getManager()->getConverter()->convertToDocument($rawData[0], $this);
-        }
-
-        return $this->parseResult($result, $resultType, '');
     }
 
     /**
