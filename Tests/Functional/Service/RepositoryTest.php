@@ -516,4 +516,39 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $document = $repository->find(1, Repository::RESULTS_RAW_ITERATOR);
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $document);
     }
+
+    /**
+     * Tests if document can be updated with partial update without initiating document object.
+     */
+    public function testPartialUpdate()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
+
+        /** @var Product $product */
+        $product = $repository->find(1);
+        $this->assertEquals($product->title, 'foo');
+
+        $result = $repository->update(1, ['title' => 'acme']);
+
+        $product = $repository->find(1);
+        $this->assertEquals($product->title, 'acme');
+    }
+
+    /**
+     * Tests if document can be updated with partial update without initiating document object.
+     */
+    public function testPartialUpdateWithDocumentResponse()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
+
+        $result = $repository->update(1, ['title' => 'acme'], null, ['fields' => 'id,title,price']);
+
+        $this->assertEquals(1, $result['_id']);
+        $this->assertEquals('acme', $result['get']['fields']['title'][0]);
+        $this->assertEquals(10, $result['get']['fields']['price'][0]);
+
+        $this->assertNotContains('id', $result['get']['fields']);
+    }
 }
