@@ -180,10 +180,11 @@ class JsonReader implements \Countable, \Iterator
     {
         $resolver
             ->setRequired(['_id', '_type', '_source'])
-            ->setDefaults(['_score' => null])
+            ->setDefaults(['_score' => null, 'fields' => []])
             ->addAllowedTypes('_id', ['integer', 'string'])
             ->addAllowedTypes('_type', 'string')
-            ->addAllowedTypes('_source', 'array');
+            ->addAllowedTypes('_source', 'array')
+            ->addAllowedTypes('fields', 'array');
     }
 
     /**
