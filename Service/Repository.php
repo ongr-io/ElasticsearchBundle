@@ -203,6 +203,37 @@ class Repository
     }
 
     /**
+     * Counts documents by given search.
+     *
+     * @param Search $search
+     * @param array  $params
+     * @param bool   $returnRaw If set true returns raw response gotten from client.
+     *
+     * @return int|array
+     */
+    public function count(Search $search, array $params = [], $returnRaw = false)
+    {
+        $body = array_merge(
+            [
+                'index' => $this->getManager()->getIndexName(),
+                'type' => $this->getTypes(),
+                'body' => $search->toArray(),
+            ],
+            $params
+        );
+
+        $results = $this
+            ->getManager()
+            ->getClient()->count($body);
+
+        if ($returnRaw) {
+            return $results;
+        } else {
+            return $results['count'];
+        }
+    }
+
+    /**
      * Delete by query.
      *
      * @param Search $search

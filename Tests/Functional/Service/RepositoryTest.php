@@ -551,4 +551,47 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $this->assertNotContains('id', $result['get']['fields']);
     }
+
+    /**
+     * Tests results counting via search query.
+     */
+    public function testCountApi()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
+
+        $matchAll = new MatchAllQuery();
+        $search = $repository->createSearch();
+        $search->addQuery($matchAll);
+
+        $count = $repository->count($search);
+
+        $this->assertEquals(4, $count);
+    }
+
+    /**
+     * Tests results counting raw response from client.
+     */
+    public function testCountApiRawResponse()
+    {
+        $manager = $this->getManager();
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
+
+        $matchAll = new MatchAllQuery();
+        $search = $repository->createSearch();
+        $search->addQuery($matchAll);
+
+        $count = $repository->count($search, [], true);
+
+        $this->assertTrue(is_array($count));
+        $this->assertEquals(4, $count['count']);
+
+        $shards = [
+            'total' => 5,
+            'successful' => 5,
+            'failed' => 0,
+        ];
+
+        $this->assertEquals($shards, $count['_shards']);
+    }
 }
