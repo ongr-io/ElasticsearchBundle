@@ -93,6 +93,44 @@ $manager->commit();
 
 ```
 
+## Partial update
+
+There is a quicker way to update a document field without creating object or fetching a whole document from elasticsearch. For this action we will use [partial update](https://www.elastic.co/guide/en/elasticsearch/guide/current/partial-updates.html) from elasticsearch.
+
+To update a field you need to know a document `ID` and fields to update. Here's an example:
+
+```php
+
+$repo = $this->get('es.manager.default.content');
+$repo->update(1, ['title' => 'new title']);
+
+```
+
+You can also update fields with script operation, lets say, you want to do some math:
+
+
+```php
+
+$repo = $this->get('es.manager.default.product');
+$repo->update(1, [], 'ctx._source.stock+=1');
+
+```
+> Important: when using script update fields cannot be updated, leave empty array, otherwise you will get 400 exception.
+
+`ctx._source` comes from groovy scripting and you have to enable it in elasticsearch config with: `script.groovy.sandbox.enabled: false`
+
+
+In addition you also can get other document fields with the response of update, lets say we also want a content field and a new title, so just add them with comma separated:
+
+
+```php
+
+$repo = $this->get('es.manager.default.content');
+$response = $repo->update(1, ['title' => 'new title'], null, ['fields' => 'title,content']);
+
+```
+
+
 ## Delete a document
 
 ```php
