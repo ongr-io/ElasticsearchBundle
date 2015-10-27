@@ -53,20 +53,13 @@ class Repository
     }
 
     /**
-     * Resolves elasticsearch types from documents.
+     * Returns elasticsearch manager used in the repository.
      *
-     * @param array $repositories
-     *
-     * @return array
+     * @return Manager
      */
-    private function resolveTypes($repositories)
+    public function getManager()
     {
-        $types = [];
-        foreach ($repositories as $repository) {
-            $types[] = $this->getManager()->getMetadataCollector()->getDocumentType($repository);
-        }
-
-        return $types;
+        return $this->manager;
     }
 
     /**
@@ -278,6 +271,61 @@ class Repository
     }
 
     /**
+     * Partial document update.
+     *
+     * @param string $id     Document id to update.
+     * @param array  $fields Fields array to update.
+     * @param string $script Groovy script to update fields.
+     * @param array  $params Additional parameters to pass to the client.
+     *
+     * @return array
+     */
+    public function update($id, array $fields = [], $script = null, array $params = [])
+    {
+        if (count($this->types) > 1) {
+            throw new \LogicException('Partial update can be executed only with one type selected.');
+        }
+
+        $type = $this->getTypes()[0];
+
+        $body = array_filter(
+            [
+                'doc' => $fields,
+                'script' => $script,
+            ]
+        );
+
+        $params = array_merge(
+            [
+                'id' => $id,
+                'index' => $this->getManager()->getIndexName(),
+                'type' => $type,
+                'body' => $body,
+            ],
+            $params
+        );
+
+        return $this->getManager()->getClient()->update($params);
+    }
+
+    /**
+     * Resolves elasticsearch types from documents.
+     *
+     * @param array $repositories
+     *
+     * @return array
+     */
+    private function resolveTypes($repositories)
+    {
+        $types = [];
+        foreach ($repositories as $repository) {
+            $types[] = $this->getManager()->getMetadataCollector()->getDocumentType($repository);
+        }
+
+        return $types;
+    }
+
+    /**
      * Parses raw result.
      *
      * @param array  $raw
@@ -336,15 +384,5 @@ class Repository
         }
 
         return $output;
-    }
-
-    /**
-     * Returns elasticsearch manager used in the repository.
-     *
-     * @return Manager
-     */
-    public function getManager()
-    {
-        return $this->manager;
     }
 }
