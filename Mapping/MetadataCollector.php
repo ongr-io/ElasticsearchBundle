@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\Common\Proxy\Exception\UnexpectedValueException;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 
 /**
