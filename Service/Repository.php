@@ -53,20 +53,13 @@ class Repository
     }
 
     /**
-     * Resolves elasticsearch types from documents.
+     * Returns elasticsearch manager used in the repository.
      *
-     * @param array $repositories
-     *
-     * @return array
+     * @return Manager
      */
-    private function resolveTypes($repositories)
+    public function getManager()
     {
-        $types = [];
-        foreach ($repositories as $repository) {
-            $types[] = $this->getManager()->getMetadataCollector()->getDocumentType($repository);
-        }
-
-        return $types;
+        return $this->manager;
     }
 
     /**
@@ -278,6 +271,23 @@ class Repository
     }
 
     /**
+     * Resolves elasticsearch types from documents.
+     *
+     * @param array $repositories
+     *
+     * @return array
+     */
+    private function resolveTypes($repositories)
+    {
+        $types = [];
+        foreach ($repositories as $repository) {
+            $types[] = $this->getManager()->getMetadataCollector()->getDocumentType($repository);
+        }
+
+        return $types;
+    }
+
+    /**
      * Parses raw result.
      *
      * @param array  $raw
@@ -336,15 +346,5 @@ class Repository
         }
 
         return $output;
-    }
-
-    /**
-     * Returns elasticsearch manager used in the repository.
-     *
-     * @return Manager
-     */
-    public function getManager()
-    {
-        return $this->manager;
     }
 }
