@@ -65,7 +65,8 @@ class ExportService
         $writer = $this->getWriter($this->getFilePath($filename), $metadata);
 
         foreach ($results as $data) {
-            $writer->push(array_intersect_key($data, array_flip(['_id', '_type', '_source'])));
+            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source', 'fields']));
+            $writer->push($doc);
             $progress->advance();
         }
 
@@ -105,6 +106,8 @@ class ExportService
             ->setScroll()
             ->setSize($chunkSize);
         $search->addQuery(new MatchAllQuery());
+        $search->setFields(['_parent']);
+        $search->setSource(true);
 
         return $repository->execute($search, Repository::RESULTS_RAW_ITERATOR);
     }

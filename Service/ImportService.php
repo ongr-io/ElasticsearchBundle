@@ -60,6 +60,10 @@ class ImportService
             $data = $document['_source'];
             $data['_id'] = $document['_id'];
 
+            if (array_key_exists('fields', $document)) {
+                $data = array_merge($document['fields'], $data);
+            }
+
             $manager->bulk('index', $document['_type'], $data);
 
             if (($key + 1) % $bulkSize == 0) {
