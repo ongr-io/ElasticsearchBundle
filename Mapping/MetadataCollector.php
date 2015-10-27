@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Proxy\Exception\UnexpectedValueException;
 use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 
 /**
@@ -32,7 +33,7 @@ class MetadataCollector
     /**
      * @var CacheProvider
      */
-    private $cache;
+    private $cache = null;
 
     /**
      * @var bool
@@ -45,19 +46,22 @@ class MetadataCollector
      *
      * @var mixed
      */
-    private $mappings;
+    private $mappings = [];
 
     /**
      * @param DocumentFinder $finder For finding documents.
      * @param DocumentParser $parser For reading document annotations.
      * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
      */
-    public function __construct($finder, $parser, $cache)
+    public function __construct($finder, $parser, $cache = null)
     {
         $this->finder = $finder;
         $this->parser = $parser;
         $this->cache = $cache;
-        $this->mappings = $this->cache->fetch('ongr.metadata.mappings');
+
+        if ($this->cache) {
+            $this->mappings = $this->cache->fetch('ongr.metadata.mappings');
+        }
     }
 
     /**
@@ -80,7 +84,18 @@ class MetadataCollector
     {
         $output = [];
         foreach ($bundles as $bundle) {
-            $output = array_merge($output, $this->getBundleMapping($bundle));
+            $mappings = $this->getBundleMapping($bundle);
+
+            $alreadyDefinedTypes = array_intersect_key($mappings, $output);
+            if (count($alreadyDefinedTypes)) {
+                throw new \LogicException(
+                    implode(',', array_keys($alreadyDefinedTypes)) .
+                    ' type(s) already defined in other document, you can use the same ' .
+                    'type only once in a manager definition.'
+                );
+            }
+
+            $output = array_merge($output, $mappings);
         }
 
         return $output;
@@ -95,7 +110,7 @@ class MetadataCollector
      */
     public function getBundleMapping($name)
     {
-        if (!is_scalar($name)) {
+        if (!is_string($name)) {
             throw new \LogicException('getBundleMapping() in the Metadata collector expects a string argument only!');
         }
 
@@ -127,6 +142,10 @@ class MetadataCollector
         $bundleNamespace = $this->finder->getBundleClass($bundle);
         $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
 
+        if (!count($documents)) {
+            return [];
+        }
+
         // Loop through documents found in bundle.
         foreach ($documents as $document) {
             $documentReflection = new \ReflectionClass(
@@ -136,9 +155,19 @@ class MetadataCollector
             );
 
             $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-            if (is_array($documentMapping) && isset($documentMapping['type'])) {
+
+            if (!array_key_exists('type', $documentMapping)) {
+                continue;
+            }
+
+            if (!array_key_exists($documentMapping['type'], $mappings)) {
                 $documentMapping['bundle'] = $bundle;
-                $mappings = array_replace_recursive($mappings, [$documentMapping['type'] => $documentMapping]);
+                $mappings = array_merge($mappings, [$documentMapping['type'] => $documentMapping]);
+            } else {
+                throw new \LogicException(
+                    $bundle . ' has 2 same type names defined in the documents. ' .
+                    'Type names must be unique!'
+                );
             }
         }
 
@@ -229,7 +258,7 @@ class MetadataCollector
      *
      * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
      *
-     * @return array|null
+     * @return array
      */
     private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
     {
@@ -241,7 +270,7 @@ class MetadataCollector
      *
      * @param DocumentInterface $document
      *
-     * @return array|null
+     * @return array
      */
     public function getDocumentMapping(DocumentInterface $document)
     {
