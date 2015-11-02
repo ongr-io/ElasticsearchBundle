@@ -16,11 +16,11 @@
         "doctrine/annotations": "~1.2",
         "doctrine/inflector": "~1.0",
         "doctrine/cache": "~1.4",
+        "monolog/monolog": "~1.0",
         "elasticsearch/elasticsearch": "~2.0",
         "ongr/elasticsearch-dsl": "~1.0"
     },
     "require-dev": {
-        "monolog/monolog": "~1.0",
         "mikey179/vfsStream": "~1.4",
         "phpunit/phpunit": "~4.4",
         "squizlabs/php_codesniffer": "~2.0",
