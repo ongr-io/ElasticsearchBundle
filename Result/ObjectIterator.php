@@ -51,4 +51,14 @@ class ObjectIterator extends AbstractResultsIterator
             $this->alias['aliases']
         );
     }
+
+    /**
+     * Return current document count.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->documents);
+    }
 }
