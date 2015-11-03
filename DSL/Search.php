@@ -60,6 +60,11 @@ class Search
     /**
      * @var string
      */
+    private $timeout;
+
+    /**
+     * @var string
+     */
     private $searchType;
 
     /**
@@ -627,6 +632,22 @@ class Search
     }
 
     /**
+     * @return int
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * @param int $timeout
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+    }
+
+    /**
      * Setter for preference.
      *
      * Controls which shard replicas to execute the search request on.
@@ -676,6 +697,7 @@ class Search
         return array_filter(
             [
                 'scroll' => $this->getScroll(),
+                'timeout' => $this->getTimeout(),
                 'search_type' => $this->getSearchType(),
                 'preference' => $this->getPreference(),
             ]
