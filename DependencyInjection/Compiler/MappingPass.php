@@ -174,6 +174,14 @@ class MappingPass implements CompilerPassInterface
             $params['connectionParams']['auth'] = array_values($connection['auth']);
         }
 
+        if (!empty($connection['curl_options']) && !empty($connection['curl_options']['connection_timeout'])) {
+            $params['guzzleOptions']['curl.options'][CURLOPT_CONNECTTIMEOUT] = $connection['curl_options']['connection_timeout'];
+        }
+
+        if (!empty($connection['curl_options']) && !empty($connection['curl_options']['timeout'])) {
+            $params['guzzleOptions']['curl.options'][CURLOPT_TIMEOUT] = $connection['curl_options']['timeout'];
+        }
+
         if ($manager['debug']['enabled'] === true) {
             $params['logging'] = true;
             $params['logPath'] = $container->getParameter('es.logging.path');
