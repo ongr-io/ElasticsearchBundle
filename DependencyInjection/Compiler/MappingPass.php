@@ -175,15 +175,13 @@ class MappingPass implements CompilerPassInterface
         }
 
         if (!empty($connection['curl_options']) && !empty($connection['curl_options']['connection_timeout'])) {
-            $params[
-                'guzzleOptions'
-            ]['curl.options'][CURLOPT_CONNECTTIMEOUT] = $connection['curl_options']['connection_timeout'];
+            $connectionTimeout = $connection['curl_options']['connection_timeout'];
+            $params['guzzleOptions']['curl.options'][CURLOPT_CONNECTTIMEOUT] = $connectionTimeout;
         }
 
         if (!empty($connection['curl_options']) && !empty($connection['curl_options']['timeout'])) {
-            $params[
-                'guzzleOptions'
-            ]['curl.options'][CURLOPT_TIMEOUT] = $connection['curl_options']['timeout'];
+            $timeout = $connection['curl_options']['timeout'];
+            $params['guzzleOptions']['curl.options'][CURLOPT_TIMEOUT] = $timeout;
         }
 
         if ($manager['debug']['enabled'] === true) {
