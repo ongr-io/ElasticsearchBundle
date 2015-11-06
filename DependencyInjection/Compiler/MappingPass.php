@@ -107,7 +107,7 @@ class MappingPass implements CompilerPassInterface
                 $metadataDefinition->addArgument([$repository => $metadata]);
 
                 if (strpos($bundle, ':') === false) {
-                    $out[$bundle . ':' . $metadata['class']] = $metadataDefinition;
+                    $out[$bundle.':'.$metadata['class']] = $metadataDefinition;
                 } else {
                     $out[$bundle] = $metadataDefinition;
                 }
@@ -132,7 +132,7 @@ class MappingPass implements CompilerPassInterface
     {
         if (!isset($connections[$settings['connection']])) {
             throw new InvalidConfigurationException(
-                'There is no ES connection with name ' . $settings['connection']
+                'There is no ES connection with name '.$settings['connection']
             );
         }
 
@@ -174,12 +174,16 @@ class MappingPass implements CompilerPassInterface
             $params['connectionParams']['auth'] = array_values($connection['auth']);
         }
 
-        if (!empty($connection['curl_options']) && !empty($connection['curl_options']['connection_timeout'])) {
-            $params['guzzleOptions']['curl.options'][CURLOPT_CONNECTTIMEOUT] = $connection['curl_options']['connection_timeout'];
+        if (!empty($connection['curl_options']) &&
+            !empty($connection['curl_options']['connection_timeout'])) {
+            $params['guzzleOptions']['curl.options']
+                [CURLOPT_CONNECTTIMEOUT] = $connection['curl_options']['connection_timeout'];
         }
 
-        if (!empty($connection['curl_options']) && !empty($connection['curl_options']['timeout'])) {
-            $params['guzzleOptions']['curl.options'][CURLOPT_TIMEOUT] = $connection['curl_options']['timeout'];
+        if (!empty($connection['curl_options']) &&
+            !empty($connection['curl_options']['timeout'])) {
+            $params['guzzleOptions']['curl.options']
+                [CURLOPT_TIMEOUT] = $connection['curl_options']['timeout'];
         }
 
         if ($manager['debug']['enabled'] === true) {
