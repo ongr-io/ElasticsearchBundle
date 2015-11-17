@@ -7,7 +7,7 @@ Elasticsearch bundle is installed using [Composer](https://getcomposer.org).
 
 ```
 
-php composer.phar require ongr/elasticsearch-bundle "~1.0"
+php composer.phar require ongr/elasticsearch-bundle "dev-master"
 
 ```
 
