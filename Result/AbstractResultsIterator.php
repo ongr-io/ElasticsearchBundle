@@ -17,7 +17,7 @@ use ONGR\ElasticsearchBundle\Service\Repository;
 /**
  * Class AbstractResultsIterator.
  */
-abstract class AbstractResultsIterator implements \Countable, \Iterator
+abstract class AbstractResultsIterator implements \ArrayAccess, \Countable, \Iterator
 {
     /**
      * @var array Documents.
@@ -113,6 +113,38 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetExists($offset)
+    {
+        return $this->documentExists($offset);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        return $this->getDocument($offset);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw new \LogicException('Data of this iterator can not be changed after initialization.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset($offset)
+    {
+        throw new \LogicException('Data of this iterator can not be changed after initialization.');
     }
 
     /**
