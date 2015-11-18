@@ -15,7 +15,7 @@ before_script:
   - composer install --no-interaction
 script:
   - vendor/bin/phpunit --coverage-clover=coveralls.clover
-  - vendor/bin/phpcs -p --standard=vendor/ongr/ongr-strict-standard/Ongr --ignore=vendor/,Tests/app/ ./
+  - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
 after_script:
   - vendor/bin/coveralls
 notifications:
