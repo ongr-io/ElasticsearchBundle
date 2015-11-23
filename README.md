@@ -5,7 +5,7 @@ professional [elasticsearch](https://www.elastic.co/products/elasticsearch) inte
 2 systems. This bundle is:
 
 * Supported by [ONGR.io](http://ongr.io) development team.
-* Uses the official [elasticsearch-php](https://github.com/elasticsearch/elasticsearch-php>) client.
+* Uses the official [elasticsearch-php](https://github.com/elastic/elasticsearch-php) client.
 * Ensures full integration with Symfony 2 framework.
 
 Technical goodies:
