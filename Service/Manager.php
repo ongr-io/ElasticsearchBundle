@@ -345,10 +345,8 @@ class Manager
         switch ($operation) {
             case 'index':
             case 'create':
-                $this->bulkQueries['body'][] = $query;
-                break;
             case 'update':
-                $this->bulkQueries['body'][] = ['doc' => $query];
+                $this->bulkQueries['body'][] = $query;
                 break;
             case 'delete':
                 // Body for delete operation is not needed to apply.
