@@ -19,14 +19,14 @@ trait TimestampableAwareTrait
     /**
      * @var \DateTime
      *
-     * @ONGR\ElasticsearchBundle\Annotation\ES\Property(name="updatedAt", type="date")
+     * @ONGR\ElasticsearchBundle\Annotation\Property(name="updatedAt", type="date")
      */
     public $updatedAt;
 
     /**
      * @var \DateTime
      *
-     * @ONGR\ElasticsearchBundle\Annotation\ES\Property(name="createdAt", type="date")
+     * @ONGR\ElasticsearchBundle\Annotation\Property(name="createdAt", type="date")
      */
     public $createdAt;
 
