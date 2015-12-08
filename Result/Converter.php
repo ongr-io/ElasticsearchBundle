@@ -100,6 +100,10 @@ class Converter
                     if ($aliases[$name]['multiple']) {
                         $value = new ObjectIterator($this, $value, $aliases[$name]);
                     } else {
+                        if (!isset($value)) {
+                            $value = new ObjectIterator($this, $value, $aliases[$name]);
+                            break;
+                        }
                         $value = $this->assignArrayToObject(
                             $value,
                             new $aliases[$name]['namespace'](),
