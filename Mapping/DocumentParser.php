@@ -182,23 +182,7 @@ class DocumentParser
                     case $property->isProtected():
                     case $property->isPrivate():
                         $propertyType = 'private';
-
-                        $camelCaseName = ucfirst(Caser::camel($name));
-                        if ($reflectionClass->hasMethod('get'.$camelCaseName)
-                            && $reflectionClass->hasMethod('set'.$camelCaseName)
-                        ) {
-                            $alias[$type->name]['methods'] = [
-                                'getter' => 'get'.$camelCaseName,
-                                'setter' => 'set'.$camelCaseName,
-                            ];
-                        } else {
-                            $message = sprintf(
-                                'Missing %s() method in %s class. Add it, or change property to public.',
-                                $name,
-                                $reflectionName
-                            );
-                            throw new \LogicException($message);
-                        }
+                        $alias[$type->name]['methods'] = $this->getMutatorMethods($reflectionClass, $name);
                         break;
                     default:
                         $message = sprintf(
@@ -229,6 +213,50 @@ class DocumentParser
         $this->aliases[$reflectionName] = $alias;
 
         return $this->aliases[$reflectionName];
+    }
+
+    /**
+     * Checks if class have setter and getter, and returns them in array.
+     *
+     * @param \ReflectionClass $reflectionClass
+     * @param string           $property
+     *
+     * @return array
+     */
+    private function getMutatorMethods(\ReflectionClass $reflectionClass, $property)
+    {
+        $camelCaseName = ucfirst(Caser::camel($property));
+        $setterName = 'set'.$camelCaseName;
+        if (!$reflectionClass->hasMethod($setterName)) {
+            $message = sprintf(
+                'Missing %s() method in %s class. Add it, or change property to public.',
+                $setterName,
+                $reflectionClass->getName()
+            );
+            throw new \LogicException($message);
+        }
+
+        if ($reflectionClass->hasMethod('get'.$camelCaseName)) {
+            return [
+                'getter' => 'get' . $camelCaseName,
+                'setter' => $setterName
+            ];
+        }
+
+        if ($reflectionClass->hasMethod('is'.$camelCaseName)) {
+            return [
+                'getter' => 'is' . $camelCaseName,
+                'setter' => $setterName
+            ];
+        }
+
+        $message = sprintf(
+            'Missing %s() or %s() method in %s class. Add it, or change property to public.',
+            'get'.$camelCaseName,
+            'is'.$camelCaseName,
+            $reflectionClass->getName()
+        );
+        throw new \LogicException($message);
     }
 
     /**
