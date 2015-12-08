@@ -362,7 +362,7 @@ class DocumentParser
 
         if ($this->objects[$namespace] === null) {
             throw new \LogicException(
-                sprintf('%s should have ES object or ES nested notation to be used as as object property.', $objectName)
+                sprintf('%s should have @Object or @Nested annotation to be used as as object property.', $objectName)
             );
         }
 
