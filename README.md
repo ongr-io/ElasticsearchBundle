@@ -91,7 +91,7 @@ ongr_elasticsearch:
         default:
             connection: default
             mappings:
-                - AcmeDemoBundle
+                - AppBundle
 
 ```
 
@@ -102,20 +102,20 @@ In this particular example there is 2 things you should know. The index name in 
 
 #### Step 3: Define your Elasticsearch types as `Document` objects
 
-Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch objects. Now lets create a ``Customer`` class in the ``Document`` folder. We assume that we have an AcmeDemoBundle installed.
+Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch objects. Now lets create a ``Customer`` class in the ``Document`` folder. We assume that we have an AppBundle installed.
 
 > Folder name could not be changed, please make sure you put your documents in the righ place.
 
 ```php
 
 <?php
-namespace Acme\DemoBundle\Document;
+namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
 /**
- * @ES\Document
+ * @ES\Document()
  */
 class Customer extends AbstractDocument
 {
