@@ -8,7 +8,7 @@ Here's an example of configuration containing the definitions of filter and anal
 
 ```yaml
 
-elasticsearch:
+ongr_elasticsearch:
     analysis:
         filter:
             incremental_filter:
