@@ -182,7 +182,7 @@ class DocumentParser
                     case $property->isProtected():
                     case $property->isPrivate():
                         $propertyType = 'private';
-                        $alias[$type->name]['methods'] = $this->getMutatorMethods($reflectionClass, $name);
+                        $alias[$type->name]['methods'] = $this->getMutatorMethods($reflectionClass, $name, $type->type);
                         break;
                     default:
                         $message = sprintf(
@@ -223,7 +223,7 @@ class DocumentParser
      *
      * @return array
      */
-    private function getMutatorMethods(\ReflectionClass $reflectionClass, $property)
+    private function getMutatorMethods(\ReflectionClass $reflectionClass, $property, $propertyType)
     {
         $camelCaseName = ucfirst(Caser::camel($property));
         $setterName = 'set'.$camelCaseName;
@@ -243,17 +243,26 @@ class DocumentParser
             ];
         }
 
-        if ($reflectionClass->hasMethod('is'.$camelCaseName)) {
-            return [
-                'getter' => 'is' . $camelCaseName,
-                'setter' => $setterName
-            ];
+        if ($propertyType === 'boolean') {
+            if ($reflectionClass->hasMethod('is' . $camelCaseName)) {
+                return [
+                    'getter' => 'is' . $camelCaseName,
+                    'setter' => $setterName
+                ];
+            }
+
+            $message = sprintf(
+                'Missing %s() or %s() method in %s class. Add it, or change property to public.',
+                'get'.$camelCaseName,
+                'is'.$camelCaseName,
+                $reflectionClass->getName()
+            );
+            throw new \LogicException($message);
         }
 
         $message = sprintf(
-            'Missing %s() or %s() method in %s class. Add it, or change property to public.',
+            'Missing %s() method in %s class. Add it, or change property to public.',
             'get'.$camelCaseName,
-            'is'.$camelCaseName,
             $reflectionClass->getName()
         );
         throw new \LogicException($message);
