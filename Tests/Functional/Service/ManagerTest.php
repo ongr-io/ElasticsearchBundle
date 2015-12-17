@@ -188,6 +188,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $actualProduct = $this->repository->find('testId');
 
         $this->assertEquals($product->getId(), $actualProduct->getId());
+        $this->assertNotNull($actualProduct->getTtl());
         $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
     }
 

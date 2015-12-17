@@ -17,7 +17,7 @@ use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 /**
  * Product document for testing.
  *
- * @ES\Document(type="product")
+ * @ES\Document(type="product", ttl={"enabled"=true})
  */
 class Product extends AbstractDocument
 {
