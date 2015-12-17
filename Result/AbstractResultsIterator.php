@@ -160,6 +160,10 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      */
     public function valid()
     {
+        if (!isset($this->documents)) {
+            return false;
+        }
+
         $valid = $this->documentExists($this->key());
         if ($valid) {
             return true;
