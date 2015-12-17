@@ -93,6 +93,12 @@ class DocumentFinder
         return $this->rglob($path);
     }
 
+    /**
+     * Recusive glob
+     * @param $pattern
+     * @param int $flags
+     * @return array
+     */
     private function rglob($pattern, $flags = 0)
     {
         $files = glob($pattern, $flags);

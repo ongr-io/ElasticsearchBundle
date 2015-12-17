@@ -309,8 +309,13 @@ class MetadataCollector
         }
     }
 
+    /**
+     * returns the namespace declared at the start of a file
+     * @param $filepath
+     * @return bool
+     */
     private function getFileNamespace($filepath) {
-        $exists = preg_match('/<\?php.+namespace ([^;]+)/si', file_get_contents($filepath), $match);
+        $exists = preg_match('/<\?php.+?namespace ([^;]+)/si', file_get_contents($filepath), $match);
 
         if ($exists && isset($match[1])) {
             return $match[1];
