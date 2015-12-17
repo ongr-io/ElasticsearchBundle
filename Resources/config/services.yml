@@ -33,7 +33,7 @@ services:
 
     annotations.cached_reader:
         class: %annotations.cached_reader.class%
-        arguments: [@annotations.reader, @es.cache_engine, %kernel.debug%]
+        arguments: ["@annotations.reader", "@es.cache_engine", %kernel.debug%]
 
     es.document_finder:
         class: %es.document_finder.class%
@@ -42,12 +42,12 @@ services:
 
     es.document_parser:
         class: %es.document_parser.class%
-        arguments: [@annotations.cached_reader, @es.document_finder]
+        arguments: ["@annotations.cached_reader", "@es.document_finder"]
         public: false
 
     es.metadata_collector:
         class: %es.metadata_collector.class%
-        arguments: [@es.document_finder, @es.document_parser, @es.cache_engine]
+        arguments: ["@es.document_finder", "@es.document_parser", "@es.cache_engine"]
         calls:
             - [setEnableCache, [%es.cache%]]
 
@@ -59,20 +59,20 @@ services:
         class: %es.tracer.class%
         arguments: ['ongr']
         calls:
-            - [pushHandler, [@es.logger.collection_handler]]
+            - [pushHandler, ["@es.logger.collection_handler"]]
 
     es.profiler:
         class: %es.profiler.class%
         calls:
             - [setManagers, [%es.managers%]]
-            - [addLogger, [@es.tracer]]
+            - [addLogger, ["@es.tracer"]]
         tags:
             - {name: data_collector, template: %es.profiler.template%, id: ongr.profiler}
 
     es.result_converter:
         class: %es.result_converter.class%
-        arguments: [@es.metadata_collector]
+        arguments: ["@es.metadata_collector"]
 
     es.manager_factory:
         class: %es.manager_factory.class%
-        arguments: [@es.metadata_collector, @es.result_converter, @es.tracer]
+        arguments: ["@es.metadata_collector", "@es.result_converter", "@es.tracer"]
