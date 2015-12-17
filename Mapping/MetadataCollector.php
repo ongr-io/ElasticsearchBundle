@@ -147,10 +147,12 @@ class MetadataCollector
 
         // Loop through documents found in bundle.
         foreach ($documents as $document) {
+            $namespace = $this->getFileNamespace($document);
+            if (!$namespace) {
+                continue;
+            }
             $documentReflection = new \ReflectionClass(
-                $bundleNamespace .
-                '\\' . DocumentFinder::DOCUMENT_DIR .
-                '\\' . pathinfo($document, PATHINFO_FILENAME)
+                $namespace . '\\' . pathinfo($document, PATHINFO_FILENAME)
             );
 
             $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
@@ -305,5 +307,14 @@ class MetadataCollector
             $this->mappings[$bundle] = $mapping;
             $this->cache->save('ongr.metadata.mappings', $this->mappings);
         }
+    }
+
+    private function getFileNamespace($filepath) {
+        $exists = preg_match('/<\?php.+namespace ([^;]+)/si', file_get_contents($filepath), $match);
+
+        if ($exists && isset($match[1])) {
+            return $match[1];
+        }
+        return false;
     }
 }
