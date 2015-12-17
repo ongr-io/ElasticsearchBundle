@@ -32,7 +32,7 @@ services:
         arguments: ["%kernel.cache_dir%/ongr", ".ongr.data"]
 
     annotations.cached_reader:
-        class: %annotations.cached_reader.class%
+        class: Doctrine\Common\Annotations\CachedReader
         arguments: ["@annotations.reader", "@es.cache_engine", %kernel.debug%]
 
     es.document_finder:
