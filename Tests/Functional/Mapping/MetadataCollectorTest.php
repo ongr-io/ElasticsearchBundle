@@ -59,6 +59,9 @@ class MetadataCollectorTest extends WebTestCase
         $mapping = $this->metadataCollector->getMappings(['AcmeBazBundle']);
         $this->assertArrayHasKey('product', $mapping);
         $this->assertNotEmpty($mapping['product']['objects']);
-        $this->assertEquals('ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BazBundle\Document\Object\CategoryObject', $mapping['product']['objects'][0]);
+        $this->assertEquals(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BazBundle\Document\Object\CategoryObject',
+            $mapping['product']['objects'][0]
+        );
     }
 }
