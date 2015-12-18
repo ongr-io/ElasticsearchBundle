@@ -138,8 +138,7 @@ class MetadataCollector
         }
 
         $mappings = [];
-        $bundleNamespace = $this->finder->getBundleClass($bundle);
-        $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
+        $this->finder->getBundleClass($bundle);
 
         if (!count($documents)) {
             return [];

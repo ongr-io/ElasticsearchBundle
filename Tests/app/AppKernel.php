@@ -29,6 +29,7 @@ class AppKernel extends Kernel
             new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
             new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle(),
             new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\AcmeFooBundle(),
+            new ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BazBundle\AcmeBazBundle(),
         ];
     }
 
