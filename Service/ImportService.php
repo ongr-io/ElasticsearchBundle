@@ -25,32 +25,12 @@ class ImportService
      *
      * @param Manager         $manager
      * @param string          $filename
-     * @param bool            $raw
-     * @param OutputInterface $output
-     * @param int             $bulkSize
-     *
-     * @throws \Exception
-     */
-    public function importIndex($manager, $filename, $raw, OutputInterface $output, $bulkSize = 1000)
-    {
-        if (!$raw) {
-            throw new \Exception('Currently only raw import is supported. Please set --raw flag to use it.');
-        }
-
-        $this->executeRawImport($manager, $this->getFilePath($filename), $output, $bulkSize);
-    }
-
-    /**
-     * Executes a raw import.
-     *
-     * @param Manager         $manager
-     * @param string          $filename
      * @param OutputInterface $output
      * @param int             $bulkSize
      */
-    protected function executeRawImport(Manager $manager, $filename, OutputInterface $output, $bulkSize)
+    public function importIndex(Manager $manager, $filename, OutputInterface $output, $bulkSize)
     {
-        $reader = $this->getReader($manager, $filename, false);
+        $reader = $this->getReader($manager, $this->getFilePath($filename), false);
 
         $progress = new ProgressBar($output, $reader->count());
         $progress->setRedrawFrequency(100);

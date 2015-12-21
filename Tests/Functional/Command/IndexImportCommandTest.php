@@ -53,7 +53,6 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--raw' => true,
                 'filename' => __DIR__ . '/../../app/fixture/data/' . $filename,
                 '--bulk-size' => $bulkSize,
             ]

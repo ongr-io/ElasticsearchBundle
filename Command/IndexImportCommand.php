@@ -43,8 +43,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
                 InputOption::VALUE_REQUIRED,
                 'Set bulk size for import',
                 1000
-            )
-            ->addOption('raw', null, InputOption::VALUE_NONE);
+            );
     }
 
     /**
@@ -59,7 +58,6 @@ class IndexImportCommand extends AbstractManagerAwareCommand
         $importService->importIndex(
             $manager,
             $input->getArgument('filename'),
-            $input->getOption('raw'),
             $output,
             $input->getOption('bulk-size')
         );
