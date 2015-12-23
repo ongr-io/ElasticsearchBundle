@@ -142,6 +142,51 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
 
         $out[] = [$options, $expectedResults];
 
+        // Case 2: several types specified.
+        $options = ['--types' => ['product', 'customer'], '--manager' => 'foo'];
+        $expectedResults = [
+            [
+                '_id' => '1',
+                '_type' => 'customer',
+                '_source' => [
+                    'name' => 'foo',
+                ],
+            ],
+            [
+                '_id' => '2',
+                '_type' => 'customer',
+                '_source' => [
+                    'name' => 'acme',
+                ],
+            ],
+            [
+                '_id' => '1',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'foo',
+                    'price' => 10.45,
+                ],
+            ],
+            [
+                '_id' => '2',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'bar',
+                    'price' => 32,
+                ],
+            ],
+            [
+                '_id' => '3',
+                '_type' => 'product',
+                '_source' => [
+                    'title' => 'acme',
+                    'price' => 20,
+                ],
+            ],
+        ];
+
+        $out[] = [$options, $expectedResults];
+
         return $out;
     }
 
