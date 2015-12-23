@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Unit\DataCollector;
+namespace ONGR\ElasticsearchBundle\Tests\Unit\Profiler;
 
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
 
