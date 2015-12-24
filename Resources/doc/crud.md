@@ -2,12 +2,14 @@
 
 > To proceed with steps bellow it is necessary to read [mapping](mapping.md) topic and have defined documents in the bundle.
 
-For all steps below we asume that there is an `AcmeDemoBundle` with the `Content` document.
+For all steps below we asume that there is an `AppBundle` with the `Content` document.
 
 ```php
 
 <?php
-//AcmeDemoBundle:Content
+//AppBundle:Content
+namespace AppBundle/Document;
+
 use ONGR\ElasticsearchBundle\Annotation as ES; // Alias to make short annotation.
 use ONGR\ElasticsearchBundle\Document\AbstractDocument;
 
@@ -43,7 +45,7 @@ In addition manager provides repository access, which enables direct access to t
 ```php
 
 $manager = $this->get('es.manager');
-$repo = $manager->getRepository('AcmeDemoBundle:Content');
+$repo = $manager->getRepository('AppBundle:Content');
 
 ```
 

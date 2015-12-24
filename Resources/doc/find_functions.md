@@ -24,7 +24,7 @@ e.g.
 ```php
 
 $manager = $this->get('es.manager');
-$repo = $manager->getRepository(['AcmeDemoBundle:User', 'AcmeDemoBundle:Content']);
+$repo = $manager->getRepository(['AppBundle:User', 'AppBundle:Content']);
 $result = $repo->find(1); // Throws \LogicException
 
 ```

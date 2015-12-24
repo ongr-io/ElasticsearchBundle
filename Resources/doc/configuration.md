@@ -1,6 +1,6 @@
 # Configuration tree
 
-Here's an example of full configuration with options:
+Here's an example of full configuration with all options:
 
 ```yml
 ongr_elasticsearch:

@@ -2,8 +2,7 @@
 
 Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsearch database](https://www.elastic.co/products/elasticsearch) in the [Symfony 2](https://github.com/symfony/symfony-standard) applications. We created this bundle with love :heart: and we think you will love it too.
 
-#### Very first steps to begin
-* [Setup](setup.md)
+> Bundle set up guide you can find in the `README.md` file. 
 
 #### Usage
 * [Mapping explained](mapping.md)
@@ -22,7 +21,6 @@ Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsea
 #### Some news for upcoming versions
 
 We already have a new milestone set for v1.1.0 version (see active milestones [here](https://github.com/ongr-io/ElasticsearchBundle/milestones)). For the new milestone we are planning to support new endpoints:
-* Events
 * Highlight
 * Autocomplete
 * Suggestions

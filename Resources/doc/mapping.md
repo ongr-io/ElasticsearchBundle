@@ -34,7 +34,7 @@ ongr_elasticsearch:
         default:
             connection: default
             mappings:
-                - AcmeDemoBundle
+                - AppBundle
 
 ```
 
@@ -49,7 +49,9 @@ Lets start with a document class example.
 ```php
 
 <?php
-//AcmeDemoBundle:Content
+//AppBundle:Content
+namespace AppBundle/Document;
+
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
 
@@ -96,7 +98,9 @@ To add custom settings to property like analyzer it has to be included in `optio
 ```php
 
 <?php
-//AcmeDemoBundle:Content
+//AppBundle:Content
+namespace AppBundle/Document;
+
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
 
@@ -125,7 +129,9 @@ It is a little different to define nested and object types. For this user will n
 ```php
 
 <?php
-//AcmeDemoBundle:Content
+//AppBundle:Content
+namespace AppBundle/Document;
+
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
 
@@ -142,7 +148,7 @@ class Content extends AbstractContentDocument
     /**
      * @var ContentMetaObject
      *
-     * @ES\Property(name="meta", type="object", objectName="AcmeDemoBundle:ContentMetaObject")
+     * @ES\Property(name="meta", type="object", objectName="AppBundle:ContentMetaObject")
      */
     public $metaObject;
 }
@@ -154,7 +160,8 @@ And the content object will look like:
 ```php
 
 <?php
-//AcmeDemoBundle:ContentMetaObject
+//AppBundle:ContentMetaObject
+namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -185,7 +192,7 @@ As shown in the example, by default only a single object will be saved in the do
 /**
  * @var ContentMetaObject
  *
- * @ES\Property(name="meta", type="object", multiple="true", objectName="AcmeDemoBundle:ContentMetaObject")
+ * @ES\Property(name="meta", type="object", multiple="true", objectName="AppBundle:ContentMetaObject")
  */
 public $metaObject;
 //....
