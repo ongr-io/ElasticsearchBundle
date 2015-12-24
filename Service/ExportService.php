@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
+use Elasticsearch\Helper\Iterators\SearchHitIterator;
+use Elasticsearch\Helper\Iterators\SearchResponseIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
@@ -33,25 +35,23 @@ class ExportService
      */
     public function exportIndex(Manager $manager, $filename, $types, $chunkSize, OutputInterface $output)
     {
-        $typesMapping = $manager->getMetadataCollector()->getMappings($manager->getConfig()['mappings']);
-        $typesToExport = [];
-        if ($types) {
-            foreach ($types as $type) {
-                if (!array_key_exists($type, $typesMapping)) {
-                    throw new \InvalidArgumentException(sprintf('Type "%s" does not exist.', $type));
-                }
+        $params = [
+            'search_type' => 'scan',
+            'scroll' => '5m',
+            'size' => $chunkSize,
+            'source' => true,
+            'body' => [
+                'query' => [
+                    'match_all' => [],
+                ],
+            ],
+            'index' => $manager->getIndexName(),
+            'type' => $types,
+        ];
 
-                $typesToExport[] = $typesMapping[$type]['bundle'].':'.$typesMapping[$type]['class'];
-            }
-        } else {
-            foreach ($typesMapping as $type => $typeConfig) {
-                $typesToExport[] = $typeConfig['bundle'].':'.$typeConfig['class'];
-            }
-        }
-
-        $repo = $manager->getRepository($typesToExport);
-
-        $results = $this->getResults($repo, $chunkSize);
+        $results = new SearchHitIterator(
+            new SearchResponseIterator($manager->getClient(), $params)
+        );
 
         $progress = new ProgressBar($output, $results->count());
         $progress->setRedrawFrequency(100);
@@ -89,27 +89,6 @@ class ExportService
         }
 
         return getcwd() . '/' . $filename;
-    }
-
-    /**
-     * Returns scan results iterator.
-     *
-     * @param Repository $repository
-     * @param int        $chunkSize
-     *
-     * @return RawIterator
-     */
-    protected function getResults(Repository $repository, $chunkSize)
-    {
-        $search = $repository->createSearch();
-        $search
-            ->setScroll()
-            ->setSize($chunkSize);
-        $search->addQuery(new MatchAllQuery());
-        $search->setFields(['_parent']);
-        $search->setSource(true);
-
-        return $repository->execute($search, Repository::RESULTS_RAW_ITERATOR);
     }
 
     /**
