@@ -95,9 +95,9 @@ ongr_elasticsearch:
 
 ```
 
-> This is the very basic example only, for more information, please take a look at the [configuration](configuration.md) chapter.
+> This is the very basic example only, for more information, please take a look at the [configuration](Resources/doc/configuration.md) chapter.
 
-In this particular example there is 2 things you should know. The index name in the connection node and the mappings. Mappings is the place where you documents are stored (more info at [the mapping chapter](mapping.md)).
+In this particular example there is 2 things you should know. The index name in the connection node and the mappings. Mappings is the place where you documents are stored (more info at [the mapping chapter](Resources/doc/mapping.md)).
 
 
 #### Step 3: Define your Elasticsearch types as `Document` objects
@@ -132,7 +132,7 @@ class Customer extends AbstractDocument
 
 ```
 
-> This is the basic example only, for more information about mapping, please take a look at the [the mapping chapter](mapping.md).
+> This is the basic example only, for more information about mapping, please take a look at the [the mapping chapter](Resources/doc/mapping.md).
 
 
 #### Step 4: Create index and mappings
@@ -145,12 +145,12 @@ Elasticsearch bundle provides several `CLI` commands. One of them is for creatin
 
 ```
 
-> More info about the rest of the commands can be found in the [commands chapter](commands.md).
+> More info about the rest of the commands can be found in the [commands chapter](Resources/doc/commands.md).
 
 
 #### Step 5: Enjoy with the Elasticsearch
 
-We advice to take a look at the [mapping chapter](mapping.md) to configure the index. Search documentation for the Elasticsearch bundle is [available here](search.md). And finally it's up to you what an amazing things you are gonna create :sunglasses:.
+We advice to take a look at the [mapping chapter](Resources/doc/mapping.md) to configure the index. Search documentation for the Elasticsearch bundle is [available here](Resources/doc/search.md). And finally it's up to you what an amazing things you are gonna create :sunglasses:.
 
 
 ## License
