@@ -90,10 +90,12 @@ class ManagerFactory
 
         $indexSettings = [
             'index' => $connection['index_name'],
-            'body' => [
-                'settings' => $connection['settings'],
-                'mappings' => $mappings,
-            ],
+            'body' => array_filter(
+                [
+                    'settings' => $connection['settings'],
+                    'mappings' => $mappings,
+                ]
+            ),
         ];
 
         $manager = new Manager(
