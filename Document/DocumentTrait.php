@@ -47,14 +47,6 @@ trait DocumentTrait
     public $ttl;
 
     /**
-     * When document is cloned id is set to null.
-     */
-    public function __clone()
-    {
-        $this->setId(null);
-    }
-
-    /**
      * Sets document unique id.
      *
      * @param string $documentId
