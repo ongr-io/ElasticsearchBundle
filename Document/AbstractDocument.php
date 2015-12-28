@@ -21,28 +21,28 @@ abstract class AbstractDocument implements DocumentInterface
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="_id")
+     * @ES\MetaField(name="_id")
      */
     public $id;
 
     /**
      * @var string
      *
-     * @ES\Property(type="float", name="_score")
+     * @ES\MetaField(name="_score")
      */
     public $score;
 
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="_parent")
+     * @ES\MetaField(name="_parent")
      */
     public $parent;
 
     /**
      * @var string
      *
-     * @ES\Property(type="string", name="_ttl")
+     * @ES\MetaField(name="_ttl")
      */
     public $ttl;
 
