@@ -84,12 +84,27 @@ class DocumentFinder
     {
         $bundleReflection = new \ReflectionClass($this->getBundleClass($bundle));
 
-        return glob(
-            dirname($bundleReflection->getFileName()) .
+        $path = dirname($bundleReflection->getFileName()) .
             DIRECTORY_SEPARATOR .
             self::DOCUMENT_DIR .
             DIRECTORY_SEPARATOR .
-            '*.php'
-        );
+            '*.php';
+
+        return $this->rglob($path);
+    }
+
+    /**
+     * Recusive glob
+     * @param $pattern
+     * @param int $flags
+     * @return array
+     */
+    private function rglob($pattern, $flags = 0)
+    {
+        $files = glob($pattern, $flags);
+        foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
+            $files = array_merge($files, $this->rglob($dir . '/' . basename($pattern), $flags));
+        }
+        return $files;
     }
 }

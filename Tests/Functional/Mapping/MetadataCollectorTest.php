@@ -50,4 +50,18 @@ class MetadataCollectorTest extends WebTestCase
     {
         $this->metadataCollector->getBundleMapping('acme');
     }
+
+    /**
+     * Test if function throws exception if ES type names are not unique.
+     */
+    public function testGetBundleMappingWithDocumentSubdirectory()
+    {
+        $mapping = $this->metadataCollector->getMappings(['AcmeBazBundle']);
+        $this->assertArrayHasKey('product', $mapping);
+        $this->assertNotEmpty($mapping['product']['objects']);
+        $this->assertEquals(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BazBundle\Document\Object\CategoryObject',
+            $mapping['product']['objects'][0]
+        );
+    }
 }
