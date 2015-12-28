@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * Document abstraction which introduces mandatory fields for the document.
+ * This trait provides support for main Elasticsearch meta fields.
  */
-abstract class AbstractDocument implements DocumentInterface
+trait DocumentTrait
 {
     /**
      * @var string

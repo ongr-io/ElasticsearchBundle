@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Service\Json;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -292,7 +291,7 @@ class JsonReader implements \Countable, \Iterator
      *
      * @param array $document
      *
-     * @return DocumentInterface
+     * @return object
      */
     private function convertDocument($document)
     {

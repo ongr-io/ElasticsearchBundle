@@ -53,13 +53,15 @@ Lets start with a document class example.
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
-class Content extends AbstractContentDocument
+class Content
 {
+    use DocumentTrait;
+
     /**
      * @ES\Property(type="string", name="title")
      */
@@ -68,7 +70,7 @@ class Content extends AbstractContentDocument
 
 ```
 
-> Make sure your @ES\\Document class’es directly implements DocumentInterface or extends AbstractDocument, otherwise it will not work.
+> You can use `DocumentTrait` trait to quickly add support for meta fields.
 
 
 #### Document annotation configuration
@@ -85,8 +87,10 @@ e.g. `@ES\Document(type="content", _ttl={"enabled": true, "default": "1d"})`
 
 > You can use time units specified in `elasticsearch documentation`. ESB parses it if needed, e.g. for type mapping update.
 
-##### Abstract document
-``AbstractDocument`` implements ``DocumentInterface`` and gives support with all special fields in the elasticsearch document such as `_id`, `_source`, `_ttl`, `_parent`, `_fields` handling. `AbstractDocument` has all parameters and setters already defined for you.
+##### DocumentTrait
+
+`DocumentTrait` provides support for Elasticsearch meta fields (`_id`, `_source`,
+`_ttl`, `_parent`, etc ). `DocumentTrait` has all parameters and setters already defined for you.
 
 
 ### Document properties annotations
@@ -102,13 +106,15 @@ To add custom settings to property like analyzer it has to be included in `optio
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
-class Content extends AbstractContentDocument
+class Content
 {
+    use DocumentTrait;
+
     /**
      * @ES\Property(
         type="string",
@@ -133,13 +139,15 @@ It is a little different to define nested and object types. For this user will n
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractContentDocument;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
-class Content extends AbstractContentDocument
+class Content
 {
+    use DocumentTrait;
+
     /**
      * @ES\Property(type="string", name="title")
      */

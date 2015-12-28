@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Common\Exceptions\Missing404Exception;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
@@ -76,7 +75,7 @@ class Repository
      * @param string $id         Document Id to find.
      * @param string $resultType Result type returned.
      *
-     * @return DocumentInterface|null
+     * @return object|null
      *
      * @throws \LogicException
      */
@@ -154,7 +153,7 @@ class Repository
      *
      * @throws \Exception
      *
-     * @return DocumentInterface|null The object.
+     * @return object|null The object.
      */
     public function findOneBy(array $criteria, array $orderBy = [], $resultType = self::RESULTS_OBJECT)
     {

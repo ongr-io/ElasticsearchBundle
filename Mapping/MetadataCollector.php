@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Cache\CacheProvider;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 
 /**
  * DocumentParser wrapper for getting bundle documents mapping.
@@ -267,12 +266,16 @@ class MetadataCollector
     /**
      * Retrieves mapping from document.
      *
-     * @param DocumentInterface $document
+     * @param object $document
      *
      * @return array
      */
-    public function getDocumentMapping(DocumentInterface $document)
+    public function getDocumentMapping($document)
     {
+        if (!is_object($document)) {
+            throw new \InvalidArgumentException('Document must be an object.');
+        }
+
         return $this->getDocumentReflectionMapping(new \ReflectionObject($document));
     }
 

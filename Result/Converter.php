@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Service\Repository;
 
@@ -41,7 +40,7 @@ class Converter
      * @param array      $rawData
      * @param Repository $repository
      *
-     * @return DocumentInterface
+     * @return object
      *
      * @throws \LogicException
      */
@@ -67,7 +66,6 @@ class Converter
                 break;
         }
 
-        /** @var DocumentInterface $object */
         $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
 
         return $object;
@@ -222,7 +220,7 @@ class Converter
     /**
      * Returns aliases for certain document.
      *
-     * @param DocumentInterface $document
+     * @param object $document
      *
      * @return array
      *
