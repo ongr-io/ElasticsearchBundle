@@ -122,7 +122,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
 
         $this->assertEquals(
             [
-                'body' => '{"query":{"term":{"title":"pizza"}}}',
+                'body' => json_encode($search->toArray()),
                 'method' => 'GET',
                 'httpParameters' => [],
                 'scheme' => 'http',
