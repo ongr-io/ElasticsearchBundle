@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
+use ONGR\ElasticsearchBundle\Annotation\MetaField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 
 /**
@@ -21,6 +22,11 @@ use ONGR\ElasticsearchBundle\Annotation\Property;
  */
 class DocumentParser
 {
+    /**
+     * @const string
+     */
+    const META_FIELD_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\MetaField';
+
     /**
      * @const string
      */
@@ -140,6 +146,18 @@ class DocumentParser
     }
 
     /**
+     * Returns meta field annotation data from reader.
+     *
+     * @param \ReflectionProperty $property
+     *
+     * @return MetaField|null
+     */
+    public function getMetaFieldAnnotationData($property)
+    {
+        return $this->reader->getPropertyAnnotation($property, self::META_FIELD_ANNOTATION);
+    }
+
+    /**
      * Returns objects used in document.
      *
      * @return array
@@ -170,11 +188,17 @@ class DocumentParser
 
         foreach ($properties as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
+            $meta = $type === null;
+            $type = $meta ? $this->getMetaFieldAnnotationData($property) : $type;
             if ($type !== null) {
                 $alias[$type->name] = [
                     'propertyName' => $name,
-                    'type' => $type->type,
                 ];
+
+                if (!$meta) {
+                    $alias[$type->name]['type'] = $type->type;
+                }
+
                 switch (true) {
                     case $property->isPublic():
                         $propertyType = 'public';
@@ -196,7 +220,7 @@ class DocumentParser
                 $alias[$type->name]['propertyType'] = $propertyType;
 
 
-                if ($type->objectName) {
+                if (!$meta && $type->objectName) {
                     $child = new \ReflectionClass($this->finder->getNamespace($type->objectName));
                     $alias[$type->name] = array_merge(
                         $alias[$type->name],
@@ -275,6 +299,7 @@ class DocumentParser
     {
         $annotations = [
             'Document',
+            'MetaField',
             'Property',
             'Object',
             'Nested',
