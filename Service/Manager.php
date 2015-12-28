@@ -449,8 +449,13 @@ class Manager
         }
 
         foreach ($types as $type) {
+            $mapping = $this->getMetadataCollector()->getClientMapping([$type]);
+
+            if ($mapping === null) {
+                throw new \LogicException(sprintf('Mapping for type "%s" was not found.', $type));
+            }
+
             try {
-                $mapping = $this->getMetadataCollector()->getClientMapping([$type]);
                 $type = $this->getMetadataCollector()->getDocumentType($type);
                 $params['type'] = $type;
                 $params['body'] = $mapping;

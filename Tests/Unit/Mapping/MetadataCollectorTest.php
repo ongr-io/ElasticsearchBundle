@@ -68,4 +68,12 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->metadataCollector->getBundleMapping(1000);
     }
+
+    /**
+     * Test for getClientMapping() in case no mapping exists.
+     */
+    public function testGetClientMappingNull()
+    {
+        $this->assertNull($this->metadataCollector->getClientMapping([]));
+    }
 }

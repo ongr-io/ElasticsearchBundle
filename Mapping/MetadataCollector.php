@@ -225,12 +225,12 @@ class MetadataCollector
      *
      * @param array $bundles Manager config.
      *
-     * @return array
+     * @return array|null
      */
     public function getClientMapping(array $bundles)
     {
         /** @var array $typesMapping Array of filtered mappings for the elasticsearch client*/
-        $typesMapping = [];
+        $typesMapping = null;
 
         /** @var array $mappings All mapping info */
         $mappings = $this->getMappings($bundles);
