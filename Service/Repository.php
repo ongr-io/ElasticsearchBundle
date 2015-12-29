@@ -19,7 +19,7 @@ use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 
 /**
- * Repository class.
+ * Document repository class.
  */
 class Repository
 {
@@ -57,6 +57,7 @@ class Repository
         }
 
         $this->manager = $manager;
+        $this->className = $className;
         $this->type = $this->resolveType($className);
     }
 

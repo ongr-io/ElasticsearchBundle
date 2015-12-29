@@ -42,11 +42,11 @@ So all 3 content elements will be found. `DocumentIterator`implements [`\Countab
 
 ```php
 
-echo $results->count() . '\n';
+echo $results->count() . "\n";
 
 /** @var AppBundle:Content $document */
 foreach ($results as $document) {
-    echo $document->title . '\n';
+    echo $document->title . "\n";
 }
 
 ```

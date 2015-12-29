@@ -28,12 +28,12 @@ use ONGR\ElasticsearchDSL\Search;
 class Manager
 {
     /**
-     * @var string Managers name.
+     * @var string Manager name
      */
     private $name;
 
     /**
-     * @var array Managers name.
+     * @var array Manager configuration
      */
     private $config = [];
 
@@ -53,12 +53,12 @@ class Manager
     private $readOnly;
 
     /**
-     * @var array Container for bulk queries.
+     * @var array Container for bulk queries
      */
     private $bulkQueries = [];
 
     /**
-     * @var array Holder for consistency, refresh and replication parameters.
+     * @var array Holder for consistency, refresh and replication parameters
      */
     private $bulkParams = [];
 
@@ -100,8 +100,8 @@ class Manager
     private $repositories;
 
     /**
-     * @param string            $name              Managers name.
-     * @param array             $config            Managers configuration.
+     * @param string            $name              Manager name
+     * @param array             $config            Manager configuration
      * @param Client            $client
      * @param array             $indexSettings
      * @param MetadataCollector $metadataCollector
