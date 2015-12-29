@@ -141,17 +141,23 @@ class Manager
     }
 
     /**
-     * Returns repository with one or several active selected type.
+     * Returns repository by document class.
      *
-     * @param string|string[] $type
+     * @param string $className FQCN or string in Bundle:Document format
      *
      * @return Repository
      */
-    public function getRepository($type)
+    public function getRepository($className)
     {
-        $type = is_array($type) ? $type : [$type];
+        // TODO: add local cache
 
-        return $this->createRepository($type);
+        if (!is_string($className)) {
+            throw new \InvalidArgumentException('Document class must be a string.');
+        }
+
+        $namespace = $this->getMetadataCollector()->getClassName($className);
+
+        return $this->createRepository($namespace);
     }
 
     /**
@@ -209,13 +215,13 @@ class Manager
     /**
      * Creates a repository.
      *
-     * @param array $types
+     * @param string $className
      *
      * @return Repository
      */
-    private function createRepository(array $types)
+    private function createRepository($className)
     {
-        return new Repository($this, $types);
+        return new Repository($this, $className);
     }
 
     /**

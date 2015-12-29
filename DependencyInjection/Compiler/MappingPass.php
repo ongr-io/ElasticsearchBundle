@@ -72,7 +72,7 @@ class MappingPass implements CompilerPassInterface
             foreach ($mappings as $repositoryType => $repositoryDetails) {
                 $repositoryDefinition = new Definition(
                     $container->getParameter('es.repository.class'),
-                    [$repositoryDetails['bundle'].':'.$repositoryDetails['class']]
+                    [$repositoryDetails['namespace']]
                 );
                 $repositoryDefinition->setFactory(
                     [

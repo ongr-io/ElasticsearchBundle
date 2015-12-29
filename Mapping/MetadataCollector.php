@@ -209,11 +209,13 @@ class MetadataCollector
      */
     public function getMappingByNamespace($namespace)
     {
+        $namespace = $this->getClassName($namespace);
+
         if (isset($this->mappings[$namespace])) {
             return $this->mappings[$namespace];
         }
 
-        $mapping = $this->getDocumentReflectionMapping(new \ReflectionClass($this->finder->getNamespace($namespace)));
+        $mapping = $this->getDocumentReflectionMapping(new \ReflectionClass($namespace));
         $this->cacheBundle($namespace, $mapping);
 
         return $mapping;
@@ -308,5 +310,17 @@ class MetadataCollector
             $this->mappings[$bundle] = $mapping;
             $this->cache->save('ongr.metadata.mappings', $this->mappings);
         }
+    }
+
+    /**
+     * Returns fully qualified class name.
+     *
+     * @param string $className
+     *
+     * @return string
+     */
+    public function getClassName($className)
+    {
+        return $this->finder->getNamespace($className);
     }
 }
