@@ -58,6 +58,29 @@ For more query and filter examples take a look at the [Elasticsearch DSL library
 
 > The results parsing is the same like in the find functions.
 
+## Searching in Multiple Types
+
+Previous section showed how to search in single type using repository. In some
+cases you might need to search multiple types at once. In order to do that you
+can use manager's `execute()` method (actually repository's `execute()` is just
+a proxy for this method).
+
+Lets say you have `City` and `State` documents with `title` field. Search all
+cities and states with title "Indiana":
+
+```php
+$search = new Search();
+$search->addQuery(new TermQuery('title', 'Indiana'));
+
+$results = $manager->execute(
+    // Array of documents representing different types
+    ['AppBundle:City', 'AppBundle:State'], 
+    $search
+);
+```
+
+This example returns an iterator with all matching documents.
+
 ## Results count
 
 Elasticsearch bundle provides support for [Count API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html). If you need only count results, this is faster way to approach this. Here's an example how to count cars by red color:

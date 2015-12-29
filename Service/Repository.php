@@ -11,24 +11,18 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use Elasticsearch\Common\Exceptions\Missing404Exception;
-use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
+use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 
 /**
- * Repository class.
+ * Document repository class.
  */
 class Repository
 {
-    const RESULTS_ARRAY = 'array';
-    const RESULTS_OBJECT = 'object';
-    const RESULTS_RAW = 'raw';
-    const RESULTS_RAW_ITERATOR = 'raw_iterator';
-
     /**
      * @var Manager
      */
@@ -63,6 +57,7 @@ class Repository
         }
 
         $this->manager = $manager;
+        $this->className = $className;
         $this->type = $this->resolveType($className);
     }
 
@@ -87,42 +82,22 @@ class Repository
     /**
      * Returns a single document data by ID or null if document is not found.
      *
-     * @param string $id         Document Id to find.
-     * @param string $resultType Result type returned.
+     * @param string $id Document ID to find
      *
-     * @return object|null
-     *
-     * @throws \LogicException
+     * @return object
      */
-    public function find($id, $resultType = self::RESULTS_OBJECT)
+    public function find($id)
     {
-        $params = [
-            'index' => $this->getManager()->getIndexName(),
-            'type' => $this->type,
-            'id' => $id,
-        ];
-
-        try {
-            $result = $this->getManager()->getClient()->get($params);
-        } catch (Missing404Exception $e) {
-            return null;
-        }
-
-        if ($resultType === self::RESULTS_OBJECT) {
-            return $this->getManager()->getConverter()->convertToDocument($result, $this);
-        }
-
-        return $this->parseResult($result, $resultType, '');
+        return $this->manager->find($this->type, $id);
     }
 
     /**
-     * Finds entities by a set of criteria.
+     * Finds documents by a set of criteria.
      *
      * @param array      $criteria   Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
      * @param array|null $orderBy    Example: ['name' => 'ASC', 'surname' => 'DESC'].
      * @param int|null   $limit      Example: 5.
      * @param int|null   $offset     Example: 30.
-     * @param string     $resultType Result type returned.
      *
      * @return array|DocumentIterator The objects.
      */
@@ -130,8 +105,7 @@ class Repository
         array $criteria,
         array $orderBy = [],
         $limit = null,
-        $offset = null,
-        $resultType = self::RESULTS_OBJECT
+        $offset = null
     ) {
         $search = $this->createSearch();
 
@@ -152,35 +126,22 @@ class Repository
             $search->addSort(new FieldSort($field, $direction));
         }
 
-        return $this->execute($search, $resultType);
+        return $this->execute($search);
     }
 
     /**
-     * Finds only one entity by a set of criteria.
+     * Finds a single document by a set of criteria.
      *
      * @param array      $criteria   Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
      * @param array|null $orderBy    Example: ['name' => 'ASC', 'surname' => 'DESC'].
-     * @param string     $resultType Result type returned.
-     *
-     * @throws \Exception
      *
      * @return object|null The object.
      */
-    public function findOneBy(array $criteria, array $orderBy = [], $resultType = self::RESULTS_OBJECT)
+    public function findOneBy(array $criteria, array $orderBy = [])
     {
-        $result = $this->findBy($criteria, $orderBy, null, null, $resultType);
+        $result = $this->findBy($criteria, $orderBy, null, null);
 
-        switch ($resultType) {
-            case self::RESULTS_OBJECT:
-            case self::RESULTS_RAW_ITERATOR:
-                return $result->first();
-            case self::RESULTS_ARRAY:
-                return array_shift($result);
-            case self::RESULTS_RAW:
-                return array_shift($result['hits']['hits']);
-            default:
-                throw new \Exception('Wrong results type selected');
-        }
+        return $result->first();
     }
 
     /**
@@ -203,13 +164,9 @@ class Repository
      *
      * @throws \Exception
      */
-    public function execute(Search $search, $resultsType = self::RESULTS_OBJECT)
+    public function execute(Search $search, $resultsType = Result::RESULTS_OBJECT)
     {
-        $results = $this
-            ->getManager()
-            ->search([$this->type], $search->toArray(), $search->getQueryParams());
-
-        return $this->parseResult($results, $resultsType, $search->getScroll());
+        return $this->manager->execute([$this->type], $search, $resultsType);
     }
 
     /**
@@ -262,27 +219,6 @@ class Repository
             ->getManager()
             ->getClient()
             ->deleteByQuery($params);
-    }
-
-    /**
-     * Fetches next set of results.
-     *
-     * @param string $scrollId
-     * @param string $scrollDuration
-     * @param string $resultsType
-     *
-     * @return AbstractResultsIterator
-     *
-     * @throws \Exception
-     */
-    public function scroll(
-        $scrollId,
-        $scrollDuration = '5m',
-        $resultsType = self::RESULTS_OBJECT
-    ) {
-        $results = $this->getManager()->getClient()->scroll(['scroll_id' => $scrollId, 'scroll' => $scrollDuration]);
-
-        return $this->parseResult($results, $resultsType, $scrollDuration);
     }
 
     /**
@@ -349,67 +285,6 @@ class Repository
     private function resolveType($className)
     {
         return $this->getManager()->getMetadataCollector()->getDocumentType($className);
-    }
-
-    /**
-     * Parses raw result.
-     *
-     * @param array  $raw
-     * @param string $resultsType
-     * @param string $scrollDuration
-     *
-     * @return DocumentIterator|RawIterator|array
-     *
-     * @throws \Exception
-     */
-    private function parseResult($raw, $resultsType, $scrollDuration = null)
-    {
-        $scrollConfig = [];
-        if (isset($raw['_scroll_id'])) {
-            $scrollConfig['_scroll_id'] = $raw['_scroll_id'];
-            $scrollConfig['duration'] = $scrollDuration;
-        }
-
-        switch ($resultsType) {
-            case self::RESULTS_OBJECT:
-                return new DocumentIterator($raw, $this, $scrollConfig);
-            case self::RESULTS_ARRAY:
-                return $this->convertToNormalizedArray($raw);
-            case self::RESULTS_RAW:
-                return $raw;
-            case self::RESULTS_RAW_ITERATOR:
-                return new RawIterator($raw, $this, $scrollConfig);
-            default:
-                throw new \Exception('Wrong results type selected');
-        }
-    }
-
-    /**
-     * Normalizes response array.
-     *
-     * @param array $data
-     *
-     * @return array
-     */
-    private function convertToNormalizedArray($data)
-    {
-        if (array_key_exists('_source', $data)) {
-            return $data['_source'];
-        }
-
-        $output = [];
-
-        if (isset($data['hits']['hits'][0]['_source'])) {
-            foreach ($data['hits']['hits'] as $item) {
-                $output[] = $item['_source'];
-            }
-        } elseif (isset($data['hits']['hits'][0]['fields'])) {
-            foreach ($data['hits']['hits'] as $item) {
-                $output[] = array_map('reset', $item['fields']);
-            }
-        }
-
-        return $output;
     }
 
     /**

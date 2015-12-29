@@ -72,7 +72,7 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
         $search = $repository
             ->createSearch()
             ->addAggregation($this->buildAggregation());
-        $results = $repository->execute($search, Repository::RESULTS_OBJECT);
+        $results = $repository->execute($search);
         $aggs = $results->getAggregations()->find('terms');
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator', $aggs);

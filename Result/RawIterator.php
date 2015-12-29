@@ -11,10 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Service\Repository;
-
 /**
- * Class DocumentIterator.
+ * Raw documents iterator.
  */
 class RawIterator extends AbstractResultsIterator
 {
@@ -41,6 +39,6 @@ class RawIterator extends AbstractResultsIterator
      */
     protected function getScrollResultsType()
     {
-        return Repository::RESULTS_RAW_ITERATOR;
+        return Result::RESULTS_RAW_ITERATOR;
     }
 }
