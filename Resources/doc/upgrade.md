@@ -1,6 +1,5 @@
-# Upgrade info
-
-## Upgrading from v0.10.\* to v1.0.\*
+UPGRADE FROM 0.x to 1.0
+===
 
 #### Breaking changes
 
@@ -16,11 +15,12 @@
 * Mapping annotations was simplified. In the `Document` annotations `Skip` and `Inherit` annotations were removed. In `Property` there are only a `type`, `name`, `multiple`, `objectName` and `options`. From now on all custom fields has to be defined in `options` (e.g. index_analyzer). See [mapping chapter](mapping.md) for more info.
 * `AbstractDocument` and `DocumentInterface` was removed in favor of `DocumentTrait`. We think that document detection should be done via annotation and not by interfaces.
 * MetaField annotation introduced to define fields like `_id`, `_score`, `_parent`, `_ttl` etc.
+* From now on `Repository` always represents single document. To execute search on multiple types use `Manager`.
 
 #### Changes which should not impact the functionality
 
 * Minimum PHP required version now is 5.5
-* Minimum symfony required version now is 2.7
+* Minimum Symfony required version now is 2.7
 * Document Proxy class was completely removed. This should not effect any functionality.
 * Profiler namespace is changed from `DataCollector` to `Profiler`.
 * `findBy` in the Repository now uses `query_string` query instead of terms query.

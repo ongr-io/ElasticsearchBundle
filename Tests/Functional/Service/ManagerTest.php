@@ -246,4 +246,29 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->setIndexName($uniqueIndexName);
         $this->assertEquals($uniqueIndexName, $manager->getIndexName());
     }
+
+    /**
+     * Test for getRepository(). Check if local cache is working.
+     */
+    public function testGetRepository()
+    {
+        $manager = $this->repository->getManager();
+        $expected = $manager->getRepository('AcmeBarBundle:Product');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
+
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Service\Repository', $repository);
+        $this->assertSame($expected, $repository);
+    }
+
+    /**
+     * Test for getRepository() in case invalid class name given.
+     *
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage must be a string
+     */
+    public function testGetRepositoryException()
+    {
+        $manager = $this->repository->getManager();
+        $manager->getRepository(12345);
+    }
 }

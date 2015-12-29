@@ -89,6 +89,11 @@ class Manager
     private $bulkCount = 0;
 
     /**
+     * @var Repository[] Repository local cache
+     */
+    private $repositories;
+
+    /**
      * @param string            $name              Managers name.
      * @param array             $config            Managers configuration.
      * @param Client            $client
@@ -149,15 +154,20 @@ class Manager
      */
     public function getRepository($className)
     {
-        // TODO: add local cache
-
         if (!is_string($className)) {
             throw new \InvalidArgumentException('Document class must be a string.');
         }
 
         $namespace = $this->getMetadataCollector()->getClassName($className);
 
-        return $this->createRepository($namespace);
+        if (isset($this->repositories[$namespace])) {
+            return $this->repositories[$namespace];
+        }
+
+        $repository = $this->createRepository($namespace);
+        $this->repositories[$namespace] = $repository;
+
+        return $repository;
     }
 
     /**
