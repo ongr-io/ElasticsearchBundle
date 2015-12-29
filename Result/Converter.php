@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Service\Manager;
 
 /**
  * This class converts array to document object.
@@ -37,16 +37,16 @@ class Converter
     /**
      * Converts raw array to document.
      *
-     * @param array      $rawData
-     * @param Repository $repository
+     * @param array   $rawData
+     * @param Manager $manager
      *
      * @return object
      *
      * @throws \LogicException
      */
-    public function convertToDocument($rawData, Repository $repository)
+    public function convertToDocument($rawData, Manager $manager)
     {
-        $types = $this->metadataCollector->getMappings($repository->getManager()->getConfig()['mappings']);
+        $types = $this->metadataCollector->getMappings($manager->getConfig()['mappings']);
 
         if (isset($types[$rawData['_type']])) {
             $metadata = $types[$rawData['_type']];

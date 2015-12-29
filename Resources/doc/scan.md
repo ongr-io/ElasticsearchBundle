@@ -45,7 +45,7 @@ $search->setScroll('10m'); // Scroll time
 $termQuery = new TermQuery('country', 'Lithuania');
 $search->addQuery($termQuery);
 
-$results = $repo->execute($search, Repository::RESULTS_RAW);
+$results = $repo->execute($search, Result::RESULTS_RAW);
 
 foreach ($results as $raw) {
 
@@ -53,6 +53,6 @@ foreach ($results as $raw) {
 
 }
 
-$nextIteration = $repo->scan($results['_scroll_id'], '10m', Repository::RESULTS_RAW);
+$nextIteration = $repo->getManager()->scroll($results['_scroll_id'], '10m', Result::RESULTS_RAW);
 
 ```

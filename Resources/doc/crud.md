@@ -42,7 +42,7 @@ $manager = $this->get('es.manager');
 
 ## Repositories
 
-In addition manager provides repository access, which enables direct access to the elasticsearch type.  Repositories represents a documents. Whenever you need to do any action with a repository to get it:
+In addition manager provides repository access, which enables direct access to the elasticsearch type.  Repositories represents a document. Whenever you need to do any action with a repository to get it:
 
 ```php
 

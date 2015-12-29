@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
+use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
@@ -337,7 +338,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
             ->createSearch()
             ->addFilter(new PrefixFilter('title', 'dummy'));
 
-        $searchResult = $repository->execute($search, Repository::RESULTS_OBJECT);
+        $searchResult = $repository->execute($search);
         $this->assertInstanceOf(
             '\ONGR\ElasticsearchBundle\Result\DocumentIterator',
             $searchResult
@@ -449,57 +450,6 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Tests if find works as expected with RESULTS_RAW return type.
-     */
-    public function testFindArrayRaw()
-    {
-        $manager = $this->getManager();
-        $index = $manager->getIndexName();
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $document = $repository->find(1, Repository::RESULTS_RAW);
-        $expected = [
-            '_index' => $index,
-            '_id' => 1,
-            '_type' => 'product',
-            '_version' => 1,
-            'found' => true,
-            '_source' => [
-                'title' => 'foo',
-                'price' => 10,
-                'description' => 'goo Lorem',
-            ],
-        ];
-        $this->assertEquals(asort($expected), asort($document));
-    }
-
-    /**
-     * Tests if find works as expected with RESULTS_ARRAY return type.
-     */
-    public function testFindArray()
-    {
-        $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $document = $repository->find(1, Repository::RESULTS_ARRAY);
-        $expected = [
-            'title' => 'foo',
-            'price' => 10,
-            'description' => 'goo Lorem',
-        ];
-        $this->assertEquals($expected, $document);
-    }
-
-    /**
-     * Tests if find works as expected with RESULTS_RAW_ITERATOR return type.
-     */
-    public function testFindArrayIterator()
-    {
-        $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $document = $repository->find(1, Repository::RESULTS_RAW_ITERATOR);
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $document);
-    }
-
-    /**
      * Tests if document can be updated with partial update without initiating document object.
      */
     public function testPartialUpdate()
@@ -511,7 +461,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $product = $repository->find(1);
         $this->assertEquals($product->title, 'foo');
 
-        $result = $repository->update(1, ['title' => 'acme']);
+        $repository->update(1, ['title' => 'acme']);
 
         $product = $repository->find(1);
         $this->assertEquals($product->title, 'acme');

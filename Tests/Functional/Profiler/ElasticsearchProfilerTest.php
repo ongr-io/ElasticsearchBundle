@@ -112,7 +112,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
         $search = $repository
             ->createSearch()
             ->addQuery(new TermQuery('title', 'pizza'));
-        $result = $repository->execute($search, Repository::RESULTS_OBJECT);
+        $result = $repository->execute($search);
 
         $queries = $this->getCollector()->getQueries();
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);

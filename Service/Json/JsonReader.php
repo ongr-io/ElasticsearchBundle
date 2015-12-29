@@ -299,8 +299,6 @@ class JsonReader implements \Countable, \Iterator
             return $document;
         }
 
-        $repository = $this->getManager()->getRepository([]);
-
-        return $this->getConverter()->convertToDocument($document, $repository);
+        return $this->getConverter()->convertToDocument($document, $this->getManager());
     }
 }

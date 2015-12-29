@@ -11,14 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
-use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
-use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
@@ -37,6 +35,44 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function setUp()
     {
         $this->repository = $this->getManager()->getRepository('AcmeBarBundle:Product');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDataArray()
+    {
+        return [
+            'foo' => [
+                'product' => [
+                    [
+                        '_id' => 1,
+                        'title' => 'foo',
+                        'price' => 10.45,
+                    ],
+                    [
+                        '_id' => 2,
+                        'title' => 'bar',
+                        'price' => 32,
+                    ],
+                    [
+                        '_id' => 3,
+                        'title' => 'acme',
+                        'price' => 20,
+                    ],
+                ],
+                'customer' => [
+                    [
+                        '_id' => 1,
+                        'name' => 'foo',
+                    ],
+                    [
+                        '_id' => 2,
+                        'name' => 'acme',
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
@@ -270,5 +306,18 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->repository->getManager();
         $manager->getRepository(12345);
+    }
+
+    /**
+     * Test if execute() works with multiple types.
+     */
+    public function testExecuteQueryOnMultipleTypes()
+    {
+        $result = $this->getManager('foo')->execute(
+            ['AcmeBarBundle:Product', 'AcmeFooBundle:Customer'],
+            new Search()
+        );
+
+        $this->assertCount(5, $result);
     }
 }

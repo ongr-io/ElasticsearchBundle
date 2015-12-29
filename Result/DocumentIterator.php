@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
 use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
-use ONGR\ElasticsearchBundle\Service\Repository;
 
 /**
  * Class DocumentIterator.
@@ -49,7 +48,7 @@ class DocumentIterator extends AbstractResultsIterator
      */
     protected function convertDocument(array $document)
     {
-        return $this->getConverter()->convertToDocument($document, $this->getRepository());
+        return $this->getConverter()->convertToDocument($document, $this->getManager());
     }
 
     /**
@@ -57,6 +56,6 @@ class DocumentIterator extends AbstractResultsIterator
      */
     protected function getScrollResultsType()
     {
-        return Repository::RESULTS_OBJECT;
+        return Result::RESULTS_OBJECT;
     }
 }

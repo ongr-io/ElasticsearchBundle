@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Service\Manager;
 
 /**
  * Class AbstractResultsIterator.
@@ -39,9 +39,9 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     private $converter;
 
     /**
-     * @var Repository
+     * @var Manager
      */
-    private $repository;
+    private $manager;
 
     /**
      * Elasticsearch manager configuration.
@@ -68,18 +68,18 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     private $key = 0;
 
     /**
-     * @param array      $rawData
-     * @param Repository $repository
-     * @param array      $scroll
+     * @param array   $rawData
+     * @param Manager $manager
+     * @param array   $scroll
      */
     public function __construct(
         array $rawData,
-        Repository $repository,
+        Manager $manager,
         array $scroll = []
     ) {
-        $this->repository = $repository;
-        $this->converter = $repository->getManager()->getConverter();
-        $this->managerConfig = $repository->getManager()->getConfig();
+        $this->manager = $manager;
+        $this->converter = $manager->getConverter();
+        $this->managerConfig = $manager->getConfig();
 
         if (isset($scroll['_scroll_id']) && isset($scroll['duration'])) {
             $this->scrollId = $scroll['_scroll_id'];
@@ -107,11 +107,11 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
-     * @return Repository
+     * @return Manager
      */
-    public function getRepository()
+    protected function getManager()
     {
-        return $this->repository;
+        return $this->manager;
     }
 
     /**
@@ -272,7 +272,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
             return $this;
         }
 
-        $raw = $this->repository->scroll($this->scrollId, $this->scrollDuration, Repository::RESULTS_RAW);
+        $raw = $this->manager->scroll($this->scrollId, $this->scrollDuration, Result::RESULTS_RAW);
         $this->rewind();
         $this->scrollId = $raw['_scroll_id'];
         $this->documents = $raw['hits']['hits'];

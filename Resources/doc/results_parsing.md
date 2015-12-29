@@ -24,7 +24,7 @@ For all chapters below we will us a data example inserted in the elasticsearch c
 
 ## Results iterator
 
-Whenever any search actions is performed and `Repository::RESULTS_OBJECT` is selected as the result type the `DocumentIterator` will be returned. It has plenty of helper functions to aggregate more efficiently with the results.
+Whenever any search actions is performed and `Result::RESULTS_OBJECT` is selected as the result type the `DocumentIterator` will be returned. It has plenty of helper functions to aggregate more efficiently with the results.
 
 
 Lets assume you search the index with:
@@ -34,8 +34,7 @@ Lets assume you search the index with:
 $repo = $this->get('es.manager.default.content');
 $search = $repo->createSearch();
 $termQuery = new MatchAllQuery();
-$results = $repo->execute($search, Repository::RESULTS_OBJECT); //
-Repository::RESULTS_OBJECT is the default value
+$results = $repo->execute($search, Result::RESULTS_OBJECT); // Result::RESULTS_OBJECT is the default value
 
 ```
 

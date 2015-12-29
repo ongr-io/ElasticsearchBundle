@@ -17,54 +17,7 @@ $content = $repo->find(1); // 5 is the document _uid in the elasticsearch.
 
 ```
 
-By default the response will be a `Document` object which is mapped to certain type you are searching. There is possible to change a result type to an array or raw response what is returned from elasticsearch.
-
-```php
-
-$repo = $this->get('es.manager.default.content');
-
-/** @var $content Content **/
-$content = $repo->find(1, Repository::RESULTS_ARRAY); // Default is Repository::RESULTS_OBJECT
-
-```
-
-The response will look like:
-
-```
-Array
-(
-    [title] => Quidem rem temporibus distinctio sunt repellat qui.
-)
-```
-
-When using `Repository::RESULTS_RAW` the result will be:
-
-```php
-
-$repo = $this->get('es.manager.default.content');
-
-/** @var $content Content **/
-$content = $repo->find(5, Repository::RESULTS_RAW); // Default is Repository::RESULTS_OBJECT
-
-```
-
-```
-Array
-(
-    [_index] => ongr
-    [_type] => content
-    [_id] => 1
-    [_version] => 2
-    [found] => 1
-    [_source] => Array
-        (
-            [title] => Quidem rem temporibus distinctio sunt repellat qui.
-        )
-
-)
-```
-
-> The result type selection is also available in all other search methods.
+> All `find` methods returns an object. If you want to get raw result use `execute()`.
 
 ## Find by field
 
@@ -94,17 +47,9 @@ Array
 )
 ```
 
-By default the result will be `ResultIterator` objetct with loaded documents. There is also other options to change result type:
-
-| Argument                   | Result                                                     |
-|----------------------------|------------------------------------------------------------|
-| Repository::RESULTS_RAW    | Returns raw output what comes from elasticsearch           |
-| Repository::RESULTS_ARRAY  | An array of results with structure that matches a document |
-| Repository::RESULTS_OBJECT | `ResultsIterator`                                          |
-
 ## Find one document by field
 
-Completely the same as `findBy()` function, except it will return the first result. And if the result type will be `Repository::RESULTS_OBJECT` it wont return an iterator, instead `Document` object will be returned.
+Completely the same as `findBy()` function, except it will return the first document.
 
 ```php
 

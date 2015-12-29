@@ -47,7 +47,7 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
         $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
-        $iterator = $repo->execute($search, Repository::RESULTS_OBJECT);
+        $iterator = $repo->execute($search);
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
