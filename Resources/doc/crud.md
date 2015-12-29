@@ -11,13 +11,15 @@ For all steps below we asume that there is an `AppBundle` with the `Content` doc
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES; // Alias to make short annotation.
-use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
-class Content extends AbstractDocument
+class Content
 {
+    use DocumentTrait;
+
     /**
      * @ES\Property(type="string", name="title")
      */
@@ -81,7 +83,7 @@ $manager->commit();
 
 ```
 
-> id field comes from `AbstractDocument`. It's optional, in addition you can also use `ttl`, 'parent' and other special fields.
+> id field comes from `DocumentTrait`. It's optional, in addition you can also use `ttl`, 'parent' and other special fields.
 
 ## Update a document
 

@@ -54,7 +54,7 @@ final class Property
      * If this value is set to true, in the result ObjectIterator will be provided,
      * otherwise you will get Document object
      *
-     * @var bool DocumentInterface or ObjectIterator.
+     * @var bool Object or ObjectIterator.
      */
     public $multiple;
 

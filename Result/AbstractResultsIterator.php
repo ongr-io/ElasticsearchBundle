@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Service\Repository;
 
 /**
@@ -286,7 +285,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      *
      * @param array $document
      *
-     * @return DocumentInterface|array
+     * @return object|array
      */
     abstract protected function convertDocument(array $document);
 }

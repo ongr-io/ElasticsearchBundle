@@ -112,13 +112,15 @@ Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch
 namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document()
  */
-class Customer extends AbstractDocument
+class Customer
 {
+    use DocumentTrait;
+
     /**
      * @var string
      *

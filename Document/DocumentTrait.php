@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * Document abstraction which introduces mandatory fields for the document.
+ * This trait provides support for main Elasticsearch meta fields.
  */
-abstract class AbstractDocument implements DocumentInterface
+trait DocumentTrait
 {
     /**
      * @var string
@@ -45,14 +45,6 @@ abstract class AbstractDocument implements DocumentInterface
      * @ES\MetaField(name="_ttl")
      */
     public $ttl;
-
-    /**
-     * When document is cloned id is set to null.
-     */
-    public function __clone()
-    {
-        $this->setId(null);
-    }
 
     /**
      * Sets document unique id.

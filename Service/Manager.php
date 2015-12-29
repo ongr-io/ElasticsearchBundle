@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\Forbidden403Exception;
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 
@@ -245,9 +244,9 @@ class Manager
     /**
      * Adds document to next flush.
      *
-     * @param DocumentInterface $document
+     * @param object $document
      */
-    public function persist(DocumentInterface $document)
+    public function persist($document)
     {
         $documentArray = $this->converter->convertToArray($document);
         $typeMapping = $this->getMetadataCollector()->getDocumentMapping($document);

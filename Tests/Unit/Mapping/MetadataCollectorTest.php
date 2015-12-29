@@ -70,6 +70,17 @@ class MetadataCollectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test for getDocumentMapping() in case non-object given.
+     *
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Document must be an object
+     */
+    public function testGetDocumentMappingException()
+    {
+        $this->metadataCollector->getDocumentMapping(1000);
+    }
+
+    /**
      * Test for getClientMapping() in case no mapping exists.
      */
     public function testGetClientMappingNull()

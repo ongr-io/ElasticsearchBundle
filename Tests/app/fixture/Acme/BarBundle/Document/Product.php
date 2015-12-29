@@ -12,15 +12,17 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * Product document for testing.
  *
  * @ES\Document(type="product")
  */
-class Product extends AbstractDocument
+class Product
 {
+    use DocumentTrait;
+
     /**
      * @var string
      * @ES\Property(

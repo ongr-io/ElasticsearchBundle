@@ -234,34 +234,6 @@ class ManagerTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Tests cloning documents.
-     */
-    public function testCloningDocuments()
-    {
-        $manager = $this->repository->getManager();
-
-        $document = new Product();
-        $document->setId('tuna_id');
-        $document->title = 'tuna';
-
-        $manager->persist($document);
-        $manager->commit();
-
-        $document = $this->repository->find('tuna_id');
-        $clone = clone $document;
-
-        $this->assertNull($clone->getId(), 'Id should be null\'ed.');
-        $manager->persist($clone);
-        $manager->commit();
-
-        $search = $this->repository
-            ->createSearch()
-            ->addQuery(new TermQuery('title', 'tuna'));
-
-        $this->assertCount(2, $this->repository->execute($search), '2 Results should be found.');
-    }
-
-    /**
      * Tests setter and getter of index name.
      */
     public function testIndexName()

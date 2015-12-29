@@ -11,14 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
-use ONGR\ElasticsearchBundle\Document\DocumentInterface;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
-use ONGR\ElasticsearchDSL\Filter\MissingFilter;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\RangeQuery;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
-use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -177,7 +173,6 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $results = [];
 
-        /** @var DocumentInterface $result */
         foreach ($fullResults as $result) {
             $results[] = $result->getId();
         }

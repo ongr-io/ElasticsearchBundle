@@ -12,15 +12,17 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\AbstractDocument;
+use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * Testing document for representing media.
  *
  * @ES\Document(type="customer");
  */
-class Customer extends AbstractDocument
+class Customer
 {
+    use DocumentTrait;
+
     /**
      * Test adding raw mapping.
      *
