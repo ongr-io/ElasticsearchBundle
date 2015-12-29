@@ -35,20 +35,35 @@ class Repository
     private $manager;
 
     /**
-     * @var array
+     * @var string Fully qualified class name
      */
-    private $types = [];
+    private $className;
+
+    /**
+     * @var string Elasticsearch type name
+     */
+    private $type;
 
     /**
      * Constructor.
      *
      * @param Manager $manager
-     * @param array   $repositories
+     * @param string  $className
      */
-    public function __construct($manager, array $repositories)
+    public function __construct($manager, $className)
     {
+        if (!is_string($className)) {
+            throw new \InvalidArgumentException('Class name must be a string.');
+        }
+
+        if (!class_exists($className)) {
+            throw new \InvalidArgumentException(
+                sprintf('Cannot create repository for non-existing class "%s".', $className)
+            );
+        }
+
         $this->manager = $manager;
-        $this->types = $this->resolveTypes($repositories);
+        $this->type = $this->resolveType($className);
     }
 
     /**
@@ -64,9 +79,9 @@ class Repository
     /**
      * @return array
      */
-    public function getTypes()
+    public function getType()
     {
-        return $this->types;
+        return $this->type;
     }
 
     /**
@@ -81,13 +96,9 @@ class Repository
      */
     public function find($id, $resultType = self::RESULTS_OBJECT)
     {
-        if (count($this->types) !== 1) {
-            throw new \LogicException('Only one type must be specified for the find() method');
-        }
-
         $params = [
             'index' => $this->getManager()->getIndexName(),
-            'type' => $this->types[0],
+            'type' => $this->type,
             'id' => $id,
         ];
 
@@ -196,7 +207,7 @@ class Repository
     {
         $results = $this
             ->getManager()
-            ->search($this->types, $search->toArray(), $search->getQueryParams());
+            ->search([$this->type], $search->toArray(), $search->getQueryParams());
 
         return $this->parseResult($results, $resultsType, $search->getScroll());
     }
@@ -215,7 +226,7 @@ class Repository
         $body = array_merge(
             [
                 'index' => $this->getManager()->getIndexName(),
-                'type' => $this->getTypes(),
+                'type' => $this->type,
                 'body' => $search->toArray(),
             ],
             $params
@@ -243,7 +254,7 @@ class Repository
     {
         $params = [
             'index' => $this->getManager()->getIndexName(),
-            'type' => $this->types,
+            'type' => $this->type,
             'body' => $search->toArray(),
         ];
 
@@ -285,19 +296,15 @@ class Repository
      */
     public function remove($id)
     {
-        if (count($this->types) == 1) {
-            $params = [
-                'index' => $this->getManager()->getIndexName(),
-                'type' => $this->types[0],
-                'id' => $id,
-            ];
+        $params = [
+            'index' => $this->getManager()->getIndexName(),
+            'type' => $this->type,
+            'id' => $id,
+        ];
 
-            $response = $this->getManager()->getClient()->delete($params);
+        $response = $this->getManager()->getClient()->delete($params);
 
-            return $response;
-        } else {
-            throw new \LogicException('Only one type must be specified for the find() method');
-        }
+        return $response;
     }
 
     /**
@@ -312,12 +319,6 @@ class Repository
      */
     public function update($id, array $fields = [], $script = null, array $params = [])
     {
-        if (count($this->types) > 1) {
-            throw new \LogicException('Partial update can be executed only with one type selected.');
-        }
-
-        $type = $this->getTypes()[0];
-
         $body = array_filter(
             [
                 'doc' => $fields,
@@ -329,7 +330,7 @@ class Repository
             [
                 'id' => $id,
                 'index' => $this->getManager()->getIndexName(),
-                'type' => $type,
+                'type' => $this->type,
                 'body' => $body,
             ],
             $params
@@ -339,20 +340,15 @@ class Repository
     }
 
     /**
-     * Resolves elasticsearch types from documents.
+     * Resolves elasticsearch type by class name.
      *
-     * @param array $repositories
+     * @param string $className
      *
      * @return array
      */
-    private function resolveTypes($repositories)
+    private function resolveType($className)
     {
-        $types = [];
-        foreach ($repositories as $repository) {
-            $types[] = $this->getManager()->getMetadataCollector()->getDocumentType($repository);
-        }
-
-        return $types;
+        return $this->getManager()->getMetadataCollector()->getDocumentType($className);
     }
 
     /**
@@ -414,5 +410,15 @@ class Repository
         }
 
         return $output;
+    }
+
+    /**
+     * Returns fully qualified class name.
+     *
+     * @return string
+     */
+    public function getClassName()
+    {
+        return $this->className;
     }
 }

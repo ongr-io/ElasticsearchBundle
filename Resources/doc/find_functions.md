@@ -17,18 +17,6 @@ $content = $repo->find(1); // 5 is the document _uid in the elasticsearch.
 
 ```
 
-> Important: with `$repo` you an initiate binding to more than one repository (elasticsearch type). `find()` function works only if there is one elasticsearch type loaded otherwise you will get logic exception.
-
-e.g.
-
-```php
-
-$manager = $this->get('es.manager');
-$repo = $manager->getRepository(['AppBundle:User', 'AppBundle:Content']);
-$result = $repo->find(1); // Throws \LogicException
-
-```
-
 By default the response will be a `Document` object which is mapped to certain type you are searching. There is possible to change a result type to an array or raw response what is returned from elasticsearch.
 
 ```php

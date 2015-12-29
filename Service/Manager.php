@@ -89,6 +89,11 @@ class Manager
     private $bulkCount = 0;
 
     /**
+     * @var Repository[] Repository local cache
+     */
+    private $repositories;
+
+    /**
      * @param string            $name              Managers name.
      * @param array             $config            Managers configuration.
      * @param Client            $client
@@ -141,17 +146,28 @@ class Manager
     }
 
     /**
-     * Returns repository with one or several active selected type.
+     * Returns repository by document class.
      *
-     * @param string|string[] $type
+     * @param string $className FQCN or string in Bundle:Document format
      *
      * @return Repository
      */
-    public function getRepository($type)
+    public function getRepository($className)
     {
-        $type = is_array($type) ? $type : [$type];
+        if (!is_string($className)) {
+            throw new \InvalidArgumentException('Document class must be a string.');
+        }
 
-        return $this->createRepository($type);
+        $namespace = $this->getMetadataCollector()->getClassName($className);
+
+        if (isset($this->repositories[$namespace])) {
+            return $this->repositories[$namespace];
+        }
+
+        $repository = $this->createRepository($namespace);
+        $this->repositories[$namespace] = $repository;
+
+        return $repository;
     }
 
     /**
@@ -209,13 +225,13 @@ class Manager
     /**
      * Creates a repository.
      *
-     * @param array $types
+     * @param string $className
      *
      * @return Repository
      */
-    private function createRepository(array $types)
+    private function createRepository($className)
     {
-        return new Repository($this, $types);
+        return new Repository($this, $className);
     }
 
     /**

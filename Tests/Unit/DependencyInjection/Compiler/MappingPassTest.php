@@ -11,9 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection\Compiler;
 
-use MyProject\Proxies\__CG__\stdClass;
 use ONGR\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Unit tests for MappingPass.
@@ -35,6 +33,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                     'properties' => [],
                     'bundle' => 'AcmeBarBundle',
                     'class' => 'Foo',
+                    'namespace' => 'Acme\BarBundle\Document\Foo',
                 ],
             ]
         );

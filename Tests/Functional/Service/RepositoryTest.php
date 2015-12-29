@@ -298,19 +298,6 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test repository find method in repo with many types.
-     *
-     * @expectedException \LogicException
-     */
-    public function testFindInMultiTypeRepo()
-    {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository(['AcmeBarBundle:Product', 'AcmeFooBundle:Customer']);
-
-        $repo->find(1);
-    }
-
-    /**
      * Tests remove method.
      */
     public function testRemove()

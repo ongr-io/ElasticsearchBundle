@@ -23,7 +23,7 @@ class DocumentTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
         $repo = $manager->getRepository('AcmeBarBundle:Product');
 
-        $type = $repo->getTypes()[0];
+        $type = $repo->getType();
         $mappings = $manager->getClient()->indices()->getMapping(['index' => $manager->getIndexName()]);
 
         $this->assertArrayHasKey($type, $mappings[$manager->getIndexName()]['mappings']);
