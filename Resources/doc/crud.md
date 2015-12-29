@@ -2,15 +2,13 @@
 
 > To proceed with steps bellow it is necessary to read [mapping](mapping.md) topic and have defined documents in the bundle.
 
-For all steps below we asume that there is an `AppBundle` with the `Content` document.
+For all steps below we assume that there is an `AppBundle` with the `Content` document.
 
 ```php
-
-<?php
-//AppBundle:Content
+// src/AppBundle/Document/Content.php
 namespace AppBundle/Document;
 
-use ONGR\ElasticsearchBundle\Annotation as ES; // Alias to make short annotation.
+use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
@@ -21,11 +19,10 @@ class Content
     use DocumentTrait;
 
     /**
-     * @ES\Property(type="string", name="title")
+     * @ES\Property(type="string")
      */
     public $title;
 }
-
 ```
 
 ## Manager

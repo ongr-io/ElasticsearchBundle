@@ -35,4 +35,26 @@ class DocumentTest extends AbstractElasticsearchTestCase
             sort($mappings[$manager->getIndexName()]['mappings'][$type])
         );
     }
+
+    /**
+     * Test if field names are correctly generated from property names.
+     */
+    public function testOptionalNames()
+    {
+        $mappings = $this->getManager()->getMetadataCollector()->getMapping('AcmeBarBundle:Person');
+
+        $expected = [
+            'first_name' => [
+                'type' => 'string',
+            ],
+            'family_name' => [
+                'type' => 'string',
+            ],
+            'age' => [
+                'type' => 'integer',
+            ],
+        ];
+
+        $this->assertEquals($expected, $mappings['properties']);
+    }
 }
