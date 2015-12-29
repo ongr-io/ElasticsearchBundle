@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Annotation;
 
 use ONGR\ElasticsearchBundle\Mapping\Caser;
 use Doctrine\Common\Annotations\Annotation\Enum;
+use Doctrine\Common\Annotations\Annotation\Required;
 
 /**
  * Annotation used to check mapping type during the parsing process.
@@ -23,15 +24,6 @@ use Doctrine\Common\Annotations\Annotation\Enum;
 final class Property
 {
     /**
-     * Name of the type field.
-     *
-     * @var string
-     *
-     * @Required
-     */
-    public $name;
-
-    /**
      * Field type.
      *
      * @var string
@@ -41,6 +33,13 @@ final class Property
      *        "object", "nested", "geo_point", "geo_shape", "ip", "binary", "token_count" })
      */
     public $type;
+
+    /**
+     * Name of the type field. Defaults to normalized property name.
+     *
+     * @var string
+     */
+    public $name;
 
     /**
      * If type was selected as `object` or `nested` you need to define the object name.

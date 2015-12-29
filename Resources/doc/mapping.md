@@ -47,9 +47,7 @@ In the managers configuration `mappings` is optional. If there are no mappings d
 
 Lets start with a document class example.
 ```php
-
-<?php
-//AppBundle:Content
+// src/AppBundle/Document/Content.php
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -63,11 +61,10 @@ class Content
     use DocumentTrait;
 
     /**
-     * @ES\Property(type="string", name="title")
+     * @ES\Property(type="string")
      */
     public $title;
 }
-
 ```
 
 > You can use `DocumentTrait` trait to quickly add support for meta fields.
@@ -95,14 +92,15 @@ e.g. `@ES\Document(type="content", _ttl={"enabled": true, "default": "1d"})`
 
 ### Document properties annotations
 
-To define type properties there is `@ES\Property` annotation. You can define different class property name as an elasticsearch type's property name and it will be handled automatically by bundle. Property also supports the type where it needs to define what kind of information will be indexed. Analyzers names is the same that was defined in `config.yml` `analysis` section [before](#Mapping configuration).
+To define type properties there is `@ES\Property` annotation. The only required
+attribute is `type` - Elasticsearch field type to define what kind of information
+will be indexed. By default field name is generated from property name by converting
+it to "snake case" string. You can specify custom name by setting `name` attribute.
 
-To add custom settings to property like analyzer it has to be included in `options`. Here's an example how to add it:
+To add custom settings to property like analyzer it has to be included in `options`. Analyzers names is the same that was defined in `config.yml` `analysis` section [before](#Mapping configuration). Here's an example how to add it:
 
 ```php
-
-<?php
-//AppBundle:Content
+// src/AppBundle/Document/Content.php
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -118,7 +116,7 @@ class Content
     /**
      * @ES\Property(
         type="string",
-        name="title",
+        name="original_title",
         options={"index_analyzer":"incrementalAnalyzer"}
       )
      */
@@ -133,9 +131,7 @@ class Content
 It is a little different to define nested and object types. For this user will need to create a separate class with object annotation. Lets assume we have a Content type with object field.
 
 ```php
-
-<?php
-//AppBundle:Content
+// src/AppBundle/Document/Content.php
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -149,7 +145,7 @@ class Content
     use DocumentTrait;
 
     /**
-     * @ES\Property(type="string", name="title")
+     * @ES\Property(type="string")
      */
     public $title;
 
@@ -166,9 +162,7 @@ class Content
 And the content object will look like:
 
 ```php
-
-<?php
-//AppBundle:ContentMetaObject
+// src/AppBundle/Document/ContentMetaObject.php
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;

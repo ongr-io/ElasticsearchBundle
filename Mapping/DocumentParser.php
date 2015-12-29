@@ -142,7 +142,13 @@ class DocumentParser
      */
     public function getPropertyAnnotationData($property)
     {
-        return $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
+        $result = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
+
+        if ($result !== null && $result->name === null) {
+            $result->name = Caser::snake($property->getName());
+        }
+
+        return $result;
     }
 
     /**
