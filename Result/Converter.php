@@ -229,7 +229,7 @@ class Converter
     private function getAlias($document)
     {
         $class = get_class($document);
-        $documentMapping = $this->metadataCollector->getDocumentMapping($document);
+        $documentMapping = $this->metadataCollector->getMapping($class);
         if (is_array($documentMapping) && isset($documentMapping['aliases'])) {
             return $documentMapping['aliases'];
         }

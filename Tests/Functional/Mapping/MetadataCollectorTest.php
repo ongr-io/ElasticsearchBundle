@@ -70,4 +70,15 @@ class MetadataCollectorTest extends WebTestCase
         $this->assertArrayHasKey('_ttl', $aliases);
         $this->assertArrayHasKey('_parent', $aliases);
     }
+
+    /**
+     * Test for getDocumentType() in case invalid class given.
+     *
+     * @expectedException \Exception
+     * @expectedExceptionMessage Mapping for class "\StdClass" was not found
+     */
+    public function testGetDocumentTypeException()
+    {
+        $this->metadataCollector->getDocumentType('\StdClass');
+    }
 }
