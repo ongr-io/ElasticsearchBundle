@@ -138,4 +138,26 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $manager = new Manager('test', $config, $esClient, ['index' => 'test'], $metadataCollector, $converter);
         $manager->updateMapping(['test']);
     }
+
+    /**
+     * Test for clearScroll().
+     */
+    public function testClearScroll()
+    {
+        $esClient = $this->getMock('Elasticsearch\Client', ['clearScroll'], [], '', false);
+        $esClient->expects($this->once())->method('clearScroll')->with(['scroll_id' => 'foo']);
+
+        $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $converter = $this->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $config = ['readonly' => false];
+
+        $manager = new Manager('test', $config, $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $manager->clearScroll('foo');
+    }
 }
