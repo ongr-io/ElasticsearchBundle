@@ -442,6 +442,12 @@ class DocumentParser
 
         $this->objects[$namespace] = $this->getRelationMapping(new \ReflectionClass($namespace));
 
+        if ($this->objects[$namespace] === null) {
+            throw new \LogicException(
+                sprintf('%s should have @Object or @Nested annotation to be used as as object property.', $objectName)
+            );
+        }
+
         return $this->objects[$namespace];
     }
 
