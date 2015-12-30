@@ -187,38 +187,22 @@ class MetadataCollector
     }
 
     /**
-     * Resolves document elasticsearch type, use format: SomeBarBundle:AcmeDocument.
+     * Resolves Elasticsearch type by document class.
      *
-     * @param string $document
+     * @param string $className FQCN or string in AppBundle:Document format
      *
      * @return string
+     * @throws \Exception
      */
-    public function getDocumentType($document)
+    public function getDocumentType($className)
     {
-        $mapping = $this->getMappingByNamespace($document);
+        $mapping = $this->getMapping($className);
 
-        return $mapping['type'];
-    }
-
-    /**
-     * Retrieves document mapping by namespace.
-     *
-     * @param string $namespace Document namespace.
-     *
-     * @return array|null
-     */
-    public function getMappingByNamespace($namespace)
-    {
-        $namespace = $this->getClassName($namespace);
-
-        if (isset($this->mappings[$namespace])) {
-            return $this->mappings[$namespace];
+        if (empty($mapping)) {
+            throw new \Exception(sprintf('Mapping for class "%s" was not found!', $className));
         }
 
-        $mapping = $this->getDocumentReflectionMapping(new \ReflectionClass($namespace));
-        $this->cacheBundle($namespace, $mapping);
-
-        return $mapping;
+        return $mapping['type'];
     }
 
     /**
@@ -266,36 +250,24 @@ class MetadataCollector
     }
 
     /**
-     * Retrieves mapping from document.
+     * Returns single document mapping metadata.
      *
-     * @param object $document
-     *
-     * @return array
-     */
-    public function getDocumentMapping($document)
-    {
-        if (!is_object($document)) {
-            throw new \InvalidArgumentException('Document must be an object.');
-        }
-
-        return $this->getDocumentReflectionMapping(new \ReflectionObject($document));
-    }
-
-    /**
-     * Returns mapping with metadata.
-     *
-     * @param string $namespace Bundle or document namespace.
+     * @param string $namespace Document namespace
      *
      * @return array
      */
     public function getMapping($namespace)
     {
-        if (strpos($namespace, ':') === false) {
-            return $this->getBundleMapping($namespace);
-        }
-        $mapping = $this->getMappingByNamespace($namespace);
+        $namespace = $this->getClassName($namespace);
 
-        return $mapping === null ? [] : $mapping;
+        if (isset($this->mappings[$namespace])) {
+            return $this->mappings[$namespace];
+        }
+
+        $mapping = $this->getDocumentReflectionMapping(new \ReflectionClass($namespace));
+        $this->cacheBundle($namespace, $mapping);
+
+        return $mapping;
     }
 
     /**

@@ -271,9 +271,9 @@ class Manager
     public function persist($document)
     {
         $documentArray = $this->converter->convertToArray($document);
-        $typeMapping = $this->getMetadataCollector()->getDocumentMapping($document);
+        $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
 
-        $this->bulk('index', $typeMapping['type'], $documentArray);
+        $this->bulk('index', $type, $documentArray);
     }
 
     /**
