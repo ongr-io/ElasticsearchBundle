@@ -57,4 +57,26 @@ class DocumentTest extends AbstractElasticsearchTestCase
 
         $this->assertEquals($expected, $mappings['properties']);
     }
+
+    /**
+     * Test if correct mapping is generated when inner objects used.
+     */
+    public function testInnerObject()
+    {
+        $mappings = $this->getManager()->getMetadataCollector()->getMapping('AcmeBarBundle:Product');
+        $properties = $mappings['properties'];
+
+        $expected = [
+            'type' => 'object',
+            'properties' => [
+                'title' => [
+                    'type' => 'string',
+                    'index' => 'not_analyzed',
+                ],
+            ],
+        ];
+
+        $this->assertArrayHasKey('category', $properties);
+        $this->assertEquals($expected, $properties['category']);
+    }
 }
