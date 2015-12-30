@@ -152,7 +152,7 @@ class Content
     /**
      * @var ContentMetaObject
      *
-     * @ES\Property(name="meta", type="object", objectName="AppBundle:ContentMetaObject")
+     * @ES\Embedded(class="AppBundle:ContentMetaObject")
      */
     public $metaObject;
 }
@@ -194,7 +194,7 @@ As shown in the example, by default only a single object will be saved in the do
 /**
  * @var ContentMetaObject
  *
- * @ES\Property(name="meta", type="object", multiple="true", objectName="AppBundle:ContentMetaObject")
+ * @ES\Embedded(class="AppBundle:ContentMetaObject", multiple="true")
  */
 public $metaObject;
 //....
@@ -212,8 +212,8 @@ $manager->persist($content);
 $manager->commit();
 
 ```
-To define object or nested fields the same `@ES\Property` annotations could be used. In the objects there is possibility to define other objects also.
+To define object or nested fields use `@ES\Embedded` annotation. In the objects there is possibility to define other objects also.
 
-> Nested types can be defined the same way as objects, except ``@ES\Nested`` annotation must be used.
+> Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
 
 More info about mapping is in the [elasticsearch mapping documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)

@@ -12,27 +12,24 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 use ONGR\ElasticsearchBundle\Mapping\Caser;
-use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\Common\Annotations\Annotation\Required;
 
 /**
- * Annotation used to check mapping type during the parsing process.
+ * Annotation for property which points to inner object.
  *
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Property
+final class Embedded
 {
     /**
-     * Field type.
+     * Inner object class name.
      *
-     * @var string
+     * @var string Object name to map
      *
      * @Required
-     * @Enum({"string", "boolean", "integer", "float", "long", "short", "byte", "double", "date",
-     *        "geo_point", "geo_shape", "ip", "binary", "token_count" })
      */
-    public $type;
+    public $class;
 
     /**
      * Name of the type field. Defaults to normalized property name.
@@ -42,7 +39,17 @@ final class Property
     public $name;
 
     /**
-     * In this field you can define options (like analyzers and etc) for specific field types.
+     * Defines if related object will have one or multiple values.
+     *
+     * If this value is set to true, in the result ObjectIterator will be provided,
+     * otherwise you will get single object.
+     *
+     * @var bool Object or ObjectIterator
+     */
+    public $multiple;
+
+    /**
+     * In this field you can define options.
      *
      * @var array
      */
@@ -60,7 +67,7 @@ final class Property
                     return $value || is_bool($value);
                 }
             ),
-            array_flip(array_merge(['name'], $exclude))
+            array_flip(array_merge(['class', 'name', 'multiple'], $exclude))
         );
 
         return array_combine(

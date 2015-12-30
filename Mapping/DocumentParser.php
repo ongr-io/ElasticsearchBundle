@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
+use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 
@@ -22,20 +23,12 @@ use ONGR\ElasticsearchBundle\Annotation\Property;
  */
 class DocumentParser
 {
-    /**
-     * @const string
-     */
     const META_FIELD_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\MetaField';
-
-    /**
-     * @const string
-     */
     const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
-
-    /**
-     * @const string
-     */
+    const EMBEDDED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Embedded';
     const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
+    const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Object';
+    const NESTED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Nested';
 
     /**
      * @var Reader Used to read document annotations.
@@ -152,6 +145,24 @@ class DocumentParser
     }
 
     /**
+     * Returns Embedded annotation data from reader.
+     *
+     * @param \ReflectionProperty $property
+     *
+     * @return Embedded|null
+     */
+    public function getEmbeddedAnnotationData($property)
+    {
+        $result = $this->reader->getPropertyAnnotation($property, self::EMBEDDED_ANNOTATION);
+
+        if ($result !== null && $result->name === null) {
+            $result->name = Caser::snake($property->getName());
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns meta field annotation data from reader.
      *
      * @param \ReflectionProperty $property
@@ -194,14 +205,14 @@ class DocumentParser
 
         foreach ($properties as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
-            $meta = $type === null;
-            $type = $meta ? $this->getMetaFieldAnnotationData($property) : $type;
+            $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
+            $type = $type !== null ? $type : $this->getMetaFieldAnnotationData($property);
             if ($type !== null) {
                 $alias[$type->name] = [
                     'propertyName' => $name,
                 ];
 
-                if (!$meta) {
+                if ($type instanceof Property) {
                     $alias[$type->name]['type'] = $type->type;
                 }
 
@@ -225,13 +236,13 @@ class DocumentParser
                 }
                 $alias[$type->name]['propertyType'] = $propertyType;
 
-
-                if (!$meta && $type->objectName) {
-                    $child = new \ReflectionClass($this->finder->getNamespace($type->objectName));
+                if ($type instanceof Embedded) {
+                    $child = new \ReflectionClass($this->finder->getNamespace($type->class));
                     $alias[$type->name] = array_merge(
                         $alias[$type->name],
                         [
-                            'multiple' => $type instanceof Property ? $type->multiple : false,
+                            'type' => $this->getInnerObjectType($type->class),
+                            'multiple' => $type->multiple,
                             'aliases' => $this->getAliases($child),
                             'namespace' => $child->getName(),
                         ]
@@ -307,6 +318,7 @@ class DocumentParser
             'Document',
             'MetaField',
             'Property',
+            'Embedded',
             'Object',
             'Nested',
         ];
@@ -381,6 +393,7 @@ class DocumentParser
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
+            $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
 
             if ((in_array($name, $properties) && !$flag)
                 || (!in_array($name, $properties) && $flag)
@@ -391,9 +404,10 @@ class DocumentParser
 
             $map = $type->dump();
 
-            // Object.
-            if (in_array($type->type, ['object', 'nested']) && !empty($type->objectName)) {
-                $map = array_replace_recursive($map, $this->getObjectMapping($type->objectName));
+            // Inner object
+            if ($type instanceof Embedded) {
+                $map['type'] = $this->getInnerObjectType($type->class);
+                $map = array_replace_recursive($map, $this->getObjectMapping($type->class));
             }
 
             // If there is set some Raw options, it will override current ones.
@@ -414,13 +428,13 @@ class DocumentParser
      *
      * Loads from cache if it's already loaded.
      *
-     * @param string $objectName
+     * @param string $className
      *
      * @return array
      */
-    private function getObjectMapping($objectName)
+    private function getObjectMapping($className)
     {
-        $namespace = $this->finder->getNamespace($objectName);
+        $namespace = $this->finder->getNamespace($className);
 
         if (array_key_exists($namespace, $this->objects)) {
             return $this->objects[$namespace];
@@ -440,10 +454,32 @@ class DocumentParser
      */
     private function getRelationMapping(\ReflectionClass $reflectionClass)
     {
-        if ($this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Object')
-            || $this->reader->getClassAnnotation($reflectionClass, 'ONGR\ElasticsearchBundle\Annotation\Nested')
+        if ($this->reader->getClassAnnotation($reflectionClass, self::OBJECT_ANNOTATION)
+            || $this->reader->getClassAnnotation($reflectionClass, self::NESTED_ANNOTATION)
         ) {
             return ['properties' => $this->getProperties($reflectionClass)];
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns inner object type by it's class name.
+     *
+     * @param string $className
+     *
+     * @return null|string
+     */
+    private function getInnerObjectType($className)
+    {
+        $reflection = new \ReflectionClass($this->finder->getNamespace($className));
+
+        if ($this->reader->getClassAnnotation($reflection, self::OBJECT_ANNOTATION)) {
+            return 'object';
+        }
+
+        if ($this->reader->getClassAnnotation($reflection, self::NESTED_ANNOTATION)) {
+            return 'nested';
         }
 
         return null;

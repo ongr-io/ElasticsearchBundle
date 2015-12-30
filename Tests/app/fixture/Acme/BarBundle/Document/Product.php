@@ -46,13 +46,13 @@ class Product
 
     /**
      * @var CategoryObject
-     * @ES\Property(type="object", name="category", objectName="AcmeBarBundle:CategoryObject")
+     * @ES\Embedded(class="AcmeBarBundle:CategoryObject")
      */
     public $category;
 
     /**
      * @var CategoryObject[]
-     * @ES\Property(type="object", name="related_categories", multiple=true, objectName="AcmeBarBundle:CategoryObject")
+     * @ES\Embedded(class="AcmeBarBundle:CategoryObject", multiple=true)
      */
     public $relatedCategories;
 
