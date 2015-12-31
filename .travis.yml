@@ -22,7 +22,7 @@ script:
   - vendor/bin/phpunit --coverage-clover=coveralls.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
 after_script:
-  - vendor/bin/coveralls
+  - travis_retry php vendor/bin/coveralls
 notifications:
   webhooks:
     urls:
