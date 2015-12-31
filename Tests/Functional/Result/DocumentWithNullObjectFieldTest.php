@@ -10,8 +10,6 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
@@ -23,16 +21,11 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
     {
         return [
             'default' => [
-                'product' => [
+                'place' => [
                     [
-                        '_id' => 'Doc 1',
+                        '_id' => 'foo',
                         'title' => 'Bar Product',
-                        'category' => null,
-                        'related_categories' => [
-                            [
-                                'title' => 'Acme',
-                            ],
-                        ],
+                        'address' => null,
                     ],
                 ],
             ],
@@ -40,22 +33,18 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test the returned result with null object field
+     * Test if fetched object field is actually NULL.
      */
     public function testResultWithNullObjectField()
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
-        $match = new MatchAllQuery();
-        $search = $repo->createSearch()->addQuery($match);
-        $iterator = $repo->execute($search);
+        $repository = $this->getManager()->getRepository('AcmeBarBundle:Place');
+        $document = $repository->find('foo');
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
+        $this->assertInstanceOf(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Place',
+            $document
+        );
 
-        foreach ($iterator as $document) {
-            $category = $document->category;
-
-            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $category);
-            $this->assertTrue($category->count() == 0);
-        }
+        $this->assertNull($document->getAddress());
     }
 }
