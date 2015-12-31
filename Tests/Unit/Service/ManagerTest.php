@@ -19,13 +19,93 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      * Data provider for testBulk()
      *
      * @return array[]
-     *
-     * @todo Add more test cases to cover all logic
      */
     public function getTestBulkData()
     {
         return [
-            [
+            'index_document' => [
+                'expected' => [
+                    'body' => [
+                        [
+                            'index' => ['_index' => 'test', '_type' => 'product'],
+                        ],
+                        [
+                            'field1' => 'value1',
+                        ],
+                    ],
+                ],
+                'calls' => [
+                    [
+                        'index',
+                        'product',
+                        [
+                            'field1' => 'value1'
+                        ],
+                    ],
+                ],
+            ],
+            'index_document_with_id' => [
+                'expected' => [
+                    'body' => [
+                        [
+                            'index' => ['_index' => 'test', '_type' => 'product', '_id' => 'foo'],
+                        ],
+                        [
+                            'field1' => 'value1',
+                        ],
+                    ],
+                ],
+                'calls' => [
+                    [
+                        'index',
+                        'product',
+                        [
+                            '_id' => 'foo',
+                            'field1' => 'value1'
+                        ],
+                    ],
+                ],
+            ],
+            'create_document' => [
+                'expected' => [
+                    'body' => [
+                        [
+                            'create' => ['_index' => 'test', '_type' => 'product'],
+                        ],
+                        [
+                            'field1' => 'value1',
+                        ],
+                    ],
+                ],
+                'calls' => [
+                    [
+                        'create',
+                        'product',
+                        [
+                            'field1' => 'value1'
+                        ],
+                    ],
+                ],
+            ],
+            'delete_document' => [
+                'expected' => [
+                    'body' => [
+                        [
+                            'delete' => ['_index' => 'test', '_type' => 'product', '_id' => 'foo'],
+                        ],
+                    ],
+                ],
+                'calls' => [
+                    [
+                        'delete',
+                        'product',
+                        [
+                            '_id' => 'foo',
+                        ],
+                    ],
+                ],
+            ],
+            'update_doc' => [
                 'expected' => [
                     'body' => [
                         [
@@ -48,7 +128,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
             ],
-            [
+            'update_script' => [
                 'expected' => [
                     'body' => [
                         [
