@@ -241,7 +241,7 @@ class DocumentParser
                     $alias[$type->name] = array_merge(
                         $alias[$type->name],
                         [
-                            'type' => $this->getInnerObjectType($type->class),
+                            'type' => $this->getObjectMapping($type->class)['type'],
                             'multiple' => $type->multiple,
                             'aliases' => $this->getAliases($child),
                             'namespace' => $child->getName(),
@@ -406,7 +406,6 @@ class DocumentParser
 
             // Inner object
             if ($type instanceof Embedded) {
-                $map['type'] = $this->getInnerObjectType($type->class);
                 $map = array_replace_recursive($map, $this->getObjectMapping($type->class));
             }
 
@@ -440,48 +439,29 @@ class DocumentParser
             return $this->objects[$namespace];
         }
 
-        $this->objects[$namespace] = $this->getRelationMapping(new \ReflectionClass($namespace));
+        $reflectionClass = new \ReflectionClass($namespace);
+
+        switch (true) {
+            case $this->reader->getClassAnnotation($reflectionClass, self::OBJECT_ANNOTATION):
+                $type = 'object';
+                break;
+            case $this->reader->getClassAnnotation($reflectionClass, self::NESTED_ANNOTATION):
+                $type = 'nested';
+                break;
+            default:
+                throw new \LogicException(
+                    sprintf(
+                        '%s should have @Object or @Nested annotation to be used as embeddable object.',
+                        $className
+                    )
+                );
+        }
+
+        $this->objects[$namespace] = [
+            'type' => $type,
+            'properties' => $this->getProperties($reflectionClass),
+        ];
 
         return $this->objects[$namespace];
-    }
-
-    /**
-     * Returns relation mapping by its reflection.
-     *
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array|null
-     */
-    private function getRelationMapping(\ReflectionClass $reflectionClass)
-    {
-        if ($this->reader->getClassAnnotation($reflectionClass, self::OBJECT_ANNOTATION)
-            || $this->reader->getClassAnnotation($reflectionClass, self::NESTED_ANNOTATION)
-        ) {
-            return ['properties' => $this->getProperties($reflectionClass)];
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns inner object type by it's class name.
-     *
-     * @param string $className
-     *
-     * @return null|string
-     */
-    private function getInnerObjectType($className)
-    {
-        $reflection = new \ReflectionClass($this->finder->getNamespace($className));
-
-        if ($this->reader->getClassAnnotation($reflection, self::OBJECT_ANNOTATION)) {
-            return 'object';
-        }
-
-        if ($this->reader->getClassAnnotation($reflection, self::NESTED_ANNOTATION)) {
-            return 'nested';
-        }
-
-        return null;
     }
 }
