@@ -223,7 +223,11 @@ class DocumentParser
                     case $property->isProtected():
                     case $property->isPrivate():
                         $propertyType = 'private';
-                        $alias[$type->name]['methods'] = $this->getMutatorMethods($reflectionClass, $name, $type->type);
+                        $alias[$type->name]['methods'] = $this->getMutatorMethods(
+                            $reflectionClass,
+                            $name,
+                            $type instanceof Property ? $type->type : null
+                        );
                         break;
                     default:
                         $message = sprintf(

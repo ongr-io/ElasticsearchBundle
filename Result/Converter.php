@@ -101,7 +101,6 @@ class Converter
                             $value = new ObjectIterator($this, $value, $aliases[$name]);
                         } else {
                             if (!isset($value)) {
-                                $value = new ObjectIterator($this, $value, $aliases[$name]);
                                 break;
                             }
                             $value = $this->assignArrayToObject(
