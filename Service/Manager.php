@@ -695,6 +695,16 @@ class Manager
     }
 
     /**
+     * Clears scroll.
+     *
+     * @param string $scrollId
+     */
+    public function clearScroll($scrollId)
+    {
+        $this->getClient()->clearScroll(['scroll_id' => $scrollId]);
+    }
+
+    /**
      * Resolves type name by class name.
      *
      * @param string $className

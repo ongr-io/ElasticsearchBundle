@@ -99,6 +99,17 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
+     * Destructor.
+     */
+    public function __destruct()
+    {
+        // Clear scroll if initialized
+        if ($this->isScrollable()) {
+            $this->manager->clearScroll($this->scrollId);
+        }
+    }
+
+    /**
      * @return array
      */
     protected function getAggregations()
