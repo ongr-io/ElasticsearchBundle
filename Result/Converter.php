@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use ONGR\ElasticsearchBundle\Collection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Service\Manager;
 
@@ -154,7 +155,7 @@ class Converter
                 if (array_key_exists('aliases', $alias)) {
                     $new = [];
                     if ($alias['multiple']) {
-                        $this->isTraversable($value);
+                        $this->isCollection($aliases[$name]['propertyName'], $value);
                         foreach ($value as $item) {
                             $this->checkVariableType($item, [$alias['namespace']]);
                             $new[] = $this->convertToArray($item, $alias['aliases']);
@@ -199,21 +200,22 @@ class Converter
     }
 
     /**
-     * Check if object is traversable, throw exception otherwise.
+     * Check if value is instance of Collection.
      *
-     * @param mixed $value
-     *
-     * @return bool
+     * @param string $property
+     * @param mixed  $value
      *
      * @throws \InvalidArgumentException
      */
-    private function isTraversable($value)
+    private function isCollection($property, $value)
     {
-        if (!(is_array($value) || (is_object($value) && $value instanceof \Traversable))) {
-            throw new \InvalidArgumentException("Variable isn't traversable, although field is set to multiple.");
-        }
+        if (!$value instanceof Collection) {
+            $got = is_object($value) ? get_class($value) : gettype($value);
 
-        return true;
+            throw new \InvalidArgumentException(
+                sprintf('Value of "%s" property must be an instance of Collection, got %s.', $property, $got)
+            );
+        }
     }
 
     /**

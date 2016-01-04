@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Collection;
 use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
@@ -94,4 +95,9 @@ class Product
      * )
      */
     public $tokenPiecesCount;
+
+    public function __construct()
+    {
+        $this->relatedCategories = new Collection();
+    }
 }

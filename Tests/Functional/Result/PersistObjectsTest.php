@@ -55,7 +55,6 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $category2 = new CategoryObject();
         $category2->title = 'Baz Category';
 
-        /** @var Product $product */
         $product = new Product();
         $product->id = 'foo';
         $product->title = 'Test Document';

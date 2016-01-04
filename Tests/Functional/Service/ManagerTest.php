@@ -160,7 +160,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         // Case #1: a single link is set, although field is set to multiple.
         $product = new Product();
         $product->relatedCategories = new CategoryObject();
-        $out[] = [$product, "Variable isn't traversable, although field is set to multiple."];
+        $out[] = [$product, "must be an instance of Collection"];
 
         // Case #2: invalid type of object is set to the field.
         $product = new Product;

@@ -285,7 +285,8 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $result = $repo->find(123);
 
-        $this->assertEquals(get_object_vars($product), get_object_vars($result));
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product', $result);
+        $this->assertEquals($product->getId(), $result->getId());
     }
 
     /**

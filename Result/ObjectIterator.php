@@ -46,8 +46,12 @@ class ObjectIterator extends Collection
         $this->rawObjects = $objects;
         $this->alias = $alias;
 
+        $callback = function ($v) {
+            return null;
+        };
+
         // Pass array with available keys and no values
-        parent::__construct(array_map(function ($v) { return null; }, $objects));
+        parent::__construct(array_map($callback, $objects));
     }
 
     /**
