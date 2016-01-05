@@ -60,6 +60,23 @@ Zane Heidenreich IV
 Hattie Shields MD
 ```
 
+### Getting Document Score
+
+In most cases Elasticsearch returns result score (`_score` field) for each document.
+As this score might be different per search it's not treated as document field and
+cannot be associated with document. You can get document's score from results iterator
+while iterating:
+
+```php
+$results = $repository->execute($search);
+
+foreach ($results as $document) {
+    echo $document->title, $results->getDocumentScore();
+}
+```
+
+Example above prints titles of all documents following search score.
+
 #### Important notice
 
 `DocumentIterator` doesn't cache or store generated document object. `Converter` directly returns the instance after it's requested and will generate again if it will be requested.
