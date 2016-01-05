@@ -48,17 +48,22 @@ In the managers configuration `mappings` is optional. If there are no mappings d
 Lets start with a document class example.
 ```php
 // src/AppBundle/Document/Content.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_id")
+     */
+    public $id;
 
     /**
      * @ES\Property(type="string")
@@ -66,9 +71,6 @@ class Content
     public $title;
 }
 ```
-
-> You can use `DocumentTrait` trait to quickly add support for meta fields.
-
 
 #### Document annotation configuration
 
@@ -84,12 +86,6 @@ e.g. `@ES\Document(type="content", _ttl={"enabled": true, "default": "1d"})`
 
 > You can use time units specified in `elasticsearch documentation`. ESB parses it if needed, e.g. for type mapping update.
 
-##### DocumentTrait
-
-`DocumentTrait` provides support for Elasticsearch meta fields (`_id`, `_source`,
-`_ttl`, `_parent`, etc ). `DocumentTrait` has all parameters and setters already defined for you.
-
-
 ### Document properties annotations
 
 To define type properties there is `@ES\Property` annotation. The only required
@@ -104,14 +100,13 @@ To add custom settings to property like analyzer it has to be included in `optio
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
+    // ...
 
     /**
      * @ES\Property(
@@ -132,18 +127,16 @@ It is a little different to define nested and object types. For this user will n
 
 ```php
 // src/AppBundle/Document/Content.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
-
     /**
      * @ES\Property(type="string")
      */
@@ -163,6 +156,7 @@ And the content object will look like:
 
 ```php
 // src/AppBundle/Document/ContentMetaObject.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -239,4 +233,38 @@ To define object or nested fields use `@ES\Embedded` annotation. In the objects 
 
 > Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
 
-More info about mapping is in the [elasticsearch mapping documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
+### Meta-Fields Annotation
+
+There is a special `@MetaField` annotation to handle Elasticsearch [meta-fields][2]
+like `_id`, `_parent` and others. None of these are mandatory, but in most cases
+you would like to know document's ID. This is how you could define a property for it:
+
+```php
+// src/AppBundle/Document/Content.php
+
+namespace AppBundle/Document;
+
+use ONGR\ElasticsearchBundle\Annotation as ES;
+
+/**
+ * @ES\Document(type="content")
+ */
+class Content
+{
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_id")
+     */
+    public $id;
+
+    // ...
+}
+```
+
+The same way you can define properties for any other supported meta-field. 
+
+> More information about mapping can be found in the [Elasticsearch mapping documentation][1].
+
+[1]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
+[2]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html

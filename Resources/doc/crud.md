@@ -6,17 +6,22 @@ For all steps below we assume that there is an `AppBundle` with the `Content` do
 
 ```php
 // src/AppBundle/Document/Content.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_id")
+     */
+    public $id;
 
     /**
      * @ES\Property(type="string")
@@ -79,8 +84,6 @@ $manager->persist($content);
 $manager->commit();
 
 ```
-
-> id field comes from `DocumentTrait`. It's optional, in addition you can also use `ttl`, 'parent' and other special fields.
 
 ## Update a document
 
