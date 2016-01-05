@@ -89,8 +89,7 @@ $manager->commit();
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
-$content = $repo->find(5);
+$content = $manager->find('AppBundle:Content', 5);
 $content->title = 'changed Acme title';
 $manager->persist($content);
 $manager->commit();
@@ -136,6 +135,15 @@ $response = $repo->update(1, ['title' => 'new title'], null, ['fields' => 'title
 
 
 ## Delete a document
+
+Document removal can be performed similar to create or update action:
+
+```php
+$manager->remove($content);
+$manager->commit();
+```
+
+Alternatively you can remove document by ID (requires to have repository service):
 
 ```php
 

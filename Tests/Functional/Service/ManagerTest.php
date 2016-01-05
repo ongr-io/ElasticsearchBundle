@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\WithoutId;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
@@ -318,5 +319,33 @@ class ManagerTest extends AbstractElasticsearchTestCase
         );
 
         $this->assertCount(5, $result);
+    }
+
+    /**
+     * Test for remove().
+     */
+    public function testRemove()
+    {
+        $manager = $this->getManager('foo');
+
+        $product = $manager->find('AcmeBarBundle:Product', 1);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product', $product);
+
+        $manager->remove($product);
+        $manager->commit();
+
+        $product = $manager->find('AcmeBarBundle:Product', 1);
+        $this->assertNull($product);
+    }
+
+    /**
+     * Test for remove() in case document has no annotation for ID field.
+     *
+     * @expectedException \LogicException
+     * @expectedExceptionMessage must have @MetaField annotation for "_id"
+     */
+    public function testRemoveException()
+    {
+        $this->getManager()->remove(new WithoutId());
     }
 }

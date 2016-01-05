@@ -132,13 +132,17 @@ class Converter
      *
      * @param mixed $object
      * @param array $aliases
+     * @param array $fields
      *
      * @return array
      */
-    public function convertToArray($object, $aliases = [])
+    public function convertToArray($object, $aliases = [], $fields = [])
     {
         if (empty($aliases)) {
             $aliases = $this->getAlias($object);
+            if (count($fields) > 0) {
+                $aliases = array_intersect_key($aliases, array_flip($fields));
+            }
         }
 
         $array = [];
