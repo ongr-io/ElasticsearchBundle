@@ -88,7 +88,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         // Multiple urls.
         $product = new Product();
-        $product->setId(1);
+        $product->id = 1;
         $product->title = 'test';
         $product->category = $category;
 
@@ -213,9 +213,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager = $this->repository->getManager();
 
         $product = new Product();
-        $product->setId('testId');
-        $product->setTtl(500000);
-        $product->setScore('1.0');
+        $product->id = 'testId';
+        $product->ttl = 500000;
         $product->title = 'acme';
 
         $manager->persist($product);
@@ -223,8 +222,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         $actualProduct = $this->repository->find('testId');
 
-        $this->assertEquals($product->getId(), $actualProduct->getId());
-        $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
+        $this->assertEquals($product->id, $actualProduct->id);
+        $this->assertLessThan($product->ttl, $actualProduct->ttl);
     }
 
     /**
@@ -236,7 +235,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager = $this->repository->getManager();
 
         $product = new Product();
-        $product->setId('testId');
+        $product->id = 'testId';
         $product->released = new \DateTime('2100-01-02 03:04:05.889342');
 
         $manager->persist($product);

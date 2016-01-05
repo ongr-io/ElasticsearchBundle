@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * Testing document for representing media.
@@ -21,7 +20,12 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  */
 class Customer
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_id")
+     */
+    public $id;
 
     /**
      * Test adding raw mapping.

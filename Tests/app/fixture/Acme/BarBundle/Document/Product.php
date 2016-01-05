@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Collection;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * Product document for testing.
@@ -22,7 +21,33 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  */
 class Product
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_id")
+     */
+    public $id;
+
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_score")
+     */
+    public $score;
+
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_parent")
+     */
+    public $parent;
+
+    /**
+     * @var string
+     *
+     * @ES\MetaField(name="_ttl")
+     */
+    public $ttl;
 
     /**
      * @var string
