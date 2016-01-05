@@ -186,19 +186,41 @@ class ContentMetaObject
 ```
 
 ##### Multiple objects
-As shown in the example, by default only a single object will be saved in the document. If there is necessary to store a multiple objects (array), add `multiple=true`. While initiating a document with multiple items you can simply set an array or any kind of traversable.
+
+As shown in the example, by default only a single object will be saved in the document.
+If there is necessary to store a multiple objects (array), add `multiple=true`. While
+initiating a document with multiple items you need to initialize property with new instance of `Collection`.
 
 ```php
+// src/AppBundle/Document/Content.php
 
-//....
+namespace AppBundle/Document;
+
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Collection;
+
 /**
- * @var ContentMetaObject
- *
- * @ES\Embedded(class="AppBundle:ContentMetaObject", multiple="true")
+ * @ES\Document(type="content")
  */
-public $metaObject;
-//....
+class Content
+{
+    // ...
 
+    /**
+     * @var ContentMetaObject[]|Collection
+     *
+     * @ES\Embedded(class="AppBundle:ContentMetaObject", multiple="true")
+     */
+    public $metaObjects;
+    
+    /**
+     * Initialize collection.
+     */
+    public function __construct()
+    {
+        $this->metaObjects = new Collection();
+    }
+}
 ```
 
 Insert action will look like this:
@@ -206,7 +228,8 @@ Insert action will look like this:
 
 <?php
 $content = new Content();
-$content->properties = [new ContentMetaObject(), new ContentMetaObject()];
+$content->metaObjects[] = new ContentMetaObject();
+$content->metaObjects[] = new ContentMetaObject();
 
 $manager->persist($content);
 $manager->commit();
