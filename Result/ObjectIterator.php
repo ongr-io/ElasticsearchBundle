@@ -11,33 +11,47 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use ONGR\ElasticsearchBundle\Collection;
+
 /**
  * ObjectIterator class.
  */
-class ObjectIterator extends AbstractResultsIterator
+class ObjectIterator extends Collection
 {
+    /**
+     * @var Converter
+     */
+    private $converter;
+
     /**
      * @var array Aliases information.
      */
     private $alias;
 
     /**
-     * @var Converter
+     * @var array
      */
-    private $objectConverter;
+    private $rawObjects;
 
     /**
      * Using part of abstract iterator functionality only.
      *
      * @param Converter $converter
-     * @param array     $documents
+     * @param array     $objects
      * @param array     $alias
      */
-    public function __construct($converter, $documents, $alias)
+    public function __construct($converter, $objects, $alias)
     {
-        $this->documents = $documents;
+        $this->converter = $converter;
+        $this->rawObjects = $objects;
         $this->alias = $alias;
-        $this->objectConverter = $converter;
+
+        $callback = function ($v) {
+            return null;
+        };
+
+        // Pass array with available keys and no values
+        parent::__construct(array_map($callback, $objects));
     }
 
     /**
@@ -45,7 +59,7 @@ class ObjectIterator extends AbstractResultsIterator
      */
     protected function convertDocument(array $document)
     {
-        return $this->objectConverter->assignArrayToObject(
+        return $this->converter->assignArrayToObject(
             $document,
             new $this->alias['namespace'](),
             $this->alias['aliases']
@@ -53,12 +67,20 @@ class ObjectIterator extends AbstractResultsIterator
     }
 
     /**
-     * Return current document count.
-     *
-     * @return int
+     * {@inheritdoc}
      */
-    public function count()
+    public function current()
     {
-        return count($this->documents);
+        $value = parent::current();
+
+        // Generate objects on demand
+        if ($value === null && $this->valid()) {
+            $key = $this->key();
+            $value = $this->convertDocument($this->rawObjects[$key]);
+            $this->rawObjects[$key] = null;
+            $this->offsetSet($key, $value);
+        }
+
+        return $value;
     }
 }
