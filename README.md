@@ -6,7 +6,7 @@ professional [elasticsearch](https://www.elastic.co/products/elasticsearch) inte
 
 * Supported by [ONGR.io](http://ongr.io) development team.
 * Uses the official [elasticsearch-php](https://github.com/elastic/elasticsearch-php) client.
-* Ensures full integration with Symfony 2 framework.
+* Ensures full integration with Symfony framework.
 
 Technical goodies:
 
