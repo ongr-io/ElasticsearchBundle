@@ -64,6 +64,37 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     }
 
     /**
+     * Tests creating index in case of existing this index. Configuration from tests yaml.
+     *
+     * @param string $managerName
+     * @param array  $arguments
+     * @param array  $options
+     *
+     * @dataProvider getTestExecuteData
+     */
+    public function testExecuteWithIndexExistence($managerName, $arguments, $options)
+    {
+        $manager = $this->getManager($managerName);
+
+        if (!$manager->indexExists()) {
+            $manager->createIndex();
+        }
+
+        try {
+            $arguments['--if-not-exists'] = null;
+            $this->runIndexCreateCommand($managerName, $arguments, $options);
+        } catch (\Exception $ex) {
+            $message = $ex->getMessage();
+            $expectedClassName = 'Elasticsearch\\Common\\Exceptions\\BadRequest400Exception';
+            $isExpectedException = $ex instanceof $expectedClassName;
+            if ($isExpectedException) {
+                $this->assertNotContains('IndexAlreadyExistsException', $message);
+            }
+        }
+        $manager->dropIndex();
+    }
+
+    /**
      * Tests if right exception is thrown when manager is read only.
      *
      * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
