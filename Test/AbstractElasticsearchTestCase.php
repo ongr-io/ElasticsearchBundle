@@ -61,7 +61,10 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      */
     protected function setUp()
     {
-        $this->getContainer();
+        foreach ($this->getDataArray() as $manager => $data) {
+            // Create index and populate data
+            $this->getManager($manager);
+        }
     }
 
     /**
@@ -78,9 +81,9 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      * Can be overwritten in child class to populate elasticsearch index with the data.
      *
      * Example:
-     *      "managername" =>
+     *      "manager_name" =>
      *      [
-     *          'acmetype' => [
+     *          'type_name' => [
      *              [
      *                  '_id' => 1,
      *                  'title' => 'foo',
@@ -124,7 +127,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      *
      * @param Manager $manager
      */
-    protected function ignoreVersions(Manager $manager)
+    private function ignoreVersions(Manager $manager)
     {
         $currentVersion = $manager->getVersionNumber();
         $ignore = null;
@@ -165,7 +168,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      * @param Manager $manager
      * @param array   $data
      */
-    protected function populateElasticsearchWithData($manager, array $data)
+    private function populateElasticsearchWithData($manager, array $data)
     {
         if (!empty($data)) {
             foreach ($data as $type => $documents) {
@@ -204,7 +207,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      */
     protected function getContainer($reinitialize = false, $kernelOptions = [])
     {
-        if (!$this->container || $reinitialize) {
+        if ($this->container === null || $reinitialize) {
             static::bootKernel($kernelOptions);
             $this->container = static::$kernel->getContainer();
         }
@@ -215,41 +218,35 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * Returns manager instance with injected connection if does not exist creates new one.
      *
-     * @param string $name        Manager name.
-     * @param bool   $createIndex Create index or not.
-     * @param bool   $noMapping   Create index with mapping or not.
+     * @param string $name Manager name
      *
      * @return Manager
      *
      * @throws \LogicException
      */
-    protected function getManager($name = 'default', $createIndex = true, $noMapping = false)
+    protected function getManager($name = 'default')
     {
         $serviceName = sprintf('es.manager.%s', $name);
 
         // Looks for cached manager.
         if (array_key_exists($name, $this->managers)) {
-            $manager = $this->managers[$name];
+            $this->ignoreVersions($this->managers[$name]);
+
+            return $this->managers[$name];
         } elseif ($this->getContainer()->has($serviceName)) {
             /** @var Manager $manager */
-            $manager = $this
-                ->getContainer()
-                ->get($serviceName);
+            $manager = $this->getContainer()->get($serviceName);
             $this->managers[$name] = $manager;
         } else {
             throw new \LogicException(sprintf("Manager '%s' does not exist", $name));
         }
 
         $this->ignoreVersions($manager);
+        $manager->dropAndCreateIndex();
 
-        // Drops and creates index.
-        if ($createIndex) {
-            $manager->dropAndCreateIndex($noMapping);
-        }
-
-        // Populates elasticsearch index with data.
+        // Populates elasticsearch index with data
         $data = $this->getDataArray();
-        if ($createIndex && isset($data[$name]) && !empty($data[$name])) {
+        if (!empty($data[$name])) {
             $this->populateElasticsearchWithData($manager, $data[$name]);
         }
 

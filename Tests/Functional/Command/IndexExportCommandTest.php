@@ -200,8 +200,6 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     public function testIndexExport($options, $expectedResults)
     {
-        $this->getManager($options['--manager']);
-
         $app = new Application();
         $app->add($this->getExportCommand());
 

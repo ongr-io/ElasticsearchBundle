@@ -411,7 +411,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
         $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $this->assertEquals($manager, $repository->getManager());
+        $this->assertSame($manager, $repository->getManager());
     }
 
     /**
