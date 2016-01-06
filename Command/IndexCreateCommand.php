@@ -41,7 +41,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             ->addOption('no-mapping', 'nm', InputOption::VALUE_NONE, 'Do not include mapping')
             ->addOption(
                 'if-not-exists',
-                null,
+                'ine',
                 InputOption::VALUE_NONE,
                 'Don\'t trigger an error, when the index already exists'
             );
