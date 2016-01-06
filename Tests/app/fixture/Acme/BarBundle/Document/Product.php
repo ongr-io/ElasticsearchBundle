@@ -31,13 +31,6 @@ class Product
     /**
      * @var string
      *
-     * @ES\MetaField(name="_score")
-     */
-    public $score;
-
-    /**
-     * @var string
-     *
      * @ES\MetaField(name="_parent")
      */
     public $parent;

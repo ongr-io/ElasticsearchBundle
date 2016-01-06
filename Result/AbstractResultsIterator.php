@@ -292,6 +292,24 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
+     * Returns score of current hit.
+     *
+     * @return int
+     */
+    public function getDocumentScore()
+    {
+        if (!$this->valid()) {
+            throw new \LogicException('Document score is available only while iterating over results.');
+        }
+
+        if (!isset($this->documents[$this->key]['_score'])) {
+            return null;
+        }
+
+        return $this->documents[$this->key]['_score'];
+    }
+
+    /**
      * Converts raw array to document object or array, depends on iterator type.
      *
      * @param array $document

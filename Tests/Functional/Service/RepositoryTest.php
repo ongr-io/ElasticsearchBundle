@@ -11,13 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
-use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\Service\Manager;
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class RepositoryTest extends AbstractElasticsearchTestCase
