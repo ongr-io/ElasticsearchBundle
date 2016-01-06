@@ -287,7 +287,7 @@ class Manager
 
         if (!isset($data['_id'])) {
             throw new \LogicException(
-                'In order to use remove() method document class must have @MetaField annotation for "_id" field.'
+                'In order to use remove() method document class must have property with @Id annotation.'
             );
         }
 

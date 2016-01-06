@@ -24,21 +24,14 @@ class Product
     /**
      * @var string
      *
-     * @ES\MetaField(name="_id")
+     * @ES\Id()
      */
     public $id;
 
     /**
      * @var string
      *
-     * @ES\MetaField(name="_parent")
-     */
-    public $parent;
-
-    /**
-     * @var string
-     *
-     * @ES\MetaField(name="_ttl")
+     * @ES\Ttl()
      */
     public $ttl;
 

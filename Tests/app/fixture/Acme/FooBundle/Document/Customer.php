@@ -23,7 +23,7 @@ class Customer
     /**
      * @var string
      *
-     * @ES\MetaField(name="_id")
+     * @ES\Id()
      */
     public $id;
 

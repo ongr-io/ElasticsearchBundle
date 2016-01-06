@@ -342,7 +342,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
      * Test for remove() in case document has no annotation for ID field.
      *
      * @expectedException \LogicException
-     * @expectedExceptionMessage must have @MetaField annotation for "_id"
+     * @expectedExceptionMessage must have property with @Id annotation
      */
     public function testRemoveException()
     {
