@@ -8,12 +8,12 @@ Command name: `ongr:es:index:create`
 
 Creates a new index in Elasticsearch (including with mapping if not skipped) for the specified manager (see: [configuration chapter](configuration.md)).
 
-|     Options    | Short name |             Value            |                                      What it does                                      |
-|:--------------:|:----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-|   `--manager`  |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-|    `--time`    |    `-t`    |        *not required*        | Creates an index with current timestamp appended to its name.                          |
-|    `--alias`   |    `-a`    |        *not required*        | Creates an alias with index name specified in the configuration.                       |
-| `--no-mapping` |    `-nm`   |        *not required*        | Skips the mapping configuration on index create action.                                |
+|     Options    |             Value            |                                      What it does                                      |
+|:--------------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
+| `--manager`    | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
+| `--time`       | *none*        | Creates an index with current timestamp appended to its name.                          |
+| `--alias`      | *none*        | Creates an alias with index name specified in the configuration.                       |
+| `--no-mapping` | *none*        | Skips the mapping configuration on index create action.                                |
 
 If you want to use timestabale indexes it's very handy to use it together with `-a` option. `-t` adds a date as the suffix and `-a` adds an alias as defined index name in manager configuration. So the code will work fine without any configuration changes, you dont need to do any other actions.
 
@@ -26,10 +26,10 @@ Command name: `ongr:es:index:drop`
 
 Drops the index for the specified manager.
 
-|     Options    | Short name |             Value            |                                      What it does                                      |
-|:--------------:|:----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-|   `--manager`  |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-|    `--force`    |    `-f`    |        *not required*        | This flag is mandatory for the command to work.  
+| Options     |             Value            |                                      What it does                                      |
+|:-----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
+| `--manager` | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
+| `--force`   | *none*                       | This flag is mandatory for the command to work.  
 
 
 ## Import index
@@ -39,11 +39,10 @@ Command name: `ongr:es:index:import <file-path>`
 Imports data to the selected index. We are using custom `JSON` notation to specify data inside the file for faster handling. Please keep the structure as it is described below.
 
 
-|     Options          | Short name |             Value            |                                      What it does                                      |
-|:--------------------:|:----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-|   `--manager`        |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-|    `--raw`           |    *no value*    |        *not required*        | Import data type
-|    `--bulk-size`     |    `-b`    |        *Bulk size, default 1000*        | The document frequency to flush the index on import.
+| Options       |             Value            |                                      What it does                                      |
+|:-------------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
+| `--manager`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
+| `--bulk-size` | *Bulk size, default 1000*    | The document frequency to flush the index on import.
 
 So here's a simple example how the data looks like:
 
@@ -72,11 +71,11 @@ Command name: `ongr:es:index:export <file-path>`
 Exports data from Elasticsearch index in a json format.
 
 
-|     Options          | Short name |             Value            |                                      What it does                                      |
-|:--------------------:|:----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-|   `--manager`        |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-|    `--chunk`     |    *no value*     |        *Chunk size, default 500*        | Specifies the size of each chunk to be received from Elasticsearch. This can be changed for performance reasons.
-|    `--types`     |    *no value*    |        *Elasticsearch index type names*       | Selected types to export, if no specified will export all index.
+| Options     |             Value            |                                      What it does                                      |
+|:-----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
+| `--manager` | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
+| `--chunk`   | *Chunk size, default 500*      | Specifies the size of each chunk to be received from Elasticsearch. This can be changed for performance reasons.
+| `--types`   | *Elasticsearch index type names* | Selected types to export, if no specified will export all index.
 
 > Index export generates the same `JSON` format as specified in the import chapter.
 
@@ -86,11 +85,11 @@ Command name: `ongr:es:mapping:update`
 
 Updates elasticsearch index mapping. See more info at ([official elastic docs](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html#updating-a-mapping)).
 
-|     Options    | Short name |             Value            |                                      What it does                                      |
-|:--------------:|:----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-|   `--manager`  |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-|    `--force`    |    `-f`    |        *not required*        | This flag is mandatory for the command to work.
-|    `--types`     |    *no value*    |        *Elasticsearch index type names*       | Selected types to update, if no specified will update all index.
+| Options     |             Value            |                                      What it does                                      |
+|:-----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
+| `--manager` | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
+| `--force`   | *none*                       | This flag is mandatory for the command to work.
+| `--types`   | *Elasticsearch index type names* | Selected types to update, if no specified will update all index.
 
 
 
@@ -100,6 +99,6 @@ Command name: `ongr:es:cache:clear`
 
 Clears elasticsearch document storage cache. See more info at ([official elastic docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html)).
 
-|     Options    | Short name |             Value            |                                      What it does                                      |
-|:--------------:|:----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-|   `--manager`  |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used.
+| Options     |             Value              |                                      What it does                                      |
+|:-----------:|:------------------------------:|:--------------------------------------------------------------------------------------:|
+| `--manager` | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used.

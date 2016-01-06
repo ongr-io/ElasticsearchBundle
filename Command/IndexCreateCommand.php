@@ -38,7 +38,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                 InputOption::VALUE_NONE,
                 'If the time suffix is used, its nice to create an alias to the configured index name.'
             )
-            ->addOption('no-mapping', 'nm', InputOption::VALUE_NONE, 'Do not include mapping');
+            ->addOption('no-mapping', null, InputOption::VALUE_NONE, 'Do not include mapping');
     }
 
     /**
