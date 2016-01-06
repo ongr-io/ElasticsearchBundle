@@ -67,28 +67,27 @@ class QueryEndpoint extends AbstractSearchEndpoint implements OrderedNormalizerI
     public function normalize(NormalizerInterface $normalizer, $format = null, array $context = [])
     {
         $isRelevant = false;
+        $builder = $this->getBuilder();
 
         if ($this->hasReference('filtered_query')) {
             /** @var FilteredQuery $query */
             $query = $this->getReference('filtered_query');
-            if ($this->getBuilder()) {
-                $query->setQuery($this->getBuilder());
+            if ($builder) {
+                $query->setQuery($builder);
             }
-            $this->setBuilder($query);
+            $builder = $query;
             $isRelevant = true;
         }
 
-        if ($this->getBuilder()) {
-            if (method_exists($this->getBuilder(), 'setParameters') && count($this->getParameters()) > 0) {
-                $this
-                    ->getBuilder()
-                    ->setParameters($this->processArray($this->getBuilder()->getParameters()));
+        if ($builder) {
+            if (method_exists($builder, 'setParameters') && count($this->getParameters()) > 0) {
+                $builder->setParameters($this->processArray($builder->getParameters()));
             }
 
             $isRelevant = true;
         }
 
-        return $isRelevant ? [$this->getBuilder()->getType() => $this->getBuilder()->toArray()] : null;
+        return $isRelevant ? [$builder->getType() => $builder->toArray()] : null;
     }
 
     /**
