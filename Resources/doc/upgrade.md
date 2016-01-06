@@ -14,7 +14,7 @@ UPGRADE FROM 0.x to 1.0
 * Removed `createDocument()` from `Repository` class. To create documents use normal object creation way with `new`.
 * Mapping annotations were simplified. In the `Document` annotations `Skip` and `Inherit` annotations were removed. In `Property` there are only `type`, `name` and `options` attributes left. Fields containing `Object` and `Nested` now must be defined using `Embedded` annotation. From now on all custom fields has to be defined in `options` (e.g. index_analyzer). See [mapping chapter](mapping.md) for more info.
 * `AbstractDocument` and `DocumentInterface` were removed. Now any class with correct annotations can be used as a document.
-* `@MetaField` annotation was introduced to define Elasticsearch meta-fields like `_id`, `_score`, `_parent`, etc.
+* `@Id`, `@Ttl`, `@ParentDocument` annotations were introduced to define Elasticsearch meta-fields like `_id`, `_ttl`, `_parent`.
 * From now on `Repository` always represents single document. To execute search on multiple types use `Manager`.
 
 #### Changes which should not impact the functionality

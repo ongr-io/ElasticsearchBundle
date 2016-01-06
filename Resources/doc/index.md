@@ -6,6 +6,7 @@ Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsea
 
 #### Usage
 * [Mapping explained](mapping.md)
+* [Using Meta-Fields](meta_fields.md)
 * [Configuration](configuration.md)
 * [Console commands](commands.md)
 * [How to do a simple CRUD actions](crud.md)

@@ -16,6 +16,7 @@ use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
+use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 
 /**
@@ -23,12 +24,16 @@ use ONGR\ElasticsearchBundle\Annotation\Property;
  */
 class DocumentParser
 {
-    const META_FIELD_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\MetaField';
     const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
     const EMBEDDED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Embedded';
     const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
     const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Object';
     const NESTED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Nested';
+
+    // Meta fields
+    const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
+    const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
+    const TTL_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Ttl';
 
     /**
      * @var Reader Used to read document annotations.
@@ -81,13 +86,10 @@ class DocumentParser
             ->getClassAnnotation($document, self::DOCUMENT_ANNOTATION);
 
         if ($class !== null) {
-            if ($class->parent !== null) {
-                $parent = $this->getDocumentType($class->parent);
-            } else {
-                $parent = null;
-            }
+            $fields = [];
 
             $properties = $this->getProperties($document);
+            $aliases = $this->getAliases($document, $fields);
 
             if ($class->type) {
                 $documentType = $class->type;
@@ -101,10 +103,10 @@ class DocumentParser
                 'fields' => array_filter(
                     array_merge(
                         $class->dump(),
-                        ['_parent' => $parent === null ? null : ['type' => $parent]]
+                        $fields
                     )
                 ),
-                'aliases' => $this->getAliases($document),
+                'aliases' => $aliases,
                 'objects' => $this->getObjects(),
                 'namespace' => $document->getName(),
                 'class' => $document->getShortName(),
@@ -121,7 +123,7 @@ class DocumentParser
      *
      * @return Document|null
      */
-    public function getDocumentAnnotationData($document)
+    private function getDocumentAnnotationData($document)
     {
         return $this->reader->getClassAnnotation($document, self::DOCUMENT_ANNOTATION);
     }
@@ -133,7 +135,7 @@ class DocumentParser
      *
      * @return Property|null
      */
-    public function getPropertyAnnotationData($property)
+    private function getPropertyAnnotationData($property)
     {
         $result = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
 
@@ -151,7 +153,7 @@ class DocumentParser
      *
      * @return Embedded|null
      */
-    public function getEmbeddedAnnotationData($property)
+    private function getEmbeddedAnnotationData($property)
     {
         $result = $this->reader->getPropertyAnnotation($property, self::EMBEDDED_ANNOTATION);
 
@@ -167,11 +169,29 @@ class DocumentParser
      *
      * @param \ReflectionProperty $property
      *
-     * @return MetaField|null
+     * @return array
      */
-    public function getMetaFieldAnnotationData($property)
+    private function getMetaFieldAnnotationData($property)
     {
-        return $this->reader->getPropertyAnnotation($property, self::META_FIELD_ANNOTATION);
+        /** @var MetaField $annotation */
+        $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
+        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::PARENT_ANNOTATION);
+        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::TTL_ANNOTATION);
+
+        if ($annotation === null) {
+            return null;
+        }
+
+        $data = [
+            'name' => $annotation->getName(),
+            'settings' => $annotation->getSettings(),
+        ];
+
+        if ($annotation instanceof ParentDocument) {
+            $data['settings']['type'] = $this->getDocumentType($annotation->class);
+        }
+
+        return $data;
     }
 
     /**
@@ -188,13 +208,18 @@ class DocumentParser
      * Finds aliases for every property used in document including parent classes.
      *
      * @param \ReflectionClass $reflectionClass
+     * @param array            $metaFields
      *
      * @return array
      */
-    private function getAliases(\ReflectionClass $reflectionClass)
+    private function getAliases(\ReflectionClass $reflectionClass, array &$metaFields = null)
     {
         $reflectionName = $reflectionClass->getName();
-        if (array_key_exists($reflectionName, $this->aliases)) {
+
+        // We skip cache in case $metaFields is given. This should not affect performance
+        // because for each document this method is called only once. For objects it might
+        // be called few times.
+        if ($metaFields === null && array_key_exists($reflectionName, $this->aliases)) {
             return $this->aliases[$reflectionName];
         }
 
@@ -206,7 +231,12 @@ class DocumentParser
         foreach ($properties as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
-            $type = $type !== null ? $type : $this->getMetaFieldAnnotationData($property);
+            if ($type === null && $metaFields !== null
+                && ($metaData = $this->getMetaFieldAnnotationData($property)) !== null) {
+                $metaFields[$metaData['name']] = $metaData['settings'];
+                $type = new \stdClass();
+                $type->name = $metaData['name'];
+            }
             if ($type !== null) {
                 $alias[$type->name] = [
                     'propertyName' => $name,
@@ -320,11 +350,13 @@ class DocumentParser
     {
         $annotations = [
             'Document',
-            'MetaField',
             'Property',
             'Embedded',
             'Object',
             'Nested',
+            'Id',
+            'ParentDocument',
+            'Ttl',
         ];
 
         foreach ($annotations as $annotation) {

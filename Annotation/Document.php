@@ -27,25 +27,6 @@ final class Document implements DumperInterface
     public $type;
 
     /**
-     * Tells elasticsearch from which field to extract a document ID.
-     *
-     * @var string
-     */
-    public $idField;
-
-    /**
-     * Document parent type.
-     *
-     * @var string
-     */
-    public $parent;
-
-    /**
-     * @var array
-     */
-    public $ttl;
-
-    /**
      * @var bool
      */
     public $enabled;
@@ -76,27 +57,18 @@ final class Document implements DumperInterface
     public $dynamicDateFormats;
 
     /**
-     * @var array
-     */
-    public $timestamp;
-
-    /**
      * {@inheritdoc}
      */
     public function dump(array $exclude = [])
     {
         return array_diff_key(
             [
-                '_id' => $this->idField ? ['path' => $this->idField] : null,
-                '_parent' => $this->parent,
-                '_ttl' => $this->ttl,
                 'enabled' => $this->enabled,
                 '_all' => $this->all,
                 'dynamic' => $this->dynamic,
                 'dynamic_templates' => $this->dynamicTemplates,
                 'transform' => $this->transform,
                 'dynamic_date_formats' => $this->dynamicDateFormats,
-                '_timestamp' => $this->timestamp,
             ],
             $exclude
         );

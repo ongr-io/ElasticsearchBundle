@@ -61,7 +61,7 @@ class Content
     /**
      * @var string
      *
-     * @ES\MetaField(name="_id")
+     * @ES\Id()
      */
     public $id;
 
@@ -77,14 +77,6 @@ class Content
 - `@ES\Document(type="content")` Annotation defines that this class will represent elasticsearch type with name `content`.
 
 - `type` parameter is for type name. This parameter is optional, if there will be no parameter set Elasticsearch bundle will create a type with lowercased class name.
-
-##### Additional parameters:
-
--  **TTL (time to live)** - `_ttl={"enabled": true}` parameter with which you can enable documents to have time to live, also it you can set default time interval. To do this add `default` e.g.: `_ttl={"enabled": true, "default": "1d"}`. After time runs out document deletes itself automatically.
-
-e.g. `@ES\Document(type="content", _ttl={"enabled": true, "default": "1d"})`
-
-> You can use time units specified in `elasticsearch documentation`. ESB parses it if needed, e.g. for type mapping update.
 
 ### Document properties annotations
 
@@ -233,36 +225,9 @@ To define object or nested fields use `@ES\Embedded` annotation. In the objects 
 
 > Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
 
-### Meta-Fields Annotation
+### Meta-Fields Annotations
 
-There is a special `@MetaField` annotation to handle Elasticsearch [meta-fields][2]
-like `_id`, `_parent` and others. None of these are mandatory, but in most cases
-you would like to know document's ID. This is how you could define a property for it:
-
-```php
-// src/AppBundle/Document/Content.php
-
-namespace AppBundle/Document;
-
-use ONGR\ElasticsearchBundle\Annotation as ES;
-
-/**
- * @ES\Document(type="content")
- */
-class Content
-{
-    /**
-     * @var string
-     *
-     * @ES\MetaField(name="_id")
-     */
-    public $id;
-
-    // ...
-}
-```
-
-The same way you can define properties for any other supported meta-field. 
+Read dedicated page about meta-field annotations [here](meta_fields.md).
 
 > More information about mapping can be found in the [Elasticsearch mapping documentation][1].
 
