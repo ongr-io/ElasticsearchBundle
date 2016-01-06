@@ -37,8 +37,7 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
      */
     public function testResultWithNullObjectField()
     {
-        $repository = $this->getManager()->getRepository('AcmeBarBundle:Place');
-        $document = $repository->find('foo');
+        $document = $this->getManager()->find('AcmeBarBundle:Place', 'foo');
 
         $this->assertInstanceOf(
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Place',

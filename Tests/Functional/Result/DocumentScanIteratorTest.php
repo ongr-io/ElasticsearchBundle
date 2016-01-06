@@ -89,8 +89,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
     {
         $iterator = $this
             ->getManager()
-            ->getRepository('AcmeBarBundle:Product')
-            ->execute($search);
+            ->execute(['AcmeBarBundle:Product'], $search);
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
         $this->assertCount(4, $iterator);

@@ -58,7 +58,8 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $manager = $this->getManager('default', false);
+        $manager = $this->getManager();
+        $manager->dropIndex();
         $repo = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repo
             ->createSearch()

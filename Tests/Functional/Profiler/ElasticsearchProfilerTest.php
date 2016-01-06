@@ -69,8 +69,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     public function testGetTime()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $repository->find(3);
+        $manager->find('AcmeBarBundle:Product', 3);
 
         $this->assertGreaterThan(0.0, $this->getCollector()->getTime(), 'Time should be greater than 0ms');
     }
@@ -81,8 +80,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     public function testGetQueries()
     {
         $manager = $this->getManager();
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $repository->find(2);
+        $manager->find('AcmeBarBundle:Product', 2);
         $queries = $this->getCollector()->getQueries();
 
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
