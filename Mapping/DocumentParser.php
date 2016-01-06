@@ -16,7 +16,7 @@ use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
-use ONGR\ElasticsearchBundle\Annotation\ParentRelation;
+use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 
 /**
@@ -32,7 +32,7 @@ class DocumentParser
 
     // Meta fields
     const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
-    const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentRelation';
+    const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
     const TTL_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Ttl';
 
     /**
@@ -187,7 +187,7 @@ class DocumentParser
             'settings' => $annotation->getSettings(),
         ];
 
-        if ($annotation instanceof ParentRelation) {
+        if ($annotation instanceof ParentDocument) {
             $data['settings']['type'] = $this->getDocumentType($annotation->class);
         }
 
@@ -355,7 +355,7 @@ class DocumentParser
             'Object',
             'Nested',
             'Id',
-            'ParentRelation',
+            'ParentDocument',
             'Ttl',
         ];
 

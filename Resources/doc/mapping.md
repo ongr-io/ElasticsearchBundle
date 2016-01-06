@@ -78,14 +78,6 @@ class Content
 
 - `type` parameter is for type name. This parameter is optional, if there will be no parameter set Elasticsearch bundle will create a type with lowercased class name.
 
-##### Additional parameters:
-
--  **TTL (time to live)** - `_ttl={"enabled": true}` parameter with which you can enable documents to have time to live, also it you can set default time interval. To do this add `default` e.g.: `_ttl={"enabled": true, "default": "1d"}`. After time runs out document deletes itself automatically.
-
-e.g. `@ES\Document(type="content", _ttl={"enabled": true, "default": "1d"})`
-
-> You can use time units specified in `elasticsearch documentation`. ESB parses it if needed, e.g. for type mapping update.
-
 ### Document properties annotations
 
 To define type properties there is `@ES\Property` annotation. The only required

@@ -19,7 +19,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class ParentRelation implements MetaField
+final class ParentDocument implements MetaField
 {
     /**
      * Parent document class name.
