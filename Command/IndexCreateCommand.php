@@ -69,7 +69,8 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                     $input->getOption('manager')
                 )
             );
-            return;
+
+            return 0;
         }
 
         $manager->createIndex($input->getOption('no-mapping'));
