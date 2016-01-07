@@ -20,10 +20,10 @@ class DocumentFinderTest extends WebTestCase
     /**
      * Tests if document paths are returned for fixture bundle.
      */
-    public function testGetBundleDocumentPaths()
+    public function testGetBundleDocumentClasses()
     {
         $finder = new DocumentFinder($this->getContainer()->getParameter('kernel.bundles'));
-        $this->assertGreaterThan(0, count($finder->getBundleDocumentPaths('AcmeBarBundle')));
+        $this->assertGreaterThan(0, count($finder->getBundleDocumentClasses('AcmeBarBundle')));
     }
 
     /**
