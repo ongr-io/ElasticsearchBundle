@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person\Address;
 
 /**
  * Place document for testing.
@@ -31,9 +32,9 @@ class Place
     private $title;
 
     /**
-     * @var AddressObject
+     * @var Address
      *
-     * @ES\Embedded(class="AcmeBarBundle:AddressObject")
+     * @ES\Embedded(class="AcmeBarBundle:Person\Address")
      */
     private $address;
 
@@ -54,15 +55,15 @@ class Place
     }
 
     /**
-     * @param AddressObject|null $address
+     * @param Address|null $address
      */
-    public function setAddress(AddressObject $address = null)
+    public function setAddress(Address $address = null)
     {
         $this->address = $address;
     }
 
     /**
-     * @return AddressObject
+     * @return Address
      */
     public function getAddress()
     {

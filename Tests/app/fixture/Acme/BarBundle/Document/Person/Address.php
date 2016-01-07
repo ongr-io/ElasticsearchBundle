@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -18,7 +18,7 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
  *
  * @ES\Object
  */
-class AddressObject
+class Address
 {
     /**
      * @var string
