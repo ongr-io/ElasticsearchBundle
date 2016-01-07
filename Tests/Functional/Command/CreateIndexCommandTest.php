@@ -65,27 +65,17 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
 
     /**
      * Tests creating index in case of existing this index. Configuration from tests yaml.
-     *
-     * @param string $managerName
-     * @param array  $arguments
-     * @param array  $options
-     *
-     * @dataProvider getTestExecuteData
      */
-    public function testExecuteWhenIndexExists($managerName, $arguments, $options)
+    public function testExecuteWhenIndexExists()
     {
-        $manager = $this->getManager($managerName);
-
-        // Try to create index in prior
-        if (!$manager->indexExists()) {
-            $manager->createIndex();
-        }
+        $manager = $this->getManager();
 
         // Initialize command
         $commandName = 'ongr:es:index:create';
         $commandTester = $this->getCommandTester($commandName);
+        $options = [];
         $arguments['command'] = $commandName;
-        $arguments['--manager'] = $managerName;
+        $arguments['--manager'] = $manager->getName();
         $arguments['--if-not-exists'] = null;
 
         // Test if the command returns 0 or not
@@ -97,13 +87,11 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $expectedOutput = sprintf(
             'Index `%s` already exists in `%s` manager.',
             $manager->getIndexName(),
-            $managerName
+            $manager->getName()
         );
 
         // Test if the command output matches the expected output or not
         $this->assertStringMatchesFormat($expectedOutput . '%a', $commandTester->getDisplay());
-
-        $manager->dropIndex();
     }
 
     /**
