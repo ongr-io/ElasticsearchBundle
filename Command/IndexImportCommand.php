@@ -46,7 +46,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
             )
             ->addOption(
                 'gzip',
-                null,
+                'z',
                 InputOption::VALUE_NONE,
                 'Import a gzip file'
             );
