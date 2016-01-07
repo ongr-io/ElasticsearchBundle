@@ -27,7 +27,6 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
     public function bulkSizeProvider()
     {
         return [
-            [10, 9, 'command_import_9.json.gz'],
             [10, 9, 'command_import_9.json'],
             [10, 10, 'command_import_10.json'],
             [10, 11, 'command_import_11.json'],

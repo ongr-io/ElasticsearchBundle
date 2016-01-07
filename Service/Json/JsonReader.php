@@ -115,9 +115,9 @@ class JsonReader implements \Countable, \Iterator
     protected function getFileHandler()
     {
         if ($this->handle === null) {
-            $filename = $this->isGzip?
+            $filename = !$this->isGzip?
                 $this->filename:
-                sprintf('compress.zip://%s', $this->filename);
+                sprintf('compress.zlib://%s', $this->filename);
             $fileHandler = @fopen($filename, 'r');
 
             if ($fileHandler === false) {

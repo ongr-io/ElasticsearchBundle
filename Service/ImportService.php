@@ -87,12 +87,12 @@ class ImportService
      * @param Manager $manager
      * @param string  $filename
      * @param bool    $convertDocuments
-     * @param string   $dataType
+     * @param bool   $isGzip
      *
      * @return JsonReader
      */
-    protected function getReader($manager, $filename, $convertDocuments, $dataType)
+    protected function getReader($manager, $filename, $convertDocuments, $isGzip)
     {
-        return new JsonReader($manager, $filename, $convertDocuments, $dataType);
+        return new JsonReader($manager, $filename, $convertDocuments, $isGzip);
     }
 }
