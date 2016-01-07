@@ -16,54 +16,56 @@ use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 class DocumentFinderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Data provider for testDocumentDir tests.
+     * Data provider for testGetNamespace().
      *
      * @return array
      */
-    public function getTestData()
+    public function getTestGetNamespaceData()
     {
-        $out = [];
-
-        // Case #0.
-        $out[] = [
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
-            'AcmeBarBundle:Product',
-            true,
+        return [
+            [
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+                'AcmeBarBundle:Product'
+            ],
+            [
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person\Address',
+                'AcmeBarBundle:Person\Address'
+            ],
         ];
-
-        // Case #1.
-        $out[] = [
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
-            'AcmeBarBundle:Product',
-        ];
-
-        return $out;
     }
 
     /**
-     * Tests if correct namespace is returned.
+     * Tests for getNamespace().
      *
      * @param string $expectedNamespace
-     * @param string $document
-     * @param bool   $testPath
+     * @param string $className
      *
-     * @dataProvider getTestData
+     * @dataProvider getTestGetNamespaceData()
      */
-    public function testDocumentDir($expectedNamespace, $document, $testPath = false)
+    public function testGetNamespace($expectedNamespace, $className)
     {
-        $finder = new DocumentFinder($this->getBundles());
+        $bundles = [
+            'AcmeBarBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle'
+        ];
+        $finder = new DocumentFinder($bundles);
 
-        $this->assertEquals($expectedNamespace, $finder->getNamespace($document));
-        if ($testPath) {
-            $this->assertGreaterThan(0, count($finder->getBundleDocumentPaths('AcmeBarBundle')));
-        }
+        $this->assertEquals($expectedNamespace, $finder->getNamespace($className));
     }
 
     /**
-     * @return array
+     * Test for getBundleDocumentClasses().
      */
-    public function getBundles()
+    public function testGetBundleDocumentClasses()
     {
-        return ['AcmeBarBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle'];
+        $bundles = [
+            'AcmeBarBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle'
+        ];
+        $finder = new DocumentFinder($bundles);
+
+        $documents = $finder->getBundleDocumentClasses('AcmeBarBundle');
+
+        $this->assertGreaterThan(0, count($documents));
+        $this->assertContains('Product', $documents);
+        $this->assertContains('Person\Address', $documents);
     }
 }

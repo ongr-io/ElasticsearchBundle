@@ -74,22 +74,40 @@ class DocumentFinder
     }
 
     /**
-     * Returns bundle document paths.
+     * Returns a list of bundle document classes.
+     *
+     * Example output:
+     *
+     *     [
+     *         'Category',
+     *         'Product',
+     *         'SubDir\SomeObject'
+     *     ]
      *
      * @param string $bundle
      *
      * @return array
      */
-    public function getBundleDocumentPaths($bundle)
+    public function getBundleDocumentClasses($bundle)
     {
         $bundleReflection = new \ReflectionClass($this->getBundleClass($bundle));
 
-        return glob(
-            dirname($bundleReflection->getFileName()) .
-            DIRECTORY_SEPARATOR .
-            self::DOCUMENT_DIR .
-            DIRECTORY_SEPARATOR .
-            '*.php'
-        );
+        $documentDirectory = DIRECTORY_SEPARATOR . self::DOCUMENT_DIR . DIRECTORY_SEPARATOR;
+        $directory = dirname($bundleReflection->getFileName()) . $documentDirectory;
+
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
+        $files = new \RegexIterator($iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
+
+        $documents = [];
+
+        foreach ($files as $file => $v) {
+            $documents[] = str_replace(
+                DIRECTORY_SEPARATOR,
+                '\\',
+                substr(strstr($file, $documentDirectory), strlen($documentDirectory), -4)
+            );
+        }
+
+        return $documents;
     }
 }
