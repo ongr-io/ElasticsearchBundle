@@ -72,25 +72,37 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
      *
      * @dataProvider getTestExecuteData
      */
-    public function testExecuteWithIndexExistence($managerName, $arguments, $options)
+    public function testExecuteWhenIndexExists($managerName, $arguments, $options)
     {
         $manager = $this->getManager($managerName);
 
+        // Try to create index in prior
         if (!$manager->indexExists()) {
             $manager->createIndex();
         }
 
-        try {
-            $arguments['--if-not-exists'] = null;
-            $this->runIndexCreateCommand($managerName, $arguments, $options);
-        } catch (\Exception $ex) {
-            $message = $ex->getMessage();
-            $expectedClassName = 'Elasticsearch\\Common\\Exceptions\\BadRequest400Exception';
-            $isExpectedException = $ex instanceof $expectedClassName;
-            if ($isExpectedException) {
-                $this->assertNotContains('IndexAlreadyExistsException', $message);
-            }
-        }
+        // Initialize command
+        $commandName = 'ongr:es:index:create';
+        $commandTester = $this->getCommandTester($commandName);
+        $arguments['command'] = $commandName;
+        $arguments['--manager'] = $managerName;
+        $arguments['--if-not-exists'] = null;
+
+        // Test if the command returns 0 or not
+        $this->assertSame(
+            0,
+            $commandTester->execute($arguments, $options)
+        );
+
+        $expectedOutput = sprintf(
+            'Index `%s` already exists in `%s` manager.',
+            $manager->getIndexName(),
+            $managerName
+        );
+
+        // Test if the command output matches the expected output or not
+        $this->assertStringMatchesFormat($expectedOutput . '%a', $commandTester->getDisplay());
+
         $manager->dropIndex();
     }
 
@@ -146,13 +158,10 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
      */
     protected function runIndexCreateCommand($managerName, array $arguments = [], array $options = [])
     {
-        $app = new Application();
-        $app->add($this->getCreateCommand());
-
         // Creates index.
-        $command = $app->find('ongr:es:index:create');
-        $commandTester = new CommandTester($command);
-        $arguments['command'] = $command->getName();
+        $commandName = 'ongr:es:index:create';
+        $commandTester = $this->getCommandTester($commandName);
+        $arguments['command'] = $commandName;
         $arguments['--manager'] = $managerName;
 
         $commandTester->execute($arguments, $options);
@@ -169,5 +178,22 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $command->setContainer($this->getContainer());
 
         return $command;
+    }
+
+    /**
+     * Returns command tester.
+     * @param string commandName
+     *
+     * @return CommandTester
+     */
+    protected function getCommandTester($commandName)
+    {
+        $app = new Application();
+        $app->add($this->getCreateCommand());
+
+        $command = $app->find($commandName);
+        $commandTester = new CommandTester($command);
+
+        return $commandTester;
     }
 }
