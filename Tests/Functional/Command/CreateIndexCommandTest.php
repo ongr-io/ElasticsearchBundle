@@ -41,6 +41,41 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     }
 
     /**
+     * Tests creating index in case of existing this index. Configuration from tests yaml.
+     */
+    public function testExecuteWhenIndexExists()
+    {
+        $manager = $this->getManager();
+
+        if (!$manager->indexExists()) {
+            $manager->createIndex();
+        }
+
+        // Initialize command
+        $commandName = 'ongr:es:index:create';
+        $commandTester = $this->getCommandTester($commandName);
+        $options = [];
+        $arguments['command'] = $commandName;
+        $arguments['--manager'] = $manager->getName();
+        $arguments['--if-not-exists'] = null;
+
+        // Test if the command returns 0 or not
+        $this->assertSame(
+            0,
+            $commandTester->execute($arguments, $options)
+        );
+
+        $expectedOutput = sprintf(
+            'Index `%s` already exists in `%s` manager.',
+            $manager->getIndexName(),
+            $manager->getName()
+        );
+
+        // Test if the command output matches the expected output or not
+        $this->assertStringMatchesFormat($expectedOutput . '%a', $commandTester->getDisplay());
+    }
+
+    /**
      * Tests creating index. Configuration from tests yaml.
      *
      * @param string $managerName
@@ -115,13 +150,10 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
      */
     protected function runIndexCreateCommand($managerName, array $arguments = [], array $options = [])
     {
-        $app = new Application();
-        $app->add($this->getCreateCommand());
-
         // Creates index.
-        $command = $app->find('ongr:es:index:create');
-        $commandTester = new CommandTester($command);
-        $arguments['command'] = $command->getName();
+        $commandName = 'ongr:es:index:create';
+        $commandTester = $this->getCommandTester($commandName);
+        $arguments['command'] = $commandName;
         $arguments['--manager'] = $managerName;
 
         $commandTester->execute($arguments, $options);
@@ -138,5 +170,22 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         $command->setContainer($this->getContainer());
 
         return $command;
+    }
+
+    /**
+     * Returns command tester.
+     * @param string commandName
+     *
+     * @return CommandTester
+     */
+    protected function getCommandTester($commandName)
+    {
+        $app = new Application();
+        $app->add($this->getCreateCommand());
+
+        $command = $app->find($commandName);
+        $commandTester = new CommandTester($command);
+
+        return $commandTester;
     }
 }
