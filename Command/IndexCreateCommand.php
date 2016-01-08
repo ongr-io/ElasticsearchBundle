@@ -38,7 +38,13 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                 InputOption::VALUE_NONE,
                 'If the time suffix is used, its nice to create an alias to the configured index name.'
             )
-            ->addOption('no-mapping', null, InputOption::VALUE_NONE, 'Do not include mapping');
+            ->addOption('no-mapping', 'nm', InputOption::VALUE_NONE, 'Do not include mapping')
+            ->addOption(
+                'if-not-exists',
+                null,
+                InputOption::VALUE_NONE,
+                'Don\'t trigger an error, when the index already exists'
+            );
     }
 
     /**
@@ -53,6 +59,18 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             /** @var IndexSuffixFinder $finder */
             $finder = $this->getContainer()->get('es.client.index_suffix_finder');
             $finder->setNextFreeIndex($manager);
+        }
+
+        if ($input->getOption('if-not-exists') && $manager->indexExists()) {
+            $output->writeln(
+                sprintf(
+                    '<info>Index `<comment>%s</comment>` already exists in `<comment>%s</comment>` manager.</info>',
+                    $manager->getIndexName(),
+                    $input->getOption('manager')
+                )
+            );
+
+            return 0;
         }
 
         $manager->createIndex($input->getOption('no-mapping'));
