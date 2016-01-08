@@ -93,6 +93,6 @@ class ImportService
      */
     protected function getReader($manager, $filename, $convertDocuments, $options)
     {
-        return new JsonReader($manager, $filename, $convertDocuments, $options);
+        return new JsonReader($manager, $filename, $options, $convertDocuments);
     }
 }

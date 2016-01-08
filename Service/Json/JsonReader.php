@@ -75,10 +75,11 @@ class JsonReader implements \Countable, \Iterator
      *
      * @param Manager $manager
      * @param string  $filename
-     * @param bool    $convertDocuments
      * @param array   $options
+     * @param bool    $convertDocuments
+     *
      */
-    public function __construct($manager, $filename, $convertDocuments = true, $options)
+    public function __construct($manager, $filename, $options, $convertDocuments = true)
     {
         $this->manager = $manager;
         $this->filename = $filename;
