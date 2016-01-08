@@ -39,11 +39,12 @@ Command name: `ongr:es:index:import <file-path>`
 
 Imports data to the selected index. We are using custom `JSON` notation to specify data inside the file for faster handling. Please keep the structure as it is described below.
 
+|     Options          | Short name |             Value            |                                      What it does                                      |
+|:--------------------:|:----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
+|   `--manager`        |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
+|    `--bulk-size`     |    `-b`    |        *Bulk size, default 1000*        | The document frequency to flush the index on import. |
+|    `--gzip`     |    *no value*    |        *not required*        | Import a gzip file.
 
-| Options       |             Value            |                                      What it does                                      |
-|:-------------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-| `--manager`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-| `--bulk-size` | *Bulk size, default 1000*    | The document frequency to flush the index on import.
 
 So here's a simple example how the data looks like:
 
