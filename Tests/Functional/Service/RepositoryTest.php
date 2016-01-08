@@ -11,13 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
-use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\Service\Manager;
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class RepositoryTest extends AbstractElasticsearchTestCase
@@ -175,7 +173,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $results = [];
 
         foreach ($fullResults as $result) {
-            $results[] = $result->getId();
+            $results[] = $result->id;
         }
 
         // Results are not sorted, they will be returned in random order.
@@ -263,7 +261,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
             $this->assertNull($result);
         } else {
             $this->assertNotNull($result);
-            $this->assertEquals($expectedResult, $result->getId());
+            $this->assertEquals($expectedResult, $result->id);
         }
     }
 
@@ -275,7 +273,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $product = new Product;
-        $product->setId('123');
+        $product->id = '123';
         $product->title = 'foo';
 
         $manager->persist($product);
@@ -285,7 +283,8 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $result = $repo->find(123);
 
-        $this->assertEquals(get_object_vars($product), get_object_vars($result));
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product', $result);
+        $this->assertEquals($product->id, $result->id);
     }
 
     /**
@@ -364,7 +363,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $document = new Product;
 
-        $document->setId(5);
+        $document->id = 5;
         $document->title = 'acme';
 
         $manager->persist($document);
@@ -379,7 +378,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
                 'title' => 'acme',
             ],
             [
-                'id' => $document->getId(),
+                'id' => $document->id,
                 'title' => $document->title,
             ],
             'Document should be created.'
@@ -398,7 +397,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
                 'title' => 'acme bar',
             ],
             [
-                'id' => $document->getId(),
+                'id' => $document->id,
                 'title' => $document->title,
             ],
             'Document should be updated.'
@@ -412,7 +411,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
         $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $this->assertEquals($manager, $repository->getManager());
+        $this->assertSame($manager, $repository->getManager());
     }
 
     /**

@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
+use ONGR\ElasticsearchBundle\Collection;
 
 /**
  * Product document for testing.
@@ -21,7 +21,19 @@ use ONGR\ElasticsearchBundle\Document\DocumentTrait;
  */
 class Product
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\Id()
+     */
+    public $id;
+
+    /**
+     * @var string
+     *
+     * @ES\Ttl()
+     */
+    public $ttl;
 
     /**
      * @var string
@@ -94,4 +106,9 @@ class Product
      * )
      */
     public $tokenPiecesCount;
+
+    public function __construct()
+    {
+        $this->relatedCategories = new Collection();
+    }
 }

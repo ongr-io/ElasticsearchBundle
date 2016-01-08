@@ -44,7 +44,7 @@ class MappingPass implements CompilerPassInterface
             $connection = $connections[$manager['connection']];
 
             $managerDefinition = new Definition(
-                $container->getParameter('es.manager.class'),
+                'ONGR\ElasticsearchBundle\Service\Manager',
                 [
                     $managerName,
                     $connection,
@@ -71,7 +71,7 @@ class MappingPass implements CompilerPassInterface
             // Building repository services.
             foreach ($mappings as $repositoryType => $repositoryDetails) {
                 $repositoryDefinition = new Definition(
-                    $container->getParameter('es.repository.class'),
+                    'ONGR\ElasticsearchBundle\Service\Repository',
                     [$repositoryDetails['namespace']]
                 );
                 $repositoryDefinition->setFactory(

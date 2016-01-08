@@ -12,21 +12,26 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * All meta-field annotations must implement this interface.
+ * Annotation to associate document property with _id meta-field.
+ *
+ * @Annotation
+ * @Target("PROPERTY")
  */
-interface MetaField
+final class Id implements MetaField
 {
     /**
-     * Returns meta-field name.
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function getName();
+    public function getName()
+    {
+        return '_id';
+    }
 
     /**
-     * Returns meta-field settings.
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function getSettings();
+    public function getSettings()
+    {
+        return [];
+    }
 }

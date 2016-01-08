@@ -1,6 +1,6 @@
 {
     "name": "ongr/elasticsearch-bundle",
-    "description": "Elasticsearch php client bundle for Symfony 2.",
+    "description": "Elasticsearch bundle for Symfony.",
     "type": "symfony-bundle",
     "homepage": "http://ongr.io",
     "license": "MIT",
@@ -16,8 +16,8 @@
         "doctrine/annotations": "~1.2",
         "doctrine/inflector": "~1.0",
         "doctrine/cache": "~1.4",
-        "monolog/monolog": "~1.0",
-        "elasticsearch/elasticsearch": "~2.0",
+        "monolog/monolog": "~1.10",
+        "elasticsearch/elasticsearch": "^2.1.3",
         "ongr/elasticsearch-dsl": "~1.0"
     },
     "require-dev": {
@@ -27,6 +27,7 @@
         "satooshi/php-coveralls": "~1.0"
     },
     "autoload": {
-        "psr-4": { "ONGR\\ElasticsearchBundle\\": "" }
+        "psr-4": { "ONGR\\ElasticsearchBundle\\": "" },
+        "exclude-from-classmap": ["/Tests/", "/Test/"]
     }
 }

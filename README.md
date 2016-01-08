@@ -6,7 +6,7 @@ professional [elasticsearch](https://www.elastic.co/products/elasticsearch) inte
 
 * Supported by [ONGR.io](http://ongr.io) development team.
 * Uses the official [elasticsearch-php](https://github.com/elastic/elasticsearch-php) client.
-* Ensures full integration with Symfony 2 framework.
+* Ensures full integration with Symfony framework.
 
 Technical goodies:
 
@@ -95,34 +95,35 @@ In this particular example there is 2 things you should know. The index name in 
 
 #### Step 3: Define your Elasticsearch types as `Document` objects
 
-Elasticsearch bundle uses ``Document`` objects to communicate with elasticsearch objects. Now lets create a ``Customer`` class in the ``Document`` folder. We assume that we have an AppBundle installed.
+Elasticsearch bundle uses objects to represent Elasticsearch documents. Lets create a `Customer` class for customer document. We assume that we have an AppBundle installed.
 
-> Folder name could not be changed, please make sure you put your documents in the righ place.
+> __Note:__ All documents must be created in `Document/` directory.
 
 ```php
+// src/AppBundle/Document/Customer.php
 
-<?php
 namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document()
  */
 class Customer
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\Id()
+     */
+    public $id;
 
     /**
      * @var string
      *
      * @ES\Property(name="name", type="string")
      */
-    private $name;
-
-    // Setters and getters boilerplate follows:
-    // ...
+    public $name;
 }
 
 ```
@@ -150,5 +151,5 @@ We advice to take a look at the [mapping chapter](Resources/doc/mapping.md) to c
 
 ## License
 
-This bundle is under the MIT license. Please, see the complete license
-in the bundle ``LICENSE`` file.
+This bundle is licensed under the MIT license. Please, see the complete license
+in the bundle `LICENSE` file.

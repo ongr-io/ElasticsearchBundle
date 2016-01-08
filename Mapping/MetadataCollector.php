@@ -116,23 +116,13 @@ class MetadataCollector
             return $this->mappings[$name];
         }
 
-        // Checks if is mapped document or bundle.
+        // Handle the case when single document mapping requested
         if (strpos($name, ':') !== false) {
-            $bundleInfo = explode(':', $name);
-            $bundle = $bundleInfo[0];
-            $documentClass = $bundleInfo[1];
-
-            $documents = $this->finder->getBundleDocumentPaths($bundle);
-            $documents = array_filter(
-                $documents,
-                function ($document) use ($documentClass) {
-                    if (pathinfo($document, PATHINFO_FILENAME) == $documentClass) {
-                        return true;
-                    }
-                }
-            );
+            list($bundle, $documentClass) = explode(':', $name);
+            $documents = $this->finder->getBundleDocumentClasses($bundle);
+            $documents = in_array($documentClass, $documents) ? [$documentClass] : [];
         } else {
-            $documents = $this->finder->getBundleDocumentPaths($name);
+            $documents = $this->finder->getBundleDocumentClasses($name);
             $bundle = $name;
         }
 
@@ -149,7 +139,7 @@ class MetadataCollector
             $documentReflection = new \ReflectionClass(
                 $bundleNamespace .
                 '\\' . DocumentFinder::DOCUMENT_DIR .
-                '\\' . pathinfo($document, PATHINFO_FILENAME)
+                '\\' . $document
             );
 
             $documentMapping = $this->getDocumentReflectionMapping($documentReflection);

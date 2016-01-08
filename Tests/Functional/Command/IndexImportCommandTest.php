@@ -70,7 +70,8 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $manager = $this->getManager('default', false);
+        $manager = $this->getManager();
+        $manager->dropIndex();
         $repo = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repo
             ->createSearch()
@@ -80,7 +81,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
 
         $ids = [];
         foreach ($results as $doc) {
-            $ids[] = substr($doc->getId(), 3);
+            $ids[] = substr($doc->id, 3);
         }
         sort($ids);
         $data = range(1, $realSize);

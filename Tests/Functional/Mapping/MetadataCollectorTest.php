@@ -60,15 +60,11 @@ class MetadataCollectorTest extends WebTestCase
 
         $properties = $mapping['product']['properties'];
         $this->assertArrayNotHasKey('_id', $properties);
-        $this->assertArrayNotHasKey('_score', $properties);
         $this->assertArrayNotHasKey('_ttl', $properties);
-        $this->assertArrayNotHasKey('_parent', $properties);
 
         $aliases = $mapping['product']['aliases'];
         $this->assertArrayHasKey('_id', $aliases);
-        $this->assertArrayHasKey('_score', $aliases);
         $this->assertArrayHasKey('_ttl', $aliases);
-        $this->assertArrayHasKey('_parent', $aliases);
     }
 
     /**

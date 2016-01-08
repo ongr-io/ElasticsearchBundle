@@ -1,11 +1,12 @@
 ## Elasticsearch Bundle
 
-Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsearch database](https://www.elastic.co/products/elasticsearch) in the [Symfony 2](https://github.com/symfony/symfony-standard) applications. We created this bundle with love :heart: and we think you will love it too.
+Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsearch database](https://www.elastic.co/products/elasticsearch) in the [Symfony](https://github.com/symfony/symfony-standard) applications. We created this bundle with love :heart: and we think you will love it too.
 
 > Bundle set up guide you can find in the `README.md` file. 
 
 #### Usage
 * [Mapping explained](mapping.md)
+* [Using Meta-Fields](meta_fields.md)
 * [Configuration](configuration.md)
 * [Console commands](commands.md)
 * [How to do a simple CRUD actions](crud.md)

@@ -6,17 +6,22 @@ For all steps below we assume that there is an `AppBundle` with the `Content` do
 
 ```php
 // src/AppBundle/Document/Content.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\Id()
+     */
+    public $id;
 
     /**
      * @ES\Property(type="string")
@@ -80,14 +85,11 @@ $manager->commit();
 
 ```
 
-> id field comes from `DocumentTrait`. It's optional, in addition you can also use `ttl`, 'parent' and other special fields.
-
 ## Update a document
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
-$content = $repo->find(5);
+$content = $manager->find('AppBundle:Content', 5);
 $content->title = 'changed Acme title';
 $manager->persist($content);
 $manager->commit();
@@ -133,6 +135,15 @@ $response = $repo->update(1, ['title' => 'new title'], null, ['fields' => 'title
 
 
 ## Delete a document
+
+Document removal can be performed similar to create or update action:
+
+```php
+$manager->remove($content);
+$manager->commit();
+```
+
+Alternatively you can remove document by ID (requires to have repository service):
 
 ```php
 

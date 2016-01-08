@@ -26,7 +26,8 @@ class MappingUpdateCommandTest extends AbstractElasticsearchTestCase
      */
     public function testExecute()
     {
-        $manager = $this->getManager('default', true, ['default' => []]);
+        $manager = $this->getManager();
+        $manager->dropAndCreateIndex(true);
 
         $mapping = $manager->getClient()->indices()->getMapping(['index' => $manager->getIndexName()]);
 

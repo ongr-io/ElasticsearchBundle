@@ -277,6 +277,26 @@ class Manager
     }
 
     /**
+     * Adds document for removal.
+     *
+     * @param object $document
+     */
+    public function remove($document)
+    {
+        $data = $this->converter->convertToArray($document, [], ['_id']);
+
+        if (!isset($data['_id'])) {
+            throw new \LogicException(
+                'In order to use remove() method document class must have property with @Id annotation.'
+            );
+        }
+
+        $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
+
+        $this->bulk('delete', $type, ['_id' => $data['_id']]);
+    }
+
+    /**
      * Flushes elasticsearch index.
      *
      * @param array $params

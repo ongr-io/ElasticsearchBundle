@@ -6,15 +6,22 @@ php:
   - 7.0
   - hhvm
 env:
-  - ES_VERSION=1.7.4
-  - ES_VERSION=2.1.1
+  global:
+      - ES_VERSION="2.1.1"
+      - SYMFONY="~3.0"
 matrix:
   allow_failures:
     - php: hhvm
+  include:
+    - php: 7.0
+      env: ES_VERSION="1.7.4"
+    - php: 7.0
+      env: SYMFONY="2.7.*"
 install:
+  - composer require --no-update symfony/symfony:${SYMFONY}
   - wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
-  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch &
+  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /dev/null 2>&1 &
 before_script:
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction

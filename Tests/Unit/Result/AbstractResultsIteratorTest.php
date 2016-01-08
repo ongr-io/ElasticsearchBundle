@@ -35,4 +35,76 @@ class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
         // Trigger destructor call
         unset($iterator);
     }
+
+    /**
+     * Test for getDocumentScore().
+     */
+    public function testGetDocumentScore()
+    {
+        $rawData = [
+            'hits' => [
+                'total' => 3,
+                'hits' => [
+                    [
+                        '_index' => 'test',
+                        '_type' => 'product',
+                        '_id' => 'foo',
+                        '_score' => 1,
+                        '_source' => [
+                            'title' => 'Product Foo',
+                        ],
+                    ],
+                    [
+                        '_index' => 'test',
+                        '_type' => 'product',
+                        '_id' => 'bar',
+                        '_score' => 2,
+                        '_source' => [
+                            'title' => 'Product Bar',
+                        ],
+                    ],
+                    [
+                        '_index' => 'test',
+                        '_type' => 'product',
+                        '_id' => 'baz',
+                        '_score' => null,
+                        '_source' => [
+                            'title' => 'Product Baz',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $results = new DummyIterator($rawData, $manager);
+
+        $expectedScores = [1, 2, null];
+        $actualScores = [];
+
+        foreach ($results as $item) {
+            $actualScores[] = $results->getDocumentScore();
+        }
+
+        $this->assertEquals($expectedScores, $actualScores);
+    }
+
+    /**
+     * Test for getDocumentScore() in case called when current iterator value is not valid.
+     *
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Document score is available only while iterating over results
+     */
+    public function testGetScoreException()
+    {
+        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $results = new DummyIterator([], $manager);
+        $results->getDocumentScore();
+    }
 }

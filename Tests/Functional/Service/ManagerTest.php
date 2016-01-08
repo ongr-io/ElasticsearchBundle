@@ -11,9 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\WithoutId;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
@@ -24,19 +24,6 @@ use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
  */
 class ManagerTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * @var Repository
-     */
-    private $repository;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp()
-    {
-        $this->repository = $this->getManager()->getRepository('AcmeBarBundle:Product');
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -81,14 +68,14 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testPersist()
     {
         /** @var Manager $manager */
-        $manager = $this->repository->getManager();
+        $manager = $this->getManager();
 
         $category = new CategoryObject();
         $category->title = 'acme';
 
         // Multiple urls.
         $product = new Product();
-        $product->setId(1);
+        $product->id = 1;
         $product->title = 'test';
         $product->category = $category;
 
@@ -96,7 +83,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->commit();
 
         /** @var Product $actualProduct */
-        $actualProduct = $this->repository->find(1);
+        $actualProduct = $manager->find('AcmeBarBundle:Product', 1);
         $this->assertInstanceOf(
             'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
             $actualProduct
@@ -114,7 +101,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->persist($actualProduct);
         $manager->commit();
 
-        $actualProduct = $this->repository->find(1);
+        $actualProduct = $manager->find('AcmeBarBundle:Product', 1);
 
         $this->assertTrue($actualProduct->limited);
     }
@@ -160,7 +147,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         // Case #1: a single link is set, although field is set to multiple.
         $product = new Product();
         $product->relatedCategories = new CategoryObject();
-        $out[] = [$product, "Variable isn't traversable, although field is set to multiple."];
+        $out[] = [$product, "must be an instance of Collection"];
 
         // Case #2: invalid type of object is set to the field.
         $product = new Product;
@@ -209,22 +196,20 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testPersistSpecialFields()
     {
-        /** @var Manager $manager */
-        $manager = $this->repository->getManager();
+        $manager = $this->getManager();
 
         $product = new Product();
-        $product->setId('testId');
-        $product->setTtl(500000);
-        $product->setScore('1.0');
+        $product->id = 'testId';
+        $product->ttl = 500000;
         $product->title = 'acme';
 
         $manager->persist($product);
         $manager->commit();
 
-        $actualProduct = $this->repository->find('testId');
+        $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
 
-        $this->assertEquals($product->getId(), $actualProduct->getId());
-        $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
+        $this->assertEquals($product->id, $actualProduct->id);
+        $this->assertLessThan($product->ttl, $actualProduct->ttl);
     }
 
     /**
@@ -232,17 +217,16 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testPersistDateField()
     {
-        /** @var Manager $manager */
-        $manager = $this->repository->getManager();
+        $manager = $this->getManager();
 
         $product = new Product();
-        $product->setId('testId');
+        $product->id = 'testId';
         $product->released = new \DateTime('2100-01-02 03:04:05.889342');
 
         $manager->persist($product);
         $manager->commit();
 
-        $actualProduct = $this->repository->find('testId');
+        $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
 
         $this->assertGreaterThan(time(), $actualProduct->released->getTimestamp());
     }
@@ -252,7 +236,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testPersistTokenCountField()
     {
-        $manager = $this->repository->getManager();
+        $manager = $this->getManager();
         $product = new Product();
         $product->tokenPiecesCount = 't e s t';
         $manager->persist($product);
@@ -261,12 +245,12 @@ class ManagerTest extends AbstractElasticsearchTestCase
         // Analyzer is whitespace, so there are four tokens.
         $search = new Search();
         $search->addQuery(new TermQuery('pieces_count.count', '4'));
-        $this->assertEquals(1, $this->repository->execute($search)->count());
+        $this->assertEquals(1, $manager->execute(['AcmeBarBundle:Product'], $search)->count());
 
         // Test with invalid count.
         $search = new Search();
         $search->addQuery(new TermQuery('pieces_count.count', '6'));
-        $this->assertEquals(0, $this->repository->execute($search)->count());
+        $this->assertEquals(0, $manager->execute(['AcmeBarBundle:Product'], $search)->count());
     }
 
     /**
@@ -276,7 +260,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $uniqueIndexName = 'test_index_' . uniqid();
 
-        $manager = $this->repository->getManager();
+        $manager = $this->getManager();
         $this->assertNotEquals($uniqueIndexName, $manager->getIndexName());
 
         $manager->setIndexName($uniqueIndexName);
@@ -288,7 +272,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testGetRepository()
     {
-        $manager = $this->repository->getManager();
+        $manager = $this->getManager();
         $expected = $manager->getRepository('AcmeBarBundle:Product');
         $repository = $manager->getRepository('AcmeBarBundle:Product');
 
@@ -304,7 +288,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testGetRepositoryException()
     {
-        $manager = $this->repository->getManager();
+        $manager = $this->getManager();
         $manager->getRepository(12345);
     }
 
@@ -319,5 +303,33 @@ class ManagerTest extends AbstractElasticsearchTestCase
         );
 
         $this->assertCount(5, $result);
+    }
+
+    /**
+     * Test for remove().
+     */
+    public function testRemove()
+    {
+        $manager = $this->getManager('foo');
+
+        $product = $manager->find('AcmeBarBundle:Product', 1);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product', $product);
+
+        $manager->remove($product);
+        $manager->commit();
+
+        $product = $manager->find('AcmeBarBundle:Product', 1);
+        $this->assertNull($product);
+    }
+
+    /**
+     * Test for remove() in case document has no annotation for ID field.
+     *
+     * @expectedException \LogicException
+     * @expectedExceptionMessage must have property with @Id annotation
+     */
+    public function testRemoveException()
+    {
+        $this->getManager()->remove(new WithoutId());
     }
 }

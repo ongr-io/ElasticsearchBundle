@@ -2,33 +2,18 @@ parameters:
     es.logging.path: %kernel.logs_dir%/elasticsearch_%kernel.environment%.log
     es.profiler.template: ONGRElasticsearchBundle:Profiler:profiler.html.twig
 
-    es.manager.class: ONGR\ElasticsearchBundle\Service\Manager
-    es.repository.class: ONGR\ElasticsearchBundle\Service\Repository
-    es.manager_factory.class: ONGR\ElasticsearchBundle\Service\ManagerFactory
-    es.export.class: ONGR\ElasticsearchBundle\Service\ExportService
-    es.import.class: ONGR\ElasticsearchBundle\Service\ImportService
-    es.client.index_suffix_finder.class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
-    es.document_finder.class: ONGR\ElasticsearchBundle\Mapping\DocumentFinder
-    es.document_parser.class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
-    es.metadata_collector.class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
-    es.logger.collection_handler.class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
-    es.profiler.class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
-    es.doctrine.filesystem_cache.class: Doctrine\Common\Cache\FilesystemCache
-    es.result_converter.class: ONGR\ElasticsearchBundle\Result\Converter
-    es.tracer.class: Monolog\Logger
-
 services:
     es.export:
-        class: %es.export.class%
+        class: ONGR\ElasticsearchBundle\Service\ExportService
 
     es.import:
-        class: %es.import.class%
+        class: ONGR\ElasticsearchBundle\Service\ImportService
 
     es.client.index_suffix_finder:
-        class: %es.client.index_suffix_finder.class%
+        class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
 
     es.cache_engine:
-        class: %es.doctrine.filesystem_cache.class%
+        class: Doctrine\Common\Cache\FilesystemCache
         arguments: ["%kernel.cache_dir%/ongr", ".ongr.data"]
 
     annotations.cached_reader:
@@ -36,33 +21,33 @@ services:
         arguments: ["@annotations.reader", "@es.cache_engine", %kernel.debug%]
 
     es.document_finder:
-        class: %es.document_finder.class%
+        class: ONGR\ElasticsearchBundle\Mapping\DocumentFinder
         arguments: [%kernel.bundles%]
         public: false
 
     es.document_parser:
-        class: %es.document_parser.class%
+        class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
         arguments: ["@annotations.cached_reader", "@es.document_finder"]
         public: false
 
     es.metadata_collector:
-        class: %es.metadata_collector.class%
+        class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
         arguments: ["@es.document_finder", "@es.document_parser", "@es.cache_engine"]
         calls:
             - [setEnableCache, [%es.cache%]]
 
     es.logger.collection_handler:
-        class: %es.logger.collection_handler.class%
+        class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
         public: false
 
     es.tracer:
-        class: %es.tracer.class%
+        class: Monolog\Logger
         arguments: ['ongr']
         calls:
             - [pushHandler, ["@es.logger.collection_handler"]]
 
     es.profiler:
-        class: %es.profiler.class%
+        class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
         calls:
             - [setManagers, [%es.managers%]]
             - [addLogger, ["@es.tracer"]]
@@ -70,9 +55,9 @@ services:
             - {name: data_collector, template: %es.profiler.template%, id: ongr.profiler}
 
     es.result_converter:
-        class: %es.result_converter.class%
+        class: ONGR\ElasticsearchBundle\Result\Converter
         arguments: ["@es.metadata_collector"]
 
     es.manager_factory:
-        class: %es.manager_factory.class%
+        class: ONGR\ElasticsearchBundle\Service\ManagerFactory
         arguments: ["@es.metadata_collector", "@es.result_converter", "@es.tracer"]

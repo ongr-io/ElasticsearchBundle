@@ -48,17 +48,22 @@ In the managers configuration `mappings` is optional. If there are no mappings d
 Lets start with a document class example.
 ```php
 // src/AppBundle/Document/Content.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
+    /**
+     * @var string
+     *
+     * @ES\Id()
+     */
+    public $id;
 
     /**
      * @ES\Property(type="string")
@@ -67,28 +72,11 @@ class Content
 }
 ```
 
-> You can use `DocumentTrait` trait to quickly add support for meta fields.
-
-
 #### Document annotation configuration
 
 - `@ES\Document(type="content")` Annotation defines that this class will represent elasticsearch type with name `content`.
 
 - `type` parameter is for type name. This parameter is optional, if there will be no parameter set Elasticsearch bundle will create a type with lowercased class name.
-
-##### Additional parameters:
-
--  **TTL (time to live)** - `_ttl={"enabled": true}` parameter with which you can enable documents to have time to live, also it you can set default time interval. To do this add `default` e.g.: `_ttl={"enabled": true, "default": "1d"}`. After time runs out document deletes itself automatically.
-
-e.g. `@ES\Document(type="content", _ttl={"enabled": true, "default": "1d"})`
-
-> You can use time units specified in `elasticsearch documentation`. ESB parses it if needed, e.g. for type mapping update.
-
-##### DocumentTrait
-
-`DocumentTrait` provides support for Elasticsearch meta fields (`_id`, `_source`,
-`_ttl`, `_parent`, etc ). `DocumentTrait` has all parameters and setters already defined for you.
-
 
 ### Document properties annotations
 
@@ -104,14 +92,13 @@ To add custom settings to property like analyzer it has to be included in `optio
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
+    // ...
 
     /**
      * @ES\Property(
@@ -132,18 +119,16 @@ It is a little different to define nested and object types. For this user will n
 
 ```php
 // src/AppBundle/Document/Content.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Document\DocumentTrait;
 
 /**
  * @ES\Document(type="content")
  */
 class Content
 {
-    use DocumentTrait;
-
     /**
      * @ES\Property(type="string")
      */
@@ -163,6 +148,7 @@ And the content object will look like:
 
 ```php
 // src/AppBundle/Document/ContentMetaObject.php
+
 namespace AppBundle/Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -186,19 +172,41 @@ class ContentMetaObject
 ```
 
 ##### Multiple objects
-As shown in the example, by default only a single object will be saved in the document. If there is necessary to store a multiple objects (array), add `multiple=true`. While initiating a document with multiple items you can simply set an array or any kind of traversable.
+
+As shown in the example, by default only a single object will be saved in the document.
+If there is necessary to store a multiple objects (array), add `multiple=true`. While
+initiating a document with multiple items you need to initialize property with new instance of `Collection`.
 
 ```php
+// src/AppBundle/Document/Content.php
 
-//....
+namespace AppBundle/Document;
+
+use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Collection;
+
 /**
- * @var ContentMetaObject
- *
- * @ES\Embedded(class="AppBundle:ContentMetaObject", multiple="true")
+ * @ES\Document(type="content")
  */
-public $metaObject;
-//....
+class Content
+{
+    // ...
 
+    /**
+     * @var ContentMetaObject[]|Collection
+     *
+     * @ES\Embedded(class="AppBundle:ContentMetaObject", multiple="true")
+     */
+    public $metaObjects;
+    
+    /**
+     * Initialize collection.
+     */
+    public function __construct()
+    {
+        $this->metaObjects = new Collection();
+    }
+}
 ```
 
 Insert action will look like this:
@@ -206,7 +214,8 @@ Insert action will look like this:
 
 <?php
 $content = new Content();
-$content->properties = [new ContentMetaObject(), new ContentMetaObject()];
+$content->metaObjects[] = new ContentMetaObject();
+$content->metaObjects[] = new ContentMetaObject();
 
 $manager->persist($content);
 $manager->commit();
@@ -216,4 +225,11 @@ To define object or nested fields use `@ES\Embedded` annotation. In the objects 
 
 > Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
 
-More info about mapping is in the [elasticsearch mapping documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
+### Meta-Fields Annotations
+
+Read dedicated page about meta-field annotations [here](meta_fields.md).
+
+> More information about mapping can be found in the [Elasticsearch mapping documentation][1].
+
+[1]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
+[2]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html
