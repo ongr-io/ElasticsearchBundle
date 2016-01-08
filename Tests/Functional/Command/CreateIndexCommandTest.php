@@ -41,34 +41,15 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     }
 
     /**
-     * Tests creating index. Configuration from tests yaml.
-     *
-     * @param string $managerName
-     * @param array  $arguments
-     * @param array  $options
-     *
-     * @dataProvider getTestExecuteData
-     */
-    public function testExecute($managerName, $arguments, $options)
-    {
-        $manager = $this->getManager($managerName);
-
-        if ($manager->indexExists()) {
-            $manager->dropIndex();
-        }
-
-        $this->runIndexCreateCommand($managerName, $arguments, $options);
-
-        $this->assertTrue($manager->indexExists(), 'Index should exist.');
-        $manager->dropIndex();
-    }
-
-    /**
      * Tests creating index in case of existing this index. Configuration from tests yaml.
      */
     public function testExecuteWhenIndexExists()
     {
         $manager = $this->getManager();
+
+        if (!$manager->indexExists()) {
+            $manager->createIndex();
+        }
 
         // Initialize command
         $commandName = 'ongr:es:index:create';
@@ -92,6 +73,29 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
 
         // Test if the command output matches the expected output or not
         $this->assertStringMatchesFormat($expectedOutput . '%a', $commandTester->getDisplay());
+    }
+
+    /**
+     * Tests creating index. Configuration from tests yaml.
+     *
+     * @param string $managerName
+     * @param array  $arguments
+     * @param array  $options
+     *
+     * @dataProvider getTestExecuteData
+     */
+    public function testExecute($managerName, $arguments, $options)
+    {
+        $manager = $this->getManager($managerName);
+
+        if ($manager->indexExists()) {
+            $manager->dropIndex();
+        }
+
+        $this->runIndexCreateCommand($managerName, $arguments, $options);
+
+        $this->assertTrue($manager->indexExists(), 'Index should exist.');
+        $manager->dropIndex();
     }
 
     /**
