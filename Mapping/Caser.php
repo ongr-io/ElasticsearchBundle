@@ -19,7 +19,7 @@ use Doctrine\Common\Inflector\Inflector;
 class Caser
 {
     /**
-     * Transforms string to camel case.
+     * Transforms string to camel case (e.g., resultString).
      *
      * @param string $string Text to transform.
      *
@@ -31,7 +31,7 @@ class Caser
     }
 
     /**
-     * Transforms string to snake case.
+     * Transforms string to snake case (e.g., result_string).
      *
      * @param string $string Text to transform.
      *
