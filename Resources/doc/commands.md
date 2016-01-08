@@ -13,7 +13,7 @@ Creates a new index in Elasticsearch (including with mapping if not skipped) for
 |   `--manager`  |   `-mng`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
 |    `--time`    |    `-t`    |        *not required*        | Creates an index with current timestamp appended to its name.                          |
 |    `--alias`   |    `-a`    |        *not required*        | Creates an alias with index name specified in the configuration.                       |
-| `--no-mapping` |    `-nm`   |        *not required*        | Skips the mapping configuration on index create action.                                |
+| `--no-mapping` |    *no value*   |        *not required*        | Skips the mapping configuration on index create action.                                |
 | `--if-not-exists` |    *no value*   |        *not required*        | Skips an index creation, when the index already exists.                                |
 
 If you want to use timestabale indexes it's very handy to use it together with `-a` option. `-t` adds a date as the suffix and `-a` adds an alias as defined index name in manager configuration. So the code will work fine without any configuration changes, you dont need to do any other actions.
