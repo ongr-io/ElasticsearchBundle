@@ -61,7 +61,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
 
         $options = [];
         if ($input->getOption('gzip')) {
-            $options['gzip'] = true;
+            $options['gzip'] = null;
         }
 
         /** @var ImportService $importService */
