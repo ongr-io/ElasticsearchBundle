@@ -14,6 +14,7 @@ Creates a new index in Elasticsearch (including with mapping if not skipped) for
 | `--time`       | *none*        | Creates an index with current timestamp appended to its name.                          |
 | `--alias`      | *none*        | Creates an alias with index name specified in the configuration.                       |
 | `--no-mapping` | *none*        | Skips the mapping configuration on index create action.                                |
+| `--if-not-exists` | *none* | Skips an index creation, when the index already exists.                                |
 
 If you want to use timestabale indexes it's very handy to use it together with `-a` option. `-t` adds a date as the suffix and `-a` adds an alias as defined index name in manager configuration. So the code will work fine without any configuration changes, you dont need to do any other actions.
 
