@@ -66,9 +66,9 @@ class JsonReader implements \Countable, \Iterator
     private $convertDocuments;
 
     /**
-     * @var bool
+     * @var array
      */
-    private $isGzip;
+    private $options;
 
     /**
      * Constructor.
@@ -76,15 +76,15 @@ class JsonReader implements \Countable, \Iterator
      * @param Manager $manager
      * @param string  $filename
      * @param bool    $convertDocuments
-     * @param bool    $isGzip
+     * @param array   $options
      */
-    public function __construct($manager, $filename, $convertDocuments = true, $isGzip)
+    public function __construct($manager, $filename, $convertDocuments = true, $options)
     {
         $this->manager = $manager;
         $this->filename = $filename;
         $this->converter = $manager->getConverter();
         $this->convertDocuments = $convertDocuments;
-        $this->isGzip = $isGzip;
+        $this->options = $options;
     }
 
     /**
@@ -115,7 +115,9 @@ class JsonReader implements \Countable, \Iterator
     protected function getFileHandler()
     {
         if ($this->handle === null) {
-            $filename = !$this->isGzip?
+            $isGzip = array_key_exists('gzip', $this->options);
+
+            $filename = !$isGzip?
                 $this->filename:
                 sprintf('compress.zlib://%s', $this->filename);
             $fileHandler = @fopen($filename, 'r');

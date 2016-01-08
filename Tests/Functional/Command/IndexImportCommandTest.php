@@ -42,7 +42,9 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
     public function compressedDataProvider()
     {
         return [
-            [10, 9, 'command_import_9.json.gz']
+            [10, 9, 'command_import_9.json.gz'],
+            [10, 10, 'command_import_10.json.gz'],
+            [10, 11, 'command_import_11.json.gz'],
         ];
     }
 
@@ -113,7 +115,8 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $manager = $this->getManager('default', false);
+        $manager = $this->getManager();
+        $manager->dropIndex();
         $repo = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repo
             ->createSearch()
@@ -123,7 +126,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
 
         $ids = [];
         foreach ($results as $doc) {
-            $ids[] = substr($doc->getId(), 3);
+            $ids[] = substr($doc->id, 3);
         }
         sort($ids);
         $data = range(1, $realSize);

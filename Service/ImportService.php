@@ -27,16 +27,16 @@ class ImportService
      * @param string          $filename
      * @param OutputInterface $output
      * @param int             $bulkSize
-     * @param bool            $isGzip
+     * @param array           $options
      */
     public function importIndex(
         Manager $manager,
         $filename,
         OutputInterface $output,
         $bulkSize,
-        $isGzip
+        $options
     ) {
-        $reader = $this->getReader($manager, $this->getFilePath($filename), false, $isGzip);
+        $reader = $this->getReader($manager, $this->getFilePath($filename), false, $options);
 
         $progress = new ProgressBar($output, $reader->count());
         $progress->setRedrawFrequency(100);
@@ -87,12 +87,12 @@ class ImportService
      * @param Manager $manager
      * @param string  $filename
      * @param bool    $convertDocuments
-     * @param bool   $isGzip
+     * @param array   $options
      *
      * @return JsonReader
      */
-    protected function getReader($manager, $filename, $convertDocuments, $isGzip)
+    protected function getReader($manager, $filename, $convertDocuments, $options)
     {
-        return new JsonReader($manager, $filename, $convertDocuments, $isGzip);
+        return new JsonReader($manager, $filename, $convertDocuments, $options);
     }
 }
