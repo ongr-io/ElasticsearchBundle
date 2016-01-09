@@ -18,6 +18,8 @@ use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use ONGR\ElasticsearchBundle\Mapping\Exception\DocumentParserException;
+use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException;
 
 /**
  * Document parser used for reading document annotations.
@@ -74,46 +76,42 @@ class DocumentParser
     /**
      * Parses documents by used annotations and returns mapping for elasticsearch with some extra metadata.
      *
-     * @param \ReflectionClass $document
+     * @param \ReflectionClass $class
      *
      * @return array
+     * @throws DocumentParserException
      */
-    public function parse(\ReflectionClass $document)
+    public function parse(\ReflectionClass $class)
     {
-        /** @var Document $class */
-        $class = $this
-            ->reader
-            ->getClassAnnotation($document, self::DOCUMENT_ANNOTATION);
+        /** @var Document $document */
+        $document = $this->reader->getClassAnnotation($class, self::DOCUMENT_ANNOTATION);
 
-        if ($class !== null) {
-            $fields = [];
-
-            $properties = $this->getProperties($document);
-            $aliases = $this->getAliases($document, $fields);
-
-            if ($class->type) {
-                $documentType = $class->type;
-            } else {
-                $documentType = $document->getShortName();
-            }
-
-            return [
-                'type' => $documentType,
-                'properties' => $properties,
-                'fields' => array_filter(
-                    array_merge(
-                        $class->dump(),
-                        $fields
-                    )
-                ),
-                'aliases' => $aliases,
-                'objects' => $this->getObjects(),
-                'namespace' => $document->getName(),
-                'class' => $document->getShortName(),
-            ];
+        if ($document === null) {
+            throw new MissingDocumentAnnotationException(
+                sprintf(
+                    '"%s" class cannot be parsed as document because @Document annotation is missing.',
+                    $class->getName()
+                )
+            );
         }
 
-        return [];
+        $fields = [];
+        $aliases = $this->getAliases($class, $fields);
+
+        return [
+            'type' => $document->type ?: Caser::snake($class->getShortName()),
+            'properties' => $this->getProperties($class),
+            'fields' => array_filter(
+                array_merge(
+                    $document->dump(),
+                    $fields
+                )
+            ),
+            'aliases' => $aliases,
+            'objects' => $this->getObjects(),
+            'namespace' => $class->getName(),
+            'class' => $class->getShortName(),
+        ];
     }
 
     /**

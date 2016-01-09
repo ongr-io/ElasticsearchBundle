@@ -12,6 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Cache\CacheProvider;
+use ONGR\ElasticsearchBundle\Mapping\Exception\DocumentParserException;
+use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException;
 
 /**
  * DocumentParser wrapper for getting bundle documents mapping.
@@ -142,9 +144,10 @@ class MetadataCollector
                 '\\' . $document
             );
 
-            $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
-
-            if (!array_key_exists('type', $documentMapping)) {
+            try {
+                $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
+            } catch (MissingDocumentAnnotationException $exception) {
+                // Not a document, just ignore
                 continue;
             }
 
@@ -182,15 +185,10 @@ class MetadataCollector
      * @param string $className FQCN or string in AppBundle:Document format
      *
      * @return string
-     * @throws \Exception
      */
     public function getDocumentType($className)
     {
         $mapping = $this->getMapping($className);
-
-        if (empty($mapping)) {
-            throw new \Exception(sprintf('Mapping for class "%s" was not found!', $className));
-        }
 
         return $mapping['type'];
     }
@@ -233,6 +231,7 @@ class MetadataCollector
      * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
      *
      * @return array
+     * @throws DocumentParserException
      */
     private function getDocumentReflectionMapping(\ReflectionClass $reflectionClass)
     {
@@ -245,6 +244,7 @@ class MetadataCollector
      * @param string $namespace Document namespace
      *
      * @return array
+     * @throws DocumentParserException
      */
     public function getMapping($namespace)
     {

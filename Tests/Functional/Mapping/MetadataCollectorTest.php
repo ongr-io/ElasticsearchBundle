@@ -70,8 +70,8 @@ class MetadataCollectorTest extends WebTestCase
     /**
      * Test for getDocumentType() in case invalid class given.
      *
-     * @expectedException \Exception
-     * @expectedExceptionMessage Mapping for class "\StdClass" was not found
+     * @expectedException \ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException
+     * @expectedExceptionMessage cannot be parsed as document because @Document annotation is missing
      */
     public function testGetDocumentTypeException()
     {

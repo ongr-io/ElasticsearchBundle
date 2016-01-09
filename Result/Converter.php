@@ -228,17 +228,12 @@ class Converter
      * @param object $document
      *
      * @return array
-     *
-     * @throws \DomainException
      */
     private function getAlias($document)
     {
         $class = get_class($document);
         $documentMapping = $this->metadataCollector->getMapping($class);
-        if (is_array($documentMapping) && isset($documentMapping['aliases'])) {
-            return $documentMapping['aliases'];
-        }
 
-        throw new \DomainException("Aliases could not be found for {$class} document.");
+        return $documentMapping['aliases'];
     }
 }
