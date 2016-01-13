@@ -26,22 +26,21 @@ class ImportService
      * @param Manager         $manager
      * @param string          $filename
      * @param OutputInterface $output
-     * @param int             $bulkSize
      * @param array           $options
      */
     public function importIndex(
         Manager $manager,
         $filename,
         OutputInterface $output,
-        $bulkSize,
         $options
     ) {
-        $reader = $this->getReader($manager, $this->getFilePath($filename), false, $options);
+        $reader = $this->getReader($manager, $this->getFilePath($filename), $options);
 
         $progress = new ProgressBar($output, $reader->count());
         $progress->setRedrawFrequency(100);
         $progress->start();
 
+        $bulkSize = $options['bulk-size'];
         foreach ($reader as $key => $document) {
             $data = $document['_source'];
             $data['_id'] = $document['_id'];
@@ -86,13 +85,12 @@ class ImportService
      *
      * @param Manager $manager
      * @param string  $filename
-     * @param bool    $convertDocuments
      * @param array   $options
      *
      * @return JsonReader
      */
-    protected function getReader($manager, $filename, $convertDocuments, $options)
+    protected function getReader($manager, $filename, $options)
     {
-        return new JsonReader($manager, $filename, $options, $convertDocuments);
+        return new JsonReader($manager, $filename, $options);
     }
 }
