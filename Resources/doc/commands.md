@@ -43,7 +43,8 @@ Imports data to the selected index. We are using custom `JSON` notation to speci
 | Options       |             Value            |                                      What it does                                      |
 |:-------------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
 | `--manager`   | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-| `--bulk-size` | *Bulk size, default 1000*    | The document frequency to flush the index on import.
+| `--bulk-size` | *Bulk size, default 1000*    | The document frequency to flush the index on import. |
+| `--gzip` | *not required*    | Used to import Gzip Json files.|
 
 So here's a simple example how the data looks like:
 

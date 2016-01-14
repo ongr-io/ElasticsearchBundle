@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Service\Json;
 
 use ONGR\ElasticsearchBundle\Service\Manager;
-use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -46,11 +45,6 @@ class JsonReader implements \Countable, \Iterator
     private $metadata;
 
     /**
-     * @var Converter
-     */
-    private $converter;
-
-    /**
      * @var Manager
      */
     private $manager;
@@ -61,23 +55,23 @@ class JsonReader implements \Countable, \Iterator
     private $optionsResolver;
 
     /**
-     * @var bool
+     * @var array
      */
-    private $convertDocuments;
+    private $options;
 
     /**
      * Constructor.
      *
      * @param Manager $manager
      * @param string  $filename
-     * @param bool    $convertDocuments
+     * @param array   $options
+     *
      */
-    public function __construct($manager, $filename, $convertDocuments = true)
+    public function __construct($manager, $filename, $options)
     {
         $this->manager = $manager;
         $this->filename = $filename;
-        $this->converter = $manager->getConverter();
-        $this->convertDocuments = $convertDocuments;
+        $this->options = $options;
     }
 
     /**
@@ -108,7 +102,12 @@ class JsonReader implements \Countable, \Iterator
     protected function getFileHandler()
     {
         if ($this->handle === null) {
-            $fileHandler = @fopen($this->filename, 'r');
+            $isGzip = array_key_exists('gzip', $this->options);
+
+            $filename = !$isGzip?
+                $this->filename:
+                sprintf('compress.zlib://%s', $this->filename);
+            $fileHandler = @fopen($filename, 'r');
 
             if ($fileHandler === false) {
                 throw new \LogicException('Can not open file.');
@@ -167,7 +166,7 @@ class JsonReader implements \Countable, \Iterator
         }
 
         $data = json_decode(rtrim($buffer, ','), true);
-        $this->currentLine = $this->convertDocument($this->getOptionsResolver()->resolve($data));
+        $this->currentLine = $this->getOptionsResolver()->resolve($data);
     }
 
     /**
@@ -264,14 +263,6 @@ class JsonReader implements \Countable, \Iterator
     }
 
     /**
-     * @return Converter
-     */
-    protected function getConverter()
-    {
-        return $this->converter;
-    }
-
-    /**
      * Returns configured options resolver instance.
      *
      * @return OptionsResolver
@@ -284,21 +275,5 @@ class JsonReader implements \Countable, \Iterator
         }
 
         return $this->optionsResolver;
-    }
-
-    /**
-     * Converts array to document.
-     *
-     * @param array $document
-     *
-     * @return object
-     */
-    private function convertDocument($document)
-    {
-        if (!$this->convertDocuments) {
-            return $document;
-        }
-
-        return $this->getConverter()->convertToDocument($document, $this->getManager());
     }
 }

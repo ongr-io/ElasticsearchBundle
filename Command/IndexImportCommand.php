@@ -43,6 +43,12 @@ class IndexImportCommand extends AbstractManagerAwareCommand
                 InputOption::VALUE_REQUIRED,
                 'Set bulk size for import',
                 1000
+            )
+            ->addOption(
+                'gzip',
+                'z',
+                InputOption::VALUE_NONE,
+                'Import a gzip file'
             );
     }
 
@@ -53,13 +59,20 @@ class IndexImportCommand extends AbstractManagerAwareCommand
     {
         $manager = $this->getManager($input->getOption('manager'));
 
+        // Initialize options array
+        $options = [];
+        if ($input->getOption('gzip')) {
+            $options['gzip'] = null;
+        }
+        $options['bulk-size'] = $input->getOption('bulk-size');
+
         /** @var ImportService $importService */
         $importService = $this->getContainer()->get('es.import');
         $importService->importIndex(
             $manager,
             $input->getArgument('filename'),
             $output,
-            $input->getOption('bulk-size')
+            $options
         );
 
         $output->writeln('<info>Data import completed!</info>');
