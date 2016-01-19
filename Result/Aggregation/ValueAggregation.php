@@ -16,7 +16,7 @@ use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 /**
  * This is the class for plain aggregation result with nested aggregations support.
  */
-class ValueAggregation
+class ValueAggregation implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var array
@@ -97,7 +97,7 @@ class ValueAggregation
      */
     public function find($path)
     {
-        $name = explode('.', $path, 1);
+        $name = explode('.', $path, 2);
         $aggregation = $this->getAggregation($name[0]);
 
         if ($aggregation === null || !isset($name[1])) {
@@ -105,5 +105,55 @@ class ValueAggregation
         }
 
         return $aggregation->find($name[1]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetExists($offset)
+    {
+        return array_key_exists($offset, $this->rawData);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        if (!isset($this->rawData[$offset])) {
+            return null;
+        }
+
+        return $this->rawData[$offset];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw new \LogicException('Aggregation result can not be changed on runtime.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset($offset)
+    {
+        throw new \LogicException('Aggregation result can not be changed on runtime.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        $buckets = $this->getBuckets();
+
+        if ($buckets === null) {
+            throw new \LogicException('Can not iterate over aggregation without buckets!');
+        }
+
+        return new \ArrayIterator($this->getBuckets());
     }
 }
