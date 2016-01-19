@@ -1,8 +1,8 @@
 # ONGR Elasticsearch Bundle
 
 Elasticsearch Bundle was created in order to serve the need for
-professional [elasticsearch](https://www.elastic.co/products/elasticsearch) integration with enterprise level Symfony
-2 systems. This bundle is:
+professional [Elasticsearch](https://www.elastic.co/products/elasticsearch) integration with enterprise level Symfony
+applications. This bundle is:
 
 * Supported by [ONGR.io](http://ongr.io) development team.
 * Uses the official [elasticsearch-php](https://github.com/elastic/elasticsearch-php) client.
@@ -52,22 +52,19 @@ php composer.phar require ongr/elasticsearch-bundle "~1.0"
 Enable Elasticsearch bundle in your AppKernel:
 
 ```php
-
-<?php
 // app/AppKernel.php
 
 public function registerBundles()
 {
-    $bundles = array(
+    $bundles = [
         // ...
         new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
-    );
+    ];
+    
+    // ...
 }
 
 ```
-
-Yep, that's it, **1 step** installation. All the next steps are **optional**. Of course, you most likely will need to add some customizations, like create document mapping, few managers and etc. So look below how easy is to continue.
-
 
 #### Step 2: Add configuration
 
@@ -75,13 +72,15 @@ Add minimal configuration for Elasticsearch bundle.
 
 ```yaml
 
-#app/config/config.yml
+# app/config/config.yml
+
 ongr_elasticsearch:
     connections:
         default:
             index_name: acme
     managers:
         default:
+            profiler: true
             connection: default
             mappings:
                 - AppBundle
@@ -95,9 +94,7 @@ In this particular example there is 2 things you should know. The index name in 
 
 #### Step 3: Define your Elasticsearch types as `Document` objects
 
-Elasticsearch bundle uses objects to represent Elasticsearch documents. Lets create a `Customer` class for customer document. We assume that we have an AppBundle installed.
-
-> __Note:__ All documents must be created in `Document/` directory.
+This bundle uses objects to represent Elasticsearch documents. Lets create a `Customer` class for customer document.
 
 ```php
 // src/AppBundle/Document/Customer.php
@@ -137,7 +134,7 @@ Elasticsearch bundle provides several `CLI` commands. One of them is for creatin
 
 ```bash
 
-    app/console ongr:es:index:create
+bin/console ongr:es:index:create
 
 ```
 

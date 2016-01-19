@@ -178,7 +178,7 @@ class Configuration implements ConfigurationInterface
                         )
                     ->end()
                     ->booleanNode('profiler')
-                        ->info('Enables elasticsearch profiler in the sf web profiler toolbar.')
+                        ->info('Enables elasticsearch profiler in the Symfony web profiler toolbar.')
                         ->defaultFalse()
                     ->end()
                     ->arrayNode('logger')

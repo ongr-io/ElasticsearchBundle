@@ -24,11 +24,6 @@ class ValueAggregation
     private $rawData;
 
     /**
-     * @var array Extracted aggregation value.
-     */
-    private $value;
-
-    /**
      * Constructor.
      *
      * @param array $rawData
@@ -39,53 +34,58 @@ class ValueAggregation
     }
 
     /**
-     * Returns the raw data which was passed from the iterator.
+     * Returns aggregation value by name.
+     *
+     * @param string $name
      *
      * @return array
      */
-    public function getRawData()
+    public function getValue($name)
     {
-        return $this->rawData;
+        if (!isset($this->rawData[$name])) {
+            return null;
+        }
+
+        return $this->rawData[$name];
     }
 
     /**
-     * Returns aggregation value.
+     * Returns array of bucket values.
      *
-     * @return array
+     * @return ValueAggregation[]|null
      */
-    public function getValue()
+    public function getBuckets()
     {
-        if ($this->value !== null) {
-            return $this->value;
+        if (!isset($this->rawData['buckets'])) {
+            return null;
         }
 
-        $this->value = [];
+        $buckets = [];
 
-        foreach ($this->rawData as $key => $value) {
-            if (strpos($key, AbstractAggregation::PREFIX) !== 0) {
-                $this->value[$key] = $value;
-            }
+        foreach ($this->rawData['buckets'] as $bucket) {
+            $buckets[] = new ValueAggregation($bucket);
         }
 
-        return $this->value;
+        return $buckets;
     }
 
     /**
-     * Returns sub-aggregations.
+     * Returns sub-aggregation.
      *
-     * @return null|AggregationIterator|ValueAggregation
+     * @param string $name
+     *
+     * @return ValueAggregation|null
      */
-    public function getAggregations()
+    public function getAggregation($name)
     {
-        $rawAggregations = [];
+        // TODO: remove this *** after DSL update
+        $name = AbstractAggregation::PREFIX . $name;
 
-        foreach ($this->rawData as $key => $value) {
-            if (strpos($key, AbstractAggregation::PREFIX) === 0) {
-                $rawAggregations[$key] = $value;
-            }
+        if (!isset($this->rawData[$name])) {
+            return null;
         }
 
-        return new AggregationIterator($rawAggregations);
+        return new ValueAggregation($this->rawData[$name]);
     }
 
     /**
@@ -93,12 +93,17 @@ class ValueAggregation
      *
      * @param string $path
      *
-     * @return null|AggregationIterator|ValueAggregation
+     * @return ValueAggregation|null
      */
     public function find($path)
     {
-        $iterator = $this->getAggregations();
+        $name = explode('.', $path, 1);
+        $aggregation = $this->getAggregation($name[0]);
 
-        return $iterator->find($path);
+        if ($aggregation === null || !isset($name[1])) {
+            return $aggregation;
+        }
+
+        return $aggregation->find($name[1]);
     }
 }
