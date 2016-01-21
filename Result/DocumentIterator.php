@@ -11,9 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
+use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
 use ONGR\ElasticsearchBundle\Service\Manager;
-use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
 
 /**
  * Class DocumentIterator.
@@ -43,18 +42,15 @@ class DocumentIterator extends AbstractResultsIterator
      *
      * @param string $name
      *
-     * @return ValueAggregation|null
+     * @return AggregationValue|null
      */
     public function getAggregation($name)
     {
-        // TODO: remove this *** after DSL update
-        $name = AbstractAggregation::PREFIX . $name;
-
         if (!isset($this->aggregations[$name])) {
             return null;
         }
 
-        return new ValueAggregation($this->aggregations[$name]);
+        return new AggregationValue($this->aggregations[$name]);
     }
 
     /**

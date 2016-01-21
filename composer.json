@@ -18,7 +18,7 @@
         "doctrine/cache": "~1.4",
         "monolog/monolog": "~1.10",
         "elasticsearch/elasticsearch": "^2.1.3",
-        "ongr/elasticsearch-dsl": "~1.0"
+        "ongr/elasticsearch-dsl": "dev-master"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.4",

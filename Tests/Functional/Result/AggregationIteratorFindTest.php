@@ -75,10 +75,10 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
         $results = $repository->execute($search);
         $agg = $results->getAggregation('terms');
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation', $agg);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue', $agg);
 
         foreach ($agg->getBuckets() as $aggKey => $subAgg) {
-            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation', $subAgg);
+            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue', $subAgg);
             $this->assertEquals($expected[$aggKey]['key'], $subAgg->getValue('key'));
             $this->assertEquals($expected[$aggKey]['doc_count'], $subAgg->getValue('doc_count'));
         }

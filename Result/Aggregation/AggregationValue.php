@@ -11,12 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
-use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
-
 /**
  * This is the class for plain aggregation result with nested aggregations support.
  */
-class ValueAggregation implements \ArrayAccess, \IteratorAggregate
+class AggregationValue implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var array
@@ -52,7 +50,7 @@ class ValueAggregation implements \ArrayAccess, \IteratorAggregate
     /**
      * Returns array of bucket values.
      *
-     * @return ValueAggregation[]|null
+     * @return AggregationValue[]|null
      */
     public function getBuckets()
     {
@@ -63,7 +61,7 @@ class ValueAggregation implements \ArrayAccess, \IteratorAggregate
         $buckets = [];
 
         foreach ($this->rawData['buckets'] as $bucket) {
-            $buckets[] = new ValueAggregation($bucket);
+            $buckets[] = new self($bucket);
         }
 
         return $buckets;
@@ -74,18 +72,15 @@ class ValueAggregation implements \ArrayAccess, \IteratorAggregate
      *
      * @param string $name
      *
-     * @return ValueAggregation|null
+     * @return AggregationValue|null
      */
     public function getAggregation($name)
     {
-        // TODO: remove this *** after DSL update
-        $name = AbstractAggregation::PREFIX . $name;
-
         if (!isset($this->rawData[$name])) {
             return null;
         }
 
-        return new ValueAggregation($this->rawData[$name]);
+        return new self($this->rawData[$name]);
     }
 
     /**
@@ -93,7 +88,7 @@ class ValueAggregation implements \ArrayAccess, \IteratorAggregate
      *
      * @param string $path
      *
-     * @return ValueAggregation|null
+     * @return AggregationValue|null
      */
     public function find($path)
     {
