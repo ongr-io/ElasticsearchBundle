@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle;
+namespace ONGR\ElasticsearchBundle\Collection;
 
 /**
  * This class is a holder for collection of objects.
