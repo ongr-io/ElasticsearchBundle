@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
-use ONGR\ElasticsearchDSL\Filter\PrefixFilter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\PrefixQuery;
 use ONGR\ElasticsearchDSL\Query\RangeQuery;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -335,7 +335,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $search = $repository
             ->createSearch()
-            ->addFilter(new PrefixFilter('title', 'dummy'));
+            ->addFilter(new PrefixQuery('title', 'dummy'));
 
         $searchResult = $repository->execute($search);
         $this->assertInstanceOf(
