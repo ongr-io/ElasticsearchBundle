@@ -14,8 +14,6 @@ matrix:
     - php: hhvm
   include:
     - php: 7.0
-      env: ES_VERSION="1.7.4"
-    - php: 7.0
       env: SYMFONY="2.7.*"
 install:
   - composer require --no-update symfony/symfony:${SYMFONY}
