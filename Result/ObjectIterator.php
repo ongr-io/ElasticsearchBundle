@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Collection;
+use ONGR\ElasticsearchBundle\Collection\Collection;
 
 /**
  * ObjectIterator class.

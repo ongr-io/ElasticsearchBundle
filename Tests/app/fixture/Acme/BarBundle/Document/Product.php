@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Collection;
+use ONGR\ElasticsearchBundle\Collection\Collection;
 
 /**
  * Product document for testing.
