@@ -84,3 +84,57 @@ Example above prints titles of all documents following search score.
 We highly recommend to `unset()` document instance after you dont need it or manage memory at your own way.
 
 There is possible to change the `DocumentIterator` behaviour. Take a look at the [overwriting bundle parts](overwriting_bundle.md).
+
+## Aggregations
+
+If your search query includes aggregations you can reach calculated aggregations
+by calling `getAggregation()` method.
+
+In example below we show how to build query with aggregations and how to handle
+aggregation results:
+
+```php
+$avgPriceAggregation = new AvgAggregation('avg_price');
+$avgPriceAggregation->setField('price');
+
+$brandTermAggregation = new TermsAggregation('brand');
+$brandTermAggregation->setField('manufacturer');
+$brandTermAggregation->addAggregation($avgPriceAggregation);
+
+$query = new Search();
+$query->addAggregation($brandTermAggregation);
+
+$result = $this->get('es.manager')->execute(['AppBundle:Product'], $query);
+
+// Build a list of available choices
+$choices = [];
+
+foreach ($result->getAggregation('brand') as $bucket) {
+    $choices[] = [
+        'brand' => $bucket['key'],
+        'count' => $bucket['doc_count'],
+        'avg_price' => $bucket->find('avg_price')['value'],
+    ];
+}
+
+var_export($choices);
+```
+
+The example above will print similar result:
+
+```
+array (
+  0 => 
+  array (
+    'brand' => 'Terre Cortesi Moncaro',
+    'count' => 7,
+    'avg_price' => 20.42714282444545,
+  ),
+  1 => 
+  array (
+    'brand' => 'Casella Wines',
+    'count' => 4,
+    'avg_price' => 10.47249972820282,
+  )
+)
+```

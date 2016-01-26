@@ -33,12 +33,4 @@ class RawIterator extends AbstractResultsIterator
     {
         return $document;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getScrollResultsType()
-    {
-        return Result::RESULTS_RAW_ITERATOR;
-    }
 }

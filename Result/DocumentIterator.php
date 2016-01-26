@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationIterator;
-use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
+use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
+use ONGR\ElasticsearchBundle\Service\Manager;
 
 /**
  * Class DocumentIterator.
@@ -20,15 +20,21 @@ use ONGR\ElasticsearchBundle\Result\Aggregation\ValueAggregation;
 class DocumentIterator extends AbstractResultsIterator
 {
     /**
-     * Returns aggregations.
-     *
-     * @return AggregationIterator
+     * @var array
      */
-    public function getAggregations()
-    {
-        $aggregations = parent::getAggregations();
+    private $aggregations;
 
-        return new AggregationIterator($aggregations);
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(array $rawData, Manager $manager, array $scroll = [])
+    {
+        if (isset($rawData['aggregations'])) {
+            $this->aggregations = $rawData['aggregations'];
+            unset($rawData['aggregations']);
+        }
+
+        parent::__construct($rawData, $manager, $scroll);
     }
 
     /**
@@ -36,11 +42,15 @@ class DocumentIterator extends AbstractResultsIterator
      *
      * @param string $name
      *
-     * @return null|AggregationIterator|ValueAggregation
+     * @return AggregationValue|null
      */
     public function getAggregation($name)
     {
-        return $this->getAggregations()->find($name);
+        if (!isset($this->aggregations[$name])) {
+            return null;
+        }
+
+        return new AggregationValue($this->aggregations[$name]);
     }
 
     /**
@@ -49,13 +59,5 @@ class DocumentIterator extends AbstractResultsIterator
     protected function convertDocument(array $document)
     {
         return $this->getConverter()->convertToDocument($document, $this->getManager());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getScrollResultsType()
-    {
-        return Result::RESULTS_OBJECT;
     }
 }
