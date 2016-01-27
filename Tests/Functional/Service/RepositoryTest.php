@@ -518,8 +518,8 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $this->assertEquals(4, $count['count']);
 
         $shards = [
-            'total' => 5,
-            'successful' => 5,
+            'total' => 1,
+            'successful' => 1,
             'failed' => 0,
         ];
 

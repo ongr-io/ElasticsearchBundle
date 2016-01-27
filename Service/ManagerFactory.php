@@ -74,6 +74,14 @@ class ManagerFactory
         }
         unset($connection['analysis']);
 
+        if (!isset($connection['settings']['number_of_replicas'])) {
+            $connection['settings']['number_of_replicas'] = 0;
+        }
+
+        if (!isset($connection['settings']['number_of_shards'])) {
+            $connection['settings']['number_of_shards'] = 1;
+        }
+
         $mappings = $this->metadataCollector->getClientMapping($managerConfig['mappings']);
 
         $client = ClientBuilder::create();
