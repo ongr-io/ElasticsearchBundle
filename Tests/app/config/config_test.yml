@@ -22,7 +22,6 @@ ongr_elasticsearch:
     managers:
         default:
             connection: default
-            profiler: true
             logger: true
             mappings:
                 - AcmeBarBundle
@@ -33,7 +32,6 @@ ongr_elasticsearch:
                 - AcmeFooBundle
         readonly:
             connection: default
-            profiler: true
             readonly: true
             mappings:
                 - AcmeBarBundle

@@ -64,7 +64,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
         $expectedManagers = [
             'test' => [
                 'connection' => 'test2',
-                'profiler' => false,
                 'logger' => [
                     'enabled' => true,
                     'level' => 'warning',
@@ -91,7 +90,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'managers' => [
                     'test' => [
                         'connection' => 'test2',
-                        'profiler' => true,
                         'logger' => true,
                         'readonly' => false,
                         'mappings' => ['testBundle'],
@@ -103,7 +101,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
         $expectedManagers = [
             'test' => [
                 'connection' => 'test2',
-                'profiler' => true,
                 'logger' => [
                     'enabled' => true,
                     'level' => 'warning',
