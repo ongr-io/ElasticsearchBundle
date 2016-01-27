@@ -46,7 +46,6 @@ ongr_elasticsearch:
     managers:
         default:
             connection: default
-            profiler: true #default %kernel.debug%
             logger: true #default %kernel.debug%
             readonly: false #default false
             mappings:
@@ -55,7 +54,6 @@ ongr_elasticsearch:
             connection: bar
         readonly:
             connection: default
-            profiler: true
             readonly: true
             mappings:
                 - AcmeBarBundle:UserDocument #Includes only one type to the mapping

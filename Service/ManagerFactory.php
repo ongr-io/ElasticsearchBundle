@@ -77,12 +77,8 @@ class ManagerFactory
         $mappings = $this->metadataCollector->getClientMapping($managerConfig['mappings']);
 
         $client = ClientBuilder::create();
-
         $client->setHosts($connection['hosts']);
-
-        if ($this->tracer && $managerConfig['profiler']) {
-            $client->setTracer($this->tracer);
-        }
+        $client->setTracer($this->tracer);
 
         if ($this->logger && $managerConfig['logger']['enabled']) {
             $client->setLogger($this->logger);
