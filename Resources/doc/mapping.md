@@ -104,7 +104,7 @@ class Content
      * @ES\Property(
         type="string",
         name="original_title",
-        options={"index_analyzer":"incrementalAnalyzer"}
+        options={"analyzer":"incrementalAnalyzer"}
       )
      */
     public $title;
