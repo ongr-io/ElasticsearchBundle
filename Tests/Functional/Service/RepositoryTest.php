@@ -415,40 +415,6 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Tests if documents are deleted by query.
-     */
-    public function testDeleteByQuery()
-    {
-        /** @var Manager $manager */
-        $all = new MatchAllQuery();
-        $manager = $this->getManager();
-        $index = $manager->getIndexName();
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
-        $search = $repository->createSearch()->addQuery($all);
-        $results = $repository->execute($search)->count();
-        $this->assertEquals(4, $results);
-
-        $query = $repository->createSearch();
-        $term = new RangeQuery('price', ['gt' => 1, 'lt' => 200]);
-        $query->addQuery($term);
-
-        $expectedResults = [
-            'failed' => 0,
-            'successful' => 5,
-            'total' => 5,
-        ];
-
-        $result = $repository->deleteByQuery($query);
-        $this->assertEquals($expectedResults['failed'], $result['_indices'][$index]['_shards']['failed']);
-        $this->assertEquals($expectedResults['successful'], $result['_indices'][$index]['_shards']['successful']);
-        $this->assertEquals($expectedResults['total'], $result['_indices'][$index]['_shards']['total']);
-
-        $search = $repository->createSearch()->addQuery($all);
-        $results = $repository->execute($search)->count();
-        $this->assertEquals(2, $results);
-    }
-
-    /**
      * Tests if document can be updated with partial update without initiating document object.
      */
     public function testPartialUpdate()

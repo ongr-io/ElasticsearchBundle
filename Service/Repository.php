@@ -201,27 +201,6 @@ class Repository
     }
 
     /**
-     * Delete by query.
-     *
-     * @param Search $search
-     *
-     * @return array
-     */
-    public function deleteByQuery(Search $search)
-    {
-        $params = [
-            'index' => $this->getManager()->getIndexName(),
-            'type' => $this->type,
-            'body' => $search->toArray(),
-        ];
-
-        return $this
-            ->getManager()
-            ->getClient()
-            ->deleteByQuery($params);
-    }
-
-    /**
      * Removes a single document data by ID.
      *
      * @param string $id Document ID to remove.
