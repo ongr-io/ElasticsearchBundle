@@ -91,10 +91,9 @@ class Converter
             if (isset($aliases[$name]['type'])) {
                 switch ($aliases[$name]['type']) {
                     case 'date':
-                        $value = \DateTime::createFromFormat(
-                            isset($aliases[$name]['format']) ? $aliases[$name]['format'] : \DateTime::ISO8601,
-                            $value
-                        );
+                        $epoch = strtotime($value);
+                        $value = new \DateTime();
+                        $value->setTimestamp($epoch);
                         break;
                     case 'object':
                     case 'nested':
