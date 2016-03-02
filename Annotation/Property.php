@@ -30,7 +30,7 @@ final class Property
      *
      * @Required
      * @Enum({"string", "boolean", "integer", "float", "long", "short", "byte", "double", "date",
-     *        "geo_point", "geo_shape", "ip", "binary", "token_count" })
+     *        "geo_point", "geo_shape", "ip", "binary", "token_count", "object" })
      */
     public $type;
 
