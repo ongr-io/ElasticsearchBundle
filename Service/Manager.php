@@ -205,10 +205,10 @@ class Manager
      */
     public function setCommitMode($commitMode)
     {
-        if ($commitMode === 'refresh' || $commitMode === 'flush') {
+        if ($commitMode === 'refresh' || $commitMode === 'flush' || $commitMode === 'none') {
             $this->commitMode = $commitMode;
         } else {
-            throw new \LogicException('The commit method must be either refresh or flush.');
+            throw new \LogicException('The commit method must be either refresh, flush or none.');
         }
     }
 
@@ -342,7 +342,6 @@ class Manager
                     $this->flush($params);
                     break;
                 case 'refresh':
-                default:
                     $this->refresh($params);
                     break;
             }
