@@ -240,4 +240,18 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $manager = new Manager('test', $config, $esClient, ['index' => 'test'], $metadataCollector, $converter);
         $manager->clearScroll('foo');
     }
+
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessage The commit method must be either refresh or flush
+     */
+    public function testSetCommitModeException()
+    {
+        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+            ->disableOriginalConstructor()
+            ->setMethods(null)
+            ->getMock();
+
+        $manager->setCommitMode('foo');
+    }
 }

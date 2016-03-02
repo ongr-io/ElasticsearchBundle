@@ -82,18 +82,6 @@ class MappingPass implements CompilerPassInterface
                 );
 
                 $repositoryId = sprintf('es.manager.%s.%s', $managerName, $repositoryType);
-
-                if (strtolower(substr($repositoryType, -8)) === 'document') {
-                    $container->setAlias(
-                        sprintf(
-                            'es.manager.%s.%s',
-                            $managerName,
-                            substr($repositoryType, 0, strlen($repositoryType) - 8)
-                        ),
-                        $repositoryId
-                    );
-                }
-
                 $container->setDefinition($repositoryId, $repositoryDefinition);
             }
         }
