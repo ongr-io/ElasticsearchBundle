@@ -84,20 +84,18 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         );
 
         if ($input->getOption('alias') && $originalIndexName != $manager->getIndexName()) {
-            $manager->getClient()->indices()->putAlias(
-                [
-                    'index' => $manager->getIndexName(),
-                    'name' => $originalIndexName,
+            $params['body'] = [
+                'actions' => [
+                    [
+                        'add' => [
+                            'index' => $manager->getIndexName(),
+                            'alias' => $originalIndexName,
+                        ]
+                    ]
                 ]
-            );
-
-            $output->writeln(
-                sprintf(
-                    '<info>Created an alias `<comment>%s</comment>` for the `<comment>%s</comment>` index.</info>',
-                    $originalIndexName,
-                    $manager->getIndexName()
-                )
-            );
+            ];
+            $message = '<info>Created an alias `<comment>'.$originalIndexName.'</comment>` for the `<comment>'.
+                $manager->getIndexName().'</comment>` index.</info>';
 
             if ($manager->getClient()->indices()->existsAlias(['name' => $originalIndexName])) {
                 $currentAlias = $manager->getClient()->indices()->getAlias(
@@ -106,29 +104,18 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                     ]
                 );
 
-                if (isset($currentAlias[$manager->getIndexName()])) {
-                    unset($currentAlias[$manager->getIndexName()]);
-                }
-
                 $indexesToRemoveAliases = implode(',', array_keys($currentAlias));
                 if (!empty($indexesToRemoveAliases)) {
-                    $manager->getClient()->indices()->deleteAlias(
-                        [
+                    $params['body']['actions'][]['remove'] = [
                             'index' => $indexesToRemoveAliases,
-                            'name' => $originalIndexName,
-                        ]
-                    );
-
-                    $output->writeln(
-                        sprintf(
-                            '<info>Removed `<comment>%s</comment>` alias from `<comment>%s</comment>`' .
-                            'index(es).</info>',
-                            $originalIndexName,
-                            $indexesToRemoveAliases
-                        )
-                    );
+                            'alias' => $originalIndexName,
+                        ];
+                    $message .= '<info>Removed `<comment>'.$originalIndexName.'</comment>` alias from `<comment>'.
+                        $indexesToRemoveAliases.'</comment>` index(es).</info>';
                 }
             }
+            $manager->getClient()->indices()->updateAliases($params);
+            $output->writeln($message);
         }
     }
 }
