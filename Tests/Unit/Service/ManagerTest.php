@@ -243,7 +243,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \LogicException
-     * @expectedExceptionMessage The commit method must be either refresh or flush
+     * @expectedExceptionMessage The commit method must be either refresh, flush or none.
      */
     public function testSetCommitModeException()
     {
