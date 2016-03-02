@@ -39,7 +39,7 @@ final class Embedded
     public $name;
 
     /**
-     * Defines if related object will have one or multiple values.
+     * Defines if related value will store a single object or an array of objects
      *
      * If this value is set to true, in the result ObjectIterator will be provided,
      * otherwise you will get single object.
