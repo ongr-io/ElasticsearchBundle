@@ -171,7 +171,7 @@ class Configuration implements ConfigurationInterface
                         )
                     ->end()
                     ->enumNode('commit_mode')
-                        ->values(['refresh', 'flush'])
+                        ->values(['refresh', 'flush', 'none'])
                         ->defaultValue('refresh')
                         ->info(
                             'The type of commit to the elasticsearch'
