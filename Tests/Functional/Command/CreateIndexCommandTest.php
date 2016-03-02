@@ -142,6 +142,34 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     }
 
     /**
+     * Testing if aliases are correctly changed from one index to the next after multiple command calls
+     */
+    public function testAliasIsChangedCorrectly()
+    {
+        $manager = $this->getManager();
+        $aliasName = $manager->getIndexName();
+
+        $this->runIndexCreateCommand($manager->getName(), ['--time' => null, '--alias' => null], []);
+        $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
+        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
+        $this->assertCount(1, array_keys($aliases));
+        $aliasedIndex1 = array_keys($aliases)[0];
+
+        $this->assertNotEquals($manager->getIndexName(), $aliasedIndex1);
+        $this->runIndexCreateCommand($manager->getName(), ['--time' => null, '--alias' => null], []);
+
+        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
+        $this->assertCount(1, array_keys($aliases));
+        $aliasedIndex2 = array_keys($aliases)[0];
+        $this->assertNotEquals($aliasedIndex1, $aliasedIndex2);
+
+        $manager->setIndexName($aliasedIndex1);
+        $manager->dropIndex();
+        $manager->setIndexName($aliasedIndex2);
+        $manager->dropIndex();
+    }
+
+    /**
      * Runs the index create command.
      *
      * @param string $managerName
