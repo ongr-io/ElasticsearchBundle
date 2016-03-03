@@ -471,7 +471,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
      */
     public function testCountApiRawResponse()
     {
-        $manager = $this->getManager();
+        $manager = $this->getManager('default');
         $repository = $manager->getRepository('AcmeBarBundle:Product');
 
         $matchAll = new MatchAllQuery();
