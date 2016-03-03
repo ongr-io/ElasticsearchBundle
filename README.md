@@ -80,7 +80,6 @@ ongr_elasticsearch:
             index_name: acme
     managers:
         default:
-            profiler: true
             connection: default
             mappings:
                 - AppBundle
