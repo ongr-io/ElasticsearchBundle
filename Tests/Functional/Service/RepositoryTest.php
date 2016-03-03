@@ -505,7 +505,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
      */
     public function testCountApiRawResponse()
     {
-        $manager = $this->getManager();
+        $manager = $this->getManager('default');
         $repository = $manager->getRepository('AcmeBarBundle:Product');
 
         $matchAll = new MatchAllQuery();
@@ -518,8 +518,8 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $this->assertEquals(4, $count['count']);
 
         $shards = [
-            'total' => 1,
-            'successful' => 1,
+            'total' => 5,
+            'successful' => 5,
             'failed' => 0,
         ];
 

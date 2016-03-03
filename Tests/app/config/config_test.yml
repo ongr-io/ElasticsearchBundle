@@ -17,9 +17,6 @@ ongr_elasticsearch:
             hosts:
                 - 127.0.0.1:9200
             index_name: ongr-esb-test-bar
-            settings:
-                refresh_interval: -1
-                number_of_replicas: 0
     managers:
         default:
             connection: default
