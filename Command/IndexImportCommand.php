@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * IndexImportCommand class.
@@ -57,6 +58,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $manager = $this->getManager($input->getOption('manager'));
 
         // Initialize options array
@@ -75,6 +77,6 @@ class IndexImportCommand extends AbstractManagerAwareCommand
             $options
         );
 
-        $output->writeln('<info>Data import completed!</info>');
+        $io->success('Data import completed!');
     }
 }

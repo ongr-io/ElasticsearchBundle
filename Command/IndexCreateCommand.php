@@ -15,6 +15,7 @@ use ONGR\ElasticsearchBundle\Service\IndexSuffixFinder;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command for creating elasticsearch index.
@@ -52,6 +53,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $manager = $this->getManager($input->getOption('manager'));
         $originalIndexName = $manager->getIndexName();
 
@@ -62,9 +64,9 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         }
 
         if ($input->getOption('if-not-exists') && $manager->indexExists()) {
-            $output->writeln(
+            $io->note(
                 sprintf(
-                    '<info>Index `<comment>%s</comment>` already exists in `<comment>%s</comment>` manager.</info>',
+                    'Index `%s` already exists in `%s` manager.',
                     $manager->getIndexName(),
                     $input->getOption('manager')
                 )
@@ -75,9 +77,9 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
 
         $manager->createIndex($input->getOption('no-mapping'));
 
-        $output->writeln(
+        $io->text(
             sprintf(
-                '<info>Created `<comment>%s</comment>` index for the `<comment>%s</comment>` manager.</info>',
+                'Created `<comment>%s</comment>` index for the `<comment>%s</comment>` manager. ',
                 $manager->getIndexName(),
                 $input->getOption('manager')
             )
@@ -94,8 +96,8 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                     ]
                 ]
             ];
-            $message = '<info>Created an alias `<comment>'.$originalIndexName.'</comment>` for the `<comment>'.
-                $manager->getIndexName().'</comment>` index.</info>';
+            $message = 'Created an alias `<comment>'.$originalIndexName.'</comment>` for the `<comment>'.
+                $manager->getIndexName().'</comment>` index. ';
 
             if ($manager->getClient()->indices()->existsAlias(['name' => $originalIndexName])) {
                 $currentAlias = $manager->getClient()->indices()->getAlias(
@@ -110,12 +112,12 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                             'index' => $indexesToRemoveAliases,
                             'alias' => $originalIndexName,
                         ];
-                    $message .= '<info>Removed `<comment>'.$originalIndexName.'</comment>` alias from `<comment>'.
-                        $indexesToRemoveAliases.'</comment>` index(es).</info>';
+                    $message .= 'Removed `<comment>'.$originalIndexName.'</comment>` alias from `<comment>'.
+                        $indexesToRemoveAliases.'</comment>` index(es).';
                 }
             }
             $manager->getClient()->indices()->updateAliases($params);
-            $output->writeln($message);
+            $io->text($message);
         }
     }
 }

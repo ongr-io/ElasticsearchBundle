@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * IndexExportCommand class.
@@ -55,6 +56,7 @@ class IndexExportCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $manager = $this->getManager($input->getOption('manager'));
 
         /** @var ExportService $exportService */
@@ -67,6 +69,6 @@ class IndexExportCommand extends AbstractManagerAwareCommand
             $output
         );
 
-        $output->writeln('<info>Data export completed!</info>');
+        $io->success('Data export completed!');
     }
 }
