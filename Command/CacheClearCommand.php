@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Symfony command for clearing elasticsearch cache.
@@ -36,12 +37,13 @@ class CacheClearCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         $this
             ->getManager($input->getOption('manager'))
             ->clearCache();
-        $output->writeln(
+        $io->success(
             sprintf(
-                '<info>Elasticsearch index cache has been cleared for manager named</info> </comment>`%s`</comment>',
+                'Elasticsearch index cache has been cleared for manager named `%s`',
                 $input->getOption('manager')
             )
         );

@@ -66,13 +66,13 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
         );
 
         $expectedOutput = sprintf(
-            'Index `%s` already exists in `%s` manager.',
+            '/Index `%s` already exists in `%s` manager./',
             $manager->getIndexName(),
             $manager->getName()
         );
 
         // Test if the command output matches the expected output or not
-        $this->assertStringMatchesFormat($expectedOutput . '%a', $commandTester->getDisplay());
+        $this->assertRegexp($expectedOutput, $commandTester->getDisplay());
     }
 
     /**

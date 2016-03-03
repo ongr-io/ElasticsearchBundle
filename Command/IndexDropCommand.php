@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command for dropping Elasticsearch index.
@@ -43,18 +44,20 @@ class IndexDropCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         if ($input->getOption('force')) {
             $this->getManager($input->getOption('manager'))->dropIndex();
 
-            $output->writeln(
+            $io->text(
                 sprintf(
-                    '<info>Dropped index for the </info> <comment>`%s`</comment> manager',
+                    'Dropped index for the<comment>`%s`</comment> manager',
                     $input->getOption('manager')
                 )
             );
         } else {
-            $output->writeln('<error>ATTENTION:</error> This action should not be used in the production environment.');
-            $output->writeln('<error>"Option --force is mandatory to drop type(s)."</error> ');
+            $io->error('ATTENTION:');
+            $io->text('This action should not be used in the production environment.');
+            $io->error('Option --force is mandatory to drop type(s).');
         }
     }
 }

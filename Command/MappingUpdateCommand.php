@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to update mapping.
@@ -59,6 +60,7 @@ class MappingUpdateCommand extends AbstractManagerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
         if ($input->getOption('force')) {
             $managerName = $input->getOption('manager');
             $types = $input->getOption('types');
@@ -70,19 +72,19 @@ class MappingUpdateCommand extends AbstractManagerAwareCommand
                 ->getManager($input->getOption('manager'))
                 ->updateMapping($types, $ignoreConflicts);
 
-            $typesOutput = empty($types) ? 'All' : implode('</comment><info>`, `</info><comment>', $types);
+            $typesOutput = empty($types) ? 'All' : implode('`, `', $types);
 
-            $output->writeln(
+            $io->note($typesOutput);
+            $io->text(
                 sprintf(
-                    '<info>`</info><comment>%s</comment><info>` document(s) type(s) have been updated for the '
-                    . '`</info><comment>%s</comment><info> manager`.</info>',
-                    $typesOutput,
+                    'document(s) type(s) have been updated for the '
+                    . '`<comment>%s</comment> manager`.</info>',
                     $managerName
                 )
             );
         } else {
-            $output->writeln('<error>ATTENTION:</error> This action should not be used in the production environment.');
-            $output->writeln('<error>"Option --force is mandatory to change type(s) mapping."</error> ');
+            $io->error('ATTENTION: This action should not be used in the production environment.');
+            $io->error('Option --force is mandatory to change type(s) mapping.');
         }
     }
 }
