@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person;
 
 class PersistObjectsTest extends AbstractElasticsearchTestCase
 {
@@ -90,5 +91,34 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $product = $manager->find('AcmeBarBundle:Product', 'doc1');
 
         $this->count(3, $product->relatedCategories);
+    }
+
+    /**
+     * Tests the type of int and float parameters retrieved from elasticsearch
+     * when objects are created with strings
+     */
+    public function testType()
+    {
+        $manager = $this->getManager();
+
+        $product = new Product();
+        $product->id = 'foo';
+        $product->title = 'Test Document';
+        $product->price = '8.95';
+
+        $person = new Person();
+        $person->firstName = 'name';
+        $person->age = '35';
+
+        $manager->persist($product);
+        $manager->persist($person);
+        $manager->commit();
+
+        $product = $manager->find('AcmeBarBundle:Product', 'foo');
+        $repo = $manager->getRepository('AcmeBarBundle:Person');
+        $person = $repo->findOneBy(['first_name' => 'name']);
+
+        $this->assertInternalType('float', $product->price);
+        $this->assertInternalType('integer', $person->age);
     }
 }

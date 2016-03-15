@@ -175,6 +175,19 @@ class Converter
                     $value = $value->format(isset($alias['format']) ? $alias['format'] : \DateTime::ISO8601);
                 }
 
+                if (isset($alias['type'])) {
+                    switch ($alias['type']) {
+                        case 'float':
+                            $value = (float)$value;
+                            break;
+                        case 'integer':
+                            $value = (int)$value;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 $array[$name] = $value;
             }
         }
