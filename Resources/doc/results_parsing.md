@@ -77,6 +77,20 @@ foreach ($results as $document) {
 
 Example above prints titles of all documents following search score.
 
+### Getting Document Sort
+
+Similarly to Document score, during iteration you can get document sort, provided you
+added a sort to your search, you can retrieve your sort value while iterating the
+results:
+
+```php
+$results = $repository->execute($search);
+
+foreach ($results as $document) {
+    echo $document->title, $results->getDocumentSort();
+}
+```
+
 #### Important notice
 
 `DocumentIterator` doesn't cache or store generated document object. `Converter` directly returns the instance after it's requested and will generate again if it will be requested.
