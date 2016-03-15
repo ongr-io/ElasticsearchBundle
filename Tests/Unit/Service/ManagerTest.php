@@ -190,36 +190,6 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test for updateMapping() in case mapping was not found.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Mapping for type "test" was not found.
-     */
-    public function testUpdateMappingException()
-    {
-        $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
-
-        $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
-            ->setMethods(['getClientMapping'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $metadataCollector->expects($this->once())
-            ->method('getClientMapping')
-            ->with(['test'])
-            ->will($this->returnValue(null));
-
-        $converter = $this->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $config = ['readonly' => false];
-
-        $manager = new Manager('test', $config, $esClient, ['index' => 'test'], $metadataCollector, $converter);
-        $manager->updateMapping(['test']);
-    }
-
-    /**
      * Test for clearScroll().
      */
     public function testClearScroll()
