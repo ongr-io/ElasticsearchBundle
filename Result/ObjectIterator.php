@@ -83,4 +83,21 @@ class ObjectIterator extends Collection
 
         return $value;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        $value = parent::offsetGet($offset);
+
+        // Generate objects on demand
+        if ($value === null && $this->valid()) {
+            $value = $this->convertDocument($this->rawObjects[$offset]);
+            $this->rawObjects[$offset] = null;
+            $this->offsetSet($offset, $value);
+        }
+
+        return $value;
+    }
 }
