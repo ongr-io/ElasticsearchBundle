@@ -310,6 +310,24 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
+    * Returns sort of current hit.
+    *
+    * @return mixed
+    */
+    public function getDocumentSort()
+    {
+        if (!$this->valid()) {
+            throw new \LogicException('Document sort is available only while iterating over results.');
+        }
+
+        if (!isset($this->documents[$this->key]['sort'])) {
+            return null;
+        }
+
+        return $this->documents[$this->key]['sort'][0];
+    }
+
+    /**
      * Converts raw array to document object or array, depends on iterator type.
      *
      * @param array $document
