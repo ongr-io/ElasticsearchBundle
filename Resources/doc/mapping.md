@@ -225,6 +225,46 @@ To define object or nested fields use `@ES\Embedded` annotation. In the objects 
 
 > Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
 
+### Multi field annotations and usage
+
+Within the properties annotation you can specify the `field` attribute. It enables you to map several core_types of the same value.
+This can come very handy, for example, when wanting to map a string type, once when it’s analyzed and once when it’s not_analyzed.
+Lets take a look at an example.
+```php
+    /**
+     * @var string
+     * @ES\Property(
+     *  type="string",
+     *  name="title",
+     *  options={
+     *    "fields"={
+     *        "raw"={"type"="string", "index"="not_analyzed"},
+     *        "title"={"type"="string"}
+     *    }
+     *  }
+     * )
+     */
+    public $title;
+
+```
+You will notice that now title value is mapped both with and without the analyzer. Querying these fields will
+look like this:
+
+```php
+....
+        $query = new MatchQuery('title.title', 'Bar');
+        $search->addQuery($query);
+
+        $result1 = $repo->execute($search);
+
+        $query = new MatchQuery('title.raw', 'Bar');
+        $search->addQuery($query);
+
+        $result2 = $repo->execute($search);
+....
+```
+As you can see, when querying, full navigation notation (`title.title`) has to be specified, not just `title`.
+
 ### Meta-Fields Annotations
 
 Read dedicated page about meta-field annotations [here](meta_fields.md).
