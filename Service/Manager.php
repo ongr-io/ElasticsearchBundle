@@ -464,53 +464,6 @@ class Manager
     }
 
     /**
-     * Puts mapping into elasticsearch client.
-     *
-     * @param array $types           Specific types to put.
-     * @param bool  $ignoreConflicts Ignore elasticsearch merge conflicts.
-     */
-    public function updateMapping(array $types = [], $ignoreConflicts = true)
-    {
-        $this->isReadOnly('Mapping update');
-        $params['index'] = $this->getIndexName();
-
-        if (empty($types)) {
-            $map = $this->getConfig()['mappings'];
-            foreach ($map as $bundle) {
-                if (strpos($bundle, ':')) {
-                    $types[] = $bundle;
-                } else {
-                    $bundleMappings = $this->getMetadataCollector()->getMappings([$bundle]);
-                    foreach ($bundleMappings as $document) {
-                        $types[] = $document['bundle'].':'.$document['class'];
-                    }
-                }
-            }
-        }
-
-        foreach ($types as $type) {
-            $mapping = $this->getMetadataCollector()->getClientMapping([$type]);
-
-            if ($mapping === null) {
-                throw new \LogicException(sprintf('Mapping for type "%s" was not found.', $type));
-            }
-
-            try {
-                $type = $this->getMetadataCollector()->getDocumentType($type);
-                $params['type'] = $type;
-                $params['body'] = $mapping;
-                $params['ignore_conflicts'] = $ignoreConflicts;
-                $this->client->indices()->putMapping(array_filter($params));
-            } catch (\Exception $e) {
-                throw new \LogicException(
-                    'Only the documents[] can be passed to the type update command. ' .
-                    'Maybe you added only a bundle. Please check if a document is mapped in the manager.'
-                );
-            }
-        }
-    }
-
-    /**
      * Checks if connection index is already created.
      *
      * @return bool
