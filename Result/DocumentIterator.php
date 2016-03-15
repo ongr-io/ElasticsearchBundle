@@ -38,6 +38,22 @@ class DocumentIterator extends AbstractResultsIterator
     }
 
     /**
+     * Returns aggregations.
+     *
+     * @return array
+     */
+    public function getAggregations()
+    {
+        $aggregations = array();
+
+        foreach ($this->aggregations as $key => $aggregation) {
+            $aggregations[$key] = $this->getAggregation($key);
+        }
+
+        return $aggregations;
+    }
+
+    /**
      * Get a specific aggregation by name. It fetches from the top level only.
      *
      * @param string $name
