@@ -282,8 +282,19 @@ class Manager
         $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
 
         $this->bulk('index', $type, $documentArray);
-        if (!isset($document->id)) {
-            $this->persistedObjects[] = $document;
+
+        if ($id_field_info = $this->getIdFieldInfo($document)) {
+            if ($id_field_info['property_type'] == 'public') {
+                $id_field = $id_field_info['id_property'];
+                if (!isset($document->$id_field)) {
+                    $this->persistedObjects[] = $document;
+                }
+            } elseif (isset($id_field_info['getter'])) {
+                $getter = $id_field_info['getter'];
+                if ($document->$getter() == null) {
+                    $this->persistedObjects[] = $document;
+                }
+            }
         }
     }
 
@@ -332,6 +343,36 @@ class Manager
     }
 
     /**
+     * Gets Id field of the document
+     *
+     * @param object $document
+     *
+     * @return mixed
+     */
+    public function getIdFieldInfo($document)
+    {
+        $class = get_class($document);
+        $mapping = $this->metadataCollector->getMapping($class);
+        $response = [];
+
+        if (isset($mapping['aliases']['_id'])) {
+            $mapping = $mapping['aliases']['_id'];
+            $response['id_property'] = $mapping['propertyName'];
+            $response['property_type'] = 'private';
+
+            if ($mapping['propertyType'] == 'public') {
+                $response['property_type'] = 'public';
+            } elseif (isset($mapping['methods']['setter']) && isset($mapping['methods']['getter'])) {
+                $response['setter'] = $mapping['methods']['setter'];
+                $response['getter'] = $mapping['methods']['getter'];
+            }
+        } else {
+            return false;
+        }
+        return $response;
+    }
+
+    /**
      * Adds ids to documents
      *
      * @param array $bulkQueries
@@ -354,17 +395,12 @@ class Manager
             if (isset($this->persistedObjects)) {
                 $i = 0;
                 foreach ($this->persistedObjects as $document) {
-                    $class = get_class($document);
-                    $mapping = $this->metadataCollector->getMapping($class);
-
-                    if (isset($mapping['aliases']['_id'])) {
-                        $mapping = $mapping['aliases']['_id'];
-                        $id_property = $mapping['propertyName'];
-
-                        if ($mapping['propertyType'] == 'public') {
-                            $document->$id_property = $bulkResponse['items'][$indexing[$i]]['create']['_id'];
-                        } elseif (isset($mapping['methods']['setter'])) {
-                            $method = $mapping['methods']['setter'];
+                    if ($id_field_info = $this->getIdFieldInfo($document)) {
+                        if ($id_field_info['property_type'] == 'public') {
+                            $id_field = $id_field_info['id_property'];
+                            $document->$id_field = $bulkResponse['items'][$indexing[$i]]['create']['_id'];
+                        } elseif ($id_field_info['setter']) {
+                            $method = $id_field_info['setter'];
                             $document->$method($bulkResponse['items'][$indexing[$i]]['create']['_id']);
                         }
                     }
