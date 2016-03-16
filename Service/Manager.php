@@ -81,6 +81,14 @@ class Manager
     private $commitMode = 'refresh';
 
     /**
+     * Reference to the persisted objects that need to be given an ID that returns from
+     * elasticsearch
+     *
+     * @var array
+     */
+    private $persistedObjects = [];
+
+    /**
      * The size that defines after how much document inserts call commit function.
      *
      * @var int
@@ -274,6 +282,9 @@ class Manager
         $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
 
         $this->bulk('index', $type, $documentArray);
+        if (!isset($document->id)) {
+            $this->persistedObjects[] = $document;
+        }
     }
 
     /**
@@ -321,6 +332,50 @@ class Manager
     }
 
     /**
+     * Adds ids to documents
+     *
+     * @param array $bulkQueries
+     *
+     * @param array $bulkResponse
+     */
+    public function addIds(array $bulkQueries, $bulkResponse = [])
+    {
+        if (empty($bulkResponse)) {
+            $this->persistedObjects = [];
+            return;
+        }
+        $indexing = [];
+        foreach ($bulkQueries['body'] as $number => $query) {
+            if (isset($query['index']) && !isset($query['index']['_id'])) {
+                $indexing[] = $number / 2;
+            }
+        }
+        if (isset($bulkQueries['body'][0]['index'])) {
+            if (isset($this->persistedObjects)) {
+                $i = 0;
+                foreach ($this->persistedObjects as $document) {
+                    $class = get_class($document);
+                    $mapping = $this->metadataCollector->getMapping($class);
+
+                    if (isset($mapping['aliases']['_id'])) {
+                        $mapping = $mapping['aliases']['_id'];
+                        $id_property = $mapping['propertyName'];
+
+                        if ($mapping['propertyType'] == 'public') {
+                            $document->$id_property = $bulkResponse['items'][$indexing[$i]]['create']['_id'];
+                        } elseif (isset($mapping['methods']['setter'])) {
+                            $method = $mapping['methods']['setter'];
+                            $document->$method($bulkResponse['items'][$indexing[$i]]['create']['_id']);
+                        }
+                    }
+                    $i++;
+                }
+            }
+            $this->persistedObjects = [];
+        }
+    }
+
+    /**
      * Inserts the current query container to the index, used for bulk queries execution.
      *
      * @param array $params Parameters that will be passed to the flush or refresh queries.
@@ -346,9 +401,10 @@ class Manager
                     break;
             }
 
+            $this->addIds($bulkQueries, $bulkResponse);
+
             return $bulkResponse;
         }
-
         return null;
     }
 
