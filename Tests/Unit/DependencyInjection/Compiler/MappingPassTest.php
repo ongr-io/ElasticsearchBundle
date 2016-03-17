@@ -54,7 +54,6 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             'default' => [
                 'connection' => 'default',
                 'debug' => true,
-                'readonly' => false,
                 'mappings' => ['AcmeBarBundle'],
             ],
         ];
@@ -117,7 +116,6 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             'default' => [
                 'connection' => 'default',
                 'debug' => true,
-                'readonly' => false,
                 'mappings' => ['AcmeBarBundle'],
             ],
         ];

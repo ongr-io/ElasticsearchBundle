@@ -107,23 +107,6 @@ class ManagerTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test if exception is thrown on read only manager.
-     *
-     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
-     * @expectedExceptionMessage Manager is readonly! Bulk operation is not permitted.
-     */
-    public function testPersistReadOnlyManager()
-    {
-        $manager = $this->getContainer()->get('es.manager.readonly');
-
-        $product = new Product();
-        $product->title = 'test';
-
-        $manager->persist($product);
-        $manager->commit();
-    }
-
-    /**
      * Data provider for testPersistExceptions().
      *
      * @return array

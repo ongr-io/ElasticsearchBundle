@@ -178,9 +178,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $config = ['readonly' => false];
-
-        $manager = new Manager('test', $config, $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
 
         foreach ($calls as list($operation, $type, $query)) {
             $manager->bulk($operation, $type, $query);
@@ -205,9 +203,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $config = ['readonly' => false];
-
-        $manager = new Manager('test', $config, $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
         $manager->clearScroll('foo');
     }
 
