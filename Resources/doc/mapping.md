@@ -195,7 +195,7 @@ class Content
     /**
      * @var ContentMetaObject[]|Collection
      *
-     * @ES\Embedded(class="AppBundle:ContentMetaObject", multiple="true")
+     * @ES\Embedded(class="AppBundle:ContentMetaObject", multiple=true)
      */
     public $metaObjects;
     
