@@ -48,11 +48,6 @@ class Manager
     private $converter;
 
     /**
-     * @var bool
-     */
-    private $readOnly;
-
-    /**
      * @var array Container for bulk queries
      */
     private $bulkQueries = [];
@@ -121,8 +116,6 @@ class Manager
         $this->indexSettings = $indexSettings;
         $this->metadataCollector = $metadataCollector;
         $this->converter = $converter;
-
-        $this->setReadOnly($config['readonly']);
     }
 
     /**
@@ -329,8 +322,6 @@ class Manager
      */
     public function commit(array $params = [])
     {
-        $this->isReadOnly('Commit');
-
         if (!empty($this->bulkQueries)) {
             $bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
             $this->bulkQueries = [];
@@ -360,11 +351,11 @@ class Manager
      * @param array        $query     DSL to execute.
      *
      * @throws \InvalidArgumentException
+     *
+     * @return null|array
      */
     public function bulk($operation, $type, array $query)
     {
-        $this->isReadOnly('Bulk');
-
         if (!in_array($operation, ['index', 'create', 'update', 'delete'])) {
             throw new \InvalidArgumentException('Wrong bulk operation selected');
         }
@@ -398,10 +389,13 @@ class Manager
         // We are using counter because there is to difficult to resolve this from bulkQueries array.
         $this->bulkCount++;
 
+        $response = null;
         if ($this->bulkCommitSize === $this->bulkCount) {
-            $this->commit();
+            $response = $this->commit();
             $this->bulkCount = 0;
         }
+
+        return $response;
     }
 
     /**
@@ -426,8 +420,6 @@ class Manager
      */
     public function createIndex($noMapping = false)
     {
-        $this->isReadOnly('Create index');
-
         if ($noMapping) {
             unset($this->indexSettings['body']['mappings']);
         }
@@ -440,8 +432,6 @@ class Manager
      */
     public function dropIndex()
     {
-        $this->isReadOnly('Drop index');
-
         return $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
     }
 
@@ -508,33 +498,7 @@ class Manager
      */
     public function clearCache()
     {
-        $this->isReadOnly('Clear cache');
-
         $this->getClient()->indices()->clearCache(['index' => $this->getIndexName()]);
-    }
-
-    /**
-     * Set connection to read only state.
-     *
-     * @param bool $readOnly
-     */
-    public function setReadOnly($readOnly)
-    {
-        $this->readOnly = $readOnly;
-    }
-
-    /**
-     * Checks if connection is read only.
-     *
-     * @param string $message Error message.
-     *
-     * @throws Forbidden403Exception
-     */
-    public function isReadOnly($message = '')
-    {
-        if ($this->readOnly) {
-            throw new Forbidden403Exception("Manager is readonly! {$message} operation is not permitted.");
-        }
     }
 
     /**

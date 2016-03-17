@@ -28,8 +28,3 @@ ongr_elasticsearch:
             mappings:
                 - AcmeBarBundle
                 - AcmeFooBundle
-        readonly:
-            connection: default
-            readonly: true
-            mappings:
-                - AcmeBarBundle

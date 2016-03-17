@@ -47,14 +47,8 @@ ongr_elasticsearch:
         default:
             connection: default
             logger: true #default %kernel.debug%
-            readonly: false #default false
             mappings:
                 - AcmeBarBundle #Scans all bundle documents
         foo:
             connection: bar
-        readonly:
-            connection: default
-            readonly: true
-            mappings:
-                - AcmeBarBundle:UserDocument #Includes only one type to the mapping
 ```

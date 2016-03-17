@@ -99,18 +99,6 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     }
 
     /**
-     * Tests if right exception is thrown when manager is read only.
-     *
-     * @expectedException \Elasticsearch\Common\Exceptions\Forbidden403Exception
-     * @expectedExceptionMessage Manager is readonly! Create index operation is not permitted.
-     */
-    public function testCreateIndexWhenManagerIsReadOnly()
-    {
-        $manager = $this->getContainer()->get('es.manager.readonly');
-        $manager->createIndex();
-    }
-
-    /**
      * Testing if creating index with alias option will switch alias correctly to the new index.
      */
     public function testAliasIsCreatedCorrectly()
