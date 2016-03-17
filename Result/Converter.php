@@ -91,10 +91,13 @@ class Converter
             if (isset($aliases[$name]['type'])) {
                 switch ($aliases[$name]['type']) {
                     case 'date':
-                        $value = \DateTime::createFromFormat(
-                            isset($aliases[$name]['format']) ? $aliases[$name]['format'] : \DateTime::ISO8601,
-                            $value
-                        );
+                        if (is_numeric($value) && (int)$value == $value) {
+                            $time = $value;
+                        } else {
+                            $time = strtotime($value);
+                        }
+                        $value = new \DateTime();
+                        $value->setTimestamp($time);
                         break;
                     case 'object':
                     case 'nested':

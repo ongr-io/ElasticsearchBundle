@@ -121,4 +121,29 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $this->assertInternalType('float', $product->price);
         $this->assertInternalType('integer', $person->age);
     }
+
+    public function testDocumentPersistWithDate()
+    {
+        $product1 = new Product();
+        $product1->id = '1';
+        $product1->released = '1458206100';
+
+        $product2 = new Product();
+        $product2->id = '2';
+        $product2->released = '2016-11-11T11:22:11';
+
+        $manager = $this->getManager();
+        $manager->persist($product1);
+        $manager->persist($product2);
+
+        $r = $manager->commit();
+
+        /** @var Product $product1FromES */
+        $product1FromES = $manager->find('AcmeBarBundle:Product', '1');
+        /** @var Product $product2FromES */
+        $product2FromES = $manager->find('AcmeBarBundle:Product', '2');
+
+        $this->assertEquals($product1->released, $product1FromES->released->getTimestamp());
+        $this->assertEquals(strtotime($product2->released), $product2FromES->released->getTimestamp());
+    }
 }
