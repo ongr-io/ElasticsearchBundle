@@ -7,7 +7,7 @@ For all steps below we assume that there is an `AppBundle` with the `Content` do
 ```php
 // src/AppBundle/Document/Content.php
 
-namespace AppBundle/Document;
+namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 

@@ -49,7 +49,7 @@ Lets start with a document class example.
 ```php
 // src/AppBundle/Document/Content.php
 
-namespace AppBundle/Document;
+namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -89,7 +89,7 @@ To add custom settings to property like analyzer it has to be included in `optio
 
 ```php
 // src/AppBundle/Document/Content.php
-namespace AppBundle/Document;
+namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -120,7 +120,7 @@ It is a little different to define nested and object types. For this user will n
 ```php
 // src/AppBundle/Document/Content.php
 
-namespace AppBundle/Document;
+namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -149,7 +149,7 @@ And the content object will look like:
 ```php
 // src/AppBundle/Document/ContentMetaObject.php
 
-namespace AppBundle/Document;
+namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -180,7 +180,7 @@ initiating a document with multiple items you need to initialize property with n
 ```php
 // src/AppBundle/Document/Content.php
 
-namespace AppBundle/Document;
+namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Collection;
