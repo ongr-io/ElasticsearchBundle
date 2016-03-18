@@ -133,7 +133,7 @@ class DocumentParser
      *
      * @return Property|null
      */
-    private function getPropertyAnnotationData($property)
+    private function getPropertyAnnotationData(\ReflectionProperty $property)
     {
         $result = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
 
@@ -151,7 +151,7 @@ class DocumentParser
      *
      * @return Embedded|null
      */
-    private function getEmbeddedAnnotationData($property)
+    private function getEmbeddedAnnotationData(\ReflectionProperty $property)
     {
         $result = $this->reader->getPropertyAnnotation($property, self::EMBEDDED_ANNOTATION);
 
