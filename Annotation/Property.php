@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\Annotation;
 
 use ONGR\ElasticsearchBundle\Mapping\Caser;
 use Doctrine\Common\Annotations\Annotation\Enum;
-use Doctrine\Common\Annotations\Annotation\Required;
 
 /**
  * Annotation used to check mapping type during the parsing process.
@@ -28,7 +27,7 @@ final class Property
      *
      * @var string
      *
-     * @Required
+     * @Doctrine\Common\Annotations\Annotation\Required
      * @Enum({"string", "boolean", "integer", "float", "long", "short", "byte", "double", "date",
      *        "geo_point", "geo_shape", "ip", "binary", "token_count" })
      */

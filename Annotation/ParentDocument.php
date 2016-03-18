@@ -11,8 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Required;
-
 /**
  * Annotation used to enable parent-child relationship.
  *
@@ -26,7 +24,7 @@ final class ParentDocument implements MetaField
      *
      * @var string
      *
-     * @Required
+     * @Doctrine\Common\Annotations\Annotation\Required
      */
     public $class;
 
