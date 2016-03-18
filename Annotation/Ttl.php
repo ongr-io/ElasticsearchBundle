@@ -17,7 +17,7 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Ttl implements MetaField
+final class Ttl implements MetaFieldInterface
 {
     /**
      * Parent document class name.
