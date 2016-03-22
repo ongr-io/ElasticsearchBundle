@@ -26,14 +26,14 @@ class Product
      *
      * @ES\Id()
      */
-    public $id;
+    private $id;
 
     /**
      * @var string
      *
      * @ES\Ttl()
      */
-    public $ttl;
+    private $ttl;
 
     /**
      * @var string
@@ -48,49 +48,49 @@ class Product
      *  }
      * )
      */
-    public $title;
+    private $title;
 
     /**
      * @var string
      * @ES\Property(type="string", name="description")
      */
-    public $description;
+    private $description;
 
     /**
      * @var CategoryObject
      * @ES\Embedded(class="AcmeBarBundle:CategoryObject")
      */
-    public $category;
+    private $category;
 
     /**
      * @var CategoryObject[]
      * @ES\Embedded(class="AcmeBarBundle:CategoryObject", multiple=true)
      */
-    public $relatedCategories;
+    private $relatedCategories;
 
     /**
      * @var int
      * @ES\Property(type="float", name="price")
      */
-    public $price;
+    private $price;
 
     /**
      * @var string
      * @ES\Property(type="geo_point", name="location")
      */
-    public $location;
+    private $location;
 
     /**
      * @var string
      * @ES\Property(type="boolean", name="limited")
      */
-    public $limited;
+    private $limited;
 
     /**
      * @var \DateTime
      * @ES\Property(type="date", name="released")
      */
-    public $released;
+    private $released;
 
     /**
      * @var int
@@ -105,10 +105,195 @@ class Product
      *     }
      * )
      */
-    public $tokenPiecesCount;
+    private $tokenPiecesCount;
 
     public function __construct()
     {
         $this->relatedCategories = new Collection();
     }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTtl()
+    {
+        return $this->ttl;
+    }
+
+    /**
+     * @param string $ttl
+     */
+    public function setTtl($ttl)
+    {
+        $this->ttl = $ttl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return CategoryObject
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param CategoryObject $category
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+    }
+
+    /**
+     * @return CategoryObject[]
+     */
+    public function getRelatedCategories()
+    {
+        return $this->relatedCategories;
+    }
+
+    /**
+     * @param CategoryObject[] $relatedCategories
+     */
+    public function setRelatedCategories($relatedCategories)
+    {
+        $this->relatedCategories = $relatedCategories;
+    }
+
+    /**
+     * @param CategoryObject $relatedCategory
+     */
+    public function addRelatedCategory($relatedCategory)
+    {
+        $this->relatedCategories[] = $relatedCategory;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param int $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLimited()
+    {
+        return $this->limited;
+    }
+
+    /**
+     * @param string $limited
+     */
+    public function setLimited($limited)
+    {
+        $this->limited = $limited;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getReleased()
+    {
+        return $this->released;
+    }
+
+    /**
+     * @param \DateTime $released
+     */
+    public function setReleased($released)
+    {
+        $this->released = $released;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTokenPiecesCount()
+    {
+        return $this->tokenPiecesCount;
+    }
+
+    /**
+     * @param int $tokenPiecesCount
+     */
+    public function setTokenPiecesCount($tokenPiecesCount)
+    {
+        $this->tokenPiecesCount = $tokenPiecesCount;
+    }
+
 }

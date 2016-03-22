@@ -23,11 +23,45 @@ class CategoryObject
     /**
      * @var string Field without ESB annotation, should not be indexed.
      */
-    public $withoutAnnotation;
+    private $withoutAnnotation;
 
     /**
      * @var string
      * @ES\Property(type="string", name="title", options={"index"="not_analyzed"})
      */
-    public $title;
+    private $title;
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWithoutAnnotation()
+    {
+        return $this->withoutAnnotation;
+    }
+
+    /**
+     * @param string $withoutAnnotation
+     */
+    public function setWithoutAnnotation($withoutAnnotation)
+    {
+        $this->withoutAnnotation = $withoutAnnotation;
+    }
+
+
 }

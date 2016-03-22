@@ -25,7 +25,7 @@ class Customer
      *
      * @ES\Id()
      */
-    public $id;
+    private $id;
 
     /**
      * Test adding raw mapping.
@@ -34,7 +34,7 @@ class Customer
      *
      * @ES\Property(name="name", type="string", options={"index"="not_analyzed"})
      */
-    public $name;
+    private $name;
 
     /**
      * Test adding raw mapping.
@@ -60,4 +60,37 @@ class Customer
     {
         $this->active = $active;
     }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
 }

@@ -121,7 +121,7 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
     {
         $data = [];
         foreach ($iterator as $result) {
-            $data[] = $result->title;
+            $data[] = $result->getTitle();
         }
 
         return $data;
