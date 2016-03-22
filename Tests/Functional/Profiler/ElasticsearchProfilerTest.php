@@ -54,7 +54,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $document = new Product();
-        $document->title = 'tuna';
+        $document->setTitle('tuna');
 
         $manager->persist($document);
         $manager->commit();

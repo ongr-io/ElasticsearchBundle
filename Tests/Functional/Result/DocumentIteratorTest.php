@@ -65,7 +65,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
         foreach ($iterator as $document) {
-            $categories = $document->relatedCategories;
+            $categories = $document->getRelatedCategories();
 
             $this->assertInstanceOf(
                 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
@@ -107,6 +107,6 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
             ->addQuery(new MatchAllQuery());
         $document = $repo->execute($search)->first();
 
-        $this->assertEquals('Foo Product', $document->title);
+        $this->assertEquals('Foo Product', $document->getTitle());
     }
 }
