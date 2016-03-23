@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 use ONGR\ElasticsearchBundle\Mapping\Caser;
-use Doctrine\Common\Annotations\Annotation\Required;
 
 /**
  * Annotation for property which points to inner object.
@@ -27,7 +26,7 @@ final class Embedded
      *
      * @var string Object name to map
      *
-     * @Required
+     * @Doctrine\Common\Annotations\Annotation\Required
      */
     public $class;
 

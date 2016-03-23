@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
-use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
