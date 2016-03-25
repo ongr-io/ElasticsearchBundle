@@ -21,6 +21,7 @@ class GenerateDocumentCommandTest extends AbstractCommandTestCase
         $command = $app->find('ongr:es:document:generate');
 
         $tester = new CommandTester($command);
+        $tester->execute(['command' => $command->getName()], ['interactive' => false]);
         $tester->execute(
             ['command' => $command->getName(), '--no-interaction' => true],
             ['interactive' => false]

@@ -43,11 +43,7 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
      */
     protected function generateEntityUse()
     {
-        if ($this->generateAnnotations) {
-            return "\n" . 'use ONGR\ElasticsearchBundle\Annotation as ES;' . "\n";
-        } else {
-            return "";
-        }
+        return $this->generateAnnotations ? ("\n" . 'use ONGR\ElasticsearchBundle\Annotation as ES;' . "\n") : '';
     }
 
     /**

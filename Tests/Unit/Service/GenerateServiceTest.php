@@ -1,0 +1,86 @@
+<?php
+
+namespace ONGR\ElasticsearchBundle\Tests\Unit\Generator;
+
+use ONGR\ElasticsearchBundle\Generator\DocumentGenerator;
+use ONGR\ElasticsearchBundle\Service\GenerateService;
+use Symfony\Component\Filesystem\Filesystem;
+
+class GenerateServiceTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var string
+     */
+    private $tmpDir;
+
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        $this->tmpDir = sys_get_temp_dir() . '/ongr';
+
+        $this->filesystem = new Filesystem();
+        $this->filesystem->remove($this->tmpDir);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function tearDown()
+    {
+        $this->filesystem->remove($this->tmpDir);
+    }
+
+    public function testGenerate()
+    {
+        $this->getGenerateService()->generate(
+            $this->getBundle(),
+            'Foo',
+            'foo',
+            [
+                [
+                    'fieldName' => 'test',
+                    'annotation' => 'Property',
+                    'property_type' => 'string',
+                    'property_name' => 'testProperty',
+                    'property_options' => 'test',
+                ]
+            ]
+        );
+
+        $this->assertFileExists($this->getBundle()->getPath() . '/Document/Foo.php');
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getBundle()
+    {
+        $bundle = $this->getMock('Symfony\Component\HttpKernel\Bundle\BundleInterface');
+        $bundle->expects($this->any())->method('getPath')->will($this->returnValue($this->tmpDir));
+        $bundle->expects($this->any())->method('getName')->will($this->returnValue('FooBarBundle'));
+        $bundle->expects($this->any())->method('getNamespace')->will($this->returnValue('Foo\BarBundle'));
+
+        return $bundle;
+    }
+
+    /**
+     * @return GenerateService
+     */
+    private function getGenerateService()
+    {
+        $generator = new DocumentGenerator();
+
+        $generator->setGenerateAnnotations(true);
+        $generator->setAnnotationPrefix('ES\\');
+        $generator->setGenerateStubMethods(true);
+
+        return new GenerateService($generator, $this->filesystem);
+    }
+}
