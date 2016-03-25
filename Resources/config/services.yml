@@ -67,3 +67,14 @@ services:
         arguments: ["@service_container", "%es.managers%"]
         tags:
             - { name: kernel.event_listener, event: kernel.terminate }
+
+    es.generator.document:
+        class: ONGR\ElasticsearchBundle\Generator\DocumentGenerator
+        calls:
+            - [setGenerateAnnotations, [true]]
+            - [setAnnotationPrefix, [ES\]]
+            - [setGenerateStubMethods, [true]]
+
+    es.generate:
+        class: ONGR\ElasticsearchBundle\Service\GenerateService
+        arguments: ["@es.generator.document", "@filesystem"]
