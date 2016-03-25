@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\WithoutId;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
@@ -314,5 +315,47 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testRemoveException()
     {
         $this->getManager()->remove(new WithoutId());
+    }
+
+    /**
+     * Tests testParseResults method with different result types
+     */
+    public function testParseResultsWithDifferentResultTypes()
+    {
+        $fooManager = $this->getManager('foo');
+        $defaultManager = $this->getManager();
+
+        $repo = $fooManager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $products = $repo->execute($search, 'array');
+        $this->assertArrayHasKey(0, $products);
+
+        $repo = $defaultManager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $products = $repo->execute($search, 'array');
+        $this->assertArrayNotHasKey(0, $products);
+
+        $repo = $fooManager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $products = $repo->execute($search, 'raw_iterator');
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $products);
+    }
+
+    /**
+     * Tests exception that is thrown by parseResults()
+     * when a bad result type is provided
+     *
+     * @expectedException \Exception
+     */
+    public function testParseResultsException()
+    {
+        $manager = $this->getManager();
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $repo->execute($search, 'non_existant_type');
     }
 }
