@@ -70,10 +70,6 @@ services:
 
     es.generator.document:
         class: ONGR\ElasticsearchBundle\Generator\DocumentGenerator
-        calls:
-            - [setGenerateAnnotations, [true]]
-            - [setAnnotationPrefix, [ES\]]
-            - [setGenerateStubMethods, [true]]
 
     es.generate:
         class: ONGR\ElasticsearchBundle\Service\GenerateService

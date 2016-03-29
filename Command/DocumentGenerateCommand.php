@@ -133,7 +133,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
 
             $properties[] = [
                 'annotation' => 'Property',
-                'fieldName' => $field,
+                'field_name' => $field,
                 'property_name' => $name,
                 'property_type' => $type,
                 'property_options' => $options,

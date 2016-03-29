@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use ONGR\ElasticsearchBundle\Generator\DocumentGenerator;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -58,15 +57,19 @@ class GenerateService
         array $properties
     ) {
         $documentPath = $bundle->getPath() . '/Document/' . str_replace('\\', '/', $document) . '.php';
-        $class = new ClassMetadataInfo($bundle->getNamespace() . '\\Document\\' . $document);
+        $class = [
+            'name' => $bundle->getNamespace() . '\\Document\\' . $document,
+            'annotation' => 'Document',
+            'type' => $type
+        ];
+
+        $class['properties'] = [];
 
         foreach ($properties as $property) {
-            $class->mapField($property);
+            $class['properties'][] = $property;
         }
 
-        $documentCode = $this->generator
-            ->setDocumentType($type)
-            ->generateEntityClass($class);
+        $documentCode = $this->generator->generateDocumentClass($class);
 
         $this->filesystem->mkdir(dirname($documentPath));
         file_put_contents($documentPath, $documentCode);

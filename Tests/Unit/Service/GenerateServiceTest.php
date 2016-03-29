@@ -39,13 +39,15 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerate()
     {
-        $this->getGenerateService()->generate(
+        $service = new GenerateService(new DocumentGenerator(), $this->filesystem);
+
+        $service->generate(
             $this->getBundle(),
             'Foo',
             'foo',
             [
                 [
-                    'fieldName' => 'test',
+                    'field_name' => 'test',
                     'annotation' => 'Property',
                     'property_type' => 'string',
                     'property_name' => 'testProperty',
@@ -68,19 +70,5 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
         $bundle->expects($this->any())->method('getNamespace')->will($this->returnValue('Foo\BarBundle'));
 
         return $bundle;
-    }
-
-    /**
-     * @return GenerateService
-     */
-    private function getGenerateService()
-    {
-        $generator = new DocumentGenerator();
-
-        $generator->setGenerateAnnotations(true);
-        $generator->setAnnotationPrefix('ES\\');
-        $generator->setGenerateStubMethods(true);
-
-        return new GenerateService($generator, $this->filesystem);
     }
 }
