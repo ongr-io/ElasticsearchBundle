@@ -12,7 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Mapping\Exception;
 
 /**
- * This is the exception which should be thrown when class does not have @Document annotation.
+ * This is the exception which should be thrown when class does not have @ONGR\ElasticsearchBundle\Annotation\Document
+ * annotation.
  */
 class MissingDocumentAnnotationException extends DocumentParserException
 {
