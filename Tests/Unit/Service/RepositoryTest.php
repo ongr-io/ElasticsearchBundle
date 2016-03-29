@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 
 use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Service\Manager;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,5 +49,28 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException($expectedException, $expectedExceptionMessage);
 
         new Repository(null, $className);
+    }
+
+    /**
+     * Tests class getter
+     */
+    public function testGetRepositoryClass()
+    {
+        $collector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $collector->expects($this->any())->method('getDocumentType')->willReturn('product');
+        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $manager->expects($this->any())->method('getMetadataCollector')->willReturn($collector);
+        $repository = new Repository(
+            $manager,
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product'
+        );
+        $this->assertEquals(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            $repository->getClassName()
+        );
     }
 }
