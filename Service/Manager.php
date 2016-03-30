@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
-use Elasticsearch\Common\Exceptions\Forbidden403Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
@@ -324,9 +323,10 @@ class Manager
     {
         if (!empty($this->bulkQueries)) {
             $bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
-            $this->bulkQueries = [];
 
             $bulkResponse = $this->client->bulk($bulkQueries);
+            $this->bulkQueries = [];
+            $this->bulkCount = 0;
 
             switch ($this->getCommitMode()) {
                 case 'flush':
@@ -392,7 +392,6 @@ class Manager
         $response = null;
         if ($this->bulkCommitSize === $this->bulkCount) {
             $response = $this->commit();
-            $this->bulkCount = 0;
         }
 
         return $response;

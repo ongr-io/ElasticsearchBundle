@@ -12,6 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 
 use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Search;
 
 class ManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -188,6 +190,47 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test if commits correctly with parameters set to it
+     */
+    public function testBulkWithCommitModeSet()
+    {
+        $expected = $this->getTestBulkData()['update_script']['expected'];
+        $expected['refresh'] = true;
+        $calls = $this->getTestBulkData()['update_script']['calls'];
+        $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
+
+        $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
+        $esClient->expects($this->any())->method('bulk')->with($expected)->willReturn([]);
+        $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
+
+        $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $converter = $this->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $manager->setBulkParams(['refresh' => true]);
+        $manager->setCommitMode('flush');
+
+        foreach ($calls as list($operation, $type, $query)) {
+            $manager->bulk($operation, $type, $query);
+        }
+
+        $this->assertNotNull($manager->commit());
+
+        $manager->setCommitMode('refresh');
+
+        foreach ($calls as list($operation, $type, $query)) {
+            $manager->bulk($operation, $type, $query);
+        }
+
+        $this->assertNotNull($manager->commit());
+    }
+
+    /**
      * Test for clearScroll().
      */
     public function testClearScroll()
@@ -219,5 +262,114 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $manager->setCommitMode('foo');
+    }
+
+    /**
+     * Returns configured manager, client mock and search object
+     *
+     * @return array
+     */
+    public function getPreparedConfiguration()
+    {
+        $search = new Search();
+        $search->addQuery(new MatchAllQuery());
+        $client = $this->getMockBuilder('Elasticsearch\Client')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $manager = new Manager(
+            'test',
+            [],
+            $client,
+            ['index' => 'test'],
+            $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
+                ->disableOriginalConstructor()
+                ->getMock(),
+            $this->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
+                ->disableOriginalConstructor()
+                ->getMock()
+        );
+
+        return [$manager, $client, $search];
+    }
+
+    /**
+     * Tests convertToNormalizedArray method with different
+     * results
+     */
+    public function testConvertToNormalizedArrayWhenSourceIsSet()
+    {
+        $configuration = $this->getPreparedConfiguration();
+        $manager = $configuration[0];
+        $client = $configuration[1];
+        $search = $configuration[2];
+        $array = [
+            '_source' => [
+                [
+                    'price' => 1,
+                    'title' => 'test title'
+                ]
+            ]
+        ];
+        $client->expects($this->any())->method('search')->willReturn($array);
+        $result = $manager->execute(['product'], $search, 'array');
+        $this->assertEquals($result, $array['_source']);
+    }
+
+    /**
+     * Tests convertToNormalizedArray method with different
+     * results
+     */
+    public function testConvertToNormalizedArrayWhenFieldsAreSet()
+    {
+        $configuration = $this->getPreparedConfiguration();
+        $manager = $configuration[0];
+        $client = $configuration[1];
+        $search = $configuration[2];
+        $array = [
+            'hits' => [
+                'hits' => [
+                    [
+                        "fields" => [
+                            [
+                                'name' => 'url',
+                                'value' => 'http://ongr.io'
+                            ],
+                            [
+                                'name' => 'title',
+                                'value' => 'Elasticsearch test'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $expected = [
+            ['url', 'title']
+        ];
+        $client->expects($this->any())->method('search')->willReturn($array);
+        $result = $manager->execute(['product'], $search, 'array');
+        $this->assertEquals($result, $expected);
+    }
+
+    /**
+     * Tests getters and setters
+     */
+    public function testBulkCommitSizeGettersAndSetters()
+    {
+        $configuration = $this->getPreparedConfiguration();
+        $manager = $configuration[0];
+        $manager->setBulkCommitSize(5);
+        $this->assertEquals(5, $manager->getBulkCommitSize());
+    }
+
+    /**
+     * Tests bulk error when invalid operation is provided
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testBulkException()
+    {
+        $manager = $this->getPreparedConfiguration()[0];
+        $manager->bulk('not_an_operation', 'product', []);
     }
 }

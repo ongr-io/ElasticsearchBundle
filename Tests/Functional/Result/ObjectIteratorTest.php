@@ -66,7 +66,7 @@ class ObjectIteratorTest extends AbstractElasticsearchTestCase
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
         foreach ($iterator as $document) {
-            $categories = $document->relatedCategories;
+            $categories = $document->getRelatedCategories();
 
             $this->assertInstanceOf(
                 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',

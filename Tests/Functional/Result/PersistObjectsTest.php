@@ -51,22 +51,22 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $category = new CategoryObject();
-        $category->title = 'Bar Category';
+        $category->setTitle('Bar Category');
 
         $category2 = new CategoryObject();
-        $category2->title = 'Baz Category';
+        $category2->setTitle('Baz Category');
 
         $product = new Product();
-        $product->id = 'foo';
-        $product->title = 'Test Document';
-        $product->relatedCategories[] = $category;
-        $product->relatedCategories[] = $category2;
+        $product->setId('foo');
+        $product->setTitle('Test Document');
+        $product->addRelatedCategory($category);
+        $product->addRelatedCategory($category2);
 
         $manager->persist($product);
         $manager->commit();
 
         $product = $manager->find('AcmeBarBundle:Product', 'doc1');
-        $this->count(2, $product->relatedCategories);
+        $this->count(2, $product->getRelatedCategories());
     }
 
     /**
@@ -79,18 +79,18 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         /** @var Product $product */
         $product = $manager->find('AcmeBarBundle:Product', 'doc1');
 
-        $this->count(2, $product->relatedCategories);
+        $this->count(2, $product->getRelatedCategories());
 
         $category = new CategoryObject();
-        $category->title = 'Bar Category';
-        $product->relatedCategories[] = $category;
+        $category->setTitle('Bar Category');
+        $product->addRelatedCategory($category);
 
         $manager->persist($product);
         $manager->commit();
 
         $product = $manager->find('AcmeBarBundle:Product', 'doc1');
 
-        $this->count(3, $product->relatedCategories);
+        $this->count(3, $product->getRelatedCategories());
     }
 
     /**
@@ -102,13 +102,13 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $product = new Product();
-        $product->id = 'foo';
-        $product->title = 'Test Document';
-        $product->price = '8.95';
+        $product->setId('foo');
+        $product->setTitle('Test Document');
+        $product->setPrice('8.95');
 
         $person = new Person();
-        $person->firstName = 'name';
-        $person->age = '35';
+        $person->setFirstName('name');
+        $person->setAge('35');
 
         $manager->persist($product);
         $manager->persist($person);
@@ -118,19 +118,19 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $repo = $manager->getRepository('AcmeBarBundle:Person');
         $person = $repo->findOneBy(['first_name' => 'name']);
 
-        $this->assertInternalType('float', $product->price);
-        $this->assertInternalType('integer', $person->age);
+        $this->assertInternalType('float', $product->getPrice());
+        $this->assertInternalType('integer', $person->getAge());
     }
 
     public function testDocumentPersistWithDate()
     {
         $product1 = new Product();
-        $product1->id = '1';
-        $product1->released = '1458206100';
+        $product1->setId('1');
+        $product1->setReleased('1458206100');
 
         $product2 = new Product();
-        $product2->id = '2';
-        $product2->released = '2016-11-11T11:22:11';
+        $product2->setId('2');
+        $product2->setReleased('2016-11-11T11:22:11');
 
         $manager = $this->getManager();
         $manager->persist($product1);
@@ -143,7 +143,7 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         /** @var Product $product2FromES */
         $product2FromES = $manager->find('AcmeBarBundle:Product', '2');
 
-        $this->assertEquals($product1->released, $product1FromES->released->getTimestamp());
-        $this->assertEquals(strtotime($product2->released), $product2FromES->released->getTimestamp());
+        $this->assertEquals($product1->getReleased(), $product1FromES->getReleased()->getTimestamp());
+        $this->assertEquals(strtotime($product2->getReleased()), $product2FromES->getReleased()->getTimestamp());
     }
 }

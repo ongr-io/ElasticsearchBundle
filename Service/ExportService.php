@@ -13,8 +13,6 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Helper\Iterators\SearchHitIterator;
 use Elasticsearch\Helper\Iterators\SearchResponseIterator;
-use ONGR\ElasticsearchBundle\Result\RawIterator;
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;

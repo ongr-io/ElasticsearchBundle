@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\WithoutId;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
@@ -71,13 +72,13 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $category = new CategoryObject();
-        $category->title = 'acme';
+        $category->setTitle('acme');
 
         // Multiple urls.
         $product = new Product();
-        $product->id = 1;
-        $product->title = 'test';
-        $product->category = $category;
+        $product->setId(1);
+        $product->setTitle('test');
+        $product->setCategory($category);
 
         $manager->persist($product);
         $manager->commit();
@@ -89,21 +90,21 @@ class ManagerTest extends AbstractElasticsearchTestCase
             $actualProduct
         );
 
-        $this->assertEquals($product->title, $actualProduct->title);
+        $this->assertEquals($product->getTitle(), $actualProduct->getTitle());
 
         /** @var CategoryObject $category */
-        $category = $actualProduct->category;
-        $this->assertEquals($category->title, $category->title);
+        $category = $actualProduct->getCategory();
+        $this->assertEquals($category->getTitle(), $category->getTitle());
 
-        $this->assertNull($actualProduct->limited);
+        $this->assertNull($actualProduct->getLimited());
 
-        $actualProduct->limited = true;
+        $actualProduct->setLimited(true);
         $manager->persist($actualProduct);
         $manager->commit();
 
         $actualProduct = $manager->find('AcmeBarBundle:Product', 1);
 
-        $this->assertTrue($actualProduct->limited);
+        $this->assertTrue($actualProduct->getLimited());
     }
 
     /**
@@ -118,7 +119,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         // Case #0: multiple cdns are put into url object, although it isn't a multiple field.
         $category = new Product();
         $product = new Product;
-        $product->category = $category;
+        $product->setCategory($category);
 
         $out[] = [
             $product,
@@ -129,12 +130,12 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         // Case #1: a single link is set, although field is set to multiple.
         $product = new Product();
-        $product->relatedCategories = new CategoryObject();
+        $product->setRelatedCategories(new CategoryObject());
         $out[] = [$product, "must be an instance of Collection"];
 
         // Case #2: invalid type of object is set to the field.
         $product = new Product;
-        $product->category = new \stdClass();
+        $product->setCategory(new \stdClass());
         $out[] = [
             $product,
             'Expected object of type ' .
@@ -143,7 +144,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         // Case #3: invalid type of object is set in single field.
         $product = new Product;
-        $product->category = [new CategoryObject()];
+        $product->setCategory([new CategoryObject()]);
         $out[] = [
             $product,
             'Expected variable of type object, got array. (field isn\'t multiple)',
@@ -182,17 +183,17 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $product = new Product();
-        $product->id = 'testId';
-        $product->ttl = 500000;
-        $product->title = 'acme';
+        $product->setId('testId');
+        $product->setTtl(500000);
+        $product->setTitle('acme');
 
         $manager->persist($product);
         $manager->commit();
 
         $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
 
-        $this->assertEquals($product->id, $actualProduct->id);
-        $this->assertLessThan($product->ttl, $actualProduct->ttl);
+        $this->assertEquals($product->getId(), $actualProduct->getId());
+        $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
     }
 
     /**
@@ -203,15 +204,15 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $product = new Product();
-        $product->id = 'testId';
-        $product->released = new \DateTime('2100-01-02 03:04:05.889342');
+        $product->setId('testId');
+        $product->setReleased(new \DateTime('2100-01-02 03:04:05.889342'));
 
         $manager->persist($product);
         $manager->commit();
 
         $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
 
-        $this->assertGreaterThan(time(), $actualProduct->released->getTimestamp());
+        $this->assertGreaterThan(time(), $actualProduct->getReleased()->getTimestamp());
     }
 
     /**
@@ -221,7 +222,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
         $product = new Product();
-        $product->tokenPiecesCount = 't e s t';
+        $product->setTokenPiecesCount('t e s t');
         $manager->persist($product);
         $manager->commit();
 
@@ -314,5 +315,47 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testRemoveException()
     {
         $this->getManager()->remove(new WithoutId());
+    }
+
+    /**
+     * Tests testParseResults method with different result types
+     */
+    public function testParseResultsWithDifferentResultTypes()
+    {
+        $fooManager = $this->getManager('foo');
+        $defaultManager = $this->getManager();
+
+        $repo = $fooManager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $products = $repo->execute($search, 'array');
+        $this->assertArrayHasKey(0, $products);
+
+        $repo = $defaultManager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $products = $repo->execute($search, 'array');
+        $this->assertArrayNotHasKey(0, $products);
+
+        $repo = $fooManager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $products = $repo->execute($search, 'raw_iterator');
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $products);
+    }
+
+    /**
+     * Tests exception that is thrown by parseResults()
+     * when a bad result type is provided
+     *
+     * @expectedException \Exception
+     */
+    public function testParseResultsException()
+    {
+        $manager = $this->getManager();
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
+        $search = $repo->createSearch();
+        $search->addQuery(new MatchAllQuery());
+        $repo->execute($search, 'non_existant_type');
     }
 }
