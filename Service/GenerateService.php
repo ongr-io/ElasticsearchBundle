@@ -62,18 +62,14 @@ class GenerateService
         $class = [
             'name' => $bundle->getNamespace() . '\\Document\\' . $document,
             'annotation' => $annotation,
-            'type' => $type
+            'type' => $type,
+            'properties' => $properties,
         ];
-
-        $class['properties'] = [];
-
-        foreach ($properties as $property) {
-            $class['properties'][] = $property;
-        }
 
         $documentCode = $this->generator->generateDocumentClass($class);
 
         $this->filesystem->mkdir(dirname($documentPath));
-        file_put_contents($documentPath, $documentCode);
+//        file_put_contents($documentPath, $documentCode);
+        echo $documentCode;
     }
 }

@@ -26,11 +26,11 @@ class DocumentGenerator
      */
     private $getMethodTemplate =
         '/**
- * <description>
+ * Returns <fieldName>
  *
  * @return string
  */
-public function <methodName>()
+public function get<methodName>()
 {
 <spaces>return $this-><fieldName>;
 }';
@@ -40,13 +40,13 @@ public function <methodName>()
      */
     private $setMethodTemplate =
         '/**
- * <description>
+ * Sets <fieldName>
  *
- * @param string $<variableName>
+ * @param string $<fieldName>
  */
-public function <methodName>($<variableName>)
+public function set<methodName>($<fieldName>)
 {
-<spaces>$this-><fieldName> = $<variableName>;
+<spaces>$this-><fieldName> = $<fieldName>;
 }';
 
     /**
@@ -56,18 +56,19 @@ public function <methodName>($<variableName>)
      */
     public function generateDocumentClass(array $metadata)
     {
-        $lines = [];
-
-        $lines[] = "<?php\n";
-        $lines[] = sprintf('namespace %s;', substr($metadata['name'], 0, strrpos($metadata['name'], '\\'))) . "\n";
-        $lines[] = "use ONGR\\ElasticsearchBundle\\Annotation as ES;\n";
-        $lines[] = $this->generateDocumentDocBlock($metadata);
-        $lines[] = 'class ' . $this->getClassName($metadata);
-        $lines[] = "{";
-        $lines[] = str_replace('<spaces>', $this->spaces, $this->generateDocumentBody($metadata));
-        $lines[] = "}\n";
-
-        return implode("\n", $lines);
+        return implode(
+            "\n",
+            [
+                "<?php\n",
+                sprintf('namespace %s;', substr($metadata['name'], 0, strrpos($metadata['name'], '\\'))) . "\n",
+                "use ONGR\\ElasticsearchBundle\\Annotation as ES;\n",
+                $this->generateDocumentDocBlock($metadata),
+                'class ' . $this->getClassName($metadata),
+                "{",
+                str_replace('<spaces>', $this->spaces, $this->generateDocumentBody($metadata)),
+                "}\n"
+            ]
+        );
     }
 
     /**
@@ -123,8 +124,8 @@ public function <methodName>($<variableName>)
         $lines = [];
 
         foreach ($metadata['properties'] as $property) {
-            $lines[] = $this->generateDocumentMethod($property, 'set') . "\n";
-            $lines[] = $this->generateDocumentMethod($property, 'get') . "\n";
+            $lines[] = $this->generateDocumentMethod($property, $this->setMethodTemplate) . "\n";
+            $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
         }
 
         return implode("\n", $lines);
@@ -134,24 +135,17 @@ public function <methodName>($<variableName>)
      * Generates document method
      *
      * @param array  $metadata
-     * @param string $type
+     * @param string $template
      *
      * @return string
      */
-    private function generateDocumentMethod(array $metadata, $type)
+    private function generateDocumentMethod(array $metadata, $template)
     {
-        $replacements = [
-            '<description>' => ucfirst($type) . ' ' . $metadata['field_name'],
-            '<variableName>'      => $metadata['field_name'],
-            '<methodName>'        => $type . ucfirst($metadata['field_name']),
-            '<fieldName>'         => $metadata['field_name'],
-        ];
-
         return $this->prefixWithSpaces(
             str_replace(
-                array_keys($replacements),
-                array_values($replacements),
-                $this->{$type . 'MethodTemplate'}
+                ['<methodName>', '<fieldName>'],
+                [ucfirst($metadata['field_name']), $metadata['field_name']],
+                $template
             )
         );
     }
