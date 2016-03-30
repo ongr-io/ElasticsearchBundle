@@ -69,7 +69,6 @@ class GenerateService
         $documentCode = $this->generator->generateDocumentClass($class);
 
         $this->filesystem->mkdir(dirname($documentPath));
-//        file_put_contents($documentPath, $documentCode);
-        echo $documentCode;
+        file_put_contents($documentPath, $documentCode);
     }
 }

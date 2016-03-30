@@ -85,9 +85,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
             list($bundle, $document) = $this->parseShortcutNotation($document);
 
             if (in_array(strtolower($document), $this->getReservedKeywords())) {
-                $output->writeln(
-                    $formatter->formatBlock(sprintf('"%s" is a reserved word.', $document), 'bg=red', true)
-                );
+                $output->writeln($this->getException('"%s" is a reserved word.', [$document])->getMessage());
                 continue;
             }
 
@@ -99,16 +97,10 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                 }
 
                 $output->writeln(
-                    $formatter->formatBlock(
-                        sprintf('Document "%s:%s" already exists.', $bundle, $document),
-                        'bg=red',
-                        true
-                    )
+                    $this->getException('Document "%s:%s" already exists.', [$bundle, $document])->getMessage()
                 );
             } catch (\Exception $e) {
-                $output->writeln(
-                    $formatter->formatBlock(sprintf('Bundle "%s" does not exist.', $bundle), 'bg=red', true)
-                );
+                $output->writeln($this->getException('Bundle "%s" does not exist.', [$bundle])->getMessage());
             }
         }
 
@@ -383,21 +375,30 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     /**
      * Validates property class
      *
-     * @param string $class
+     * @param string $input
      *
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function validatePropertyClass($class)
+    public function validatePropertyClass($input)
     {
-        if (!in_array($class, $this->getDocumentClasses())) {
-            throw $this->getException(
-                'The document isn\'t available ("%s" given, expecting one of following: %s)',
-                [$class, $this->getDocumentClasses()]
-            );
+        list($bundle, $document) = $this->parseShortcutNotation($input);
+
+        try {
+            if (!file_exists(
+                $this
+                    ->getContainer()
+                    ->get('kernel')
+                    ->getBundle($bundle)
+                    ->getPath() . '/Document/' . str_replace('\\', '/', $document) . '.php'
+            )) {
+                throw $this->getException('Document "%s:%s" does not exist.', [$bundle, $document]);
+            }
+        } catch (\Exception $e) {
+            throw $this->getException('Bundle "%s" does not exist.', [$bundle]);
         }
 
-        return $class;
+        return $input;
     }
 
     /**
