@@ -141,6 +141,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         $output->writeln(['', $formatter->formatBlock('New Document Property', 'bg=blue;fg=white', true)]);
 
         while (true) {
+            $property = [];
             $question = $this->getQuestion(
                 'Property name [<comment>press <info><return></info> to stop</comment>]',
                 false
@@ -148,6 +149,13 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
 
             if (!$field = $this->questionHelper->ask($input, $output, $question)) {
                 break;
+            }
+
+            foreach ($properties as $previousProperty) {
+                if ($previousProperty['field_name'] == $field) {
+                    $output->writeln($this->getException('Duplicate field name "%s"', [$field])->getMessage());
+                    continue(2);
+                }
             }
 
             try {
@@ -183,6 +191,14 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                     $property['property_options'] = $this->askForPropertyOptions($input, $output);
                     break;
                 case 'ParentDocument':
+                    if (!$this->isUniqueAnnotation($properties, $property['annotation'])) {
+                        $output->writeln(
+                            $this
+                                ->getException('Only one "%s" field can be added', [$property['annotation']])
+                                ->getMessage()
+                        );
+                        continue(2);
+                    }
                     $property['property_class'] = $this->askForPropertyClass($input, $output);
                     break;
                 case 'Property':
@@ -203,11 +219,29 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                     $property['property_options'] = $this->askForPropertyOptions($input, $output);
                     break;
                 case 'Ttl':
+                    if (!$this->isUniqueAnnotation($properties, $property['annotation'])) {
+                        $output->writeln(
+                            $this
+                                ->getException('Only one "%s" field can be added', [$property['annotation']])
+                                ->getMessage()
+                        );
+                        continue(2);
+                    }
                     $property['property_default'] = $this->questionHelper->ask(
                         $input,
                         $output,
                         $this->getQuestion("\n" . 'Default time to live')
                     );
+                    break;
+                case 'Id':
+                    if (!$this->isUniqueAnnotation($properties, $property['annotation'])) {
+                        $output->writeln(
+                            $this
+                                ->getException('Only one "%s" field can be added', [$property['annotation']])
+                                ->getMessage()
+                        );
+                        continue(2);
+                    }
                     break;
             }
 
@@ -225,11 +259,28 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     }
 
     /**
+     * @param array  $properties
+     * @param string $annotation
+     *
+     * @return string
+     */
+    private function isUniqueAnnotation($properties, $annotation)
+    {
+        foreach ($properties as $property) {
+            if ($property['annotation'] == $annotation) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Asks for property name
      *
      * @param InputInterface  $input
      * @param OutputInterface $output
-     * @param mixed           $default
+     * @param string          $default
      *
      * @return string
      */
@@ -312,7 +363,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      *
      * @param string $shortcut
      *
-     * @return array
+     * @return string[]
      * @throws \InvalidArgumentException
      */
     private function parseShortcutNotation($shortcut)
@@ -457,7 +508,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      * Returns formatted question
      *
      * @param string        $question
-     * @param null|string   $default
+     * @param mixed         $default
      * @param callable|null $validator
      * @param array|null    $values
      *
@@ -483,7 +534,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      * @param array  $options
      * @param string $suffix
      *
-     * @return array
+     * @return string[]
      */
     private function getOptionsLabel(array $options, $suffix)
     {
@@ -530,7 +581,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     /**
      * Returns property annotations
      *
-     * @return array
+     * @return string[]
      */
     private function getPropertyAnnotations()
     {
@@ -540,7 +591,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     /**
      * Returns document annotations
      *
-     * @return array
+     * @return string[]
      */
     private function getDocumentAnnotations()
     {
@@ -550,7 +601,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     /**
      * Returns reserved keywords
      *
-     * @return array
+     * @return string[]
      */
     private function getReservedKeywords()
     {

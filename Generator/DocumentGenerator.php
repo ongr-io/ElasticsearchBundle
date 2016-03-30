@@ -56,6 +56,8 @@ public function <methodName>($<variableName>)
      */
     public function generateDocumentClass(array $metadata)
     {
+        $lines = [];
+
         $lines[] = "<?php\n";
         $lines[] = sprintf('namespace %s;', substr($metadata['name'], 0, strrpos($metadata['name'], '\\'))) . "\n";
         $lines[] = "use ONGR\\ElasticsearchBundle\\Annotation as ES;\n";
@@ -163,9 +165,11 @@ public function <methodName>($<variableName>)
      */
     private function generatePropertyDocBlock(array $metadata)
     {
-        $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var string';
-        $lines[] = $this->spaces . ' *';
+        $lines = [
+            $this->spaces . '/**',
+            $this->spaces . ' * @var string',
+            $this->spaces . ' *',
+        ];
 
         $column = [];
         if (isset($metadata['property_name']) && $metadata['property_name'] != $metadata['field_name']) {
@@ -192,8 +196,7 @@ public function <methodName>($<variableName>)
             $column[] = 'options={' . $metadata['property_options'] . '}';
         }
 
-        $lines[] = $this->spaces . ' * @ES\\' . $metadata['annotation'] . '('
-            . implode(', ', $column) . ')';
+        $lines[] = $this->spaces . ' * @ES\\' . $metadata['annotation'] . '(' . implode(', ', $column) . ')';
 
         $lines[] = $this->spaces . ' */';
 
@@ -209,21 +212,20 @@ public function <methodName>($<variableName>)
      */
     private function generateDocumentDocBlock(array $metadata)
     {
-        $lines[] = '/**';
-        $lines[] = ' * ' . $this->getClassName($metadata);
-
-        $lines[] = ' *';
-
-        $lines[] = sprintf(
-            ' * @ES\%s(%s)',
-            $metadata['annotation'],
-            $metadata['type'] != lcfirst($this->getClassName($metadata))
-                ? sprintf('type="%s"', $metadata['type']) : ''
+        return str_replace(
+            ['<className>', '<annotation>', '<options>'],
+            [
+                $this->getClassName($metadata),
+                $metadata['annotation'],
+                $metadata['type'] != lcfirst($this->getClassName($metadata))
+                    ? sprintf('type="%s"', $metadata['type']) : '',
+            ],
+            '/**
+ * <className>
+ *
+ * @ES\<annotation>(<options>)
+ */'
         );
-
-        $lines[] = ' */';
-
-        return implode("\n", $lines);
     }
 
     /**
