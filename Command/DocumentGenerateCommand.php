@@ -324,7 +324,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                 "\n" . 'Property class',
                 null,
                 [$this, 'validatePropertyClass'],
-                $this->getDocumentClasses()
+                array_merge($this->getDocumentClasses(), array_keys($this->getContainer()->get('kernel')->getBundles()))
             )
         );
     }
