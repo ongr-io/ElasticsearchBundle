@@ -28,7 +28,7 @@ class DocumentGenerator
         '/**
  * <description>
  *
- * @return <variableType>
+ * @return string
  */
 public function <methodName>()
 {
@@ -42,7 +42,7 @@ public function <methodName>()
         '/**
  * <description>
  *
- * @param <variableType> $<variableName>
+ * @param string $<variableName>
  */
 public function <methodName>($<variableName>)
 {
@@ -140,7 +140,6 @@ public function <methodName>($<variableName>)
     {
         $replacements = [
             '<description>' => ucfirst($type) . ' ' . $metadata['field_name'],
-            '<variableType>'      => $metadata['property_type'],
             '<variableName>'      => $metadata['field_name'],
             '<methodName>'        => $type . ucfirst($metadata['field_name']),
             '<fieldName>'         => $metadata['field_name'],
@@ -165,8 +164,7 @@ public function <methodName>($<variableName>)
     private function generatePropertyDocBlock(array $metadata)
     {
         $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var ' . $metadata['property_type'];
-
+        $lines[] = $this->spaces . ' * @var string';
         $lines[] = $this->spaces . ' *';
 
         $column = [];
@@ -174,8 +172,20 @@ public function <methodName>($<variableName>)
             $column[] = 'name="' . $metadata['property_name'] . '"';
         }
 
-        if (isset($metadata['property_type'])) {
+        if (isset($metadata['property_class'])) {
+            $column[] = 'class="' . $metadata['property_class'] . '"';
+        }
+
+        if (isset($metadata['property_multiple']) && $metadata['property_multiple']) {
+            $column[] = 'multiple=true';
+        }
+
+        if (isset($metadata['property_type']) && $metadata['annotation'] == 'Property') {
             $column[] = 'type="' . $metadata['property_type'] . '"';
+        }
+
+        if (isset($metadata['property_default'])) {
+            $column[] = 'default="' . $metadata['property_default'] . '"';
         }
 
         if (isset($metadata['property_options'])  && $metadata['property_options']) {

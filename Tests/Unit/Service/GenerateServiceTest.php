@@ -44,6 +44,7 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
         $service->generate(
             $this->getBundle(),
             'Foo',
+            'Document',
             'foo',
             [
                 [

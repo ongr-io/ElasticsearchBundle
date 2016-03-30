@@ -11,14 +11,22 @@
 
 namespace ONGR\ElasticsearchBundle\Command;
 
+use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use Symfony\Component\Console\Helper\FormatterHelper;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\Kernel;
 
 class DocumentGenerateCommand extends AbstractManagerAwareCommand
 {
+    /**
+     * @var QuestionHelper
+     */
+    private $questionHelper;
+
     /**
      * {@inheritdoc}
      */
@@ -37,7 +45,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->hasParameterOption(['--no-interaction', '-n'])) {
-            throw new \InvalidArgumentException('No interaction mode is not allowed!');
+            throw $this->getException('No interaction mode is not allowed!');
         }
     }
 
@@ -46,10 +54,14 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
-        $io->section('Welcome to the ONGRElasticsearchBundle document generator');
-        $io->writeln(
+        /** @var FormatterHelper $formatter */
+        $formatter = $this->getHelperSet()->get('formatter');
+        $this->questionHelper = new QuestionHelper();
+
+        $output->writeln(
             [
+                '',
+                $formatter->formatBlock('Welcome to the ONGRElasticsearchBundle document generator', 'bg=blue', true),
                 '',
                 'This command helps you generate ONGRElasticsearchBundle documents.',
                 '',
@@ -64,17 +76,18 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         $bundleNames = array_keys($kernel->getBundles());
 
         while (true) {
-            $question = new Question('The Document shortcut name');
-            $question
-                ->setValidator([$this, 'validateDocumentName'])
-                ->setAutocompleterValues($bundleNames);
-
-            $document = $io->askQuestion($question);
+            $document = $this->questionHelper->ask(
+                $input,
+                $output,
+                $this->getQuestion('The Document shortcut name', null, [$this, 'validateDocumentName'], $bundleNames)
+            );
 
             list($bundle, $document) = $this->parseShortcutNotation($document);
 
             if (in_array(strtolower($document), $this->getReservedKeywords())) {
-                $io->error(sprintf('"%s" is a reserved word.', $document));
+                $output->writeln(
+                    $formatter->formatBlock(sprintf('"%s" is a reserved word.', $document), 'bg=red', true)
+                );
                 continue;
             }
 
@@ -85,67 +98,255 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                     break;
                 }
 
-                $io->error(sprintf('Document "%s:%s" already exists.', $bundle, $document));
+                $output->writeln(
+                    $formatter->formatBlock(
+                        sprintf('Document "%s:%s" already exists.', $bundle, $document),
+                        'bg=red',
+                        true
+                    )
+                );
             } catch (\Exception $e) {
-                $io->error(sprintf('Bundle "%s" does not exist.', $bundle));
+                $output->writeln(
+                    $formatter->formatBlock(sprintf('Bundle "%s" does not exist.', $bundle), 'bg=red', true)
+                );
             }
         }
 
-        $question = new Question('Document type in Elasticsearch', lcfirst($document));
-        $question->setValidator([$this, 'validateFieldName']);
-        $documentType = $io->askQuestion($question);
+        $output->writeln($this->getOptionsLabel($this->getDocumentAnnotations(), 'Available types'));
+        $annotation = $this->questionHelper->ask(
+            $input,
+            $output,
+            $this->getQuestion(
+                'Document type',
+                'Document',
+                [$this, 'validateDocumentAnnotation'],
+                $this->getDocumentAnnotations()
+            )
+        );
+
+        $documentType = lcfirst($document);
+        if ($annotation == 'Document') {
+            $documentType = $this->questionHelper->ask(
+                $input,
+                $output,
+                $this->getQuestion(
+                    "\n" . 'Elasticsearch Document name',
+                    lcfirst($document),
+                    [$this, 'validateFieldName']
+                )
+            );
+        }
 
         $properties = [];
+        $output->writeln(['', $formatter->formatBlock('New Document Property', 'bg=blue;fg=white', true)]);
 
         while (true) {
-            $question = new Question(
-                'Enter property name [<comment>No property will be added if empty!</comment>]',
+            $question = $this->getQuestion(
+                'Property name [<comment>press <info><return></info> to stop</comment>]',
                 false
             );
 
-            if (!$field = $io->askQuestion($question)) {
+            if (!$field = $this->questionHelper->ask($input, $output, $question)) {
                 break;
             }
 
             try {
                 $this->validateFieldName($field);
             } catch (\InvalidArgumentException $e) {
-                $io->error($e->getMessage());
+                $output->writeln($e->getMessage());
                 continue;
             }
 
-            $question = new Question('Enter property name in Elasticsearch', $field);
-            $question->setValidator([$this, 'validateFieldName']);
-            $name = $io->askQuestion($question);
-
-            $question = new Question('Enter property type', 'string');
-            $question
-                ->setAutocompleterValues($this->getPropertyTypes())
-                ->setValidator([$this, 'validatePropertyType']);
-            $type = $io->askQuestion($question);
-
-            $question = new Question(
-                'Enter property options [<comment>No options will be added if empty!</comment>]',
-                false
+            $output->writeln($this->getOptionsLabel($this->getPropertyAnnotations(), 'Available annotations'));
+            $property['annotation'] = $this->questionHelper->ask(
+                $input,
+                $output,
+                $this->getQuestion(
+                    'Property annotation',
+                    'Property',
+                    [$this, 'validatePropertyAnnotation'],
+                    $this->getPropertyAnnotations()
+                )
             );
 
-            $options = $io->askQuestion($question);
+            $property['field_name'] = $property['property_name'] = $field;
 
-            $properties[] = [
-                'annotation' => 'Property',
-                'field_name' => $field,
-                'property_name' => $name,
-                'property_type' => $type,
-                'property_options' => $options,
-            ];
+            switch ($property['annotation']) {
+                case 'Embedded':
+                    $property['property_name'] = $this->askForPropertyName($input, $output, $property['field_name']);
+                    $property['property_class'] = $this->askForPropertyClass($input, $output);
+
+                    $question = new ConfirmationQuestion("\n<info>Multiple</info> [<comment>no</comment>]: ", false);
+                    $question->setAutocompleterValues(['yes', 'no']);
+                    $property['property_multiple'] = $this->questionHelper->ask($input, $output, $question);
+
+                    $property['property_options'] = $this->askForPropertyOptions($input, $output);
+                    break;
+                case 'ParentDocument':
+                    $property['property_class'] = $this->askForPropertyClass($input, $output);
+                    break;
+                case 'Property':
+                    $property['property_name'] = $this->askForPropertyName($input, $output, $property['field_name']);
+
+                    $output->writeln($this->getOptionsLabel($this->getPropertyTypes(), 'Available types'));
+                    $property['property_type'] = $this->questionHelper->ask(
+                        $input,
+                        $output,
+                        $this->getQuestion(
+                            'Property type',
+                            'string',
+                            [$this, 'validatePropertyType'],
+                            $this->getPropertyTypes()
+                        )
+                    );
+
+                    $property['property_options'] = $this->askForPropertyOptions($input, $output);
+                    break;
+                case 'Ttl':
+                    $property['property_default'] = $this->questionHelper->ask(
+                        $input,
+                        $output,
+                        $this->getQuestion("\n" . 'Default time to live')
+                    );
+                    break;
+            }
+
+            $properties[] = $property;
+            $output->writeln(['', $formatter->formatBlock('New Document Property', 'bg=blue;fg=white', true)]);
         }
 
         $this->getContainer()->get('es.generate')->generate(
             $this->getContainer()->get('kernel')->getBundle($bundle),
             $document,
+            $annotation,
             $documentType,
             $properties
         );
+    }
+
+    /**
+     * Asks for property name
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @param mixed           $default
+     *
+     * @return string
+     */
+    private function askForPropertyName(InputInterface $input, OutputInterface $output, $default = null)
+    {
+        return $this->questionHelper->ask(
+            $input,
+            $output,
+            $this->getQuestion("\n" . 'Property name in Elasticsearch', $default, [$this, 'validateFieldName'])
+        );
+    }
+
+    /**
+     * Asks for property options
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return string
+     */
+    private function askForPropertyOptions(InputInterface $input, OutputInterface $output)
+    {
+        return $this->questionHelper->ask(
+            $input,
+            $output,
+            $this->getQuestion(
+                "\n" . 'Property options [<comment>press <info><return></info> to stop</comment>]',
+                false,
+                null,
+                ['"index"="not_analyzed"', '"analyzer"="standard"']
+            )
+        );
+    }
+
+    /**
+     * Asks for property class
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return string
+     */
+    private function askForPropertyClass(InputInterface $input, OutputInterface $output)
+    {
+        return $this->questionHelper->ask(
+            $input,
+            $output,
+            $this->getQuestion(
+                "\n" . 'Property class',
+                null,
+                [$this, 'validatePropertyClass'],
+                $this->getDocumentClasses()
+            )
+        );
+    }
+
+    /**
+     * Returns available document classes
+     *
+     * @return array
+     */
+    private function getDocumentClasses()
+    {
+        /** @var MetadataCollector $metadataCollector */
+        $metadataCollector = $this->getContainer()->get('es.metadata_collector');
+        $classes = [];
+
+        foreach ($this->getContainer()->getParameter('es.managers') as $manager) {
+            $documents = $metadataCollector->getMappings($manager['mappings']);
+            foreach ($documents as $document) {
+                $classes[] = sprintf('%s:%s', $document['bundle'], $document['class']);
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
+     * Parses shortcut notation
+     *
+     * @param string $shortcut
+     *
+     * @return array
+     * @throws \InvalidArgumentException
+     */
+    private function parseShortcutNotation($shortcut)
+    {
+        $shortcut = str_replace('/', '\\', $shortcut);
+
+        if (false === $pos = strpos($shortcut, ':')) {
+            throw $this->getException(
+                'The document name isn\'t valid ("%s" given, expecting something like AcmeBundle:Post)',
+                [$shortcut]
+            );
+        }
+
+        return [substr($shortcut, 0, $pos), substr($shortcut, $pos + 1)];
+    }
+
+    /**
+     * Validates property class
+     *
+     * @param string $class
+     *
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public function validatePropertyClass($class)
+    {
+        if (!in_array($class, $this->getDocumentClasses())) {
+            throw $this->getException(
+                'The document isn\'t available ("%s" given, expecting one of following: %s)',
+                [$class, $this->getDocumentClasses()]
+            );
+        }
+
+        return $class;
     }
 
     /**
@@ -156,14 +357,12 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      * @return string
      * @throws \InvalidArgumentException
      */
-    public static function validateDocumentName($document)
+    public function validateDocumentName($document)
     {
         if (!preg_match('{^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*:[a-zA-Z0-9_\x7f-\xff\\\/]+$}', $document)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'The document name isn\'t valid ("%s" given, expecting something like AcmeBlogBundle:Post)',
-                    $document
-                )
+            throw $this->getException(
+                'The document name isn\'t valid ("%s" given, expecting something like AcmeBundle:Post)',
+                [$document]
             );
         }
 
@@ -181,16 +380,14 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     public function validateFieldName($field)
     {
         if (!$field || $field != lcfirst(preg_replace('/[^a-zA-Z]+/', '', $field))) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'The parameter isn\'t valid ("%s" given, expecting camelcase separated words)',
-                    $field
-                )
+            throw $this->getException(
+                'The parameter isn\'t valid ("%s" given, expecting camelcase separated words)',
+                [$field]
             );
         }
 
         if (in_array(strtolower($field), $this->getReservedKeywords())) {
-            throw new \InvalidArgumentException(sprintf('"%s" is a reserved word.', $field));
+            throw $this->getException('"%s" is a reserved word.', [$field]);
         }
 
         return $field;
@@ -207,12 +404,9 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     public function validatePropertyType($type)
     {
         if (!in_array($type, $this->getPropertyTypes())) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'The property type isn\'t valid ("%s" given, expecting one of following: %s)',
-                    $type,
-                    implode(', ', $this->getPropertyTypes())
-                )
+            throw $this->getException(
+                'The property type isn\'t valid ("%s" given, expecting one of following: %s)',
+                [$type, implode(', ', $this->getPropertyTypes())]
             );
         }
 
@@ -220,30 +414,101 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     }
 
     /**
-     * Parses shortcut notation
+     * Validates document annotation
      *
-     * @param string $shortcut
+     * @param string $annotation
      *
-     * @return array
+     * @return string
      * @throws \InvalidArgumentException
      */
-    private function parseShortcutNotation($shortcut)
+    public function validateDocumentAnnotation($annotation)
     {
-        $shortcut = str_replace('/', '\\', $shortcut);
-
-        if (false === $pos = strpos($shortcut, ':')) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'The document name isn\'t valid ("%s" given, expecting something like AcmeBlogBundle:Post)',
-                    $shortcut
-                )
+        if (!in_array($annotation, $this->getDocumentAnnotations())) {
+            throw $this->getException(
+                'The document annotation isn\'t valid ("%s" given, expecting one of following: %s)',
+                [$annotation, implode(', ', $this->getDocumentAnnotations())]
             );
         }
 
-        return [
-            substr($shortcut, 0, $pos),
-            substr($shortcut, $pos + 1),
-        ];
+        return $annotation;
+    }
+
+    /**
+     * Validates property annotation
+     *
+     * @param string $annotation
+     *
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public function validatePropertyAnnotation($annotation)
+    {
+        if (!in_array($annotation, $this->getPropertyAnnotations())) {
+            throw $this->getException(
+                'The property annotation isn\'t valid ("%s" given, expecting one of following: %s)',
+                [$annotation, implode(', ', $this->getPropertyAnnotations())]
+            );
+        }
+
+        return $annotation;
+    }
+
+    /**
+     * Returns formatted question
+     *
+     * @param string        $question
+     * @param null|string   $default
+     * @param callable|null $validator
+     * @param array|null    $values
+     *
+     * @return Question
+     */
+    private function getQuestion($question, $default = null, callable $validator = null, array $values = null)
+    {
+        $question = new Question(
+            sprintf('<info>%s</info>%s: ', $question, $default ? sprintf(' [<comment>%s</comment>]', $default) : ''),
+            $default
+        );
+
+        $question
+            ->setValidator($validator)
+            ->setAutocompleterValues($values);
+
+        return $question;
+    }
+
+    /**
+     * Returns options label
+     *
+     * @param array  $options
+     * @param string $suffix
+     *
+     * @return array
+     */
+    private function getOptionsLabel(array $options, $suffix)
+    {
+        $label = sprintf('<info>%s:</info> ', $suffix);
+
+        foreach ($options as &$option) {
+            $option = sprintf('<comment>%s</comment>', $option);
+        }
+
+        return ['', $label . implode(', ', $options) . '.'];
+    }
+
+    /**
+     * Returns formatted exception
+     *
+     * @param string $format
+     * @param array  $args
+     *
+     * @return \InvalidArgumentException
+     */
+    private function getException($format, $args = [])
+    {
+        /** @var FormatterHelper $formatter */
+        $formatter = $this->getHelperSet()->get('formatter');
+        return new \InvalidArgumentException($formatter->formatBlock(vsprintf($format, $args), 'bg=red', true));
     }
 
     /**
@@ -260,6 +525,26 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
             ->get('annotations.cached_reader')
             ->getPropertyAnnotation($reflection->getProperty('type'), 'Doctrine\Common\Annotations\Annotation\Enum')
             ->value;
+    }
+
+    /**
+     * Returns property annotations
+     *
+     * @return array
+     */
+    private function getPropertyAnnotations()
+    {
+        return ['Embedded', 'Id', 'ParentDocument', 'Property', 'Ttl'];
+    }
+
+    /**
+     * Returns document annotations
+     *
+     * @return array
+     */
+    private function getDocumentAnnotations()
+    {
+        return ['Document', 'Nested', 'Object'];
     }
 
     /**

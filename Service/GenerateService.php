@@ -47,19 +47,21 @@ class GenerateService
      *
      * @param BundleInterface $bundle
      * @param string          $document
+     * @param string          $annotation
      * @param string          $type
      * @param array           $properties
      */
     public function generate(
         BundleInterface $bundle,
         $document,
+        $annotation,
         $type,
         array $properties
     ) {
         $documentPath = $bundle->getPath() . '/Document/' . str_replace('\\', '/', $document) . '.php';
         $class = [
             'name' => $bundle->getNamespace() . '\\Document\\' . $document,
-            'annotation' => 'Document',
+            'annotation' => $annotation,
             'type' => $type
         ];
 
