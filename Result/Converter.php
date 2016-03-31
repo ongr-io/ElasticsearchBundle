@@ -181,10 +181,22 @@ class Converter
                 if (isset($alias['type'])) {
                     switch ($alias['type']) {
                         case 'float':
-                            $value = (float)$value;
+                            if (is_array($value)) {
+                                foreach ($value as $key => $item) {
+                                    $value[$key] = (float)$item;
+                                }
+                            } else {
+                                $value = (float)$value;
+                            }
                             break;
                         case 'integer':
-                            $value = (int)$value;
+                            if (is_array($value)) {
+                                foreach ($value as $key => $item) {
+                                    $value[$key] = (int)$item;
+                                }
+                            } else {
+                                $value = (int)$value;
+                            }
                             break;
                         default:
                             break;
