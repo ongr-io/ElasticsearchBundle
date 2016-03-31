@@ -50,6 +50,18 @@ public function set<methodName>($<fieldName>)
 }';
 
     /**
+     * @var string
+     */
+    private $constructorTemplate =
+        '/**
+ * Constructor
+ */
+public function __construct()
+{
+<fields>
+}';
+
+    /**
      * @param array $metadata
      *
      * @return string
@@ -61,7 +73,7 @@ public function set<methodName>($<fieldName>)
             [
                 "<?php\n",
                 sprintf('namespace %s;', substr($metadata['name'], 0, strrpos($metadata['name'], '\\'))) . "\n",
-                "use ONGR\\ElasticsearchBundle\\Annotation as ES;\n",
+                $this->generateDocumentUse($metadata),
                 $this->generateDocumentDocBlock($metadata),
                 'class ' . $this->getClassName($metadata),
                 "{",
@@ -84,6 +96,10 @@ public function set<methodName>($<fieldName>)
 
         if ($properties = $this->generateDocumentProperties($metadata)) {
             $lines[] = $properties;
+        }
+
+        if ($this->hasMultipleEmbedded($metadata)) {
+            $lines[] = $this->generateDocumentConstructor($metadata);
         }
 
         if ($methods = $this->generateDocumentMethods($metadata)) {
@@ -129,6 +145,28 @@ public function set<methodName>($<fieldName>)
         }
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * Generates document constructor
+     *
+     * @param array $metadata
+     *
+     * @return string
+     */
+    private function generateDocumentConstructor(array $metadata)
+    {
+        $fields = [];
+
+        foreach ($metadata['properties'] as $prop) {
+            if ($prop['annotation'] == 'embedded' && isset($prop['property_multiple']) && $prop['property_multiple']) {
+                $fields[] = sprintf('%s$this->%s = new Collection();', $this->spaces, $prop['field_name']);
+            }
+        }
+
+        return $this->prefixWithSpaces(
+            str_replace('<fields>', implode("\n", $fields), $this->constructorTemplate)
+        ) . "\n";
     }
 
     /**
@@ -178,7 +216,7 @@ public function set<methodName>($<fieldName>)
             $column[] = 'multiple=true';
         }
 
-        if (isset($metadata['property_type']) && $metadata['annotation'] == 'Property') {
+        if (isset($metadata['property_type']) && $metadata['annotation'] == 'property') {
             $column[] = 'type="' . $metadata['property_type'] . '"';
         }
 
@@ -190,7 +228,7 @@ public function set<methodName>($<fieldName>)
             $column[] = 'options={' . $metadata['property_options'] . '}';
         }
 
-        $lines[] = $this->spaces . ' * @ES\\' . $metadata['annotation'] . '(' . implode(', ', $column) . ')';
+        $lines[] = $this->spaces . ' * @ES\\' . ucfirst($metadata['annotation']) . '(' . implode(', ', $column) . ')';
 
         $lines[] = $this->spaces . ' */';
 
@@ -210,7 +248,7 @@ public function set<methodName>($<fieldName>)
             ['<className>', '<annotation>', '<options>'],
             [
                 $this->getClassName($metadata),
-                $metadata['annotation'],
+                ucfirst($metadata['annotation']),
                 $metadata['type'] != lcfirst($this->getClassName($metadata))
                     ? sprintf('type="%s"', $metadata['type']) : '',
             ],
@@ -251,5 +289,39 @@ public function set<methodName>($<fieldName>)
     {
         return ($pos = strrpos($metadata['name'], '\\'))
             ? substr($metadata['name'], $pos + 1, strlen($metadata['name'])) : $metadata['name'];
+    }
+
+    /**
+     * Generates document use statements
+     *
+     * @param array $metadata
+     *
+     * @return string
+     */
+    private function generateDocumentUse(array $metadata)
+    {
+        $uses = ['use ONGR\ElasticsearchBundle\Annotation as ES;'];
+
+        if ($this->hasMultipleEmbedded($metadata)) {
+            $uses[] = 'use ONGR\ElasticsearchBundle\Collection\Collection;';
+        }
+
+        return implode("\n", $uses) . "\n";
+    }
+
+    /**
+     * @param array $metadata
+     *
+     * @return bool
+     */
+    private function hasMultipleEmbedded(array $metadata)
+    {
+        foreach ($metadata['properties'] as $prop) {
+            if ($prop['annotation'] == 'embedded' && isset($prop['property_multiple']) && $prop['property_multiple']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

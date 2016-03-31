@@ -28,6 +28,11 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     private $questionHelper;
 
     /**
+     * @var string[]
+     */
+    private $propertyAnnotations;
+
+    /**
      * {@inheritdoc}
      */
     protected function configure()
@@ -61,7 +66,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         $output->writeln(
             [
                 '',
-                $formatter->formatBlock('Welcome to the ONGRElasticsearchBundle document generator', 'bg=blue', true),
+                $formatter->formatBlock('Welcome to the Elasticsearch Bundle document generator', 'bg=blue', true),
                 '',
                 'This command helps you generate ONGRElasticsearchBundle documents.',
                 '',
@@ -110,14 +115,17 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
             $output,
             $this->getQuestion(
                 'Document type',
-                'Document',
+                'document',
                 [$this, 'validateDocumentAnnotation'],
                 $this->getDocumentAnnotations()
             )
         );
 
+        $this->propertyAnnotations = ['embedded', 'property'];
         $documentType = lcfirst($document);
-        if ($annotation == 'Document') {
+
+        if ($annotation == 'document') {
+            $this->propertyAnnotations = ['embedded', 'id', 'parentDocument', 'property', 'ttl'];
             $documentType = $this->questionHelper->ask(
                 $input,
                 $output,
@@ -130,7 +138,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         }
 
         $properties = [];
-        $output->writeln(['', $formatter->formatBlock('New Document Property', 'bg=blue;fg=white', true)]);
+        $output->writeln(['', $formatter->formatBlock('New Document Property?', 'bg=blue;fg=white', true)]);
 
         while (true) {
             $property = [];
@@ -157,22 +165,22 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                 continue;
             }
 
-            $output->writeln($this->getOptionsLabel($this->getPropertyAnnotations(), 'Available annotations'));
+            $output->writeln($this->getOptionsLabel($this->propertyAnnotations, 'Available annotations'));
             $property['annotation'] = $this->questionHelper->ask(
                 $input,
                 $output,
                 $this->getQuestion(
-                    'Property annotation',
-                    'Property',
+                    'Property meta field',
+                    'property',
                     [$this, 'validatePropertyAnnotation'],
-                    $this->getPropertyAnnotations()
+                    $this->propertyAnnotations
                 )
             );
 
             $property['field_name'] = $property['property_name'] = $field;
 
             switch ($property['annotation']) {
-                case 'Embedded':
+                case 'embedded':
                     $property['property_name'] = $this->askForPropertyName($input, $output, $property['field_name']);
                     $property['property_class'] = $this->askForPropertyClass($input, $output);
 
@@ -182,7 +190,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
 
                     $property['property_options'] = $this->askForPropertyOptions($input, $output);
                     break;
-                case 'ParentDocument':
+                case 'parentDocument':
                     if (!$this->isUniqueAnnotation($properties, $property['annotation'])) {
                         $output->writeln(
                             $this
@@ -193,7 +201,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                     }
                     $property['property_class'] = $this->askForPropertyClass($input, $output);
                     break;
-                case 'Property':
+                case 'property':
                     $property['property_name'] = $this->askForPropertyName($input, $output, $property['field_name']);
 
                     $output->writeln($this->getOptionsLabel($this->getPropertyTypes(), 'Available types'));
@@ -210,7 +218,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
 
                     $property['property_options'] = $this->askForPropertyOptions($input, $output);
                     break;
-                case 'Ttl':
+                case 'ttl':
                     if (!$this->isUniqueAnnotation($properties, $property['annotation'])) {
                         $output->writeln(
                             $this
@@ -225,7 +233,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                         $this->getQuestion("\n" . 'Default time to live')
                     );
                     break;
-                case 'Id':
+                case 'id':
                     if (!$this->isUniqueAnnotation($properties, $property['annotation'])) {
                         $output->writeln(
                             $this
@@ -295,11 +303,17 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      */
     private function askForPropertyOptions(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln(
+            "\n"
+                . '<info>Enter property options, for example <comment>"index"="not_analyzed"</comment>'
+                . ' allows mapper to index this field, so it is searchable, but value will be not analyzed.</info>'
+        );
+
         return $this->questionHelper->ask(
             $input,
             $output,
             $this->getQuestion(
-                "\n" . 'Property options [<comment>press <info><return></info> to stop</comment>]',
+                'Property options [<comment>press <info><return></info> to stop</comment>]',
                 false,
                 null,
                 ['"index"="not_analyzed"', '"analyzer"="standard"']
@@ -385,17 +399,13 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         list($bundle, $document) = $this->parseShortcutNotation($input);
 
         try {
-            if (!file_exists(
-                $this
-                    ->getContainer()
-                    ->get('kernel')
-                    ->getBundle($bundle)
-                    ->getPath() . '/Document/' . str_replace('\\', '/', $document) . '.php'
-            )) {
-                throw $this->getException('Document "%s:%s" does not exist.', [$bundle, $document]);
-            }
+            $bundlePath = $this->getContainer()->get('kernel')->getBundle($bundle)->getPath();
         } catch (\Exception $e) {
             throw $this->getException('Bundle "%s" does not exist.', [$bundle]);
+        }
+
+        if (!file_exists($bundlePath . '/Document/' . str_replace('\\', '/', $document) . '.php')) {
+            throw $this->getException('Document "%s:%s" does not exist.', [$bundle, $document]);
         }
 
         return $input;
@@ -495,10 +505,10 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      */
     public function validatePropertyAnnotation($annotation)
     {
-        if (!in_array($annotation, $this->getPropertyAnnotations())) {
+        if (!in_array($annotation, $this->propertyAnnotations)) {
             throw $this->getException(
                 'The property annotation isn\'t valid ("%s" given, expecting one of following: %s)',
-                [$annotation, implode(', ', $this->getPropertyAnnotations())]
+                [$annotation, implode(', ', $this->propertyAnnotations)]
             );
         }
 
@@ -580,23 +590,13 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     }
 
     /**
-     * Returns property annotations
-     *
-     * @return string[]
-     */
-    private function getPropertyAnnotations()
-    {
-        return ['Embedded', 'Id', 'ParentDocument', 'Property', 'Ttl'];
-    }
-
-    /**
      * Returns document annotations
      *
      * @return string[]
      */
     private function getDocumentAnnotations()
     {
-        return ['Document', 'Nested', 'Object'];
+        return ['document', 'nested', 'object'];
     }
 
     /**
