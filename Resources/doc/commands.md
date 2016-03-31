@@ -81,20 +81,6 @@ Exports data from Elasticsearch index in a json format.
 
 > Index export generates the same `JSON` format as specified in the import chapter.
 
-## Mapping update
-
-Command name: `ongr:es:mapping:update`
-
-Updates elasticsearch index mapping. See more info at ([official elastic docs](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html#updating-a-mapping)).
-
-| Options     |             Value            |                                      What it does                                      |
-|:-----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
-| `--manager` | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
-| `--force`   | *none*                       | This flag is mandatory for the command to work.
-| `--types`   | *Elasticsearch index type names* | Selected types to update, if no specified will update all index.
-
-
-
 ## Cache clear
 
 Command name: `ongr:es:cache:clear`
