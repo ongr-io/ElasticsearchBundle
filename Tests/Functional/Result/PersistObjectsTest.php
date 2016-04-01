@@ -133,13 +133,13 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $prices = [8.95, 2.68, 5.66];
         $ages = [35, 11];
         $product = new Product();
-        $product->id = 'foo';
-        $product->title ='Test Document';
-        $product->price = ['8.95', '2.68', '5.66'];
+        $product->setId('foo');
+        $product->setTitle('Test Document');
+        $product->setPrice(['8.95', '2.68', '5.66']);
 
         $person = new Person();
-        $person->firstName ='name';
-        $person->age = ['35', '11'];
+        $person->setFirstName('name');
+        $person->setAge(['35', '11']);
 
         $manager->persist($product);
         $manager->persist($person);
@@ -149,8 +149,8 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $repo = $manager->getRepository('AcmeBarBundle:Person');
         $person = $repo->findOneBy(['first_name' => 'name']);
 
-        $this->assertEquals($prices, $product->price);
-        $this->assertEquals($ages, $person->age);
+        $this->assertEquals($prices, $product->getPrice());
+        $this->assertEquals($ages, $person->getAge());
     }
 
     public function testDocumentPersistWithDate()
