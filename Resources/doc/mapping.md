@@ -35,12 +35,15 @@ ongr_elasticsearch:
             connection: default
             mappings:
                 - AppBundle
+            force_commit: false
 
 ```
 
 At the very top you can see `analysis` node. This is for holding a filters, analyzers, tokenizers and other analyzation kind stuff for your connections. So lets assume you defined custom `incrementalAnalyzer` analyzer. The key stands as analyzer name, so down below in `default` connection's `analysis` section you can add this analyzer to include in certain connection mapping. And all you need to do is only to add the name. So now when you have defined a custom analyzer, you can use it in some document fields, see below in the document's examples how to do that.
 
 In the managers configuration `mappings` is optional. If there are no mappings defined, it will look up through `Document` folders contained in the all bundles.
+
+By default `force_commit` value is `true`. It ensures, that all bulk data will be committed to Elasticsearch right after request.
 
 
 ### Document class annotations
