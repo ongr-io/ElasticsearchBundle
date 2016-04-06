@@ -14,6 +14,7 @@ Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsea
 * [How to search the index](search.md)
 * [Scan through the index](scan.md)
 * [Parsing the results](results_parsing.md)
+* [Listening to events](event_listener.md)
 
 #### Troubleshooting
 * [How to upgrade from the older versions?](upgrade.md)

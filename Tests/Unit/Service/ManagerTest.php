@@ -180,7 +180,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter, $dispatcher);
 
         foreach ($calls as list($operation, $type, $query)) {
             $manager->bulk($operation, $type, $query);
@@ -211,7 +215,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter, $dispatcher);
         $manager->setBulkParams(['refresh' => true]);
         $manager->setCommitMode('flush');
 
@@ -246,7 +254,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter, $dispatcher);
         $manager->clearScroll('foo');
     }
 
@@ -285,6 +297,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                 ->disableOriginalConstructor()
                 ->getMock(),
             $this->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
+                ->disableOriginalConstructor()
+                ->getMock(),
+            $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
                 ->disableOriginalConstructor()
                 ->getMock()
         );
