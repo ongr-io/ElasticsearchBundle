@@ -95,6 +95,10 @@ class DocumentFinder
         $documentDirectory = DIRECTORY_SEPARATOR . self::DOCUMENT_DIR . DIRECTORY_SEPARATOR;
         $directory = dirname($bundleReflection->getFileName()) . $documentDirectory;
 
+        if (!is_dir($directory)) {
+            return [];
+        }
+
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
         $files = new \RegexIterator($iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
 

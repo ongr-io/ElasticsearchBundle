@@ -24,6 +24,7 @@ class DocumentFinderTest extends WebTestCase
     {
         $finder = new DocumentFinder($this->getContainer()->getParameter('kernel.bundles'));
         $this->assertGreaterThan(0, count($finder->getBundleDocumentClasses('AcmeBarBundle')));
+        $this->assertEquals(0, count($finder->getBundleDocumentClasses('AcmeBlankBundle')));
     }
 
     /**
