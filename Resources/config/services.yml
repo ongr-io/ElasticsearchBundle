@@ -1,6 +1,7 @@
 parameters:
     es.logging.path: "%kernel.logs_dir%/elasticsearch_%kernel.environment%.log"
     es.profiler.template: ONGRElasticsearchBundle:Profiler:profiler.html.twig
+    es.cache_engine.class: Doctrine\Common\Cache\FilesystemCache
 
 services:
     es.export:
@@ -13,7 +14,7 @@ services:
         class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
 
     es.cache_engine:
-        class: Doctrine\Common\Cache\FilesystemCache
+        class: "%es.cache_engine.class%"
         arguments: ["%kernel.cache_dir%/ongr", ".ongr.data"]
 
     annotations.cached_reader:
