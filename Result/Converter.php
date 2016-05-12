@@ -83,13 +83,19 @@ class Converter
      */
     public function assignArrayToObject(array $array, $object, array $aliases)
     {
-        foreach ($array as $name => $value) {
-            if (!isset($aliases[$name])) {
-                continue;
+        foreach ($aliases as $name => $alias) {
+            $value = isset($array[$name]) ? $array[$name] : null;
+            if ($alias['field'] === true) {
+                $value = isset($array['fields']) && isset($array['fields'][$name]) ? $array['fields'][$name] : null;
+
+                // fields are always returned as arrays. We convert to scalar if only one element is present
+                if (is_array($value) && count($value) == 1) {
+                    $value = $value[0];
+                }
             }
 
-            if (isset($aliases[$name]['type'])) {
-                switch ($aliases[$name]['type']) {
+            if (isset($alias['type'])) {
+                switch ($alias['type']) {
                     case 'date':
                         if (is_numeric($value) && (int)$value == $value) {
                             $time = $value;
@@ -101,16 +107,16 @@ class Converter
                         break;
                     case 'object':
                     case 'nested':
-                        if ($aliases[$name]['multiple']) {
-                            $value = new ObjectIterator($this, $value, $aliases[$name]);
+                        if ($alias['multiple']) {
+                            $value = new ObjectIterator($this, $value, $alias);
                         } else {
                             if (!isset($value)) {
                                 break;
                             }
                             $value = $this->assignArrayToObject(
                                 $value,
-                                new $aliases[$name]['namespace'](),
-                                $aliases[$name]['aliases']
+                                new $alias['namespace'](),
+                                $alias['aliases']
                             );
                         }
                         break;
@@ -120,10 +126,10 @@ class Converter
                 }
             }
 
-            if ($aliases[$name]['propertyType'] == 'private') {
-                $object->{$aliases[$name]['methods']['setter']}($value);
+            if ($alias['propertyType'] == 'private') {
+                $object->{$alias['methods']['setter']}($value);
             } else {
-                $object->{$aliases[$name]['propertyName']} = $value;
+                $object->{$alias['propertyName']} = $value;
             }
         }
 

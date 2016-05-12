@@ -18,6 +18,7 @@ use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use ONGR\ElasticsearchBundle\Annotation\Field;
 use ONGR\ElasticsearchBundle\Mapping\Exception\DocumentParserException;
 use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException;
 
@@ -27,6 +28,7 @@ use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationExceptio
 class DocumentParser
 {
     const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
+    const FIELD_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Field';
     const EMBEDDED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Embedded';
     const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
     const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Object';
@@ -145,6 +147,28 @@ class DocumentParser
     }
 
     /**
+     * Returns field annotation data from reader.
+     *
+     * @param \ReflectionProperty $field
+     *
+     * @return Field|null
+     */
+    private function getFieldAnnotationData($field)
+    {
+        $result = $this->reader->getPropertyAnnotation($field, self::FIELD_ANNOTATION);
+
+        if ($result !== null && $result->name === null) {
+            $result->name = Caser::snake($field->getName());
+        }
+
+        if ($result !== null) {
+            $result->field = true;
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns Embedded annotation data from reader.
      *
      * @param \ReflectionProperty $property
@@ -228,6 +252,7 @@ class DocumentParser
 
         foreach ($properties as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
+            $type = $type !== null ? $type : $this->getFieldAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
             if ($type === null && $metaFields !== null
                 && ($metaData = $this->getMetaFieldAnnotationData($property)) !== null) {
@@ -267,6 +292,7 @@ class DocumentParser
                         throw new \LogicException($message);
                 }
                 $alias[$type->name]['propertyType'] = $propertyType;
+                $alias[$type->name]['field'] = isset($type->field) && $type->field === true;
 
                 if ($type instanceof Embedded) {
                     $child = new \ReflectionClass($this->finder->getNamespace($type->class));
@@ -349,6 +375,7 @@ class DocumentParser
         $annotations = [
             'Document',
             'Property',
+            'Field',
             'Embedded',
             'Object',
             'Nested',
