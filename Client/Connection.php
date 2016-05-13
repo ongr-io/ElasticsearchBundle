@@ -171,7 +171,7 @@ class Connection
      */
     public function refresh()
     {
-        $this->getClient()->indices()->refresh();
+        $this->getClient()->indices()->refresh(['index' => $this->getIndexName()]);
     }
 
     /**
@@ -181,7 +181,7 @@ class Connection
      */
     public function flush()
     {
-        $this->getClient()->indices()->flush();
+        $this->getClient()->indices()->flush(['index' => $this->getIndexName()]);
     }
 
     /**
