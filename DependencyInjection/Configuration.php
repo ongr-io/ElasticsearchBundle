@@ -215,6 +215,10 @@ class Configuration implements ConfigurationInterface
                         ->info('Maps manager to bundles. f.e. AcmeDemoBundle')
                         ->prototype('scalar')->end()
                     ->end()
+                    ->booleanNode('force_commit')
+                        ->info('Forces commit to elasticsearch on kernel terminate')
+                        ->defaultTrue()
+                    ->end()
                 ->end()
             ->end();
 
