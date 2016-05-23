@@ -42,39 +42,4 @@ class AppKernel extends Kernel
     {
         $loader->load(__DIR__ . '/config/config_' . $this->getEnvironment() . '.yml');
     }
-
-    /**
-     * Only check configuration difference on first test case. The rest test cases might be the same ;).
-     *
-     * @throws Exception
-     */
-    protected function initializeContainer()
-    {
-        static $first = true;
-
-        if ('test' !== $this->getEnvironment()) {
-            parent::initializeContainer();
-
-            return;
-        }
-
-        $debug = $this->debug;
-
-        if (!$first) {
-            // Disable debug mode on all but the first initialization.
-            $this->debug = false;
-        }
-
-        // Will not work with --process-isolation.
-        $first = false;
-
-        try {
-            parent::initializeContainer();
-        } catch (\Exception $e) {
-            $this->debug = $debug;
-            throw $e;
-        }
-
-        $this->debug = $debug;
-    }
 }

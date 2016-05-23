@@ -57,7 +57,3 @@ services:
     es.result_converter:
         class: ONGR\ElasticsearchBundle\Result\Converter
         arguments: ["@es.metadata_collector"]
-
-    es.manager_factory:
-        class: ONGR\ElasticsearchBundle\Service\ManagerFactory
-        arguments: ["@es.metadata_collector", "@es.result_converter", "@es.tracer"]

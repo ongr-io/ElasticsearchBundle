@@ -14,7 +14,9 @@ namespace ONGR\ElasticsearchBundle\DependencyInjection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * This is the class that loads and manages bundle configuration.
@@ -36,5 +38,14 @@ class ONGRElasticsearchExtension extends Extension
         $container->setParameter('es.analysis', $config['analysis']);
         $container->setParameter('es.connections', $config['connections']);
         $container->setParameter('es.managers', $config['managers']);
+        $definition = new Definition(
+            'ONGR\ElasticsearchBundle\Service\ManagerFactory',
+            [
+                new Reference('es.metadata_collector'),
+                new Reference('es.result_converter'),
+                $container->getParameter('kernel.debug') ? new Reference('es.tracer') : null,
+            ]
+        );
+        $container->setDefinition('es.manager_factory', $definition);
     }
 }
