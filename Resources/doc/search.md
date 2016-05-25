@@ -2,11 +2,11 @@
 
 ## Structured search with DSL
 
-If find functions is not enough, there is possible to perform a structured search using [query builder](https://github.com/ongr-io/ElasticsearchDSL). In a nutshell you can do any query or filter that is defined in [Elasticsearch Query DSL documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
+If find functions are not enough, there is a possibility to perform a structured search using [query builder](https://github.com/ongr-io/ElasticsearchDSL). In a nutshell you can do any query or filter that is defined in [Elasticsearch Query DSL documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
 
 To begin with structured search you will need a `Search` object.
 
-e.g. We want to search for a cities in Lithuania with more than 10K population
+e.g. We want to search for cities in Lithuania with more than 10K population
 
 ```php
 
@@ -54,7 +54,17 @@ It will construct a query:
 
 > Important: by default result size in elasticsearch is 10, if you need more set size to your needs.
 
-For more query and filter examples take a look at the [Elasticsearch DSL library docs](https://github.com/ongr-io/ElasticsearchDSL/blob/master/docs/index.md). We covered all examples that we found in [Elasticsearch Query DSL documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) how to cover in objective oriented way.
+Setting size or offset is to the search is very easy, because it has getters and setters for these attributes. Therefore to set size all you need to do is to write
+
+```php
+
+$search->setSize(100);
+
+```
+
+Similarly other properties like Scroll, Timeout, MinScore and more can be defined.
+
+For more query and filter examples take a look at the [Elasticsearch DSL library docs](https://github.com/ongr-io/ElasticsearchDSL/blob/master/docs/index.md). We covered all examples that we found in [Elasticsearch Query DSL documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) how to cover in object oriented way.
 
 > The results parsing is the same like in the find functions.
 
@@ -83,7 +93,7 @@ This example returns an iterator with all matching documents.
 
 ## Results count
 
-Elasticsearch bundle provides support for [Count API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html). If you need only count results, this is faster way to approach this. Here's an example how to count cars by red color:
+Elasticsearch bundle provides support for [Count API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html). If you need only to count the results, this is a faster way to approach this. Here's an example of how to count cars by red color:
 
 ```php
 
