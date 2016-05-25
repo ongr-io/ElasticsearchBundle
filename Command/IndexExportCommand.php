@@ -48,6 +48,12 @@ class IndexExportCommand extends AbstractManagerAwareCommand
                 InputOption::VALUE_REQUIRED,
                 'Chunk size to use in scan api',
                 500
+            )->addOption(
+                'split',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Split file in a separate parts if line number exceeds provided value',
+                300000
             );
     }
 
@@ -66,7 +72,8 @@ class IndexExportCommand extends AbstractManagerAwareCommand
             $input->getArgument('filename'),
             $input->getOption('types'),
             $input->getOption('chunk'),
-            $output
+            $output,
+            $input->getOption('split')
         );
 
         $io->success('Data export completed!');

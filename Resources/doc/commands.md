@@ -78,6 +78,7 @@ Exports data from Elasticsearch index in a json format.
 | `--manager` | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
 | `--chunk`   | *Chunk size, default 500*      | Specifies the size of each chunk to be received from Elasticsearch. This can be changed for performance reasons.
 | `--types`   | *Elasticsearch index type names* | Selected types to export, if no specified will export all index.
+| `--split`   | *Lines number* | This option indicates how many lines can be in single exported file.
 
 > Index export generates the same `JSON` format as specified in the import chapter.
 

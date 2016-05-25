@@ -29,13 +29,20 @@ class ExportService
      * @param string          $filename
      * @param array           $types
      * @param int             $chunkSize
+     * @param int             $maxLinesInFile
      * @param OutputInterface $output
      */
-    public function exportIndex(Manager $manager, $filename, $types, $chunkSize, OutputInterface $output)
-    {
+    public function exportIndex(
+        Manager $manager,
+        $filename,
+        $types,
+        $chunkSize,
+        OutputInterface $output,
+        $maxLinesInFile = 300000
+    ) {
         $params = [
             'search_type' => 'scan',
-            'scroll' => '5m',
+            'scroll' => '10m',
             'size' => $chunkSize,
             'source' => true,
             'body' => [
@@ -55,17 +62,44 @@ class ExportService
         $progress->setRedrawFrequency(100);
         $progress->start();
 
+        $counter = 0;
+        $fileCounter = 1;
+
+        if ($results->count() <= $maxLinesInFile) {
+            $count = $results->count();
+        } elseif (($results->count() - ($fileCounter * $maxLinesInFile)) > $maxLinesInFile) {
+            $count = $results->count() - ($fileCounter * $maxLinesInFile);
+        } else {
+            $count = $maxLinesInFile;
+        }
+
+        $date = date(\DateTime::ISO8601);
         $metadata = [
-            'count' => $results->count(),
-            'date' => date(\DateTime::ISO8601),
+            'count' => $count,
+            'date' => $date,
         ];
 
-        $writer = $this->getWriter($this->getFilePath($filename), $metadata);
+        $filename = str_replace('.json', '', $filename);
+        $writer = $this->getWriter($this->getFilePath($filename.'.json'), $metadata);
 
         foreach ($results as $data) {
+            if ($counter >= $maxLinesInFile) {
+                $writer->finalize();
+                $writer = null;
+                $fileCounter++;
+                $counter = 0;
+
+                $metadata = [
+                    'count' => $count,
+                    'date' => $date,
+                ];
+                $writer = $this->getWriter($this->getFilePath($filename."_".$fileCounter.".json"), $metadata);
+            }
+
             $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source', 'fields']));
             $writer->push($doc);
             $progress->advance();
+            $counter++;
         }
 
         $writer->finalize();
