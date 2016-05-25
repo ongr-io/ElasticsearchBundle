@@ -2,7 +2,7 @@
 
 > This chapter covers what comes from [find](find_functions.md) and [search](search.md) requests.
 
-For all chapters below we will us a data example inserted in the elasticsearch content type:
+For all chapters below we will use a data example inserted in the elasticsearch content type:
 
 ```
 // content type
@@ -24,7 +24,7 @@ For all chapters below we will us a data example inserted in the elasticsearch c
 
 ## Results iterator
 
-Whenever any search actions is performed and `Result::RESULTS_OBJECT` is selected as the result type the `DocumentIterator` will be returned. It has plenty of helper functions to aggregate more efficiently with the results.
+Whenever any search action is performed and `Result::RESULTS_OBJECT` is selected as the result type the `DocumentIterator` will be returned. It has plenty of helper functions to aggregate more efficiently with the results.
 
 
 Lets assume you search the index with:
@@ -97,7 +97,7 @@ foreach ($results as $document) {
 
 We highly recommend to `unset()` document instance after you dont need it or manage memory at your own way.
 
-There is possible to change the `DocumentIterator` behaviour. Take a look at the [overwriting bundle parts](overwriting_bundle.md).
+There is a possibility to change the `DocumentIterator` behaviour. Take a look at the [overwriting bundle parts](overwriting_bundle.md).
 
 ## Aggregations
 

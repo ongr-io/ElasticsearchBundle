@@ -17,13 +17,13 @@ $content = $repo->find(1); // 5 is the document _uid in the elasticsearch.
 
 ```
 
-> All `find` methods returns an object. If you want to get raw result use `execute()`.
+> All `find` methods return an object. If you want to get raw result use `execute($search, Result::RESULTS_RAW)`.
 
 ## Find by field
 
-Find by field uses [query_string query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to fetch a results by some field value.
+Find by field uses [query_string query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to fetch results by a specified field value.
 
-> Document matches depends how mapping is defined. If you are not so sure that it will work as you expect better use structured search from `Search` object.
+> Document matches heavily depend on how mapping is defined. If you are unsure of whether it will work, it is better to use structured search from `Search` object.
 
 
 ```php
@@ -46,6 +46,16 @@ Array
   )
 )
 ```
+
+Also with `findBy` you can define the way the results are ordered, limit the amount of retrieved documents and define the offset of the results, eg:
+
+```php
+
+$content = $repo->findBy(['title' => 'Acme'], ['price' => 'asc'], 20, 10);
+
+```
+
+This will return up to 20 documents with the word 'Acme' in their title, also it will skip the first 10 results and the results will be ordered from the ones with the smallest price to the ones with the highest.
 
 ## Find one document by field
 
