@@ -60,10 +60,10 @@ So here's a simple example how the data looks like:
 
 Every line of file is `JSON` object. First line must specify `count`, how many lines are in the files except first and the file timestamp in `date`.
 
-In a single line is one document. In a single file could be defined different types, basically with a single file you can import a whole index. There are 3 required keys:
+There is one document per line. There could be different types defined in a single file, basically with a single file you can import the whole index. There are 3 required keys:
 * `_type` which specifies elasticsearch type name (not an ElasticsearchBundle class document)
-* `_id` is optional, if not specified (provided `null`) elasticsearch will create random.
-* `_source`: document array encoded to json object, where all fields are equel to the elasticsearch type field names.
+* `_id` is optional, if not specified (provided `null`) elasticsearch will create a random id for that document.
+* `_source`: document array encoded to json object, where all fields are equal to the elasticsearch type field names.
 
 
 ## Export index

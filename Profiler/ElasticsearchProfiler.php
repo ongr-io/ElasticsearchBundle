@@ -82,7 +82,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     public function getTime()
     {
-        return round($this->time * 100, 2);
+        return round($this->time * 1000, 2);
     }
 
     /**

@@ -43,8 +43,6 @@ php composer.phar require ongr/elasticsearch-bundle "~1.0"
 
 ```
 
-> WARNING: "~1.0" stable is not released yet, we are in the final steps to finish everything and hope can release it soon. Here's the milestone what is left fr `1.0` https://github.com/ongr-io/ElasticsearchBundle/milestones/1.0.0
-
 > "~1.0" indicates a version, chose any version that fits for you.
 
 > Instructions for installing and deploying Elasticsearch can be found in [Elasticsearch installation page](https://www.elastic.co/downloads/elasticsearch).
@@ -88,7 +86,7 @@ ongr_elasticsearch:
 
 > This is the very basic example only, for more information, please take a look at the [configuration](Resources/doc/configuration.md) chapter.
 
-In this particular example there is 2 things you should know. The index name in the connection node and the mappings. Mappings is the place where you documents are stored (more info at [the mapping chapter](Resources/doc/mapping.md)).
+In this particular example there are 2 things you should know. The index name in the connection node and the mappings. Mappings is the place where your documents are stored (more info at [the mapping chapter](Resources/doc/mapping.md)).
 
 
 #### Step 3: Define your Elasticsearch types as `Document` objects
@@ -142,7 +140,7 @@ bin/console ongr:es:index:create
 
 #### Step 5: Enjoy with the Elasticsearch
 
-We advice to take a look at the [mapping chapter](Resources/doc/mapping.md) to configure the index. Search documentation for the Elasticsearch bundle is [available here](Resources/doc/search.md). And finally it's up to you what an amazing things you are gonna create :sunglasses:.
+We advise to take a look at the [mapping chapter](Resources/doc/mapping.md) to configure the index. Search documentation for the Elasticsearch bundle is [available here](Resources/doc/search.md). And finally it's up to you what amazing things you are going to create :sunglasses: .
 
 
 ## License

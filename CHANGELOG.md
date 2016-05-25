@@ -1,9 +1,9 @@
 # CHANGELOG
 ## v1.0.x (2016-x)
 
-## v1.0.2 (2016-05-23)
+## v1.0.2 (2016-x)
+- Fixed profiler query time calculation #619
 - Heavily improved import/export performance #617
-- Fixed query execution timer #618
 
 ## v1.0.1 (2016-04-06)
 - Changed properties to private in all tests.

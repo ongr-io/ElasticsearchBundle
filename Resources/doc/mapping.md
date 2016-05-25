@@ -39,7 +39,7 @@ ongr_elasticsearch:
 
 ```
 
-At the very top you can see `analysis` node. This is for holding a filters, analyzers, tokenizers and other analyzation kind stuff for your connections. So lets assume you defined custom `incrementalAnalyzer` analyzer. The key stands as analyzer name, so down below in `default` connection's `analysis` section you can add this analyzer to include in certain connection mapping. And all you need to do is only to add the name. So now when you have defined a custom analyzer, you can use it in some document fields, see below in the document's examples how to do that.
+At the very top you can see `analysis` node. This is for holding filters, analyzers, tokenizers and other analyzation tools for your connections. So lets assume you defined custom `incrementalAnalyzer` analyzer. The key stands as analyzer name, so down below in `default` connection's `analysis` section you can add this analyzer to include in certain connection mapping. And all you need to do is only to add the name. So now when you have defined a custom analyzer, you can use it in some document fields. See below in the document's examples how to do that.
 
 In the managers configuration `mappings` is optional. If there are no mappings defined, it will look up through `Document` folders contained in the all bundles.
 
@@ -88,7 +88,7 @@ attribute is `type` - Elasticsearch field type to define what kind of informatio
 will be indexed. By default field name is generated from property name by converting
 it to "snake case" string. You can specify custom name by setting `name` attribute.
 
-To add custom settings to property like analyzer it has to be included in `options`. Analyzers names is the same that was defined in `config.yml` `analysis` section [before](#Mapping configuration). Here's an example how to add it:
+To add custom settings to property like analyzer it has to be included in `options`. Analyzers names are defined in `config.yml` `analysis` section [before](#Mapping configuration) . Here's an example how to add it:
 
 ```php
 // src/AppBundle/Document/Content.php
@@ -115,10 +115,10 @@ class Content
 
 ```
 
-> `options` container accepts any parameters. We leave mapping validation to elasticsearch and elasticsearch-php client, if there will be a mistake index won't be created due exception.
+> `options` container accepts any parameters. We leave mapping validation to elasticsearch and elasticsearch-php client, if there will be a mistake index won't be created due to the exception.
 
 
-It is a little different to define nested and object types. For this user will need to create a separate class with object annotation. Lets assume we have a Content type with object field.
+It is a little different to define nested and object types. For this, user will need to create a separate class with object annotation. Lets assume we have a Content type with object field.
 
 ```php
 // src/AppBundle/Document/Content.php
@@ -177,7 +177,7 @@ class ContentMetaObject
 ##### Multiple objects
 
 As shown in the example, by default only a single object will be saved in the document.
-If there is necessary to store a multiple objects (array), add `multiple=true`. While
+If it is necessary to store multiple objects (array), add `multiple=true` to the annotation. While
 initiating a document with multiple items you need to initialize property with new instance of `Collection`.
 
 ```php
@@ -224,9 +224,11 @@ $manager->persist($content);
 $manager->commit();
 
 ```
-To define object or nested fields use `@ES\Embedded` annotation. In the objects there is possibility to define other objects also.
+To define object fields use `@ES\Embedded` annotation. There is also a possibility to define other objects within objects.
 
 > Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
+
+The difference between `@ES\Embedded` and `@ES\Nested` is in the way that they are indexed by the Elasticsearch. While the values of the fields in embedded objects are extracted and put into the same array with all the other values of other embedded objects in the same field, during the indexation process, the values of the fields of nested objects are stored separately. This introduces differences when querying and filtering the index.
 
 ### Multi field annotations and usage
 

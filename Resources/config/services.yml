@@ -58,10 +58,6 @@ services:
         class: ONGR\ElasticsearchBundle\Result\Converter
         arguments: ["@es.metadata_collector"]
 
-    es.manager_factory:
-        class: ONGR\ElasticsearchBundle\Service\ManagerFactory
-        arguments: ["@es.metadata_collector", "@es.result_converter", "@es.tracer"]
-
     es.terminate_listener:
         class: ONGR\ElasticsearchBundle\EventListener\TerminateListener
         arguments: ["@service_container", "%es.managers%"]
