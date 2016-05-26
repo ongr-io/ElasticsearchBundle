@@ -76,6 +76,10 @@ class Configuration implements ConfigurationInterface
                                             );
                                         }
 
+                                        if (array_key_exists('port', $value) && strpos($value['host'], ':') === false) {
+                                            $value['host'] .= ':' . $value['port'];
+                                        }
+
                                         return $value['host'];
                                     }
                                 )
@@ -96,6 +100,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('option')
                                 ->defaultValue('Basic')
                                 ->info('authentication type')
+                            ->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('curl_options')
+                        ->children()
+                            ->floatNode('connection_timeout')
+                                ->defaultValue(2.0)
+                                ->info('Sets the curl options for the connection timeout.')
+                            ->end()
+                            ->floatNode('timeout')
+                                ->defaultValue(2.0)
+                                ->info('Sets the curl options for the timeout.')
                             ->end()
                         ->end()
                     ->end()
