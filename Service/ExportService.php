@@ -62,16 +62,8 @@ class ExportService
         $progress->setRedrawFrequency(100);
         $progress->start();
 
-        $counter = 0;
-        $fileCounter = 1;
-
-        if ($results->count() <= $maxLinesInFile) {
-            $count = $results->count();
-        } elseif (($results->count() - ($fileCounter * $maxLinesInFile)) > $maxLinesInFile) {
-            $count = $results->count() - ($fileCounter * $maxLinesInFile);
-        } else {
-            $count = $maxLinesInFile;
-        }
+        $counter = $fileCounter = 0;
+        $count = $this->getFileCount($results->count(), $maxLinesInFile, $fileCounter);
 
         $date = date(\DateTime::ISO8601);
         $metadata = [
@@ -87,13 +79,13 @@ class ExportService
                 $writer->finalize();
                 $writer = null;
                 $fileCounter++;
-                $counter = 0;
-
+                $count = $this->getFileCount($results->count(), $maxLinesInFile, $fileCounter);
                 $metadata = [
                     'count' => $count,
                     'date' => $date,
                 ];
                 $writer = $this->getWriter($this->getFilePath($filename."_".$fileCounter.".json"), $metadata);
+                $counter = 0;
             }
 
             $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source', 'fields']));
@@ -134,5 +126,24 @@ class ExportService
     protected function getWriter($filename, $metadata)
     {
         return new JsonWriter($filename, $metadata);
+    }
+
+    /**
+     * @param int $resultsCount
+     * @param int $maxLinesInFile
+     * @param int $fileCounter
+     *
+     * @return int
+     */
+    protected function getFileCount($resultsCount, $maxLinesInFile, $fileCounter)
+    {
+        $leftToInsert = $resultsCount - ($fileCounter * $maxLinesInFile);
+        if ($leftToInsert <= $maxLinesInFile) {
+            $count = $leftToInsert;
+        } else {
+            $count = $maxLinesInFile;
+        }
+
+        return $count;
     }
 }
