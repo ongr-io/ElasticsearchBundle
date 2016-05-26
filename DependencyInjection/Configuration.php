@@ -75,6 +75,10 @@ class Configuration implements ConfigurationInterface
                                             );
                                         }
 
+                                        if (array_key_exists('port', $value) && strpos($value['host'], ':') === false) {
+                                            $value['host'] .= ':' . $value['port'];
+                                        }
+
                                         return $value['host'];
                                     }
                                 )
