@@ -297,6 +297,7 @@ class Manager
      */
     public function flush(array $params = [])
     {
+        $params = array_merge($params, ['index' => $this->getIndexName()]);
         return $this->client->indices()->flush($params);
     }
 
@@ -309,6 +310,7 @@ class Manager
      */
     public function refresh(array $params = [])
     {
+        $params = array_merge($params, ['index' => $this->getIndexName()]);
         return $this->client->indices()->refresh($params);
     }
 
