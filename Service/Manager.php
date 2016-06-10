@@ -20,6 +20,7 @@ use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchDSL\Search;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Manager class.
@@ -94,6 +95,11 @@ class Manager
     private $repositories;
 
     /**
+     * @var Stopwatch
+     */
+    private $stopwatch;
+
+    /**
      * @param string            $name              Manager name
      * @param array             $config            Manager configuration
      * @param Client            $client
@@ -141,6 +147,14 @@ class Manager
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * @param Stopwatch $stopwatch
+     */
+    public function setStopwatch(Stopwatch $stopwatch)
+    {
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -252,7 +266,11 @@ class Manager
             $params = array_merge($queryStringParams, $params);
         }
 
-        return $this->client->search($params);
+        $this->stopwatch('start', 'search');
+        $result = $this->client->search($params);
+        $this->stopwatch('stop', 'search');
+
+        return $result;
     }
 
     /**
@@ -324,9 +342,14 @@ class Manager
         if (!empty($this->bulkQueries)) {
             $bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
 
+            $this->stopwatch('start', 'bulk');
             $bulkResponse = $this->client->bulk($bulkQueries);
+            $this->stopwatch('stop', 'bulk');
+
             $this->bulkQueries = [];
             $this->bulkCount = 0;
+
+            $this->stopwatch('start', 'refresh');
 
             switch ($this->getCommitMode()) {
                 case 'flush':
@@ -336,6 +359,8 @@ class Manager
                     $this->refresh($params);
                     break;
             }
+
+            $this->stopwatch('stop', 'refresh');
 
             return $bulkResponse;
         }
@@ -393,7 +418,6 @@ class Manager
         if ($this->bulkCommitSize === $this->bulkCount) {
             $response = $this->commit();
         }
-
         return $response;
     }
 
@@ -653,5 +677,18 @@ class Manager
         }
 
         return $className;
+    }
+
+    /**
+     * Starts and stops an event in the stopwatch
+     *
+     * @param string $action   only 'start' and 'stop'
+     * @param string $name     name of the event
+     */
+    private function stopwatch($action, $name)
+    {
+        if (isset($this->stopwatch)) {
+            $this->stopwatch->$action('ongr_es: '.$name, 'ongr_es');
+        }
     }
 }
