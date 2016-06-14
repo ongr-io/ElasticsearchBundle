@@ -52,9 +52,19 @@ class Manager
     private $bulkQueries = [];
 
     /**
+     * @var array Container for msearch queries
+     */
+    private $msearchQueries = [];
+
+    /**
      * @var array Holder for consistency, refresh and replication parameters
      */
     private $bulkParams = [];
+
+    /**
+     * @var array Holder for consistency, refresh and replication parameters
+     */
+    private $msearchParams = [];
 
     /**
      * @var array
@@ -82,11 +92,25 @@ class Manager
     private $bulkCommitSize = 100;
 
     /**
+     * The size that defines how many searches can be executed with msearch at once.
+     *
+     * @var int
+     */
+    private $msearchSize = 100;
+
+    /**
      * Container to count how many documents was passed to the bulk query.
      *
      * @var int
      */
     private $bulkCount = 0;
+
+    /**
+     * Container to count how many queries were passed to the msearch.
+     *
+     * @var int
+     */
+    private $msearchCount = 0;
 
     /**
      * @var Repository[] Repository local cache
@@ -133,6 +157,38 @@ class Manager
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMsearchParams()
+    {
+        return $this->msearchParams;
+    }
+
+    /**
+     * @param array $msearchParams
+     */
+    public function setMsearchParams($msearchParams)
+    {
+        $this->msearchParams = $msearchParams;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMsearchSize()
+    {
+        return $this->msearchSize;
+    }
+
+    /**
+     * @param int $msearchSize
+     */
+    public function setMsearchSize($msearchSize)
+    {
+        $this->msearchSize = $msearchSize;
     }
 
     /**
@@ -344,6 +400,36 @@ class Manager
     }
 
     /**
+     * Executes multi search queries
+     *
+     * @param string $resultsType
+     *
+     * @return null|array
+     */
+    public function msearch($resultsType = Result::RESULTS_OBJECT)
+    {
+        if (!empty($this->msearchQueries)) {
+            $bulkQueries = array_merge($this->msearchQueries, $this->msearchParams);
+
+            $msearchResponse = $this->client->msearch($bulkQueries);
+            $this->msearchQueries = [];
+            $this->msearchCount = 0;
+
+            foreach ($msearchResponse['responses'] as $key => $result) {
+                $msearchResponse[$key] = $this->parseResult(
+                    $result,
+                    $resultsType
+                );
+            }
+            unset($msearchResponse['responses']);
+
+            return $msearchResponse;
+        }
+
+        return null;
+    }
+
+    /**
      * Adds query to bulk queries container.
      *
      * @param string       $operation One of: index, update, delete, create.
@@ -392,6 +478,33 @@ class Manager
         $response = null;
         if ($this->bulkCommitSize === $this->bulkCount) {
             $response = $this->commit();
+        }
+
+        return $response;
+    }
+
+    /**
+     * Adds query to bulk queries container.
+     *
+     * @param Search   $search     DSL to execute.
+     * @param array    $header    Search header.
+     *
+     * @return null|array
+     */
+    public function addSearch(Search $search, $header = [])
+    {
+        $header = array_merge(['index' => $this->getIndexName()], $header);
+        $search = $search->toArray();
+
+        $this->msearchQueries['body'][] = $header;
+        $this->msearchQueries['body'][] = $search;
+
+        // We are using counter because there is to difficult to resolve this from bulkQueries array.
+        $this->msearchCount++;
+
+        $response = null;
+        if ($this->msearchSize === $this->msearchCount) {
+            $response = $this->msearch();
         }
 
         return $response;
