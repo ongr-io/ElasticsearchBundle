@@ -113,6 +113,7 @@ class ManagerFactory
 
         $manager->setCommitMode($managerConfig['commit_mode']);
         $manager->setBulkCommitSize($managerConfig['bulk_size']);
+        $manager->setMsearchSize($managerConfig['msearch_size']);
 
         return $manager;
     }
