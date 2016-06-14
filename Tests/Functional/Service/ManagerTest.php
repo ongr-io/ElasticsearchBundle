@@ -108,6 +108,52 @@ class ManagerTest extends AbstractElasticsearchTestCase
     }
 
     /**
+     * Checks if msearch returns right results
+     */
+    public function testAddSearch()
+    {
+        /** @var Manager $manager */
+        $manager = $this->getManager('foo');
+
+        $search = new Search();
+        $search->addQuery(new MatchAllQuery());
+
+        $manager->addSearch($search);
+        $manager->addSearch($search, ['type' => 'product']);
+
+        $result = $manager->msearch();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals(5, count($result[0]));
+        $this->assertEquals(3, count($result[1]));
+
+        foreach ($result[1] as $key => $product) {
+            $this->assertEquals($product->getPrice(), $this->getDataArray()['foo']['product'][$key]['price']);
+        }
+    }
+
+    /**
+     * Checks if msearch automatically executes the searches when
+     * $msearchSize is reached
+     */
+    public function testAddSearchWhenSearchSizeIsReached()
+    {
+        $manager = $this->getManager('foo');
+        $this->assertEquals(100, $manager->getMsearchSize());
+        $manager->setMsearchSize(2);
+        $search = new Search();
+        $search->addQuery(new MatchAllQuery());
+
+        $manager->addSearch($search);
+        $manager->addSearch($search);
+        $manager->addSearch($search);
+
+        $result = $manager->msearch();
+
+        $this->assertEquals(1, count($result));
+    }
+
+    /**
      * Data provider for testPersistExceptions().
      *
      * @return array

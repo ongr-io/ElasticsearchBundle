@@ -363,6 +363,19 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests getters and setters
+     */
+    public function testMsearchSizeAndParamsGettersAndSetters()
+    {
+        $configuration = $this->getPreparedConfiguration();
+        $manager = $configuration[0];
+        $manager->setMsearchSize(5);
+        $manager->setMsearchParams(['test']);
+        $this->assertEquals(5, $manager->getMsearchSize());
+        $this->assertEquals(['test'], $manager->getMsearchParams());
+    }
+
+    /**
      * Tests bulk error when invalid operation is provided
      *
      * @expectedException \InvalidArgumentException
