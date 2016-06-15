@@ -36,6 +36,7 @@ class DocumentParser
     const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
     const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
     const TTL_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Ttl';
+    const ROUTING_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Routing';
 
     /**
      * @var Reader Used to read document annotations.
@@ -175,6 +176,7 @@ class DocumentParser
         $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::PARENT_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::TTL_ANNOTATION);
+        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::ROUTING_ANNOTATION);
 
         if ($annotation === null) {
             return null;
@@ -355,6 +357,7 @@ class DocumentParser
             'Id',
             'ParentDocument',
             'Ttl',
+            'Routing',
         ];
 
         foreach ($annotations as $annotation) {

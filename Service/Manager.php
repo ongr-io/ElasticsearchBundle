@@ -367,11 +367,12 @@ class Manager
                     '_type' => $type,
                     '_id' => isset($query['_id']) ? $query['_id'] : null,
                     '_ttl' => isset($query['_ttl']) ? $query['_ttl'] : null,
+                    '_routing' => isset($query['_routing']) ? $query['_routing'] : null,
                     '_parent' => isset($query['_parent']) ? $query['_parent'] : null,
                 ]
             ),
         ];
-        unset($query['_id'], $query['_ttl'], $query['_parent']);
+        unset($query['_id'], $query['_ttl'], $query['_parent'], $query['_routing']);
 
         switch ($operation) {
             case 'index':
