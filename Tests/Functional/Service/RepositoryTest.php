@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
+use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\PrefixQuery;
@@ -490,5 +491,26 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         ];
 
         $this->assertEquals($shards, $count['_shards']);
+    }
+
+    /**
+     * Tests mget method
+     */
+    public function testFindByIds()
+    {
+        $manager = $this->getManager('default');
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
+        $results = $repository->findByIds([1, 2, 5]);
+
+        $this->assertInstanceOf(DocumentIterator::class, $results);
+        $this->assertEquals(2, count($results));
+        $i = 0;
+        foreach ($results as $product) {
+            $this->assertInstanceOf(Product::class, $product);
+            $this->assertEquals(
+                $this->getDataArray()['default']['product'][$i++]['price'],
+                $product->getPrice()
+            );
+        }
     }
 }
