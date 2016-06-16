@@ -92,6 +92,42 @@ class Repository
     }
 
     /**
+     * Returns documents by a set of ids
+     *
+     * @param array  $ids
+     *
+     * @return DocumentIterator The objects.
+     */
+    public function findByIds(array $ids)
+    {
+        $args = [];
+        $manager = $this->getManager();
+        $args['body']['docs'] = [];
+        $args['index'] = $manager->getIndexName();
+        $args['type'] = $this->getType();
+
+        foreach ($ids as $id) {
+            $args['body']['docs'][] = [
+                '_id' => $id
+            ];
+        }
+
+        $mgetResponse = $manager->getClient()->mget($args);
+
+        $return = [];
+
+        foreach ($mgetResponse['docs'] as $item) {
+            if ($item['found']) {
+                $return['hits']['hits'][] = $item;
+            }
+        }
+
+        $return['hits']['total'] = count($return['hits']['hits']);
+
+        return new DocumentIterator($return, $manager);
+    }
+
+    /**
      * Finds documents by a set of criteria.
      *
      * @param array      $criteria   Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
