@@ -56,6 +56,21 @@ class AggregationValueTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test for getCount()
+     */
+    public function testGetCount()
+    {
+        $agg = new AggregationValue($this->getSampleResponse());
+        $i = 0;
+        foreach ($agg->getBuckets() as $bucket) {
+            $this->assertEquals(
+                $this->getSampleResponse()['buckets'][$i++]['doc_count'],
+                $bucket->getCount()
+            );
+        }
+    }
+
+    /**
      * Test for getBuckets().
      */
     public function testGetBuckets()

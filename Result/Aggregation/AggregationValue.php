@@ -48,6 +48,16 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
     }
 
     /**
+     * Returns the document count of the aggregation
+     *
+     * @return integer
+     */
+    public function getCount()
+    {
+        return $this->getValue('doc_count');
+    }
+
+    /**
      * Returns array of bucket values.
      *
      * @return AggregationValue[]|null
