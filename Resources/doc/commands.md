@@ -82,6 +82,14 @@ Exports data from Elasticsearch index in a json format.
 
 > Index export generates the same `JSON` format as specified in the import chapter.
 
+## Generate document
+
+Command name: `ongr:es:document:generate`
+
+ONGR ElasticsearchBundle supports automatic document generation. This command will present a user with a set of questions and when those questions are
+answered an ES document class is generated. This command does not require any options, all the information that is needed should be provided during the
+execution of the command. The resulting documents are generated in the provided bundles `Documents` directory.
+
 ## Cache clear
 
 Command name: `ongr:es:cache:clear`
