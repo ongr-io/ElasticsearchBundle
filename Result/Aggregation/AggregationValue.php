@@ -38,7 +38,7 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
      *
      * @return array
      */
-    public function getValue($name)
+    public function getValue($name = 'key')
     {
         if (!isset($this->rawData[$name])) {
             return null;
