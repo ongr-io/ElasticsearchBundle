@@ -173,7 +173,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
     private function addQuery($route, $record, $queryBody)
     {
         parse_str(parse_url($record['context']['uri'], PHP_URL_QUERY), $httpParameters);
-        $body = json_decode(trim($queryBody, " '\r\t\n"), true);
+        $body = json_decode(trim($queryBody, " '\r\t\n"));
         $this->queries[$route][] = array_merge(
             [
                 'body' => $body !== null ? json_encode($body, JSON_PRETTY_PRINT) : '',
