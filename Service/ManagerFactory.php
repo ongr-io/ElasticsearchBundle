@@ -15,6 +15,7 @@ use Elasticsearch\ClientBuilder;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Elasticsearch Manager factory class.
@@ -42,6 +43,11 @@ class ManagerFactory
     private $tracer;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @param MetadataCollector $metadataCollector Metadata collector service.
      * @param Converter         $converter         Converter service to transform arrays to objects and visa versa.
      * @param LoggerInterface   $tracer
@@ -53,6 +59,14 @@ class ManagerFactory
         $this->converter = $converter;
         $this->tracer = $tracer;
         $this->logger = $logger;
+    }
+
+    /**
+     * @param EventDispatcherInterface   $eventDispatcher
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -112,6 +126,7 @@ class ManagerFactory
         );
 
         $manager->setCommitMode($managerConfig['commit_mode']);
+        $manager->setEventDispatcher($this->eventDispatcher);
         $manager->setBulkCommitSize($managerConfig['bulk_size']);
 
         return $manager;
