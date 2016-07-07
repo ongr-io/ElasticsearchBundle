@@ -28,6 +28,11 @@ class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
         $converter = $this->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
             ->disableOriginalConstructor()
             ->getMock();
+
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $logger = $this->getMock('Psr\Log\LoggerInterface');
         $managerFactory = new ManagerFactory(
             $metadataCollector,
@@ -35,6 +40,8 @@ class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
             null,
             $logger
         );
+
+        $managerFactory->setEventDispatcher($dispatcher);
 
         $manager = $managerFactory->createManager(
             'test',
