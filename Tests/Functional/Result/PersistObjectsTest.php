@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Place;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person;
 
@@ -176,5 +177,36 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
         $this->assertEquals($product1->getReleased(), $product1FromES->getReleased()->getTimestamp());
         $this->assertEquals(strtotime($product2->getReleased()), $product2FromES->getReleased()->getTimestamp());
+    }
+
+    /**
+     * Test if the id of persisted objects are set
+     */
+    public function testPersistedId()
+    {
+        $manager = $this->getManager();
+
+        $product = new Product();
+        $product->setTitle('foo');
+
+        $product1 = new Product();
+        $product1->setTitle('bar');
+
+        $product2 = new Product();
+        $product2->setTitle('acme');
+        $product2->setId('1');
+
+        $place = new Place();
+        $place->setTitle('location');
+
+        $manager->persist($product);
+        $manager->persist($place);
+        $manager->persist($product2);
+        $manager->persist($product1);
+        $manager->commit();
+
+        $this->assertNotNull($product->getId());
+        $this->assertNotNull($product1->getId());
+        $this->assertEquals('1', $product2->getId());
     }
 }
