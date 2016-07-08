@@ -48,17 +48,20 @@ class IdSetter
         $class = get_class($document);
 
         if (!isset($this->mappings[$class])) {
-            $this->mappings[$class] = $this->collector->getMapping($class)['aliases']['_id'];
+            $mapping = $this->collector->getMapping($class);
+            if (isset($mapping['aliases']['_id'])) {
+                $this->mappings[$class] = $mapping['aliases']['_id'];
+            } else {
+                return;
+            }
         }
 
         $idMapping = $this->mappings[$class];
 
         if ($idMapping['propertyType'] == 'public') {
-            $property = $idMapping['propertyName'];
-            $id = $document->$property;
+            $id = $document->{$idMapping['propertyName']};
         } else {
-            $method = $idMapping['methods']['getter'];
-            $id = $document->$method();
+            $id = $document->{$idMapping['methods']['getter']}();
         }
 
         if (!$id) {
@@ -77,28 +80,22 @@ class IdSetter
 
         foreach ($response['items'] as $object) {
             if (isset($object['create'])) {
-                $document = array_shift($this->persistedDocuments);
-                $this->setId($document, $object['create']['_id']);
+                $document = current($this->persistedDocuments);
+
+                if (!$document ||
+                    !isset($this->mappings[ $class = get_class($document)])) {
+                    continue;
+                }
+
+                if ($this->mappings[$class]['propertyType'] == 'public') {
+                    $document->{$this->mappings[$class]['propertyName']} = $object['create']['_id'];
+                } else {
+                    $document->{$this->mappings[$class]['methods']['setter']}($object['create']['_id']);
+                }
+
+                next($this->persistedDocuments);
             }
         }
-    }
-
-    /**
-     * @param object $document
-     * @param string $id
-     */
-    private function setId($document, $id)
-    {
-        $class = get_class($document);
-
-        $idMapping = $this->mappings[$class];
-
-        if ($idMapping['propertyType'] == 'public') {
-            $property = $idMapping['propertyName'];
-            $document->$property = $id;
-        } else {
-            $method = $idMapping['methods']['setter'];
-            $document->$method($id);
-        }
+        $this->persistedDocuments = [];
     }
 }
