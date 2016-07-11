@@ -28,7 +28,7 @@ final class Property
      * @var string
      *
      * @Doctrine\Common\Annotations\Annotation\Required
-     * @Enum({"string", "boolean", "integer", "float", "long", "short", "byte", "double", "date",
+     * @Enum({"string", "boolean", "completion", "integer", "float", "long", "short", "byte", "double", "date",
      *        "geo_point", "geo_shape", "ip", "binary", "token_count" })
      */
     public $type;
