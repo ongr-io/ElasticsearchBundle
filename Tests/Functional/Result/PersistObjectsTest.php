@@ -15,6 +15,9 @@ use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\PrivateId;
+use ONGR\ElasticsearchDSL\Query\MatchQuery;
+use ONGR\ElasticsearchDSL\Query\TermQuery;
 
 class PersistObjectsTest extends AbstractElasticsearchTestCase
 {
@@ -176,5 +179,42 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
         $this->assertEquals($product1->getReleased(), $product1FromES->getReleased()->getTimestamp());
         $this->assertEquals(strtotime($product2->getReleased()), $product2FromES->getReleased()->getTimestamp());
+    }
+
+    /**
+     * Test if the id is retrieved from elasticsearch
+     */
+    public function testPersistedId()
+    {
+        $manager = $this->getManager();
+        $product_repo = $manager->getRepository('AcmeBarBundle:Product');
+        $private_repo = $manager->getRepository('AcmeBarBundle:PrivateId');
+        $product_search = $product_repo->createSearch();
+        $private_search = $private_repo->createSearch();
+
+        /** @var Product $product */
+        $product = new Product();
+        $product->title = 'table';
+        $product->description = 'a good product';
+        $product->price = 13.25;
+
+        /** @var PrivateId $privateId */
+        $private = new PrivateId();
+        $private->title = 'private';
+
+        $manager->persist($product);
+        $manager->persist($private);
+        $manager->commit();
+
+        $query = new MatchQuery('title', 'table');
+        $product_search->addQuery($query);
+        $product_fetched = $product_repo->execute($product_search);
+
+        $query = new TermQuery('title', 'private');
+        $private_search->addQuery($query);
+        $private_fetched = $private_repo->execute($private_search);
+
+        $this->assertEquals($product->id, $product_fetched->current()->id);
+        $this->assertEquals($private->getId(), $private_fetched->current()->getId());
     }
 }

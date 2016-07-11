@@ -75,6 +75,14 @@ class Manager
     private $commitMode = 'refresh';
 
     /**
+     * Reference to the persisted objects that need to be given an ID that returns from
+     * elasticsearch
+     *
+     * @var array
+     */
+    private $persistedObjects = [];
+
+    /**
      * The size that defines after how much document inserts call commit function.
      *
      * @var int
@@ -266,6 +274,20 @@ class Manager
         $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
 
         $this->bulk('index', $type, $documentArray);
+
+        if ($id_field_info = $this->getIdFieldInfo($document)) {
+            if ($id_field_info['property_type'] == 'public') {
+                $id_field = $id_field_info['id_property'];
+                if (!isset($document->$id_field)) {
+                    $this->persistedObjects[] = $document;
+                }
+            } elseif (isset($id_field_info['getter'])) {
+                $getter = $id_field_info['getter'];
+                if ($document->$getter() == null) {
+                    $this->persistedObjects[] = $document;
+                }
+            }
+        }
     }
 
     /**
@@ -313,6 +335,75 @@ class Manager
     }
 
     /**
+     * Gets Id field of the document
+     *
+     * @param object $document
+     *
+     * @return mixed
+     */
+    public function getIdFieldInfo($document)
+    {
+        $class = get_class($document);
+        $mapping = $this->metadataCollector->getMapping($class);
+        $response = [];
+
+        if (isset($mapping['aliases']['_id'])) {
+            $mapping = $mapping['aliases']['_id'];
+            $response['id_property'] = $mapping['propertyName'];
+            $response['property_type'] = 'private';
+
+            if ($mapping['propertyType'] == 'public') {
+                $response['property_type'] = 'public';
+            } elseif (isset($mapping['methods']['setter']) && isset($mapping['methods']['getter'])) {
+                $response['setter'] = $mapping['methods']['setter'];
+                $response['getter'] = $mapping['methods']['getter'];
+            }
+        } else {
+            return false;
+        }
+        return $response;
+    }
+
+    /**
+     * Adds ids to documents
+     *
+     * @param array $bulkQueries
+     *
+     * @param array $bulkResponse
+     */
+    public function addIds(array $bulkQueries, $bulkResponse = [])
+    {
+        if (empty($bulkResponse)) {
+            $this->persistedObjects = [];
+            return;
+        }
+        $indexing = [];
+        foreach ($bulkQueries['body'] as $number => $query) {
+            if (isset($query['index']) && !isset($query['index']['_id'])) {
+                $indexing[] = $number / 2;
+            }
+        }
+        if (isset($bulkQueries['body'][0]['index'])) {
+            if (isset($this->persistedObjects)) {
+                $i = 0;
+                foreach ($this->persistedObjects as $document) {
+                    if ($id_field_info = $this->getIdFieldInfo($document)) {
+                        if ($id_field_info['property_type'] == 'public') {
+                            $id_field = $id_field_info['id_property'];
+                            $document->$id_field = $bulkResponse['items'][$indexing[$i]]['create']['_id'];
+                        } elseif ($id_field_info['setter']) {
+                            $method = $id_field_info['setter'];
+                            $document->$method($bulkResponse['items'][$indexing[$i]]['create']['_id']);
+                        }
+                    }
+                    $i++;
+                }
+            }
+            $this->persistedObjects = [];
+        }
+    }
+
+    /**
      * Inserts the current query container to the index, used for bulk queries execution.
      *
      * @param array $params Parameters that will be passed to the flush or refresh queries.
@@ -337,9 +428,10 @@ class Manager
                     break;
             }
 
+            $this->addIds($bulkQueries, $bulkResponse);
+
             return $bulkResponse;
         }
-
         return null;
     }
 
