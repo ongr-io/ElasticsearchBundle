@@ -13,6 +13,8 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Profiler;
 
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
+use ONGR\ElasticsearchDSL\Aggregation\GlobalAggregation;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -160,5 +162,23 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
         $collector->collect(new Request(), new Response());
 
         return $collector;
+    }
+
+    public function testMatchAllQuery()
+    {
+        $manager = $this->getManager();
+
+        $repository = $manager->getRepository('AcmeBarBundle:Product');
+        $search = $repository
+            ->createSearch()
+            ->addAggregation(new GlobalAggregation('g'));
+        $repository->execute($search);
+
+        $queries = $this->getCollector()->getQueries();
+        $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
+        $this->checkQueryParameters($lastQuery);
+        $lastQuery['body'] = trim(preg_replace('/\s+/', '', $lastQuery['body']));
+
+        $this->assertEquals('{"aggregations":{"g":{"global":{}}}}', $lastQuery['body']);
     }
 }
