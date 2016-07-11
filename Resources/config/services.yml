@@ -70,3 +70,7 @@ services:
     es.generate:
         class: ONGR\ElasticsearchBundle\Service\GenerateService
         arguments: ["@es.generator.document", "@filesystem"]
+
+    es.manager_factory:
+        class: ONGR\ElasticsearchBundle\Service\ManagerFactory
+        arguments: ["@es.metadata_collector", "@es.result_converter", "@event_dispatcher", "@es.tracer"]

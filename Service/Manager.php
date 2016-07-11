@@ -13,13 +13,17 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
+use ONGR\ElasticsearchBundle\Event\OperationEvent;
+use ONGR\ElasticsearchBundle\Event\PreCommitEvent;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
+use ONGR\ElasticsearchBundle\ONGRElasticsearchEvents;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchDSL\Search;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Manager class.
@@ -94,12 +98,18 @@ class Manager
     private $repositories;
 
     /**
-     * @param string            $name              Manager name
-     * @param array             $config            Manager configuration
-     * @param Client            $client
-     * @param array             $indexSettings
-     * @param MetadataCollector $metadataCollector
-     * @param Converter         $converter
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+    
+    /**
+     * @param string                   $name              Manager name
+     * @param array                    $config            Manager configuration
+     * @param Client                   $client
+     * @param array                    $indexSettings
+     * @param MetadataCollector        $metadataCollector
+     * @param Converter                $converter
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         $name,
@@ -107,7 +117,8 @@ class Manager
         $client,
         array $indexSettings,
         $metadataCollector,
-        $converter
+        $converter,
+        $eventDispatcher
     ) {
         $this->name = $name;
         $this->config = $config;
@@ -115,6 +126,7 @@ class Manager
         $this->indexSettings = $indexSettings;
         $this->metadataCollector = $metadataCollector;
         $this->converter = $converter;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -328,6 +340,11 @@ class Manager
             $this->bulkQueries = [];
             $this->bulkCount = 0;
 
+            $this->eventDispatcher->dispatch(
+                ONGRElasticsearchEvents::PRE_COMMIT,
+                new PreCommitEvent($this->getCommitMode(), $params)
+            );
+            
             switch ($this->getCommitMode()) {
                 case 'flush':
                     $this->flush($params);
@@ -373,6 +390,11 @@ class Manager
         ];
         unset($query['_id'], $query['_ttl'], $query['_parent']);
 
+        $this->eventDispatcher->dispatch(
+            constant('ONGR\ElasticsearchBundle\ONGRElasticsearchEvents::PRE_' . strtoupper($operation)),
+            new OperationEvent($operation, $type, $query)
+        );
+        
         switch ($operation) {
             case 'index':
             case 'create':
