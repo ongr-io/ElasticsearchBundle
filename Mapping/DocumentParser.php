@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
-use ONGR\ElasticsearchBundle\Annotation\MetaField;
+use ONGR\ElasticsearchBundle\Annotation\MetaFieldInterface;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Mapping\Exception\DocumentParserException;
@@ -171,7 +171,7 @@ class DocumentParser
      */
     private function getMetaFieldAnnotationData($property)
     {
-        /** @var MetaField $annotation */
+        /** @var MetaFieldInterface $annotation */
         $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::PARENT_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::TTL_ANNOTATION);
