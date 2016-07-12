@@ -235,8 +235,15 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testClearScroll()
     {
+        $expectedBody = [
+            'scroll_id' => 'foo',
+            'client' => [
+                'ignore' => 404,
+            ],
+        ];
+
         $esClient = $this->getMock('Elasticsearch\Client', ['clearScroll'], [], '', false);
-        $esClient->expects($this->once())->method('clearScroll')->with(['scroll_id' => 'foo']);
+        $esClient->expects($this->once())->method('clearScroll')->with($expectedBody);
 
         $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
             ->disableOriginalConstructor()
