@@ -127,3 +127,19 @@ determins the form of the result. The default is `ONGR\ElasticsearchBundle\Resul
 `bulk`, `msearch_size` can be defined in the configuration of the manager. This determines the maximum amount of searches that can be executed
 with a single request. Once the number is reached the searches will be executed automatically, this means that `addSearch` method can return `null`
 or if the `msearch_size` is reached, an array with the search results. The default value of this setting is 100.
+
+It is also possible to provide headers for every search, if, for example, there is a need to execute a search on a single type in the index:
+
+```php
+
+$manager->addSearch($search, ['type' => 'my-type']);
+
+```
+
+In addition, there is a possibility to provide headers as parameters for `msearch` that will apply to the entire request:
+
+```php
+
+$manager->setMsearchParams(['search_type' => 'query_then_fetch']);
+
+```
