@@ -275,7 +275,7 @@ class Manager
      */
     public function remove($document)
     {
-        $data = $this->converter->convertToArray($document, [], ['_id']);
+        $data = $this->converter->convertToArray($document, [], ['_id', '_routing']);
 
         if (!isset($data['_id'])) {
             throw new \LogicException(
@@ -285,7 +285,7 @@ class Manager
 
         $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
 
-        $this->bulk('delete', $type, ['_id' => $data['_id']]);
+        $this->bulk('delete', $type, $data);
     }
 
     /**
@@ -506,10 +506,11 @@ class Manager
      *
      * @param string $className Document class name or Elasticsearch type name
      * @param string $id        Document ID to find
+     * @param string $routing   Custom routing for the document
      *
      * @return object
      */
-    public function find($className, $id)
+    public function find($className, $id, $routing = null)
     {
         $type = $this->resolveTypeName($className);
 
@@ -518,6 +519,10 @@ class Manager
             'type' => $type,
             'id' => $id,
         ];
+
+        if ($routing) {
+            $params['routing'] = $routing;
+        }
 
         try {
             $result = $this->getClient()->get($params);
