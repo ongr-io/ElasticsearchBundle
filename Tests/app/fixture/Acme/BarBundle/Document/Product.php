@@ -37,6 +37,13 @@ class Product
 
     /**
      * @var string
+     *
+     * @ES\Routing()
+     */
+    private $routing;
+
+    /**
+     * @var string
      * @ES\Property(
      *  type="string",
      *  name="title",
@@ -295,5 +302,22 @@ class Product
     {
         $this->tokenPiecesCount = $tokenPiecesCount;
     }
+
+    /**
+     * @return string
+     */
+    public function getRouting()
+    {
+        return $this->routing;
+    }
+
+    /**
+     * @param string $routing
+     */
+    public function setRouting($routing)
+    {
+        $this->routing = $routing;
+    }
+
 
 }
