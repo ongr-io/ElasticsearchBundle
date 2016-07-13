@@ -493,13 +493,12 @@ class Manager
      */
     public function addSearch(Search $search, $header = [])
     {
-        $header = array_merge(['index' => $this->getIndexName()], $header);
+        $header['index'] = $this->getIndexName();
         $search = $search->toArray();
 
         $this->msearchQueries['body'][] = $header;
         $this->msearchQueries['body'][] = $search;
 
-        // We are using counter because there is to difficult to resolve this from bulkQueries array.
         $this->msearchCount++;
 
         $response = null;
