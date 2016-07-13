@@ -19,6 +19,20 @@ $content = $repo->find(1); // 5 is the document _uid in the elasticsearch.
 
 > All `find` methods return an object. If you want to get raw result use `execute($search, Result::RESULTS_RAW)`.
 
+## Find multiple documents by ID
+
+If multiple documents need to be found by their IDs, `findByIds()` method can be used. It accepts an array of document IDs
+and returns `DocumentIterator` with found documents:
+
+```php
+
+$documents = $repo->findByIds(['26', '8', '11']);
+
+```
+
+For this functionality the `Repository` uses
+[elasticsearch multi get API](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html).
+
 ## Find by field
 
 Find by field uses [query_string query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to fetch results by a specified field value.
