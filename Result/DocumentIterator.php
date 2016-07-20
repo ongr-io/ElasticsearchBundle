@@ -25,6 +25,11 @@ class DocumentIterator extends AbstractResultsIterator
     private $aggregations;
 
     /**
+     * @var array
+     */
+    private $inner_hits;
+
+    /**
      * {@inheritdoc}
      */
     public function __construct(array $rawData, Manager $manager, array $scroll = [])
@@ -32,6 +37,12 @@ class DocumentIterator extends AbstractResultsIterator
         if (isset($rawData['aggregations'])) {
             $this->aggregations = $rawData['aggregations'];
             unset($rawData['aggregations']);
+        }
+
+        if (isset($rawData['hits']['hits'][0]['inner_hits'])) {
+            foreach ($rawData['hits']['hits'] as $item) {
+                $this->inner_hits[$item['_id']] = $item['inner_hits'];
+            }
         }
 
         parent::__construct($rawData, $manager, $scroll);
@@ -67,6 +78,37 @@ class DocumentIterator extends AbstractResultsIterator
         }
 
         return new AggregationValue($this->aggregations[$name]);
+    }
+
+    /**
+     * Returns inner hits for all objects
+     *
+     * @return InnerHitValue[]
+     */
+    public function getInnerHits()
+    {
+        $hits = [];
+
+        foreach ($this->inner_hits as $id => $hit) {
+            $hits[$id] = new InnerHitValue($hit, $this->getManager());
+        }
+        return $hits;
+    }
+
+    /**
+     * Returns inner hits for all objects
+     *
+     * @param string $id
+     *
+     * @return InnerHitValue
+     */
+    public function getInnerHit($id)
+    {
+        if (!isset($this->inner_hits[$id])) {
+            return null;
+        }
+
+        return new InnerHitValue($this->inner_hits[$id], $this->getManager());
     }
 
     /**
