@@ -158,6 +158,35 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     }
 
     /**
+     * Tests if the json containing index mapping is returned when --dump option is provided
+     */
+    public function testIndexMappingDump()
+    {
+        $manager = $this->getManager();
+
+        $commandName = 'ongr:es:index:create';
+        $commandTester = $this->getCommandTester($commandName);
+        $options = [];
+        $arguments['command'] = $commandName;
+        $arguments['--dump'] = null;
+
+        // Test if the command returns 0 or not
+        $this->assertSame(
+            0,
+            $commandTester->execute($arguments, $options)
+        );
+
+        // Test if the command output contains the expected output or not
+        $this->assertContains(
+            json_encode(
+                $manager->getIndexMappings(),
+                JSON_PRETTY_PRINT
+            ),
+            $commandTester->getDisplay()
+        );
+    }
+
+    /**
      * Runs the index create command.
      *
      * @param string $managerName

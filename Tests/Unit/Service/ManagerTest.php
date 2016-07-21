@@ -280,7 +280,14 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             'test',
             [],
             $client,
-            ['index' => 'test'],
+            [
+                'index' => 'test',
+                'body' => [
+                    'mappings' => [
+                        'foo' => 'bar'
+                    ]
+                ]
+            ],
             $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
                 ->disableOriginalConstructor()
                 ->getMock(),
@@ -371,5 +378,14 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     {
         $manager = $this->getPreparedConfiguration()[0];
         $manager->bulk('not_an_operation', 'product', []);
+    }
+
+    /**
+     * Tests if getIndexMappings method returns correct results
+     */
+    public function testGetIndexMappings()
+    {
+        $manager = $this->getPreparedConfiguration()[0];
+        $this->assertEquals(['foo' => 'bar'], $manager->getIndexMappings());
     }
 }
