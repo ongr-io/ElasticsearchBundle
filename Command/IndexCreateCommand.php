@@ -45,7 +45,8 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
                 null,
                 InputOption::VALUE_NONE,
                 'Don\'t trigger an error, when the index already exists'
-            );
+            )
+            ->addOption('dump', null, InputOption::VALUE_NONE, 'Prints out index mapping json');
     }
 
     /**
@@ -56,6 +57,18 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         $io = new SymfonyStyle($input, $output);
         $manager = $this->getManager($input->getOption('manager'));
         $originalIndexName = $manager->getIndexName();
+
+        if ($input->getOption('dump')) {
+            $io->note("Index mappings:");
+            $io->text(
+                json_encode(
+                    $manager->getIndexMappings(),
+                    JSON_PRETTY_PRINT
+                )
+            );
+
+            return 0;
+        }
 
         if ($input->getOption('time')) {
             /** @var IndexSuffixFinder $finder */
