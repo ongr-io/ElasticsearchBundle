@@ -166,10 +166,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testBulk($expected, $calls)
     {
+        $bulkResponse = ['errors' => false, 'items' => []];
         $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
 
         $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
-        $esClient->expects($this->once())->method('bulk')->with($expected);
+        $esClient->expects($this->once())->method('bulk')->with($expected)->will($this->returnValue($bulkResponse));
         $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
 
         $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
@@ -194,13 +195,14 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testBulkWithCommitModeSet()
     {
+        $bulkResponse = ['errors' => false, 'items' => []];
         $expected = $this->getTestBulkData()['update_script']['expected'];
         $expected['refresh'] = true;
         $calls = $this->getTestBulkData()['update_script']['calls'];
         $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
 
         $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
-        $esClient->expects($this->any())->method('bulk')->with($expected)->willReturn([]);
+        $esClient->expects($this->any())->method('bulk')->with($expected)->willReturn($bulkResponse);
         $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
 
         $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
