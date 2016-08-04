@@ -177,4 +177,32 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $this->assertEquals($product1->getReleased(), $product1FromES->getReleased()->getTimestamp());
         $this->assertEquals(strtotime($product2->getReleased()), $product2FromES->getReleased()->getTimestamp());
     }
+
+    /**
+     * Tests if the ids that are returned by commit() are correct
+     */
+    public function testIdsReturnedByCommit()
+    {
+        $product1 = new Product();
+        $product1->setTitle('foo');
+
+        $product2 = new Product();
+        $product2->setTitle('bar');
+
+        $manager = $this->getManager();
+        $manager->persist($product1);
+        $manager->persist($product2);
+
+        $ids = $manager->commit();
+
+        $this->assertTrue(is_array($ids));
+
+        /** @var Product $product1FromES */
+        $product1FromES = $manager->find('AcmeBarBundle:Product', $ids[0]);
+        /** @var Product $product2FromES */
+        $product2FromES = $manager->find('AcmeBarBundle:Product', $ids[1]);
+
+        $this->assertEquals('foo', $product1FromES->getTitle());
+        $this->assertEquals('bar', $product2FromES->getTitle());
+    }
 }

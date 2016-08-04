@@ -358,4 +358,19 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $search->addQuery(new MatchAllQuery());
         $repo->execute($search, 'non_existant_type');
     }
+
+    /**
+     * Tests the exception thrown by the commit method
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\ClientErrorResponseException
+     */
+    public function testCommitException()
+    {
+        $manager = $this->getManager();
+        $product = new Product();
+        $product->setTitle(new Product());
+
+        $manager->persist($product);
+        $manager->commit();
+    }
 }

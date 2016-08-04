@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
@@ -318,6 +319,8 @@ class Manager
      * @param array $params Parameters that will be passed to the flush or refresh queries.
      *
      * @return null|array
+     *
+     * @throws ClientErrorResponseException
      */
     public function commit(array $params = [])
     {
@@ -337,7 +340,27 @@ class Manager
                     break;
             }
 
-            return $bulkResponse;
+            if ($bulkResponse['errors']) {
+                foreach ($bulkResponse['items'] as $item) {
+                    if (isset(reset($item)['error'])) {
+                        throw new ClientErrorResponseException(
+                            sprintf(
+                                'Error when commiting items to elasticsearch. Type: %s. Reason: %s',
+                                reset($item)['error']['type'],
+                                reset($item)['error']['reason']
+                            )
+                        );
+                    }
+                }
+            }
+
+            $response = [];
+
+            foreach ($bulkResponse['items'] as $item) {
+                $response[] = reset($item)['_id'];
+            }
+
+            return $response;
         }
 
         return null;
