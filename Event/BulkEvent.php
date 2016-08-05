@@ -51,6 +51,14 @@ class BulkEvent extends Event
     }
 
     /**
+     * @param array|string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @return array
      */
     public function getQuery()
@@ -59,10 +67,26 @@ class BulkEvent extends Event
     }
 
     /**
+     * @param array $query
+     */
+    public function setQuery($query)
+    {
+        $this->query = $query;
+    }
+
+    /**
      * @return array
      */
     public function getOperation()
     {
         return $this->operation;
+    }
+
+    /**
+     * @param string $operation
+     */
+    public function setOperation($operation)
+    {
+        $this->operation = $operation;
     }
 }

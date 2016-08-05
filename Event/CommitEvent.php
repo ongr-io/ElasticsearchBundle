@@ -46,6 +46,14 @@ class CommitEvent extends Event
     }
 
     /**
+     * @param string $commitMode
+     */
+    public function setCommitMode($commitMode)
+    {
+        $this->commitMode = $commitMode;
+    }
+
+    /**
      * Returns params
      *
      * @return array
@@ -53,5 +61,13 @@ class CommitEvent extends Event
     public function getBulkParams()
     {
         return $this->bulkParams;
+    }
+
+    /**
+     * @param array $bulkParams
+     */
+    public function setBulkParams($bulkParams)
+    {
+        $this->bulkParams = $bulkParams;
     }
 }
