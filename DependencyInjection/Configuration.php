@@ -89,6 +89,7 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('connections');
 
         $node
+            ->defaultValue([])
             ->requiresAtLeastOneElement()
             ->info('Defines connections to indexes and its settings.')
             ->prototype('array')
@@ -161,7 +162,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->arrayNode('index')
                         ->children()
-                            ->scalarNode('name')
+                            ->scalarNode('index_name')
                                 ->isRequired()
                                 ->info('Sets index name for connection.')
                             ->end()
