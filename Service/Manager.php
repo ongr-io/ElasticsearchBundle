@@ -283,8 +283,6 @@ class Manager
         $documentArray = $this->converter->convertToArray($document);
         $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
 
-        $this->eventDispatcher->dispatch(Events::PERSIST, new PersistEvent($document));
-
         $this->bulk('index', $type, $documentArray);
     }
 

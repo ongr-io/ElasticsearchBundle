@@ -19,7 +19,7 @@ final class Events
     /**
      * The BULK event occurs before during the processing of bulk method
      */
-    const BULK = 'es.pre_index';
+    const BULK = 'es.bulk';
 
     /**
      * The PRE_COMMIT event occurs before committing queries to ES
@@ -30,9 +30,4 @@ final class Events
      * The POST_COMMIT event occurs after committing queries to ES
      */
     const POST_COMMIT = 'es.post_commit';
-
-    /**
-     * The PERSIST event occurs when passing a document to a managers persist method
-     */
-    const PERSIST = 'es.persist';
 }
