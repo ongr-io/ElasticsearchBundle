@@ -67,7 +67,7 @@ class ElasticsearchExtensionTest extends WebTestCase
     {
         $container = $this->createClient()->getContainer();
 
-        $expectedManagers = ['default', 'foo'];
+        $expectedManagers = ['default', 'foo', 'bar'];
         $actualManagers = $container->getParameter('es.managers');
 
         $this->assertEquals($expectedManagers, array_keys($actualManagers));
