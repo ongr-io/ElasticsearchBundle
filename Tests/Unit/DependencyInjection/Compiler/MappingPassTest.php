@@ -19,10 +19,56 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class MappingPassTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function getConfigurationData()
+    {
+        return [
+            [
+                'connections' => [
+                    'default' => [
+                        'hosts' => ['127.0.0.1:9200'],
+                        'index_name' => 'acme',
+                        'settings' => [
+                            'refresh_interval' => -1,
+                            'number_of_replicas' => 1,
+                        ],
+                    ],
+                ],
+                'managers' => [
+                    'default' => [
+                        'connection' => 'default',
+                        'debug' => true,
+                        'mappings' => ['AcmeBarBundle'],
+                    ],
+                ],
+            ],
+            [
+                'connections' => [],
+                'managers' => [
+                    'default' => [
+                        'index' => [
+                            'hosts' => ['127.0.0.1:9200'],
+                            'index_name' => 'acme',
+                            'settings' => [
+                                'refresh_interval' => -1,
+                                'number_of_replicas' => 1,
+                            ],
+                        ],
+                        'debug' => true,
+                        'mappings' => ['AcmeBarBundle'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     /**
-     * Before a test method is run, a template method called setUp() is invoked.
+     * @param array $connections
+     * @param array $managers
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function testProcessWithSeveralManagers()
+    public function getContainerMock(array $connections, array $managers)
     {
         $metadataCollectorMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
             ->disableOriginalConstructor()
@@ -38,25 +84,6 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         );
-
-        $connections = [
-            'default' => [
-                'hosts' => ['127.0.0.1:9200'],
-                'index_name' => 'acme',
-                'settings' => [
-                    'refresh_interval' => -1,
-                    'number_of_replicas' => 1,
-                ],
-            ],
-        ];
-
-        $managers = [
-            'default' => [
-                'connection' => 'default',
-                'debug' => true,
-                'mappings' => ['AcmeBarBundle'],
-            ],
-        ];
 
         $containerMock = $this->getMockBuilder('\Symfony\Component\DependencyInjection\ContainerBuilder')
             ->disableOriginalConstructor()
@@ -100,15 +127,28 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             )
             ->willReturn(null);
 
+        return $containerMock;
+    }
+
+    /**
+     * Before a test method is run, a template method called setUp() is invoked.
+     *
+     * @param array $connections
+     * @param array $managers
+     *
+     * @dataProvider getConfigurationData()
+     */
+    public function testProcessWithSeveralManagers(array $connections, array $managers)
+    {
         $compilerPass = new MappingPass();
-        $compilerPass->process($containerMock);
+        $compilerPass->process($this->getContainerMock($connections, $managers));
     }
 
     /**
      * Test exception is thrown in case invalid connection name configured.
      *
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage There is no ES connection with the name
+     * @expectedExceptionMessage There is an error in the ES connection
      */
     public function testInvalidConnectionException()
     {
