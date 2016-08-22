@@ -13,6 +13,10 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
+use ONGR\ElasticsearchBundle\Event\Events;
+use ONGR\ElasticsearchBundle\Event\BulkEvent;
+use ONGR\ElasticsearchBundle\Event\PersistEvent;
+use ONGR\ElasticsearchBundle\Event\CommitEvent;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
 use ONGR\ElasticsearchBundle\Result\Converter;
@@ -20,6 +24,7 @@ use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchDSL\Search;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Manager class.
@@ -94,6 +99,11 @@ class Manager
     private $repositories;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @param string            $name              Manager name
      * @param array             $config            Manager configuration
      * @param Client            $client
@@ -141,6 +151,14 @@ class Manager
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -324,6 +342,11 @@ class Manager
         if (!empty($this->bulkQueries)) {
             $bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
 
+            $this->eventDispatcher->dispatch(
+                Events::PRE_COMMIT,
+                new CommitEvent($this->getCommitMode(), $bulkQueries)
+            );
+
             $bulkResponse = $this->client->bulk($bulkQueries);
             $this->bulkQueries = [];
             $this->bulkCount = 0;
@@ -336,6 +359,11 @@ class Manager
                     $this->refresh($params);
                     break;
             }
+
+            $this->eventDispatcher->dispatch(
+                Events::POST_COMMIT,
+                new CommitEvent($this->getCommitMode(), $bulkResponse)
+            );
 
             return $bulkResponse;
         }
@@ -359,6 +387,11 @@ class Manager
         if (!in_array($operation, ['index', 'create', 'update', 'delete'])) {
             throw new \InvalidArgumentException('Wrong bulk operation selected');
         }
+
+        $this->eventDispatcher->dispatch(
+            Events::BULK,
+            new BulkEvent($operation, $type, $query)
+        );
 
         $this->bulkQueries['body'][] = [
             $operation => array_filter(

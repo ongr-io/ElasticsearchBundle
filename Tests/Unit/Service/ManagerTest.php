@@ -180,7 +180,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
+        $manager->setEventDispatcher($dispatcher);
 
         foreach ($calls as list($operation, $type, $query)) {
             $manager->bulk($operation, $type, $query);
@@ -211,9 +216,14 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+        
         $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
         $manager->setBulkParams(['refresh' => true]);
         $manager->setCommitMode('flush');
+        $manager->setEventDispatcher($dispatcher);
 
         foreach ($calls as list($operation, $type, $query)) {
             $manager->bulk($operation, $type, $query);

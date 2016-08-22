@@ -48,6 +48,7 @@ class ONGRElasticsearchExtension extends Extension
                 $container->getParameter('kernel.debug') ? new Reference('es.tracer') : null,
             ]
         );
+        $definition->addMethodCall('setEventDispatcher', [new Reference('event_dispatcher')]);
         $container->setDefinition('es.manager_factory', $definition);
     }
 }
