@@ -483,6 +483,16 @@ class Manager
     }
 
     /**
+     * Returns mappings of the index for this connection.
+     *
+     * @return array
+     */
+    public function getIndexMappings()
+    {
+        return $this->indexSettings['body']['mappings'];
+    }
+
+    /**
      * Returns Elasticsearch version number.
      *
      * @return string
