@@ -34,14 +34,19 @@ class MappingPass implements CompilerPassInterface
         $collector = $container->get('es.metadata_collector');
 
         foreach ($managers as $managerName => $manager) {
-            if (!isset($connections[$manager['connection']])) {
-                throw new InvalidConfigurationException(
-                    'There is no ES connection with the name: ' . $manager['connection']
-                );
+            if (!empty($manager['index'])) {
+                $connection = $manager['index'];
+            } else {
+                if (!isset($manager['connection']) || !isset($connections[$manager['connection']])) {
+                    throw new InvalidConfigurationException(
+                        'There is an error in the ES connection configuration of the manager: ' . $managerName
+                    );
+                }
+
+                $connection = $connections[$manager['connection']];
             }
 
             $managerName = strtolower($managerName);
-            $connection = $connections[$manager['connection']];
 
             $managerDefinition = new Definition(
                 'ONGR\ElasticsearchBundle\Service\Manager',

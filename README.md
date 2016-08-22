@@ -73,12 +73,10 @@ Add minimal configuration for Elasticsearch bundle.
 # app/config/config.yml
 
 ongr_elasticsearch:
-    connections:
-        default:
-            index_name: acme
     managers:
         default:
-            connection: default
+            index:
+                index_name: acme
             mappings:
                 - AppBundle
 
@@ -86,7 +84,7 @@ ongr_elasticsearch:
 
 > This is the very basic example only, for more information, please take a look at the [configuration](Resources/doc/configuration.md) chapter.
 
-In this particular example there are 2 things you should know. The index name in the connection node and the mappings. Mappings is the place where your documents are stored (more info at [the mapping chapter](Resources/doc/mapping.md)).
+In this particular example there are 2 things you should know. The index name in the index node and the mappings. Mappings is the place where your documents are stored (more info at [the mapping chapter](Resources/doc/mapping.md)).
 
 
 #### Step 3: Define your Elasticsearch types as `Document` objects
