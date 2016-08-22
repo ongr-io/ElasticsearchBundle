@@ -52,3 +52,22 @@ ongr_elasticsearch:
         foo:
             connection: bar
 ```
+
+> The `connections` node is deprecated since version `1.2` and will 
+be removed in `2.0` release. Use the `index` node for the `manager` 
+instead.
+
+```yml
+ongr_elasticsearch:
+    managers:
+        default:
+            index:
+                hosts:
+                    - 127.0.0.1:9200
+                index_name: ongr-default
+                settings:
+                    refresh_interval: -1
+                    number_of_replicas: 1
+            mappings:
+                - AcmeBarBundle
+```
