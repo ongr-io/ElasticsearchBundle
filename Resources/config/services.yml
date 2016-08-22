@@ -64,6 +64,17 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.terminate }
 
+    es.document_ids_listener:
+        class: ONGR\ElasticsearchBundle\EventListener\DocumentIdsListener
+        arguments: ["@es.document_ids_setter"]
+        tags:
+            - { name: kernel.event_listener, event: es.persist, method: onEsPersist }
+            - { name: kernel.event_listener, event: es.post_commit, method: onEsPostCommit }
+
+    es.document_ids_setter:
+        class: ONGR\ElasticsearchBundle\Service\IdSetter
+        arguments: ["@es.metadata_collector"]
+
     es.generator.document:
         class: ONGR\ElasticsearchBundle\Generator\DocumentGenerator
 
