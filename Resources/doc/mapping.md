@@ -186,7 +186,7 @@ initiating a document with multiple items you need to initialize property with n
 namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Collection;
+use ONGR\ElasticsearchBundle\Collection\Collection;
 
 /**
  * @ES\Document(type="content")
