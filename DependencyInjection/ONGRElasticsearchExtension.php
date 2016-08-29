@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -49,6 +50,12 @@ class ONGRElasticsearchExtension extends Extension
             ]
         );
         $definition->addMethodCall('setEventDispatcher', [new Reference('event_dispatcher')]);
+        $definition->addMethodCall(
+            'setStopwatch',
+            [
+                new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE)
+            ]
+        );
         $container->setDefinition('es.manager_factory', $definition);
     }
 }

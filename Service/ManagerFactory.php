@@ -16,6 +16,7 @@ use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Elasticsearch Manager factory class.
@@ -48,6 +49,11 @@ class ManagerFactory
     private $eventDispatcher;
 
     /**
+     * @var Stopwatch
+     */
+    private $stopwatch;
+
+    /**
      * @param MetadataCollector $metadataCollector Metadata collector service.
      * @param Converter         $converter         Converter service to transform arrays to objects and visa versa.
      * @param LoggerInterface   $tracer
@@ -67,6 +73,14 @@ class ManagerFactory
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * @param Stopwatch $stopwatch
+     */
+    public function setStopwatch(Stopwatch $stopwatch)
+    {
+        $this->stopwatch = $stopwatch;
     }
 
     /**
@@ -124,6 +138,10 @@ class ManagerFactory
             $this->metadataCollector,
             $this->converter
         );
+
+        if (isset($this->stopwatch)) {
+            $manager->setStopwatch($this->stopwatch);
+        }
 
         $manager->setCommitMode($managerConfig['commit_mode']);
         $manager->setEventDispatcher($this->eventDispatcher);
