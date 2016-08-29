@@ -205,7 +205,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
 
         $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
-        $esClient->expects($this->any())->method('bulk')->with($expected)->willReturn([]);
+        $esClient->expects($this->any())->method('bulk')->with($expected)->willReturn(['errors' => false]);
         $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
 
         $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')

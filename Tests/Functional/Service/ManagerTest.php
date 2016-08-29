@@ -358,4 +358,22 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $search->addQuery(new MatchAllQuery());
         $repo->execute($search, 'non_existant_type');
     }
+
+    /**
+     * Tests the exception thrown by the commit method
+     *
+     * @expectedException \Elasticsearch\Common\Exceptions\ClientErrorResponseException
+     * @expectedExceptionMessage An error occurred during the commit to elasticsearch
+     */
+    public function testCommitException()
+    {
+        $manager = $this->getManager();
+        $product = new Product();
+        $nestedProduct = new Product();
+        $nestedProduct->setTitle('test');
+        $product->setTitle($nestedProduct);
+
+        $manager->persist($product);
+        $manager->commit();
+    }
 }
