@@ -65,6 +65,7 @@ class MetadataCollectorTest extends WebTestCase
         $aliases = $mapping['product']['aliases'];
         $this->assertArrayHasKey('_id', $aliases);
         $this->assertArrayHasKey('_ttl', $aliases);
+        $this->assertArrayHasKey('_routing', $aliases);
     }
 
     /**

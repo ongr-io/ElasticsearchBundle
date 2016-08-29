@@ -11,10 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
+use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person;
+use ONGR\ElasticsearchDSL\Query\MatchQuery;
+use ONGR\ElasticsearchDSL\Search;
 
 class PersistObjectsTest extends AbstractElasticsearchTestCase
 {
@@ -167,7 +170,7 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager->persist($product1);
         $manager->persist($product2);
 
-        $r = $manager->commit();
+        $manager->commit();
 
         /** @var Product $product1FromES */
         $product1FromES = $manager->find('AcmeBarBundle:Product', '1');
@@ -176,5 +179,40 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
         $this->assertEquals($product1->getReleased(), $product1FromES->getReleased()->getTimestamp());
         $this->assertEquals(strtotime($product2->getReleased()), $product2FromES->getReleased()->getTimestamp());
+    }
+
+    public function testPersistAndRemoveDocumentWithRouting()
+    {
+        $product1 = new Product();
+        $product2 = new Product();
+        $manager = $this->getManager();
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
+
+        $product1->setId('1');
+        $product1->setRouting('foo');
+        $product2->setId('2');
+        $product2->setRouting('foo');
+
+        $manager->persist($product1);
+        $manager->persist($product2);
+        $manager->commit();
+
+        $this->assertNull($repo->find('1'));
+        $this->assertNull($repo->find('2'));
+        $this->assertInstanceOf(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            $repo->find('1', 'foo')
+        );
+        $this->assertInstanceOf(
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            $repo->find('2', 'foo')
+        );
+
+        $repo->remove('1', 'foo');
+        $manager->remove($product2);
+        $manager->commit();
+
+        $this->assertNull($repo->find('1', 'foo'));
+        $this->assertNull($repo->find('2', 'foo'));
     }
 }

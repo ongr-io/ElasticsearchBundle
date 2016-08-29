@@ -82,13 +82,14 @@ class Repository
     /**
      * Returns a single document data by ID or null if document is not found.
      *
-     * @param string $id Document ID to find
+     * @param string $id      Document ID to find
+     * @param string $routing Custom routing for the document
      *
      * @return object
      */
-    public function find($id)
+    public function find($id, $routing = null)
     {
-        return $this->manager->find($this->type, $id);
+        return $this->manager->find($this->type, $id, $routing);
     }
 
     /**
@@ -203,19 +204,24 @@ class Repository
     /**
      * Removes a single document data by ID.
      *
-     * @param string $id Document ID to remove.
+     * @param string $id      Document ID to remove
+     * @param string $routing Custom routing for the document
      *
      * @return array
      *
      * @throws \LogicException
      */
-    public function remove($id)
+    public function remove($id, $routing = null)
     {
         $params = [
             'index' => $this->getManager()->getIndexName(),
             'type' => $this->type,
             'id' => $id,
         ];
+
+        if ($routing) {
+            $params['routing'] = $routing;
+        }
 
         $response = $this->getManager()->getClient()->delete($params);
 
