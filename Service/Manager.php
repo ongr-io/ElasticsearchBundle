@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Event\BulkEvent;
@@ -354,6 +355,8 @@ class Manager
      * @param array $params Parameters that will be passed to the flush or refresh queries.
      *
      * @return null|array
+     *
+     * @throws ClientErrorResponseException
      */
     public function commit(array $params = [])
     {
@@ -381,6 +384,12 @@ class Manager
                 case 'refresh':
                     $this->refresh($params);
                     break;
+            }
+
+            if ($bulkResponse['errors']) {
+                throw new ClientErrorResponseException(
+                    'An error occurred during the commit to elasticsearch'
+                );
             }
 
             $this->eventDispatcher->dispatch(
