@@ -7,7 +7,7 @@ php:
   - hhvm
 env:
   global:
-      - ES_VERSION="2.1.1"
+      - ES_VERSION="2.3.4"
       - SYMFONY="~3.0"
 matrix:
   allow_failures:
