@@ -372,6 +372,12 @@ class Manager
             $bulkResponse = $this->client->bulk($bulkQueries);
             $this->stopwatch('stop', 'bulk');
 
+            if ($bulkResponse['errors']) {
+                throw new ClientErrorResponseException(
+                    'An error occurred during the commit to elasticsearch'
+                );
+            }
+
             $this->bulkQueries = [];
             $this->bulkCount = 0;
 
@@ -384,12 +390,6 @@ class Manager
                 case 'refresh':
                     $this->refresh($params);
                     break;
-            }
-
-            if ($bulkResponse['errors']) {
-                throw new ClientErrorResponseException(
-                    'An error occurred during the commit to elasticsearch'
-                );
             }
 
             $this->eventDispatcher->dispatch(
