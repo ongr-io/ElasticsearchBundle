@@ -12,12 +12,11 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
-use Elasticsearch\Common\Exceptions\ClientErrorResponseException;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Event\BulkEvent;
-use ONGR\ElasticsearchBundle\Event\PersistEvent;
 use ONGR\ElasticsearchBundle\Event\CommitEvent;
+use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
 use ONGR\ElasticsearchBundle\Result\Converter;
@@ -356,7 +355,7 @@ class Manager
      *
      * @return null|array
      *
-     * @throws ClientErrorResponseException
+     * @throws BulkWithErrorsException
      */
     public function commit(array $params = [])
     {
@@ -373,8 +372,11 @@ class Manager
             $this->stopwatch('stop', 'bulk');
 
             if ($bulkResponse['errors']) {
-                throw new ClientErrorResponseException(
-                    'An error occurred during the commit to elasticsearch'
+                throw new BulkWithErrorsException(
+                    json_encode($bulkResponse),
+                    0,
+                    null,
+                    $bulkResponse
                 );
             }
 

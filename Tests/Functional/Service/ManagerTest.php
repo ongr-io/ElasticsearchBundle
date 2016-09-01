@@ -362,8 +362,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     /**
      * Tests the exception thrown by the commit method
      *
-     * @expectedException \Elasticsearch\Common\Exceptions\ClientErrorResponseException
-     * @expectedExceptionMessage An error occurred during the commit to elasticsearch
+     * @expectedException \ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException
      */
     public function testCommitException()
     {
