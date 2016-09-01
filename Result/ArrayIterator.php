@@ -11,16 +11,25 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
+use ONGR\ElasticsearchBundle\Service\Manager;
+
 /**
- * Raw documents iterator.
+ * Class DocumentIterator.
  */
-class RawIterator extends AbstractResultsIterator
+class ArrayIterator extends AbstractResultsIterator
 {
     /**
      * {@inheritdoc}
      */
     protected function convertDocument(array $document)
     {
+        if (array_key_exists('_source', $document)) {
+            return $document['_source'];
+        } elseif (array_key_exists('fields', $document)) {
+            return array_map('reset', $document['fields']);
+        }
+
         return $document;
     }
 }

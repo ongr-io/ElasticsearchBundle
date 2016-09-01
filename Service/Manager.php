@@ -616,6 +616,8 @@ class Manager
     /**
      * Executes given search.
      *
+     * @deprecated use strict return type functions from Repository instead.
+     *
      * @param array  $types
      * @param Search $search
      * @param string $resultsType
@@ -635,6 +637,8 @@ class Manager
 
     /**
      * Parses raw result.
+     *
+     * @deprecated use strict return type functions from Repository class instead.
      *
      * @param array  $raw
      * @param string $resultsType
@@ -669,6 +673,8 @@ class Manager
     /**
      * Normalizes response array.
      *
+     * @deprecated Use ArrayIterator from Result namespace instead.
+     *
      * @param array $data
      *
      * @return array
@@ -701,7 +707,7 @@ class Manager
      * @param string $scrollDuration
      * @param string $resultsType
      *
-     * @return AbstractResultsIterator
+     * @return mixed
      *
      * @throws \Exception
      */
@@ -712,7 +718,16 @@ class Manager
     ) {
         $results = $this->getClient()->scroll(['scroll_id' => $scrollId, 'scroll' => $scrollDuration]);
 
-        return $this->parseResult($results, $resultsType, $scrollDuration);
+        if ($resultsType == Result::RESULTS_RAW) {
+            return $results;
+        } else {
+            trigger_error(
+                '$resultsType parameter was deprecated in scroll() fucntion. ' .
+                'Use strict type findXXX functions from repository instead. Will be removed in 3.0',
+                E_USER_DEPRECATED
+            );
+            return $this->parseResult($results, $resultsType, $scrollDuration);
+        }
     }
 
     /**

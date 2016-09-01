@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
-use ONGR\ElasticsearchBundle\Service\Manager;
 
 /**
  * Class DocumentIterator.
@@ -20,33 +19,15 @@ use ONGR\ElasticsearchBundle\Service\Manager;
 class DocumentIterator extends AbstractResultsIterator
 {
     /**
-     * @var array
-     */
-    private $aggregations;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct(array $rawData, Manager $manager, array $scroll = [])
-    {
-        if (isset($rawData['aggregations'])) {
-            $this->aggregations = $rawData['aggregations'];
-            unset($rawData['aggregations']);
-        }
-
-        parent::__construct($rawData, $manager, $scroll);
-    }
-
-    /**
      * Returns aggregations.
      *
      * @return array
      */
     public function getAggregations()
     {
-        $aggregations = array();
+        $aggregations = [];
 
-        foreach ($this->aggregations as $key => $aggregation) {
+        foreach (parent::getAggregations() as $key => $aggregation) {
             $aggregations[$key] = $this->getAggregation($key);
         }
 
@@ -62,11 +43,12 @@ class DocumentIterator extends AbstractResultsIterator
      */
     public function getAggregation($name)
     {
-        if (!isset($this->aggregations[$name])) {
+        $aggregations = parent::getAggregations();
+        if (!array_key_exists($name, $aggregations)) {
             return null;
         }
 
-        return new AggregationValue($this->aggregations[$name]);
+        return new AggregationValue($aggregations[$name]);
     }
 
     /**
