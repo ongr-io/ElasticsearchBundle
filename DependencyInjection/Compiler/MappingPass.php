@@ -46,6 +46,15 @@ class MappingPass implements CompilerPassInterface
                 $connection = $connections[$manager['connection']];
             }
 
+            if (isset($connection['auth'])) {
+                trigger_error(
+                    '`auth` usage in elasticsearch bundle configuration is deprecated, ' .
+                    'add your auth configuration directly in the host. This will be removed in v3.0. More: ' .
+                    'https://www.elastic.co/guide/en/elasticsearch/client/php-api/2.0/_security.html',
+                    E_USER_DEPRECATED
+                );
+            }
+
             $managerName = strtolower($managerName);
 
             $managerDefinition = new Definition(
