@@ -12,6 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\ClientBuilder;
+use ONGR\ElasticsearchBundle\Event\Events;
+use ONGR\ElasticsearchBundle\Event\PostCreateManagerEvent;
+use ONGR\ElasticsearchBundle\Event\PreCreateManagerEvent;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Psr\Log\LoggerInterface;
@@ -130,6 +133,12 @@ class ManagerFactory
             ),
         ];
 
+        $this->eventDispatcher &&
+            $this->eventDispatcher->dispatch(
+                Events::POST_MANAGER_CREATE,
+                new PreCreateManagerEvent($client, $indexSettings)
+            );
+
         $manager = new Manager(
             $managerName,
             $managerConfig,
@@ -146,6 +155,9 @@ class ManagerFactory
         $manager->setCommitMode($managerConfig['commit_mode']);
         $manager->setEventDispatcher($this->eventDispatcher);
         $manager->setBulkCommitSize($managerConfig['bulk_size']);
+
+        $this->eventDispatcher &&
+            $this->eventDispatcher->dispatch(Events::POST_MANAGER_CREATE, new PostCreateManagerEvent($manager));
 
         return $manager;
     }
