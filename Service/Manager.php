@@ -494,6 +494,12 @@ class Manager
             unset($this->indexSettings['body']['mappings']);
         }
 
+        if (isset($this->indexSettings['body']['mappings'])) {
+            foreach ($this->indexSettings['body']['mappings'] as $type => $mapping) {
+                unset($this->indexSettings['body']['mappings'][$type]['properties']['_ttl']);
+            }
+        }
+
         return $this->getClient()->indices()->create($this->indexSettings);
     }
 

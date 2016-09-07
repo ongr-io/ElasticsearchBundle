@@ -17,7 +17,7 @@ use ONGR\ElasticsearchBundle\Collection\Collection;
 /**
  * Product document for testing.
  *
- * @ES\Document(type="product")
+ * @ES\Document(type="product", ttl={"enabled"=true})
  */
 class Product
 {

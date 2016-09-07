@@ -193,6 +193,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
 
         $this->assertEquals($product->getId(), $actualProduct->getId());
+        $this->assertNotNull($actualProduct->getTtl());
         $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
     }
 
