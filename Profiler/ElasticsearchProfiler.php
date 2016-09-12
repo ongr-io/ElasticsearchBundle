@@ -179,7 +179,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
                 'body' => $body !== null ? json_encode($body, JSON_PRETTY_PRINT) : '',
                 'method' => $record['context']['method'],
                 'httpParameters' => $httpParameters,
-                'time' => $record['context']['duration'] * 100,
+                'time' => $record['context']['duration'] * 1000,
             ],
             array_diff_key(parse_url($record['context']['uri']), array_flip(['query']))
         );
