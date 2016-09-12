@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
+use ONGR\ElasticsearchBundle\Result\ArrayIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
@@ -194,6 +195,7 @@ class Repository
     /**
      * Executes given search.
      *
+     * @deprecated Use strict execute functions instead. e.g. executeIterator, executeRawIterator.
      * @param Search $search
      * @param string $resultsType
      *
@@ -204,6 +206,82 @@ class Repository
     public function execute(Search $search, $resultsType = Result::RESULTS_OBJECT)
     {
         return $this->manager->execute([$this->type], $search, $resultsType);
+    }
+
+
+    /**
+     * Parses scroll configuration from raw response.
+     *
+     * @param $raw
+     * @param null $scrollDuration
+     *
+     * @return array
+     */
+    private function getScrollConfiguration($raw, $scrollDuration = null)
+    {
+        $scrollConfig = [];
+        if (isset($raw['_scroll_id'])) {
+            $scrollConfig['_scroll_id'] = $raw['_scroll_id'];
+            $scrollConfig['duration'] = $scrollDuration;
+        }
+
+        return $scrollConfig;
+    }
+
+
+    /**
+     * Returns DocumentIterator with composed Document objects from array response.
+     *
+     * @param Search $search
+     *
+     * @return DocumentIterator
+     */
+    public function findDocument(Search $search)
+    {
+        $results = $this->executeSearch($search);
+
+        return new DocumentIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+    }
+
+
+    /**
+     * Returns ArrayIterator with access to unmodified documents directly.
+     *
+     * @param Search $search
+     *
+     * @return ArrayIterator
+     */
+    public function findArray(Search $search)
+    {
+        $results = $this->executeSearch($search);
+
+        return new ArrayIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+    }
+
+    /**
+     * Returns RawIterator with access to node with all returned values included.
+     *
+     * @param Search $search
+     *
+     * @return RawIterator
+     */
+    public function findRaw(Search $search)
+    {
+        $results = $this->executeSearch($search);
+
+        return new RawIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+    }
+
+    /**
+     * Executes search to the elasticsearch and returns raw response.
+     *
+     * @param Search $search
+     *
+     * @return array
+     */
+    private function executeSearch(Search $search)
+    {
+        return $this->getManager()->search([$this->getType()], $search->toArray(), $search->getQueryParams());
     }
 
     /**

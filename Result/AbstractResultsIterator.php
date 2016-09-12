@@ -19,6 +19,13 @@ use ONGR\ElasticsearchBundle\Service\Manager;
 abstract class AbstractResultsIterator implements \Countable, \Iterator
 {
     /**
+     * Raw data returned from elasticsearch.
+     *
+     * @var array
+     */
+    private $raw;
+
+    /**
      * @var array Documents.
      */
     protected $documents = [];
@@ -112,9 +119,32 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
      * @return array
      */
-    protected function getAggregations()
+    public function getRaw()
+    {
+        return $this->raw;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAggregations()
     {
         return $this->aggregations;
+    }
+
+    /**
+     * Returns specific aggregation by name.
+     *
+     * @param string $name
+     *
+     * @return array
+     */
+    public function getAggregation($name)
+    {
+        if (isset($this->aggregations[$name])) {
+            return $this->aggregations[$name];
+        }
+        return null;
     }
 
     /**
