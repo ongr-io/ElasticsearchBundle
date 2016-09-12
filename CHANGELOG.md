@@ -1,6 +1,6 @@
 # CHANGELOG
 ## v1.0.x (2016-x)
-## v1.2.0 (2016-x)
+## v1.2.0 (2016-10-12)
 - Added strict type return search functions #678
 - Added event dispatching at bulk, commit and manager creation actions #677 #659
 - Added exception throwing when there is a bad response from elasticsearch #668
