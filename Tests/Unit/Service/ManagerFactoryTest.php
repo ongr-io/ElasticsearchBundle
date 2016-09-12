@@ -57,7 +57,8 @@ class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
                     'enabled' => true
                 ],
                 'commit_mode' => 'flush',
-                'bulk_size' => 10
+                'bulk_size' => 10,
+                'msearch_size' => 10
             ]
         );
         $this->assertTrue($manager instanceof Manager);

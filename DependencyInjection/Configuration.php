@@ -213,6 +213,14 @@ class Configuration implements ConfigurationInterface
                             'When the limit is reached it will auto-commit.'
                         )
                     ->end()
+                    ->integerNode('msearch_size')
+                        ->min(0)
+                        ->defaultValue(100)
+                        ->info(
+                            'Maximum amount of searches in the msearch container. ' .
+                            'When the limit is reached it will auto-execute.'
+                        )
+                    ->end()
                     ->enumNode('commit_mode')
                         ->values(['refresh', 'flush', 'none'])
                         ->defaultValue('refresh')

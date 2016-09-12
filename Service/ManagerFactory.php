@@ -155,6 +155,7 @@ class ManagerFactory
         $manager->setCommitMode($managerConfig['commit_mode']);
         $manager->setEventDispatcher($this->eventDispatcher);
         $manager->setBulkCommitSize($managerConfig['bulk_size']);
+        $manager->setMsearchSize($managerConfig['msearch_size']);
 
         $this->eventDispatcher &&
             $this->eventDispatcher->dispatch(Events::POST_MANAGER_CREATE, new PostCreateManagerEvent($manager));

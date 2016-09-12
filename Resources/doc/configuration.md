@@ -51,6 +51,8 @@ ongr_elasticsearch:
                 - AcmeBarBundle #Scans all bundle documents
         foo:
             connection: bar
+            bulk_size: 95     # 'Maximum documents size in the bulk container
+            msearch_size: 50  # 'Maximum amount of searches in the msearch container
 ```
 
 > The `connections` node is deprecated since version `1.2` and will 

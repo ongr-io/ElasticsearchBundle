@@ -106,3 +106,40 @@ $search->addQuery($termQuery);
 $count = $repo->count($search);
 
 ```
+
+## Multi search
+
+Multi search acts similarly to `bulk`, only instead of indexing, updating or deleting it deals with search. This means that it is possible to execute
+a number of searches with a single request. This is an example of such a request:
+
+```php
+
+$manager->addSearch($search1);
+$manager->addSearch($search2);
+$manager->addSearch($search3);
+
+$result = $manager->msearch();
+
+```
+
+The `$result` will be an array with the results from every search. Just as the `execute` method, `msearch` also excepts an optional parameter that
+determins the form of the result. The default is `ONGR\ElasticsearchBundle\Result\Result::RESULTS_OBJECT`. It is also important that just as with
+`bulk`, `msearch_size` can be defined in the configuration of the manager. This determines the maximum amount of searches that can be executed
+with a single request. Once the number is reached the searches will be executed automatically, this means that `addSearch` method can return `null`
+or if the `msearch_size` is reached, an array with the search results. The default value of this setting is 100.
+
+It is also possible to provide headers for every search, if, for example, there is a need to execute a search on a single type in the index:
+
+```php
+
+$manager->addSearch($search, ['type' => 'my-type']);
+
+```
+
+In addition, there is a possibility to provide headers as parameters for `msearch` that will apply to the entire request:
+
+```php
+
+$manager->setMsearchParams(['search_type' => 'query_then_fetch']);
+
+```
