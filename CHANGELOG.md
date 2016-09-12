@@ -1,5 +1,13 @@
 # CHANGELOG
 ## v1.0.x (2016-x)
+## v1.2.0 (2016-x)
+- Added strict type return search functions #678
+- Added event dispatching at bulk, commit and manager creation actions #677 #659
+- Added exception throwing when there is a bad response from elasticsearch #668
+- `connections` node in configuration was deprecated, now connection has to be defined in manager under `index` node. 
+- Added index `--dump` option to index create command to dump mapping json to the console. #666
+- Added routing annotation and parameters in find type functions.
+- Added default value in `AggregationValue:getValue()` function. #651
 
 ## v1.1.1 (2016-05-26)
 - Added sub-folder for elasticsearch mappings cache due conflict with other ONGR bundles.
