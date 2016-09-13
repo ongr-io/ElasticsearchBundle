@@ -135,7 +135,7 @@ class ManagerFactory
 
         $this->eventDispatcher &&
             $this->eventDispatcher->dispatch(
-                Events::POST_MANAGER_CREATE,
+                Events::PRE_MANAGER_CREATE,
                 new PreCreateManagerEvent($client, $indexSettings)
             );
 
