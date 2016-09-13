@@ -375,7 +375,7 @@ class DocumentParser
         $reflectionClass = new \ReflectionClass($namespace);
         $document = $this->getDocumentAnnotationData($reflectionClass);
 
-        return empty($document->type) ? $reflectionClass->getShortName() : $document->type;
+        return empty($document->type) ? Caser::snake($reflectionClass->getShortName()) : $document->type;
     }
 
     /**
