@@ -212,12 +212,12 @@ class Repository
     /**
      * Parses scroll configuration from raw response.
      *
-     * @param $raw
-     * @param null $scrollDuration
+     * @param array  $raw
+     * @param string $scrollDuration
      *
      * @return array
      */
-    private function getScrollConfiguration($raw, $scrollDuration = null)
+    private function getScrollConfiguration($raw, $scrollDuration)
     {
         $scrollConfig = [];
         if (isset($raw['_scroll_id'])) {
@@ -240,7 +240,11 @@ class Repository
     {
         $results = $this->executeSearch($search);
 
-        return new DocumentIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+        return new DocumentIterator(
+            $results,
+            $this->getManager(),
+            $this->getScrollConfiguration($results, $search->getScroll())
+        );
     }
 
 
@@ -255,7 +259,11 @@ class Repository
     {
         $results = $this->executeSearch($search);
 
-        return new ArrayIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+        return new ArrayIterator(
+            $results,
+            $this->getManager(),
+            $this->getScrollConfiguration($results, $search->getScroll())
+        );
     }
 
     /**
@@ -269,7 +277,11 @@ class Repository
     {
         $results = $this->executeSearch($search);
 
-        return new RawIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+        return new RawIterator(
+            $results,
+            $this->getManager(),
+            $this->getScrollConfiguration($results, $search->getScroll())
+        );
     }
 
     /**
