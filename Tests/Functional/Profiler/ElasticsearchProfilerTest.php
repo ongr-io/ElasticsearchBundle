@@ -112,7 +112,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
         $search = $repository
             ->createSearch()
             ->addQuery(new TermQuery('title', 'pizza'));
-        $result = $repository->execute($search);
+        $repository->findDocuments($search);
 
         $queries = $this->getCollector()->getQueries();
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
@@ -172,7 +172,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
         $search = $repository
             ->createSearch()
             ->addAggregation(new GlobalAggregation('g'));
-        $repository->execute($search);
+        $repository->findDocuments($search);
 
         $queries = $this->getCollector()->getQueries();
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);

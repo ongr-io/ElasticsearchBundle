@@ -61,7 +61,7 @@ class DocumentWithMultipleFieldsTest extends AbstractElasticsearchTestCase
         $search = $repo->createSearch();
         $search->addQuery($query);
 
-        $result = $repo->execute($search);
+        $result = $repo->findDocuments($search);
 
         $this->assertEquals(2, count($result));
 
@@ -69,7 +69,7 @@ class DocumentWithMultipleFieldsTest extends AbstractElasticsearchTestCase
         $search = $repo->createSearch();
         $search->addQuery($query);
 
-        $result = $repo->execute($search);
+        $result = $repo->findDocuments($search);
 
         $this->assertEquals(0, count($result));
 
@@ -77,7 +77,7 @@ class DocumentWithMultipleFieldsTest extends AbstractElasticsearchTestCase
         $search = $repo->createSearch();
         $search->addQuery($query);
 
-        $result = $repo->execute($search);
+        $result = $repo->findDocuments($search);
 
         $this->assertEquals(1, count($result));
     }

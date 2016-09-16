@@ -212,12 +212,12 @@ class Repository
     /**
      * Parses scroll configuration from raw response.
      *
-     * @param $raw
-     * @param null $scrollDuration
+     * @param array  $raw
+     * @param string $scrollDuration
      *
      * @return array
      */
-    private function getScrollConfiguration($raw, $scrollDuration = null)
+    private function getScrollConfiguration($raw, $scrollDuration)
     {
         $scrollConfig = [];
         if (isset($raw['_scroll_id'])) {
@@ -232,15 +232,33 @@ class Repository
     /**
      * Returns DocumentIterator with composed Document objects from array response.
      *
-     * @param Search $search
+     * @deprecated Miss type in the function name, use findDocuments() instead. Will remove in 3.0
      *
+     * @param Search $search
      * @return DocumentIterator
      */
     public function findDocument(Search $search)
     {
+        return $this->findDocuments($search);
+    }
+
+
+    /**
+     * Returns DocumentIterator with composed Document objects from array response.
+     *
+     * @param Search $search
+     *
+     * @return DocumentIterator
+     */
+    public function findDocuments(Search $search)
+    {
         $results = $this->executeSearch($search);
 
-        return new DocumentIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+        return new DocumentIterator(
+            $results,
+            $this->getManager(),
+            $this->getScrollConfiguration($results, $search->getScroll())
+        );
     }
 
 
@@ -255,7 +273,11 @@ class Repository
     {
         $results = $this->executeSearch($search);
 
-        return new ArrayIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+        return new ArrayIterator(
+            $results,
+            $this->getManager(),
+            $this->getScrollConfiguration($results, $search->getScroll())
+        );
     }
 
     /**
@@ -269,7 +291,11 @@ class Repository
     {
         $results = $this->executeSearch($search);
 
-        return new RawIterator($results, $this->getManager(), $this->getScrollConfiguration($results));
+        return new RawIterator(
+            $results,
+            $this->getManager(),
+            $this->getScrollConfiguration($results, $search->getScroll())
+        );
     }
 
     /**
