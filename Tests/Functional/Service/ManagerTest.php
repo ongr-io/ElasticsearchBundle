@@ -225,16 +225,16 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $product->setTokenPiecesCount('t e s t');
         $manager->persist($product);
         $manager->commit();
-
+        $repo = $manager->getRepository('AcmeBarBundle:Product');
         // Analyzer is whitespace, so there are four tokens.
         $search = new Search();
         $search->addQuery(new TermQuery('pieces_count.count', '4'));
-        $this->assertEquals(1, $manager->execute(['AcmeBarBundle:Product'], $search)->count());
+        $this->assertEquals(1, $repo->findDocuments($search)->count());
 
         // Test with invalid count.
         $search = new Search();
         $search->addQuery(new TermQuery('pieces_count.count', '6'));
-        $this->assertEquals(0, $manager->execute(['AcmeBarBundle:Product'], $search)->count());
+        $this->assertEquals(0, $repo->findDocuments($search)->count());
     }
 
     /**
@@ -277,16 +277,16 @@ class ManagerTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test if execute() works with multiple types.
+     * Test if search() works with multiple types.
      */
     public function testExecuteQueryOnMultipleTypes()
     {
-        $result = $this->getManager('foo')->execute(
-            ['AcmeBarBundle:Product', 'AcmeFooBundle:Customer'],
-            new Search()
+        $result = $this->getManager('foo')->search(
+            ['product', 'customer'],
+            (new Search())->toArray()
         );
 
-        $this->assertCount(5, $result);
+        $this->assertCount(5, $result['hits']['hits']);
     }
 
     /**
@@ -328,25 +328,27 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $repo = $fooManager->getRepository('AcmeBarBundle:Product');
         $search = $repo->createSearch();
         $search->addQuery(new MatchAllQuery());
-        $products = $repo->execute($search, 'array');
+        $products = $repo->findArray($search);
         $this->assertArrayHasKey(0, $products);
 
         $repo = $defaultManager->getRepository('AcmeBarBundle:Product');
         $search = $repo->createSearch();
         $search->addQuery(new MatchAllQuery());
-        $products = $repo->execute($search, 'array');
+        $products = $repo->findArray($search);
         $this->assertArrayNotHasKey(0, $products);
 
         $repo = $fooManager->getRepository('AcmeBarBundle:Product');
         $search = $repo->createSearch();
         $search->addQuery(new MatchAllQuery());
-        $products = $repo->execute($search, 'raw_iterator');
+        $products = $repo->findRaw($search);
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $products);
     }
 
     /**
      * Tests exception that is thrown by parseResults()
      * when a bad result type is provided
+     *
+     * @deprecated Function will be removed in 3.0
      *
      * @expectedException \Exception
      */

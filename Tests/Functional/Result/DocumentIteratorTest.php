@@ -60,7 +60,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
         $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
-        $iterator = $repo->execute($search);
+        $iterator = $repo->findDocuments($search);
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
@@ -91,7 +91,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());
-        $result = $repo->execute($search);
+        $result = $repo->findDocuments($search);
 
         $this->assertNull($result->current());
     }
@@ -105,7 +105,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());
-        $document = $repo->execute($search)->first();
+        $document = $repo->findDocuments($search)->first();
 
         $this->assertEquals('Foo Product', $document->getTitle());
     }

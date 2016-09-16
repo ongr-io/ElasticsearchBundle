@@ -57,7 +57,7 @@ class GetDocumentSortTest extends AbstractElasticsearchTestCase
         $sort = new FieldSort('price', 'asc');
         $search = $repo->createSearch()->addQuery($match);
         $search->addSort($sort);
-        $results = $repo->execute($search);
+        $results = $repo->findDocuments($search);
         $sort_result = [];
         $expected = [1.95, 5, 8.33];
 
