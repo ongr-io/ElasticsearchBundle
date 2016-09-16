@@ -17,8 +17,40 @@ use ONGR\ElasticsearchBundle\Service\Manager;
 /**
  * Class DocumentIterator.
  */
-class ArrayIterator extends AbstractResultsIterator
+class ArrayIterator extends AbstractResultsIterator implements \ArrayAccess
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetExists($offset)
+    {
+        return $this->documentExists($offset);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        return $this->getDocument($offset);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->documents[$offset] = $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->documents[$offset]);
+    }
+
     /**
      * {@inheritdoc}
      */
