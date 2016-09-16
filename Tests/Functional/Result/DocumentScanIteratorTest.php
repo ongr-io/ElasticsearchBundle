@@ -80,6 +80,8 @@ class DocumentScanIteratorTest extends AbstractElasticsearchTestCase
     /**
      * Iteration test.
      *
+     * @deprecated Tested function will be removed in 3.0
+     *
      * @param Search $search
      * @param bool   $isSorted
      *

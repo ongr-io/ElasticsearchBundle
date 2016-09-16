@@ -338,7 +338,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
             ->createSearch()
             ->addFilter(new PrefixQuery('title', 'dummy'));
 
-        $searchResult = $repository->execute($search);
+        $searchResult = $repository->findDocuments($search);
         $this->assertInstanceOf(
             '\ONGR\ElasticsearchBundle\Result\DocumentIterator',
             $searchResult
