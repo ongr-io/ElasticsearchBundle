@@ -232,11 +232,25 @@ class Repository
     /**
      * Returns DocumentIterator with composed Document objects from array response.
      *
+     * @deprecated Miss type in the function name, use findDocuments() instead. Will remove in 3.0
+     *
+     * @param Search $search
+     * @return DocumentIterator
+     */
+    public function findDocument(Search $search)
+    {
+        return $this->findDocuments($search);
+    }
+
+
+    /**
+     * Returns DocumentIterator with composed Document objects from array response.
+     *
      * @param Search $search
      *
      * @return DocumentIterator
      */
-    public function findDocument(Search $search)
+    public function findDocuments(Search $search)
     {
         $results = $this->executeSearch($search);
 
