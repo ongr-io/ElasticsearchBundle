@@ -154,6 +154,7 @@ class Configuration implements ConfigurationInterface
         $node
             ->isRequired()
             ->requiresAtLeastOneElement()
+            ->useAttributeAsKey('name')
             ->info('Maps managers to connections and bundles')
             ->prototype('array')
                 ->children()
