@@ -88,7 +88,7 @@ class ExportService
                 $counter = 0;
             }
 
-            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source', 'fields']));
+            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source', '_routing', 'fields']));
             $writer->push($doc);
             $progress->advance();
             $counter++;
