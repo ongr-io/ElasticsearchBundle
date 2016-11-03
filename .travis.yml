@@ -18,8 +18,7 @@ matrix:
 addons:
   apt:
     packages:
-      - oracle-java8-installer
-      - oracle-java8-set-default
+      - oracle-java8-installer oracle-java8-set-default
 install:
   - composer require --no-update symfony/symfony:${SYMFONY}
   - 'if [ ${ES_VERSION} == "2.4.1" ]; then
