@@ -24,12 +24,13 @@ install:
   - java -version
   - composer require --no-update symfony/symfony:${SYMFONY}
   - 'if [ ${ES_VERSION} == "2.4.1" ]; then
-       wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz;
+       wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.deb;
     else
-       wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz;
+       wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.deb;
     fi'
-  - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
-  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /tmp/elasticsearch.log 2>&1 &
+  - sudo dpkg -i elasticsearch-${ES_VERSION}.deb
+  - service elasticsearch start
+  #- ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /tmp/elasticsearch.log 2>&1 &
 before_script:
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction --prefer-dist
