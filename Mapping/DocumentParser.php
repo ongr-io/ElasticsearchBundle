@@ -35,7 +35,6 @@ class DocumentParser
     // Meta fields
     const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
     const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
-    const TTL_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Ttl';
     const ROUTING_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Routing';
 
     /**
@@ -175,7 +174,6 @@ class DocumentParser
         /** @var MetaField $annotation */
         $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::PARENT_ANNOTATION);
-        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::TTL_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::ROUTING_ANNOTATION);
 
         if ($annotation === null) {
@@ -356,7 +354,6 @@ class DocumentParser
             'Nested',
             'Id',
             'ParentDocument',
-            'Ttl',
             'Routing',
         ];
 
