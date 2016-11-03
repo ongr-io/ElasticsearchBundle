@@ -31,13 +31,6 @@ class Product
     /**
      * @var string
      *
-     * @ES\Ttl()
-     */
-    private $ttl;
-
-    /**
-     * @var string
-     *
      * @ES\Routing()
      */
     private $routing;
@@ -133,22 +126,6 @@ class Product
     public function setId($id)
     {
         $this->id = $id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTtl()
-    {
-        return $this->ttl;
-    }
-
-    /**
-     * @param string $ttl
-     */
-    public function setTtl($ttl)
-    {
-        $this->ttl = $ttl;
     }
 
     /**
@@ -318,6 +295,4 @@ class Product
     {
         $this->routing = $routing;
     }
-
-
 }
