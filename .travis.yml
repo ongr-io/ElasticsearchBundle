@@ -6,7 +6,6 @@ php:
 env:
   global:
       - SYMFONY="~3.0" ES_VERSION="5.0.0"
-      - JAVA_HOME="/usr/lib/jvm/java-8-oracle/bin"
   matrix:
       - ES_VERSION="2.4.1"
       - ES_VERSION="5.0.0"
@@ -16,13 +15,13 @@ matrix:
   include:
     - php: 7.0
       env: SYMFONY="2.8.*"
-jdk:
-  - oraclejdk8
 addons:
   apt:
     packages:
       - oracle-java8-installer
 install:
+  - jdk_switcher use oraclejdk8
+  - java -version
   - composer require --no-update symfony/symfony:${SYMFONY}
   - 'if [ ${ES_VERSION} == "2.4.1" ]; then
        wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz;
@@ -32,7 +31,6 @@ install:
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
   - ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /tmp/elasticsearch.log 2>&1 &
 before_script:
-  - java -version
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction --prefer-dist
 script:
