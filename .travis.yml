@@ -37,6 +37,5 @@ before_script:
 script:
   - vendor/bin/phpunit --coverage-clover=coveralls.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
-  - cat /tmp/elasticsearch.log
 after_script:
   - travis_retry php vendor/bin/coveralls
