@@ -6,7 +6,6 @@ php:
 env:
   global:
       - SYMFONY="~3.0" ES_VERSION="5.0.0"
-      - JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
   matrix:
       - ES_VERSION="2.4.1"
       - ES_VERSION="5.0.0"
@@ -20,6 +19,7 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
+      - oracle-java8-set-default
 install:
   - composer require --no-update symfony/symfony:${SYMFONY}
   - 'if [ ${ES_VERSION} == "2.4.1" ]; then
