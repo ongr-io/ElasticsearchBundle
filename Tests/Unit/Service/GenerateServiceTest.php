@@ -59,11 +59,6 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
                     'annotation' => 'embedded',
                     'property_class' => 'AcmeBarBundle:Product',
                     'property_multiple' => true,
-                ],
-                [
-                    'field_name' => 'ttl',
-                    'annotation' => 'ttl',
-                    'property_default' => '12m',
                 ]
             ]
         );

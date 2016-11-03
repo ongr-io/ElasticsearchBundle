@@ -184,7 +184,6 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         $product = new Product();
         $product->setId('testId');
-        $product->setTtl(500000);
         $product->setTitle('acme');
 
         $manager->persist($product);
@@ -193,7 +192,6 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
 
         $this->assertEquals($product->getId(), $actualProduct->getId());
-        $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
     }
 
     /**
