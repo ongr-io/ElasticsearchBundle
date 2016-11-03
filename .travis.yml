@@ -18,7 +18,7 @@ matrix:
 addons:
   apt:
     packages:
-      - openjdk-8-jdk
+      - oracle-java8-installer
 install:
   - composer require --no-update symfony/symfony:${SYMFONY}
   - 'if [ ${ES_VERSION} == "2.4.1" ]; then
