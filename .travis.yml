@@ -16,7 +16,8 @@ matrix:
   include:
     - php: 7.0
       env: SYMFONY="2.8.*"
-jdk: oraclejdk8
+jdk:
+  - oraclejdk8
 addons:
   apt:
     packages:
@@ -31,12 +32,12 @@ install:
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
   - ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /tmp/elasticsearch.log 2>&1 &
 before_script:
+  - java -version
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction --prefer-dist
 script:
   - vendor/bin/phpunit --coverage-clover=coveralls.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
-  - java -version
   - cat /tmp/elasticsearch.log
 after_script:
   - travis_retry php vendor/bin/coveralls
