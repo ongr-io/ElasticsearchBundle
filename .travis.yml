@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 language: php
 php:
   - 7.0
@@ -15,13 +15,12 @@ matrix:
   include:
     - php: 7.0
       env: SYMFONY="2.8.*"
-install: true
-jdk: oraclejdk8
 addons:
   apt:
     packages:
       - oracle-java8-installer
 install:
+  - sudo apt-get install oracle-java8-set-default
   - java -version
   - composer require --no-update symfony/symfony:${SYMFONY}
   - 'if [ ${ES_VERSION} == "2.4.1" ]; then
