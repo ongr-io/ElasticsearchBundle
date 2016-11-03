@@ -7,17 +7,25 @@ php:
   - hhvm
 env:
   global:
-      - ES_VERSION="2.3.4"
       - SYMFONY="~3.0"
+  matrix:
+      - ES_VERSION="2.4.1"
+      - ES_VERSION="5.0.0"
 matrix:
   allow_failures:
     - php: hhvm
   include:
     - php: 7.0
       env: SYMFONY="2.7.*"
+    - php: 7.0
+      env: SYMFONY="2.8.*"
 install:
   - composer require --no-update symfony/symfony:${SYMFONY}
-  - wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
+  - 'if [ ${ES_VERSION} == "2.4.1" ]; then
+       wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz;
+    else
+       wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz;
+    fi'
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
   - ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /dev/null 2>&1 &
 before_script:
