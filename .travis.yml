@@ -29,7 +29,7 @@ install:
        wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.deb;
     fi'
   - sudo dpkg -i elasticsearch-${ES_VERSION}.deb
-  - service elasticsearch start
+  - sudo service elasticsearch restart
   #- ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /tmp/elasticsearch.log 2>&1 &
 before_script:
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
