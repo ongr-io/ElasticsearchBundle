@@ -15,12 +15,10 @@ matrix:
   include:
     - php: 7.0
       env: SYMFONY="2.8.*"
-jdk:
-  - oraclejdk8
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+      - openjdk-8-jdk
 install:
   - composer require --no-update symfony/symfony:${SYMFONY}
   - 'if [ ${ES_VERSION} == "2.4.1" ]; then
@@ -36,6 +34,7 @@ before_script:
 script:
   - vendor/bin/phpunit --coverage-clover=coveralls.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
+  - java -version
   - cat /tmp/elasticsearch.log
 after_script:
   - travis_retry php vendor/bin/coveralls
