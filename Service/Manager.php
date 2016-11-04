@@ -277,7 +277,11 @@ class Manager
     {
         $params = [];
         $params['index'] = $this->getIndexName();
-        $params['type'] = implode(',', $types);
+        
+        if (!empty($types)) {
+            $params['type'] = implode(',', $types);
+        }
+        
         $params['body'] = $query;
 
         if (!empty($queryStringParams)) {
