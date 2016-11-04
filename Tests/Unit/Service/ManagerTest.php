@@ -320,6 +320,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $client = $configuration[1];
         $search = $configuration[2];
         $array = [
+            '_id' => '15',
             '_source' => [
                 [
                     'price' => 1,
@@ -329,7 +330,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         ];
         $client->expects($this->any())->method('search')->willReturn($array);
         $result = $manager->execute(['product'], $search, 'array');
-        $this->assertEquals($result, $array['_source']);
+        $this->assertEquals($result, array_merge($array['_source'], ['_id' => $array['_id']]));
     }
 
     /**

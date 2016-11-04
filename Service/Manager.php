@@ -686,6 +686,7 @@ class Manager
     private function convertToNormalizedArray($data)
     {
         if (array_key_exists('_source', $data)) {
+            $data['_source']['_id'] = $data['_id'];
             return $data['_source'];
         }
 
@@ -693,6 +694,7 @@ class Manager
 
         if (isset($data['hits']['hits'][0]['_source'])) {
             foreach ($data['hits']['hits'] as $item) {
+                $item['_source']['_id'] = $item['_id'];
                 $output[] = $item['_source'];
             }
         } elseif (isset($data['hits']['hits'][0]['fields'])) {
