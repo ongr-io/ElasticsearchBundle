@@ -1,5 +1,7 @@
 # CHANGELOG
-## v1.x (2016-x)
+## v2.0.0 (2016-x)
+- Drop PHP 5.5 and 5.6 support. Now only PHP >=7 are supported.
+- Array iterator now returns document _id field as well.
 
 ## v1.2.4 (2016-10-03)
 - Upgraded minimum Elasticsearch DSL version
