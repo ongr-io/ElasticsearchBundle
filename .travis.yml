@@ -1,26 +1,35 @@
-sudo: false
+sudo: required
 language: php
 php:
-  - 5.5
-  - 5.6
   - 7.0
   - hhvm
 env:
   global:
-      - ES_VERSION="2.3.4"
-      - SYMFONY="~3.0"
+      - SYMFONY="~3.0" ES_VERSION="5.0.0"
+  matrix:
+      - ES_VERSION="2.4.1"
+      - ES_VERSION="5.0.0"
 matrix:
   allow_failures:
     - php: hhvm
   include:
     - php: 7.0
-      env: SYMFONY="2.7.*"
+      env: SYMFONY="2.8.*"
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
 install:
-  - composer require --no-update symfony/symfony:${SYMFONY}
-  - wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
-  - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
-  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch > /dev/null 2>&1 &
+  - sudo apt-get install -y oracle-java8-set-default
+  - 'if [ ${ES_VERSION} == "2.4.1" ]; then
+       wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.deb;
+    else
+       wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.deb;
+    fi'
+  - sudo dpkg -i elasticsearch-${ES_VERSION}.deb
+  - sudo service elasticsearch restart
 before_script:
+  - composer require --no-update symfony/symfony:${SYMFONY}
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction --prefer-dist
 script:
