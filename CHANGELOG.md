@@ -1,6 +1,30 @@
 # CHANGELOG
-## v1.0.x (2016-x)
-## v1.2.0 (2016-10-12)
+## v1.x (2016-x)
+
+## v1.2.4 (2016-10-03)
+- Upgraded minimum Elasticsearch DSL version
+
+## v1.2.3 (2016-09-23)
+- Bug fix with manager name resolve in the configuration #692
+
+## v1.1.3 (2016-09-23)
+- Bug fix with manager name resolve in the configuration #692
+
+## v1.0.4 (2016-09-23)
+- Bug fix with manager name resolve in the configuration #692
+
+## v1.2.2 (2016-09-13)
+- Fixed scroll configuration pass to find functions #687
+- Eliminated deprecated execute function in tests #688
+- Fixed profiler timing #689
+
+## v1.2.1 (2016-09-13)
+- Fixed wrong event name (#683)
+
+## v1.1.2 (2016-09-13)
+- Minor fixes
+
+## v1.2.0 (2016-09-12)
 - Added strict type return search functions #678
 - Added event dispatching at bulk, commit and manager creation actions #677 #659
 - Added exception throwing when there is a bad response from elasticsearch #668
