@@ -10,6 +10,7 @@ applications. This bundle is:
 
 Technical goodies:
 
+* Provides interactive Document object generator via CLI (`ongr:es:document:generate`)
 * Provides DSL query builder to be executed by type repository services.
 * Uses Doctrine-like documents(entities) document-object mapping using annotations.
 * Query results iterators are provided for your convenience.
