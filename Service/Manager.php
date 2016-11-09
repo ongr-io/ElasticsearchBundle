@@ -365,7 +365,7 @@ class Manager
     {
         if (!empty($this->bulkQueries)) {
             $bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
-
+            $bulkQueries['index']['_index'] = $this->getIndexName();
             $this->eventDispatcher->dispatch(
                 Events::PRE_COMMIT,
                 new CommitEvent($this->getCommitMode(), $bulkQueries)
@@ -436,7 +436,6 @@ class Manager
         $this->bulkQueries['body'][] = [
             $operation => array_filter(
                 [
-                    '_index' => $this->getIndexName(),
                     '_type' => $type,
                     '_id' => isset($query['_id']) ? $query['_id'] : null,
                     '_ttl' => isset($query['_ttl']) ? $query['_ttl'] : null,
