@@ -1,33 +1,31 @@
-sudo: required
+sudo: true
 language: php
 php:
+  - 5.6
   - 7.0
+  - 7.1
   - hhvm
 env:
   global:
-      - SYMFONY="~3.0" ES_VERSION="5.0.0"
+    - ES_VERSION="5.0" JAVA_HOME="/usr/lib/jvm/java-8-oracle/jre"
   matrix:
-      - ES_VERSION="2.4.1"
-      - ES_VERSION="5.0.0"
+    - SYMFONY="~2.8"
+    - SYMFONY="~3.0"
+    - SYMFONY="~3.1"
 matrix:
   allow_failures:
     - php: hhvm
-  include:
-    - php: 7.0
-      env: SYMFONY="2.8.*"
 addons:
   apt:
     packages:
       - oracle-java8-installer
 install:
   - sudo apt-get install -y oracle-java8-set-default
-  - 'if [ ${ES_VERSION} == "2.4.1" ]; then
-       wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.deb;
-    else
-       wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.deb;
-    fi'
-  - sudo dpkg -i elasticsearch-${ES_VERSION}.deb
-  - sudo service elasticsearch restart
+  - ES_URL=$(curl -sS "https://esvm-props.kibana.rocks/builds" | jq -r ".branches[\"$ES_VERSION\"].zip")
+  - curl -L -o elasticsearch.zip $ES_URL
+  - unzip elasticsearch.zip
+  - ./elasticsearch-*/bin/elasticsearch -d > elastic.log
+  - cat elastic.log
 before_script:
   - composer require --no-update symfony/symfony:${SYMFONY}
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
@@ -35,5 +33,6 @@ before_script:
 script:
   - vendor/bin/phpunit --coverage-clover=coveralls.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
+  - cat elastic.log
 after_script:
   - travis_retry php vendor/bin/coveralls
