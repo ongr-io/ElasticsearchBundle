@@ -31,9 +31,9 @@ is the preferred and recommended way to ask questions about ONGR bundles and lib
 
 | Elasticsearch version | ElasticsearchBundle version |
 | --------------------- | --------------------------- |
-| >= 5.0                | ~2.x                         |
-| >= 2.0, < 5.0         | ~1.x                         |
-| >= 1.0, < 2.0         | >= ~0.10, < 1.0              |
+| >= 5.0                | ~2.x                        |
+| >= 2.0, < 5.0         | ~1.x                        |
+| >= 1.0, < 2.0         | >= 0.10, < 1.0              |
 | <= 0.90.x             | < 0.10                      |
 
 ## Documentation
