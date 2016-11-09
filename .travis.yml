@@ -1,7 +1,7 @@
-sudo: true
+sudo: false
 language: php
 php:
-  - 5.6
+  - 5.6.6
   - 7.0
   - 7.1
   - hhvm
@@ -20,12 +20,11 @@ addons:
     packages:
       - oracle-java8-installer
 install:
-  - sudo apt-get install -y oracle-java8-set-default
+  #- sudo apt-get install -y oracle-java8-set-default
   - ES_URL=$(curl -sS "https://esvm-props.kibana.rocks/builds" | jq -r ".branches[\"$ES_VERSION\"].zip")
   - curl -L -o elasticsearch.zip $ES_URL
   - unzip elasticsearch.zip
-  - ./elasticsearch-*/bin/elasticsearch -d > elastic.log
-  - cat elastic.log
+  - ./elasticsearch-*/bin/elasticsearch -d
 before_script:
   - composer require --no-update symfony/symfony:${SYMFONY}
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
@@ -33,6 +32,5 @@ before_script:
 script:
   - vendor/bin/phpunit --coverage-clover=coveralls.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
-  - cat elastic.log
 after_script:
   - travis_retry php vendor/bin/coveralls
