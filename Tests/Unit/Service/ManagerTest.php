@@ -27,9 +27,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         return [
             'index_document' => [
                 'expected' => [
+                    'index' => [
+                        '_index' => 'test',
+                    ],
                     'body' => [
                         [
-                            'index' => ['_index' => 'test', '_type' => 'product'],
+                            'index' => ['_type' => 'product'],
                         ],
                         [
                             'field1' => 'value1',
@@ -48,9 +51,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ],
             'index_document_with_id' => [
                 'expected' => [
+                    'index' => [
+                        '_index' => 'test',
+                    ],
                     'body' => [
                         [
-                            'index' => ['_index' => 'test', '_type' => 'product', '_id' => 'foo'],
+                            'index' => ['_type' => 'product', '_id' => 'foo'],
                         ],
                         [
                             'field1' => 'value1',
@@ -70,9 +76,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ],
             'create_document' => [
                 'expected' => [
+                    'index' => [
+                        '_index' => 'test',
+                    ],
                     'body' => [
                         [
-                            'create' => ['_index' => 'test', '_type' => 'product'],
+                            'create' => ['_type' => 'product'],
                         ],
                         [
                             'field1' => 'value1',
@@ -91,9 +100,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ],
             'delete_document' => [
                 'expected' => [
+                    'index' => [
+                        '_index' => 'test',
+                    ],
                     'body' => [
                         [
-                            'delete' => ['_index' => 'test', '_type' => 'product', '_id' => 'foo'],
+                            'delete' => ['_type' => 'product', '_id' => 'foo'],
                         ],
                     ],
                 ],
@@ -109,9 +121,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ],
             'update_doc' => [
                 'expected' => [
+                    'index' => [
+                        '_index' => 'test',
+                    ],
                     'body' => [
                         [
-                            'update' => ['_index' => 'test', '_type' => 'product'],
+                            'update' => ['_type' => 'product'],
                         ],
                         [
                             'doc' => ['title' => 'Sample'],
@@ -132,9 +147,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             ],
             'update_script' => [
                 'expected' => [
+                    'index' => [
+                        '_index' => 'test',
+                    ],
                     'body' => [
                         [
-                            'update' => ['_index' => 'test', '_type' => 'product'],
+                            'update' => ['_type' => 'product'],
                         ],
                         [
                             'script' => 'ctx._source.counter += count',
