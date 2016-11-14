@@ -28,33 +28,50 @@ final class Document implements DumperInterface
 
     /**
      * @var bool
+     *
+     * @deprecated Use `options` to pass parameters instead.
      */
     public $enabled;
 
     /**
      * @var array
+     *
+     * @deprecated Use `options` to pass parameters instead.
      */
     public $all;
 
     /**
      * @var string
+     *
+     * @deprecated Use `options` to pass parameters instead.
      */
     public $dynamic;
 
     /**
      * @var array
+     *
+     * @deprecated Use `options` to pass parameters instead.
      */
     public $dynamicTemplates;
     
     /**
      * @var array
+     *
+     * @deprecated Use `options` to pass parameters instead.
      */
     public $transform;
 
     /**
      * @var array
+     *
+     * @deprecated Use `options` to pass parameters instead.
      */
     public $dynamicDateFormats;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 
     /**
      * {@inheritdoc}
@@ -62,14 +79,14 @@ final class Document implements DumperInterface
     public function dump(array $exclude = [])
     {
         return array_diff_key(
-            [
+            array_merge([
                 'enabled' => $this->enabled,
                 '_all' => $this->all,
                 'dynamic' => $this->dynamic,
                 'dynamic_templates' => $this->dynamicTemplates,
                 'transform' => $this->transform,
                 'dynamic_date_formats' => $this->dynamicDateFormats,
-            ],
+            ], $this->options),
             $exclude
         );
     }

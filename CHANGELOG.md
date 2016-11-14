@@ -2,6 +2,11 @@
 ## v2.0.0 (2016-x)
 - Drop PHP 5.5 and 5.6 support. Now only PHP >=7 are supported.
 - Array iterator now returns document _id field as well.
+- All features and fixes from 1.2
+
+## v1.2.5 (2016-11-14)
+- Set index for bulk operations globally #705
+- Introduced options in document annotation #707
 
 ## v1.2.4 (2016-10-03)
 - Upgraded minimum Elasticsearch DSL version
