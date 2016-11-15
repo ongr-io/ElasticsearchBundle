@@ -488,16 +488,34 @@ class Manager
      * Creates fresh elasticsearch index.
      *
      * @param bool $noMapping Determines if mapping should be included.
+     * @param bool $noArrayMappings Determines if array mapping should be included.
      *
      * @return array
      */
-    public function createIndex($noMapping = false)
+    public function createIndex($noMapping = false, $noArrayMappings = false)
     {
         if ($noMapping) {
             unset($this->indexSettings['body']['mappings']);
         }
-
+        if ($noArrayMappings) {
+            $this->removeArrayPropertyMappings();
+        }
         return $this->getClient()->indices()->create($this->indexSettings);
+    }
+
+    /**
+     * Array style mappings are causing a number of issues for our index - this works around that
+     */
+    private function removeArrayPropertyMappings()
+    {
+        foreach ($this->indexSettings['body']['mappings'] as $indexId => $index) {
+            foreach ($index['properties'] as $propertyId => $property) {
+                // exclude array types from the mapping - let ES work them out
+                if ($property['type'] == 'array') {
+                    unset($this->indexSettings['body']['mappings'][$indexId]['properties'][$propertyId]);
+                }
+            }
+        }
     }
 
     /**
