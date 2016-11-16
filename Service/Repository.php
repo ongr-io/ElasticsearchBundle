@@ -232,7 +232,7 @@ class Repository
     /**
      * Returns DocumentIterator with composed Document objects from array response.
      *
-     * @deprecated Miss type in the function name, use findDocuments() instead. Will remove in 3.0
+     * @deprecated Miss type in the function name, use findDocuments() instead. Will remove in 2.0
      *
      * @param Search $search
      * @return DocumentIterator
