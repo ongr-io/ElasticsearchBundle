@@ -728,7 +728,7 @@ class Manager
         } else {
             trigger_error(
                 '$resultsType parameter was deprecated in scroll() fucntion. ' .
-                'Use strict type findXXX functions from repository instead. Will be removed in 3.0',
+                'Use strict type findXXX functions from repository instead. Will be removed in 2.0',
                 E_USER_DEPRECATED
             );
             return $this->parseResult($results, $resultsType, $scrollDuration);
