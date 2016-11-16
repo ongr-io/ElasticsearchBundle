@@ -45,31 +45,18 @@ final class Property
      *
      * @var array
      */
-    public $options;
+    public $options = [];
 
     /**
      * {@inheritdoc}
      */
     public function dump(array $exclude = [])
     {
-        $array = array_diff_key(
-            array_filter(
-                get_object_vars($this),
-                function ($value) {
-                    return $value || is_bool($value);
-                }
-            ),
-            array_flip(array_merge(['name'], $exclude))
-        );
-
-        return array_combine(
-            array_map(
-                function ($key) {
-                    return Caser::snake($key);
-                },
-                array_keys($array)
-            ),
-            array_values($array)
+        return array_diff_key(
+            [
+                'name' => $this->name,
+            ],
+            $exclude
         );
     }
 }
