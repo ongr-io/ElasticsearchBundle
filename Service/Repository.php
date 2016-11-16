@@ -163,7 +163,7 @@ class Repository
             $search->addSort(new FieldSort($field, $direction));
         }
 
-        return $this->execute($search);
+        return $this->findDocuments($search);
     }
 
     /**

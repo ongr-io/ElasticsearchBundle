@@ -11,6 +11,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 
 class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
 {
@@ -21,11 +22,11 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
     {
         return [
             'default' => [
-                'place' => [
+                'product' => [
                     [
                         '_id' => 'foo',
                         'title' => 'Bar Product',
-                        'address' => null,
+                        'location' => null,
                     ],
                 ],
             ],
@@ -37,13 +38,14 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
      */
     public function testResultWithNullObjectField()
     {
-        $document = $this->getManager()->find('AcmeBarBundle:Place', 'foo');
+        /** @var Product $document */
+        $document = $this->getManager()->find('TestBundle:Product', 'foo');
 
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Place',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
             $document
         );
 
-        $this->assertNull($document->getAddress());
+        $this->assertNull($document->getLocation());
     }
 }

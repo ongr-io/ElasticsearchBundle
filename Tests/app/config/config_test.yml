@@ -4,38 +4,17 @@ framework:
     test: ~
 
 ongr_elasticsearch:
-    connections:
-        default:
-            hosts:
-                - 127.0.0.1:9200
-            index_name: ongr-esb-test
-            settings:
-                refresh_interval: -1
-                number_of_replicas: 0
-                number_of_shards: 5
-        bar:
-            hosts:
-                - 127.0.0.1:9200
-            index_name: ongr-esb-test-bar
     managers:
         default:
             connection: default
-            logger: true
-            mappings:
-                - AcmeBarBundle
-        foo:
-            connection: bar
-            mappings:
-                - AcmeBarBundle
-                - AcmeFooBundle
-        bar:
             index:
                 hosts:
                     - 127.0.0.1:9200
                 index_name: ongr-esb-test
                 settings:
                     refresh_interval: -1
-                    number_of_replicas: 1
-                    number_of_shards: 2
+                    number_of_replicas: 0
+                    number_of_shards: 5
+            logger: true
             mappings:
-                - AcmeBarBundle
+                - TestBundle

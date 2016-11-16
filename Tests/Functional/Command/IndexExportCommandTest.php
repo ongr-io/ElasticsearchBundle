@@ -19,13 +19,15 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class IndexExportCommandTest extends AbstractElasticsearchTestCase
 {
+    const COMMAND_NAME = 'ongr:es:index:export';
+
     /**
      * {@inheritdoc}
      */
     protected function getDataArray()
     {
         return [
-            'foo' => [
+            'default' => [
                 'product' => [
                     [
                         '_id' => 1,
@@ -43,7 +45,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
                         'price' => 20,
                     ],
                 ],
-                'customer' => [
+                'users' => [
                     [
                         '_id' => 1,
                         'name' => 'foo',
@@ -67,18 +69,18 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $out = [];
 
         // Case 1: chunk specified.
-        $options = ['--chunk' => 1, '--manager' => 'foo'];
+        $options = ['--chunk' => 1, '--manager' => 'default'];
         $expectedResults = [
             [
                 '_id' => '1',
-                '_type' => 'customer',
+                '_type' => 'users',
                 '_source' => [
                     'name' => 'foo',
                 ],
             ],
             [
                 '_id' => '2',
-                '_type' => 'customer',
+                '_type' => 'users',
                 '_source' => [
                     'name' => 'acme',
                 ],
@@ -111,8 +113,8 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
 
         $out[] = [$options, $expectedResults];
 
-        // Case 1: types specified.
-        $options = ['--types' => ['product'], '--manager' => 'foo'];
+        // Case 1: product type specified.
+        $options = ['--types' => ['product']];
         $expectedResults = [
             [
                 '_id' => '1',
@@ -143,18 +145,18 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $out[] = [$options, $expectedResults];
 
         // Case 2: several types specified.
-        $options = ['--types' => ['product', 'customer'], '--manager' => 'foo'];
+        $options = ['--types' => ['product', 'users']];
         $expectedResults = [
             [
                 '_id' => '1',
-                '_type' => 'customer',
+                '_type' => 'users',
                 '_source' => [
                     'name' => 'foo',
                 ],
             ],
             [
                 '_id' => '2',
-                '_type' => 'customer',
+                '_type' => 'users',
                 '_source' => [
                     'name' => 'acme',
                 ],
@@ -187,6 +189,33 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
 
         $out[] = [$options, $expectedResults];
 
+        // Case 3: users type specified.
+        $options = ['--types' => ['users']];
+        $expectedResults = [
+            [
+                '_id' => '1',
+                '_type' => 'users',
+                '_source' => [
+                    'name' => 'foo',
+                ],
+            ],
+            [
+                '_id' => '2',
+                '_type' => 'users',
+                '_source' => [
+                    'name' => 'acme',
+                ],
+            ],
+        ];
+
+        $out[] = [$options, $expectedResults];
+
+        // Case 4: not existing type provided.
+        $options = ['--types' => ['nothing']];
+        $expectedResults = [];
+
+        $out[] = [$options, $expectedResults];
+
         return $out;
     }
 
@@ -200,17 +229,12 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     public function testIndexExport($options, $expectedResults)
     {
-        $app = new Application();
-        $app->add($this->getExportCommand());
-
         vfsStream::setup('tmp');
 
-        $command = $app->find('ongr:es:index:export');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(
+        $this->getCommandTester()->execute(
             array_merge(
                 [
-                    'command' => $command->getName(),
+                    'command' => self::COMMAND_NAME,
                     'filename' => vfsStream::url('tmp/test.json'),
                 ],
                 $options
@@ -225,14 +249,20 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     /**
      * Returns export index command with assigned container.
      *
-     * @return IndexExportCommand
+     * @return CommandTester
      */
-    protected function getExportCommand()
+    private function getCommandTester()
     {
-        $command = new IndexExportCommand();
-        $command->setContainer($this->getContainer());
+        $indexExportCommand = new IndexExportCommand();
+        $indexExportCommand->setContainer($this->getContainer());
 
-        return $command;
+        $app = new Application();
+        $app->add($indexExportCommand);
+
+        $command = $app->find(self::COMMAND_NAME);
+        $commandTester = new CommandTester($command);
+
+        return $commandTester;
     }
 
     /**
@@ -245,7 +275,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     protected function parseResult($filePath, $expectedCount)
     {
-        $this->fileExists($filePath);
+        $this->assertFileExists($filePath);
         $results = json_decode(file_get_contents($filePath), true);
 
         $metadata = array_shift($results);

@@ -13,10 +13,8 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Profiler;
 
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
-use ONGR\ElasticsearchDSL\Aggregation\GlobalAggregation;
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\GlobalAggregation;
 use ONGR\ElasticsearchDSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

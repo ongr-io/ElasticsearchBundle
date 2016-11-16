@@ -57,7 +57,7 @@ class ArrayIteratorTest extends AbstractElasticsearchTestCase
     public function testIteration()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
         $iterator = $repo->findArray($search);
@@ -78,18 +78,16 @@ class ArrayIteratorTest extends AbstractElasticsearchTestCase
     public function testIterationWhenFieldsAreSet()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
-        $search->setFields(['title']);
         $iterator = $repo->findArray($search);
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ArrayIterator', $iterator);
 
         $assertResults = $this->getDataArray();
         foreach ($iterator as $key => $document) {
-            $assertDocument = ['title' => $assertResults['default']['product'][$key]['title']];
-            $this->assertEquals($assertDocument, $document);
+            $this->assertEquals($assertResults['default']['product'][$key]['title'], $document['title']);
         }
     }
 }

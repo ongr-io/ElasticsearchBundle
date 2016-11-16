@@ -12,38 +12,24 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexDropCommand;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class DropIndexCommandTest extends AbstractCommandTestCase
+class DropIndexCommandTest extends AbstractElasticsearchTestCase
 {
     /**
-     * Execution data provider.
-     *
-     * @return array
-     */
-    public function getTestExecuteData()
-    {
-        return [
-            ['default'],
-            ['foo'],
-        ];
-    }
-
-    /**
      * Tests dropping index. Configuration from tests yaml.
-     *
-     * @param string $argument
-     *
-     * @dataProvider getTestExecuteData
      */
-    public function testExecute($argument)
+    public function testExecute()
     {
-        $manager = $this->getManager($argument);
-        $manager->dropAndCreateIndex();
+        $manager = $this->getManager();
+
+        $command = new IndexDropCommand();
+        $command->setContainer($this->getContainer());
 
         $app = new Application();
-        $app->add($this->getDropCommand());
+        $app->add($command);
 
         // Does not drop index.
         $command = $app->find('ongr:es:index:drop');
@@ -51,7 +37,6 @@ class DropIndexCommandTest extends AbstractCommandTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--manager' => $argument,
             ]
         );
         $this->assertTrue(
@@ -64,7 +49,6 @@ class DropIndexCommandTest extends AbstractCommandTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--manager' => $argument,
                 '--force' => true,
             ]
         );
@@ -74,18 +58,5 @@ class DropIndexCommandTest extends AbstractCommandTestCase
                 ->indexExists(),
             'Index should be dropped.'
         );
-    }
-
-    /**
-     * Returns drop index command with assigned container.
-     *
-     * @return IndexDropCommand
-     */
-    protected function getDropCommand()
-    {
-        $command = new IndexDropCommand();
-        $command->setContainer($this->getContainer());
-
-        return $command;
     }
 }

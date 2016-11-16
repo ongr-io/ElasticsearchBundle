@@ -11,13 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\Result\Result;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person;
-use ONGR\ElasticsearchDSL\Query\MatchQuery;
-use ONGR\ElasticsearchDSL\Search;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 
 class PersistObjectsTest extends AbstractElasticsearchTestCase
 {
@@ -68,8 +64,8 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        $product = $manager->find('AcmeBarBundle:Product', 'doc1');
-        $this->count(2, $product->getRelatedCategories());
+        $product = $manager->find('TestBundle:Product', 'doc1');
+        $this->assertCount(2, $product->getRelatedCategories());
     }
 
     /**
@@ -80,9 +76,9 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         /** @var Product $product */
-        $product = $manager->find('AcmeBarBundle:Product', 'doc1');
+        $product = $manager->find('TestBundle:Product', 'doc1');
 
-        $this->count(2, $product->getRelatedCategories());
+        $this->assertCount(2, $product->getRelatedCategories());
 
         $category = new CategoryObject();
         $category->setTitle('Bar Category');
@@ -91,69 +87,31 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        $product = $manager->find('AcmeBarBundle:Product', 'doc1');
+        $product = $manager->find('TestBundle:Product', 'doc1');
 
-        $this->count(3, $product->getRelatedCategories());
-    }
-
-    /**
-     * Tests the type of int and float parameters retrieved from elasticsearch
-     * when objects are created with strings
-     */
-    public function testType()
-    {
-        $manager = $this->getManager();
-
-        $product = new Product();
-        $product->setId('foo');
-        $product->setTitle('Test Document');
-        $product->setPrice('8.95');
-
-        $person = new Person();
-        $person->setFirstName('name');
-        $person->setAge('35');
-
-        $manager->persist($product);
-        $manager->persist($person);
-        $manager->commit();
-
-        $product = $manager->find('AcmeBarBundle:Product', 'foo');
-        $repo = $manager->getRepository('AcmeBarBundle:Person');
-        $person = $repo->findOneBy(['first_name' => 'name']);
-
-        $this->assertInternalType('float', $product->getPrice());
-        $this->assertInternalType('integer', $person->getAge());
+        $this->assertCount(3, $product->getRelatedCategories());
     }
 
     /**
      * Tests the type of int and float parameters retrieved from elasticsearch
      * when objects are created with arrays of strings
      */
-    public function testParsedTypeWhenGivenArrayToIntField()
+    public function testParsedTypeWhenGivenArrayToFloatField()
     {
         $manager = $this->getManager();
 
         $prices = [8.95, 2.68, 5.66];
-        $ages = [35, 11];
         $product = new Product();
         $product->setId('foo');
         $product->setTitle('Test Document');
         $product->setPrice(['8.95', '2.68', '5.66']);
 
-        $person = new Person();
-        $person->setFirstName('name');
-        $person->setAge(['35', '11']);
-
         $manager->persist($product);
-        $manager->persist($person);
         $manager->commit();
 
-        $product = $manager->find('AcmeBarBundle:Product', 'foo');
-        $repo = $manager->getRepository('AcmeBarBundle:Person');
-        $person = $repo->findOneBy(['first_name' => 'name']);
+        $product = $manager->find('TestBundle:Product', 'foo');
 
         $this->assertEquals($prices, $product->getPrice());
-        $this->assertEquals($ages, $person->getAge());
     }
 
     public function testDocumentPersistWithDate()
@@ -173,9 +131,9 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager->commit();
 
         /** @var Product $product1FromES */
-        $product1FromES = $manager->find('AcmeBarBundle:Product', '1');
+        $product1FromES = $manager->find('TestBundle:Product', '1');
         /** @var Product $product2FromES */
-        $product2FromES = $manager->find('AcmeBarBundle:Product', '2');
+        $product2FromES = $manager->find('TestBundle:Product', '2');
 
         $this->assertEquals($product1->getReleased(), $product1FromES->getReleased()->getTimestamp());
         $this->assertEquals(strtotime($product2->getReleased()), $product2FromES->getReleased()->getTimestamp());
@@ -186,7 +144,7 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $product1 = new Product();
         $product2 = new Product();
         $manager = $this->getManager();
-        $repo = $manager->getRepository('AcmeBarBundle:Product');
+        $repo = $manager->getRepository('TestBundle:Product');
 
         $product1->setId('1');
         $product1->setRouting('foo');
@@ -200,11 +158,11 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $this->assertNull($repo->find('1'));
         $this->assertNull($repo->find('2'));
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
             $repo->find('1', 'foo')
         );
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
             $repo->find('2', 'foo')
         );
 

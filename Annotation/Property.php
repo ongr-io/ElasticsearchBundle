@@ -28,7 +28,7 @@ final class Property
      * @var string
      *
      * @Doctrine\Common\Annotations\Annotation\Required
-     * @Enum({"string", "boolean", "completion", "integer", "float", "long", "short", "byte", "double", "date",
+     * @Enum({"string", "text", "keyword", "boolean", "completion", "integer", "float", "long", "short", "byte", "double", "date",
      *        "geo_point", "geo_shape", "ip", "binary", "token_count" })
      */
     public $type;
@@ -53,9 +53,12 @@ final class Property
     public function dump(array $exclude = [])
     {
         return array_diff_key(
-            [
-                'name' => $this->name,
-            ],
+            array_merge(
+                [
+                    'type' => $this->type
+                ],
+                $this->options
+            ),
             $exclude
         );
     }

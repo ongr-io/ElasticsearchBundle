@@ -38,7 +38,7 @@ final class Document implements DumperInterface
     {
         return array_diff_key(
             [
-                'options' => $this->options,
+                $this->options,
             ],
             $exclude
         );

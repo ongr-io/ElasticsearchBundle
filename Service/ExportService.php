@@ -41,13 +41,13 @@ class ExportService
         $maxLinesInFile = 300000
     ) {
         $params = [
-            'search_type' => 'scroll',
+//            'search_type' => 'scroll',
             'scroll' => '10m',
             'size' => $chunkSize,
-            'source' => true,
+            '_source' => true,
             'body' => [
                 'query' => [
-                    'match_all' => [],
+                    'match_all' => new \stdClass(),
                 ],
             ],
             'index' => $manager->getIndexName(),
@@ -74,6 +74,7 @@ class ExportService
         $filename = str_replace('.json', '', $filename);
         $writer = $this->getWriter($this->getFilePath($filename.'.json'), $metadata);
 
+        $file = [];
         foreach ($results as $data) {
             if ($counter >= $maxLinesInFile) {
                 $writer->finalize();
@@ -88,8 +89,9 @@ class ExportService
                 $counter = 0;
             }
 
-            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source', 'fields']));
-            $writer->push($doc);
+            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source']));
+//            $writer->push($doc);
+            $file[] = $doc;
             $progress->advance();
             $counter++;
         }
