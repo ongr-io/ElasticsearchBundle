@@ -15,7 +15,7 @@ namespace ONGR\ElasticsearchBundle\Result;
  * This class holds available types of results.
  *
  * @deprecated There was introduced strict type find functions and these constants are no more necessary.
- *   Will remove in 3.0
+ *   Will remove in 2.0
  */
 final class Result
 {

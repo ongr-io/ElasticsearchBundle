@@ -348,7 +348,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
      * Tests exception that is thrown by parseResults()
      * when a bad result type is provided
      *
-     * @deprecated Function will be removed in 3.0
+     * @deprecated Function will be removed in 2.0
      *
      * @expectedException \Exception
      */
