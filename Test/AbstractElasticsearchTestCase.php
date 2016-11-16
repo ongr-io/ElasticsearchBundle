@@ -40,7 +40,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
             return parent::runTest();
         }
 
-        foreach (range(1, $this->getNumberOfRetries()) as $try) {
+        for ($try = 1; $try <= $this->getNumberOfRetries(); $try++) {
             try {
                 return parent::runTest();
             } catch (\Exception $e) {
@@ -51,9 +51,13 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
                 if ($try !== $this->getNumberOfRetries()) {
                     $this->tearDown();
                     $this->setUp();
+                } else {
+                    throw $e;
                 }
             }
         }
+
+        return false;
     }
 
     /**
