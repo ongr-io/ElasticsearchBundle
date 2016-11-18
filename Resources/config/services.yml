@@ -16,7 +16,7 @@ services:
         class: Doctrine\Common\Cache\FilesystemCache
         arguments: ["%kernel.cache_dir%/ongr/elasticsearch", ".ongr.data"]
 
-    annotations.cached_reader:
+    es.annotations.cached_reader:
         class: Doctrine\Common\Annotations\CachedReader
         arguments: ["@annotations.reader", "@es.cache_engine", "%kernel.debug%"]
 
@@ -27,7 +27,7 @@ services:
 
     es.document_parser:
         class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
-        arguments: ["@annotations.cached_reader", "@es.document_finder"]
+        arguments: ["@es.annotations.cached_reader", "@es.document_finder"]
         public: false
 
     es.metadata_collector:
