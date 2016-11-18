@@ -19,6 +19,14 @@ use Symfony\Component\Console\Tester\CommandTester;
 class CacheClearCommandTest extends AbstractElasticsearchTestCase
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function getDataArray()
+    {
+        return ['default' => []];
+    }
+
+    /**
      * Tests if command is being executed.
      */
     public function testExecute()
