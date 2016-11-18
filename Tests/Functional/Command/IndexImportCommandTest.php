@@ -61,6 +61,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
     {
         $app = new Application();
         $app->add($this->getImportCommand());
+        $manager = $this->getManager();
 
         $command = $app->find('ongr:es:index:import');
         $commandTester = new CommandTester($command);
@@ -72,8 +73,6 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $manager = $this->getManager();
-        $manager->dropIndex();
         $repo = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repo
             ->createSearch()
@@ -83,7 +82,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
 
         $ids = [];
         foreach ($results as $doc) {
-            $ids[] = substr($doc->id, 3);
+            $ids[] = substr($doc->getId(), 3);
         }
         sort($ids);
         $data = range(1, $realSize);
@@ -103,6 +102,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
     {
         $app = new Application();
         $app->add($this->getImportCommand());
+        $manager = $this->getManager();
 
         $command = $app->find('ongr:es:index:import');
         $commandTester = new CommandTester($command);
@@ -115,8 +115,6 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $manager = $this->getManager();
-        $manager->dropIndex();
         $repo = $manager->getRepository('AcmeBarBundle:Product');
         $search = $repo
             ->createSearch()
@@ -126,7 +124,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
 
         $ids = [];
         foreach ($results as $doc) {
-            $ids[] = substr($doc->id, 3);
+            $ids[] = substr($doc->getId(), 3);
         }
         sort($ids);
         $data = range(1, $realSize);
