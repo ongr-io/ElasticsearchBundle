@@ -41,7 +41,6 @@ class ExportService
         $maxLinesInFile = 300000
     ) {
         $params = [
-            'search_type' => 'scroll',
             'scroll' => '10m',
             'size' => $chunkSize,
             'source' => true,
