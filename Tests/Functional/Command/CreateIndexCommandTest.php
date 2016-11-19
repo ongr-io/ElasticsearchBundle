@@ -62,7 +62,8 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
             $this->getCommandTester()->execute(
                 [
                     'command' => self::COMMAND_NAME
-                ])
+                ]
+            )
         );
 
         $this->assertTrue($manager->indexExists(), 'Index should exist.');
