@@ -52,7 +52,7 @@ class GetDocumentSortTest extends AbstractElasticsearchTestCase
     public function testGetDocumentSort()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
         $match = new MatchAllQuery();
         $sort = new FieldSort('price', 'asc');
         $search = $repo->createSearch()->addQuery($match);

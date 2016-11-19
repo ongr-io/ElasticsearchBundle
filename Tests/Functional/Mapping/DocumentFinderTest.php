@@ -23,8 +23,8 @@ class DocumentFinderTest extends WebTestCase
     public function testGetBundleDocumentClasses()
     {
         $finder = new DocumentFinder($this->getContainer()->getParameter('kernel.bundles'));
-        $this->assertGreaterThan(0, count($finder->getBundleDocumentClasses('AcmeBarBundle')));
-        $this->assertEquals(0, count($finder->getBundleDocumentClasses('AcmeBlankBundle')));
+        $this->assertGreaterThan(0, count($finder->getBundleDocumentClasses('TestBundle')));
+        $this->assertEquals(0, count($finder->getBundleDocumentClasses('FrameworkBundle')));
     }
 
     /**

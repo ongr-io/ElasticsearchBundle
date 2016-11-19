@@ -13,7 +13,10 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Helper\Iterators\SearchHitIterator;
 use Elasticsearch\Helper\Iterators\SearchResponseIterator;
+use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Search;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -40,23 +43,41 @@ class ExportService
         OutputInterface $output,
         $maxLinesInFile = 300000
     ) {
-        $params = [
-//            'search_type' => 'scroll',
-            'scroll' => '10m',
-            'size' => $chunkSize,
-            '_source' => true,
-            'body' => [
-                'query' => [
-                    'match_all' => new \stdClass(),
-                ],
-            ],
-            'index' => $manager->getIndexName(),
-            'type' => $types,
-        ];
+//        $params = [
+////            'search_type' => 'scroll',
+//            'scroll' => '10m',
+////            'size' => $chunkSize,
+//            '_source' => true,
+//            'body' => [
+//                'query' => [
+//                    'match_all' => new \stdClass(),
+//                ],
+//            ],
+//            'index' => $manager->getIndexName(),
+//            'type' => $types,
+//        ];
 
-        $results = new SearchHitIterator(
-            new SearchResponseIterator($manager->getClient(), $params)
+        $search = new Search();
+        $search->addQuery(new MatchAllQuery());
+        $queryParameters = [
+                '_source' => true,
+                'scroll' => '10m',
+            ];
+
+        $searchResults = $manager->search($types, $search->toArray(), $queryParameters);
+
+        $results = new RawIterator(
+            $searchResults,
+            $manager,
+            [
+                'duration' => $queryParameters['scroll'],
+                '_scroll_id' => $searchResults['_scroll_id'],
+            ]
         );
+
+//        $results = new SearchHitIterator(
+//            new SearchResponseIterator($manager->getClient(), $params)
+//        );
 
         $progress = new ProgressBar($output, $results->count());
         $progress->setRedrawFrequency(100);
@@ -90,7 +111,7 @@ class ExportService
             }
 
             $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source']));
-//            $writer->push($doc);
+            $writer->push($doc);
             $file[] = $doc;
             $progress->advance();
             $counter++;

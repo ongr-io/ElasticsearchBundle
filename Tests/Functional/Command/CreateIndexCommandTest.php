@@ -101,8 +101,6 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
 
         //Drop index manually.
         $manager->dropIndex();
-        $manager->setIndexName($aliasName);
-        $manager->dropIndex();
     }
 
     /**
@@ -132,6 +130,7 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
         $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
         $this->assertNotEquals($manager->getIndexName(), $aliasName);
 
+        $manager->setIndexName($aliasName);
         $commandTester->execute(
             [
                 'command' => self::COMMAND_NAME,
@@ -145,10 +144,9 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
         $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
 
         //Drop index manually.
-        $manager->dropIndex();
         $manager->setIndexName($indexName);
         $manager->dropIndex();
-        $manager->setIndexName($aliasName);
+        $manager->setIndexName($indexName2);
         $manager->dropIndex();
     }
 

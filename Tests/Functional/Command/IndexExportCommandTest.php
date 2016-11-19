@@ -28,35 +28,58 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     {
         return [
             'default' => [
+                'users' => [
+                    [
+                        '_id' => "4",
+                        'name' => 'foo',
+                    ],
+                    [
+                        '_id' => "5",
+                        'name' => 'acme',
+                    ],
+                ],
                 'product' => [
                     [
-                        '_id' => 1,
+                        '_id' => "1",
                         'title' => 'foo',
                         'price' => 10.45,
                     ],
                     [
-                        '_id' => 2,
+                        '_id' => "2",
                         'title' => 'bar',
                         'price' => 32,
                     ],
                     [
-                        '_id' => 3,
+                        '_id' => "3",
                         'title' => 'acme',
                         'price' => 20,
                     ],
                 ],
-                'users' => [
-                    [
-                        '_id' => 1,
-                        'name' => 'foo',
-                    ],
-                    [
-                        '_id' => 2,
-                        'name' => 'acme',
-                    ],
-                ],
             ],
         ];
+    }
+
+    /**
+     * Transforms data provider data to elasticsearch expected result data structure.
+     *
+     * @param $type
+     * @return array
+     */
+    private function transformDataToResult($type)
+    {
+        $expectedResults = [];
+
+        foreach ($this->getDataArray()['default'][$type] as $document) {
+            $id = $document['_id'];
+            unset($document['_id']);
+            $expectedResults[] = [
+                '_type' => $type,
+                '_id' => $id,
+                '_source' => $document,
+            ];
+        }
+
+        return $expectedResults;
     }
 
     /**
@@ -68,152 +91,39 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     {
         $out = [];
 
-        // Case 1: chunk specified.
-        $options = ['--chunk' => 1, '--manager' => 'default'];
-        $expectedResults = [
-            [
-                '_id' => '1',
-                '_type' => 'users',
-                '_source' => [
-                    'name' => 'foo',
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'users',
-                '_source' => [
-                    'name' => 'acme',
-                ],
-            ],
-            [
-                '_id' => '1',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'foo',
-                    'price' => 10.45,
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'bar',
-                    'price' => 32,
-                ],
-            ],
-            [
-                '_id' => '3',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'acme',
-                    'price' => 20,
-                ],
-            ],
-        ];
-
+        // Case 0
+        $options = ['--manager' => 'default'];
+        $expectedResults = array_merge(
+            $this->transformDataToResult('product'),
+            $this->transformDataToResult('users')
+        );
         $out[] = [$options, $expectedResults];
 
         // Case 1: product type specified.
         $options = ['--types' => ['product']];
-        $expectedResults = [
-            [
-                '_id' => '1',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'foo',
-                    'price' => 10.45,
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'bar',
-                    'price' => 32,
-                ],
-            ],
-            [
-                '_id' => '3',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'acme',
-                    'price' => 20,
-                ],
-            ],
-        ];
 
+        $expectedResults = $this->transformDataToResult('product');
         $out[] = [$options, $expectedResults];
 
-        // Case 2: several types specified.
-        $options = ['--types' => ['product', 'users']];
-        $expectedResults = [
-            [
-                '_id' => '1',
-                '_type' => 'users',
-                '_source' => [
-                    'name' => 'foo',
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'users',
-                '_source' => [
-                    'name' => 'acme',
-                ],
-            ],
-            [
-                '_id' => '1',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'foo',
-                    'price' => 10.45,
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'bar',
-                    'price' => 32,
-                ],
-            ],
-            [
-                '_id' => '3',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'acme',
-                    'price' => 20,
-                ],
-            ],
-        ];
-
-        $out[] = [$options, $expectedResults];
-
-        // Case 3: users type specified.
+        // Case 2: users type specified.
         $options = ['--types' => ['users']];
-        $expectedResults = [
-            [
-                '_id' => '1',
-                '_type' => 'users',
-                '_source' => [
-                    'name' => 'foo',
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'users',
-                '_source' => [
-                    'name' => 'acme',
-                ],
-            ],
-        ];
 
+        $expectedResults = $this->transformDataToResult('users');
         $out[] = [$options, $expectedResults];
 
-        // Case 4: not existing type provided.
-        $options = ['--types' => ['nothing']];
-        $expectedResults = [];
+        // Case 3: product type specified with chunk.
+        $options = ['--chunk' => 1, '--types' => ['product']];
 
+        $expectedResults = $this->transformDataToResult('product');
+        $out[] = [$options, $expectedResults];
+
+        // Case 4: without parameters.
+        $options = [];
+
+        $expectedResults = array_merge(
+            $this->transformDataToResult('product'),
+            $this->transformDataToResult('users')
+        );
         $out[] = [$options, $expectedResults];
 
         return $out;
@@ -242,8 +152,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         );
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
-
-        $this->assertEquals($expectedResults, $results, null, 0.05);
+        $this->assertEquals($expectedResults, $results);
     }
 
     /**

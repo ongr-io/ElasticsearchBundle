@@ -29,7 +29,6 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                'index' => 'no_index',
                 'type' => 'string',
             ],
             $type->dump(),
