@@ -24,26 +24,6 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                'connections' => [
-                    'default' => [
-                        'hosts' => ['127.0.0.1:9200'],
-                        'index_name' => 'acme',
-                        'settings' => [
-                            'refresh_interval' => -1,
-                            'number_of_replicas' => 1,
-                        ],
-                    ],
-                ],
-                'managers' => [
-                    'default' => [
-                        'connection' => 'default',
-                        'debug' => true,
-                        'mappings' => ['AcmeBarBundle'],
-                    ],
-                ],
-            ],
-            [
-                'connections' => [],
                 'managers' => [
                     'default' => [
                         'index' => [
@@ -55,7 +35,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                             ],
                         ],
                         'debug' => true,
-                        'mappings' => ['AcmeBarBundle'],
+                        'mappings' => ['TestBundle'],
                     ],
                 ],
             ],
@@ -63,12 +43,11 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param array $connections
      * @param array $managers
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    public function getContainerMock(array $connections, array $managers)
+    public function getContainerMock(array $managers)
     {
         $metadataCollectorMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
             ->disableOriginalConstructor()
@@ -78,9 +57,9 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             [
                 'product' => [
                     'properties' => [],
-                    'bundle' => 'AcmeBarBundle',
+                    'bundle' => 'TestBundle',
                     'class' => 'Foo',
-                    'namespace' => 'Acme\BarBundle\Document\Foo',
+                    'namespace' => 'TestBundle\Document\Foo',
                 ],
             ]
         );
@@ -89,15 +68,13 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $containerMock->expects($this->exactly(3))->method('getParameter')->with($this->anything())
+        $containerMock->expects($this->exactly(2))->method('getParameter')->with($this->anything())
             ->will(
                 $this->returnCallback(
-                    function ($parameter) use ($connections, $managers) {
+                    function ($parameter) use ($managers) {
                         switch ($parameter) {
                             case 'es.managers':
                                 return $managers;
-                            case 'es.connections':
-                                return $connections;
                             default:
                                 return null;
                         }
@@ -133,45 +110,13 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
     /**
      * Before a test method is run, a template method called setUp() is invoked.
      *
-     * @param array $connections
      * @param array $managers
      *
      * @dataProvider getConfigurationData()
      */
-    public function testProcessWithSeveralManagers(array $connections, array $managers)
+    public function testProcessWithSeveralManagers(array $managers)
     {
         $compilerPass = new MappingPass();
-        $compilerPass->process($this->getContainerMock($connections, $managers));
-    }
-
-    /**
-     * Test exception is thrown in case invalid connection name configured.
-     *
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage There is an error in the ES connection
-     */
-    public function testInvalidConnectionException()
-    {
-        $managers = [
-            'default' => [
-                'connection' => 'default',
-                'debug' => true,
-                'mappings' => ['AcmeBarBundle'],
-            ],
-        ];
-
-        $container = new ContainerBuilder();
-        $container->setParameter('es.analysis', null);
-        $container->setParameter('es.connections', []);
-        $container->setParameter('es.managers', $managers);
-
-        $metadataCollectorMock = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $container->set('es.metadata_collector', $metadataCollectorMock);
-
-        $compilerPass = new MappingPass();
-        $compilerPass->process($container);
+        $compilerPass->process($this->getContainerMock($managers));
     }
 }

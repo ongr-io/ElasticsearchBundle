@@ -6,7 +6,6 @@ framework:
 ongr_elasticsearch:
     managers:
         default:
-            connection: default
             index:
                 hosts:
                     - 127.0.0.1:9200
@@ -15,6 +14,5 @@ ongr_elasticsearch:
                     refresh_interval: -1
                     number_of_replicas: 0
                     number_of_shards: 5
-            logger: true
             mappings:
                 - TestBundle

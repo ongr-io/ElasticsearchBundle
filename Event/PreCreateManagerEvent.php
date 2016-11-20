@@ -29,7 +29,7 @@ class PreCreateManagerEvent extends Event
     /**
      * CreateManagerEvent constructor.
      *
-     * @param PreClientBuilder $client
+     * @param ClientBuilder $client
      * @param $indexSettings array
      */
     public function __construct(ClientBuilder $client, &$indexSettings)

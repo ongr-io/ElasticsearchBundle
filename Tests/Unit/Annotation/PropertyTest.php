@@ -25,7 +25,6 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
         $type->name = 'id';
         $type->index = 'no_index';
         $type->type = 'string';
-        $type->analyzer = null;
 
         $this->assertEquals(
             [

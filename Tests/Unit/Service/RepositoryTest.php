@@ -65,10 +65,10 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $manager->expects($this->any())->method('getMetadataCollector')->willReturn($collector);
         $repository = new Repository(
             $manager,
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product'
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product'
         );
         $this->assertEquals(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
             $repository->getClassName()
         );
     }

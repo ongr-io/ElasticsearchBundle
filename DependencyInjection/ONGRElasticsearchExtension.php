@@ -36,17 +36,18 @@ class ONGRElasticsearchExtension extends Extension
         $loader->load('services.yml');
         $config['cache'] = isset($config['cache']) ?
             $config['cache'] : !$container->getParameter('kernel.debug');
+        $config['profiler'] = isset($config['profiler']) ?
+            $config['profiler'] : $container->getParameter('kernel.debug');
 
         $container->setParameter('es.cache', $config['cache']);
         $container->setParameter('es.analysis', $config['analysis']);
-        $container->setParameter('es.connections', $config['connections']);
         $container->setParameter('es.managers', $config['managers']);
         $definition = new Definition(
             'ONGR\ElasticsearchBundle\Service\ManagerFactory',
             [
                 new Reference('es.metadata_collector'),
                 new Reference('es.result_converter'),
-                $container->getParameter('kernel.debug') ? new Reference('es.tracer') : null,
+                $config['profiler'] ? new Reference('es.tracer') : null,
             ]
         );
         $definition->addMethodCall('setEventDispatcher', [new Reference('event_dispatcher')]);

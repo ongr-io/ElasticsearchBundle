@@ -26,12 +26,14 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $parameters = [
             'elasticsearch' => [
-                'connections' => [
-                    'test' => ['index_name' => 'test'],
-                ],
                 'managers' => [
                     'test' => [
-                        'connection' => 'test2',
+                        'index' => [
+                            'index_name' => 'test',
+                            'hosts' => [
+                                '127.0.0.1:9200'
+                            ]
+                        ],
                         'logger' => [
                             'enabled' => true,
                             'level' => 'warning',
@@ -42,22 +44,19 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $expectedConnections = [
-            'test' => [
-                'index_name' => 'test',
-                'hosts' => ['127.0.0.1:9200'],
-                'settings' => [],
-                'analysis' => [
-                    'tokenizer' => [],
-                    'filter' => [],
-                    'analyzer' => [],
-                ],
-            ],
-        ];
-
         $expectedManagers = [
             'test' => [
-                'connection' => 'test2',
+                'index' => [
+                    'index_name' => 'test',
+                    'hosts' => ['127.0.0.1:9200'],
+                    'settings' => [],
+                    'analysis' => [
+                        'tokenizer' => [],
+                        'filter' => [],
+                        'analyzer' => [],
+                        'char_filter' => [],
+                    ],
+                ],
                 'logger' => [
                     'enabled' => true,
                     'level' => 'warning',
@@ -72,18 +71,14 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
 
         $out[] = [
             $parameters,
-            $expectedConnections,
             $expectedManagers,
         ];
 
         $parameters = [
             'elasticsearch' => [
-                'connections' => [
-                    'test' => ['index_name' => 'test'],
-                ],
                 'managers' => [
                     'test' => [
-                        'connection' => 'test2',
+                        'index' => ['index_name' => 'test'],
                         'logger' => true,
                         'mappings' => ['testBundle'],
                     ],
@@ -93,7 +88,17 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
 
         $expectedManagers = [
             'test' => [
-                'connection' => 'test2',
+                'index' => [
+                    'index_name' => 'test',
+                    'hosts' => ['127.0.0.1:9200'],
+                    'settings' => [],
+                    'analysis' => [
+                        'tokenizer' => [],
+                        'filter' => [],
+                        'analyzer' => [],
+                        'char_filter' => [],
+                    ],
+                ],
                 'logger' => [
                     'enabled' => true,
                     'level' => 'warning',
@@ -108,7 +113,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
 
         $out[] = [
             $parameters,
-            $expectedConnections,
             $expectedManagers,
         ];
 
@@ -119,12 +123,11 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
      * Check if load adds parameters to container as expected.
      *
      * @param array $parameters
-     * @param array $expectedConnections
      * @param array $expectedManagers
      *
      * @dataProvider getData
      */
-    public function testLoad($parameters, $expectedConnections, $expectedManagers)
+    public function testLoad($parameters, $expectedManagers)
     {
         $container = new ContainerBuilder();
         class_exists('testClass') ? : eval('class testClass {}');
@@ -137,11 +140,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
             $container
         );
 
-        $this->assertEquals(
-            $expectedConnections,
-            $container->getParameter('es.connections'),
-            'Incorrect connections parameter.'
-        );
         $this->assertEquals(
             $expectedManagers,
             $container->getParameter('es.managers'),

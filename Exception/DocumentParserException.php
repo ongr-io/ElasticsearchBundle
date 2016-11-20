@@ -13,8 +13,6 @@ namespace ONGR\ElasticsearchBundle\Mapping\Exception;
 
 /**
  * This is the exception which should be thrown when document has invalid or incomplete annotations.
- *
- * @deprecated moved to ONGR\ElasticsearchBundle\Exception namespace
  */
 class DocumentParserException extends \Exception
 {

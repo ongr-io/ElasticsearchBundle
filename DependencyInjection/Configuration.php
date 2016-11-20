@@ -14,7 +14,6 @@ namespace ONGR\ElasticsearchBundle\DependencyInjection;
 use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 /**
  * This is the class that validates and merges configuration from app/config files.
@@ -37,8 +36,13 @@ class Configuration implements ConfigurationInterface
                     'By default it is enabled in prod environment and disabled in dev.'
                 )
             ->end()
+            ->booleanNode('profiler')
+                ->info(
+                    'Enables ElasticsearchBundle query profiler. Default value is kernel.debug parameter. '.
+                    'If profiler is disabled the tracer service will be disabled as well.'
+                )
+            ->end()
             ->append($this->getAnalysisNode())
-            ->append($this->getConnectionsNode())
             ->append($this->getManagersNode())
             ->end();
 
@@ -71,53 +75,9 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue([])
                     ->prototype('variable')->end()
                 ->end()
-            ->end();
-
-        return $node;
-    }
-
-    /**
-     * Connections configuration node.
-     *
-     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
-     *
-     * @throws InvalidConfigurationException
-     */
-    private function getConnectionsNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('connections');
-
-        $node
-            ->defaultValue([])
-            ->requiresAtLeastOneElement()
-            ->info('Defines connections to indexes and its settings.')
-            ->prototype('array')
-                ->children()
-                    ->arrayNode('hosts')
-                        ->info('Defines hosts to connect to.')
-                        ->defaultValue(['127.0.0.1:9200'])
-                        ->prototype('scalar')
-                        ->end()
-                    ->end()
-                    ->scalarNode('index_name')
-                        ->isRequired()
-                        ->info('Sets index name for connection.')
-                    ->end()
-                    ->arrayNode('settings')
-                        ->defaultValue([])
-                        ->info('Sets index settings for connection.')
-                        ->prototype('variable')->end()
-                    ->end()
-                    ->arrayNode('analysis')
-                        ->addDefaultsIfNotSet()
-                        ->info('Sets index analysis settings for connection.')
-                        ->children()
-                            ->arrayNode('tokenizer')->prototype('scalar')->defaultValue([])->end()->end()
-                            ->arrayNode('filter')->prototype('scalar')->defaultValue([])->end()->end()
-                            ->arrayNode('analyzer')->prototype('scalar')->defaultValue([])->end()->end()
-                        ->end()
-                    ->end()
+                ->arrayNode('char_filter')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
                 ->end()
             ->end();
 
@@ -141,9 +101,6 @@ class Configuration implements ConfigurationInterface
             ->info('Maps managers to connections and bundles')
             ->prototype('array')
                 ->children()
-                    ->scalarNode('connection')
-                        ->info('Sets connection for manager.')
-                    ->end()
                     ->arrayNode('index')
                         ->children()
                             ->scalarNode('index_name')
@@ -154,23 +111,6 @@ class Configuration implements ConfigurationInterface
                                 ->info('Defines hosts to connect to.')
                                 ->defaultValue(['127.0.0.1:9200'])
                                 ->prototype('scalar')
-                                ->end()
-                            ->end()
-                            ->arrayNode('auth')
-                                ->info('holds information for http authentication.')
-                                ->children()
-                                    ->scalarNode('username')
-                                        ->isRequired()
-                                        ->example('john')
-                                    ->end()
-                                    ->scalarNode('password')
-                                        ->isRequired()
-                                        ->example('mytopsecretpassword')
-                                    ->end()
-                                    ->scalarNode('option')
-                                        ->defaultValue('Basic')
-                                        ->info('authentication type')
-                                    ->end()
                                 ->end()
                             ->end()
                             ->arrayNode('settings')
@@ -185,6 +125,7 @@ class Configuration implements ConfigurationInterface
                                     ->arrayNode('tokenizer')->prototype('scalar')->defaultValue([])->end()->end()
                                     ->arrayNode('filter')->prototype('scalar')->defaultValue([])->end()->end()
                                     ->arrayNode('analyzer')->prototype('scalar')->defaultValue([])->end()->end()
+                                    ->arrayNode('char_filter')->prototype('scalar')->defaultValue([])->end()->end()
                                 ->end()
                             ->end()
                         ->end()
@@ -201,7 +142,7 @@ class Configuration implements ConfigurationInterface
                         ->values(['refresh', 'flush', 'none'])
                         ->defaultValue('refresh')
                         ->info(
-                            'The type of commit to the elasticsearch'
+                            'The default type of commit for bulk queries.'
                         )
                     ->end()
                     ->arrayNode('logger')
@@ -225,7 +166,7 @@ class Configuration implements ConfigurationInterface
                                 ->defaultFalse()
                             ->end()
                             ->scalarNode('level')
-                                ->info('Sets PSR logging level')
+                                ->info('Sets PSR logging level.')
                                 ->defaultValue(LogLevel::WARNING)
                                 ->validate()
                                 ->ifNotInArray((new \ReflectionClass('Psr\Log\LogLevel'))->getConstants())
@@ -233,17 +174,17 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('log_file_name')
-                                ->info('Log filename, by default it is a manager name')
+                                ->info('Log filename. By default it is a manager name.')
                                 ->defaultValue(null)
                             ->end()
                         ->end()
                     ->end()
                     ->arrayNode('mappings')
-                        ->info('Maps manager to bundles. f.e. AcmeDemoBundle')
+                        ->info('Maps manager to the bundles. f.e. AppBundle')
                         ->prototype('scalar')->end()
                     ->end()
                     ->booleanNode('force_commit')
-                        ->info('Forces commit to elasticsearch on kernel terminate')
+                        ->info('Forces commit to the elasticsearch on kernel terminate event.')
                         ->defaultTrue()
                     ->end()
                 ->end()
