@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use ONGR\ElasticsearchBundle\Mapping\Caser;
 use Doctrine\Common\Annotations\Annotation\Enum;
 
 /**
@@ -28,8 +27,15 @@ final class Property
      * @var string
      *
      * @Doctrine\Common\Annotations\Annotation\Required
-     * @Enum({"string", "text", "keyword", "boolean", "completion", "integer", "float", "long", "short", "byte",
-     *        "double", "date", "geo_point", "geo_shape", "ip", "binary", "token_count" })
+     * @Enum({
+     *     "text", "keyword",
+     *     "long", "integer", "short", "byte", "double", "float",
+     *     "date",
+     *     "boolean",
+     *     "binary",
+     *     "geo_point", "geo_shape",
+     *     "ip", "completion", "token_count", "murmur3", "attachments", "percolator"
+     * })
      */
     public $type;
 
