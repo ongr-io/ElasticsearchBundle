@@ -19,42 +19,67 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class IndexExportCommandTest extends AbstractElasticsearchTestCase
 {
+    const COMMAND_NAME = 'ongr:es:index:export';
+
     /**
      * {@inheritdoc}
      */
     protected function getDataArray()
     {
         return [
-            'foo' => [
+            'default' => [
+                'users' => [
+                    [
+                        '_id' => "4",
+                        'name' => 'foo',
+                    ],
+                    [
+                        '_id' => "5",
+                        'name' => 'acme',
+                    ],
+                ],
                 'product' => [
                     [
-                        '_id' => 1,
+                        '_id' => "1",
                         'title' => 'foo',
                         'price' => 10.45,
                     ],
                     [
-                        '_id' => 2,
+                        '_id' => "2",
                         'title' => 'bar',
                         'price' => 32,
                     ],
                     [
-                        '_id' => 3,
+                        '_id' => "3",
                         'title' => 'acme',
                         'price' => 20,
                     ],
                 ],
-                'customer' => [
-                    [
-                        '_id' => 1,
-                        'name' => 'foo',
-                    ],
-                    [
-                        '_id' => 2,
-                        'name' => 'acme',
-                    ],
-                ],
             ],
         ];
+    }
+
+    /**
+     * Transforms data provider data to elasticsearch expected result data structure.
+     *
+     * @param $type
+     * @return array
+     */
+    private function transformDataToResult($type)
+    {
+        $expectedResults = [];
+
+        foreach ($this->getDataArray()['default'][$type] as $document) {
+            $id = $document['_id'];
+            unset($document['_id']);
+            $expectedResults[] = [
+                '_type' => $type,
+                '_id' => $id,
+                '_source' => $document,
+            ];
+        }
+
+        return $expectedResults;
     }
 
     /**
@@ -66,125 +91,39 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     {
         $out = [];
 
-        // Case 1: chunk specified.
-        $options = ['--chunk' => 1, '--manager' => 'foo'];
-        $expectedResults = [
-            [
-                '_id' => '1',
-                '_type' => 'customer',
-                '_source' => [
-                    'name' => 'foo',
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'customer',
-                '_source' => [
-                    'name' => 'acme',
-                ],
-            ],
-            [
-                '_id' => '1',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'foo',
-                    'price' => 10.45,
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'bar',
-                    'price' => 32,
-                ],
-            ],
-            [
-                '_id' => '3',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'acme',
-                    'price' => 20,
-                ],
-            ],
-        ];
-
+        // Case 0
+        $options = ['--manager' => 'default'];
+        $expectedResults = array_merge(
+            $this->transformDataToResult('product'),
+            $this->transformDataToResult('users')
+        );
         $out[] = [$options, $expectedResults];
 
-        // Case 1: types specified.
-        $options = ['--types' => ['product'], '--manager' => 'foo'];
-        $expectedResults = [
-            [
-                '_id' => '1',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'foo',
-                    'price' => 10.45,
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'bar',
-                    'price' => 32,
-                ],
-            ],
-            [
-                '_id' => '3',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'acme',
-                    'price' => 20,
-                ],
-            ],
-        ];
+        // Case 1: product type specified.
+        $options = ['--types' => ['product']];
 
+        $expectedResults = $this->transformDataToResult('product');
         $out[] = [$options, $expectedResults];
 
-        // Case 2: several types specified.
-        $options = ['--types' => ['product', 'customer'], '--manager' => 'foo'];
-        $expectedResults = [
-            [
-                '_id' => '1',
-                '_type' => 'customer',
-                '_source' => [
-                    'name' => 'foo',
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'customer',
-                '_source' => [
-                    'name' => 'acme',
-                ],
-            ],
-            [
-                '_id' => '1',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'foo',
-                    'price' => 10.45,
-                ],
-            ],
-            [
-                '_id' => '2',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'bar',
-                    'price' => 32,
-                ],
-            ],
-            [
-                '_id' => '3',
-                '_type' => 'product',
-                '_source' => [
-                    'title' => 'acme',
-                    'price' => 20,
-                ],
-            ],
-        ];
+        // Case 2: users type specified.
+        $options = ['--types' => ['users']];
 
+        $expectedResults = $this->transformDataToResult('users');
+        $out[] = [$options, $expectedResults];
+
+        // Case 3: product type specified with chunk.
+        $options = ['--chunk' => 1, '--types' => ['product']];
+
+        $expectedResults = $this->transformDataToResult('product');
+        $out[] = [$options, $expectedResults];
+
+        // Case 4: without parameters.
+        $options = [];
+
+        $expectedResults = array_merge(
+            $this->transformDataToResult('product'),
+            $this->transformDataToResult('users')
+        );
         $out[] = [$options, $expectedResults];
 
         return $out;
@@ -200,17 +139,12 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     public function testIndexExport($options, $expectedResults)
     {
-        $app = new Application();
-        $app->add($this->getExportCommand());
-
         vfsStream::setup('tmp');
 
-        $command = $app->find('ongr:es:index:export');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(
+        $this->getCommandTester()->execute(
             array_merge(
                 [
-                    'command' => $command->getName(),
+                    'command' => self::COMMAND_NAME,
                     'filename' => vfsStream::url('tmp/test.json'),
                 ],
                 $options
@@ -218,21 +152,26 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         );
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
-
-        $this->assertEquals($expectedResults, $results, null, 0.05);
+        $this->assertEquals($expectedResults, $results);
     }
 
     /**
      * Returns export index command with assigned container.
      *
-     * @return IndexExportCommand
+     * @return CommandTester
      */
-    protected function getExportCommand()
+    private function getCommandTester()
     {
-        $command = new IndexExportCommand();
-        $command->setContainer($this->getContainer());
+        $indexExportCommand = new IndexExportCommand();
+        $indexExportCommand->setContainer($this->getContainer());
 
-        return $command;
+        $app = new Application();
+        $app->add($indexExportCommand);
+
+        $command = $app->find(self::COMMAND_NAME);
+        $commandTester = new CommandTester($command);
+
+        return $commandTester;
     }
 
     /**
@@ -245,7 +184,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     protected function parseResult($filePath, $expectedCount)
     {
-        $this->fileExists($filePath);
+        $this->assertFileExists($filePath);
         $results = json_decode(file_get_contents($filePath), true);
 
         $metadata = array_shift($results);

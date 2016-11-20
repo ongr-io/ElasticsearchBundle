@@ -72,7 +72,7 @@ Example above sets default TTL to 5 minutes. See Elasticsearch [documentation][2
 for supported time value formats.
 
 > __Note:__ The current `_ttl` implementation is deprecated by Elasticsearch and
-> will be replaced with a different implementation in a future version.
+> might be replaced with a different implementation in a future version.
 
 [1]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html
 [2]: https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#time-units

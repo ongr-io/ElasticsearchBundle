@@ -55,30 +55,26 @@ class DocumentWithMultipleFieldsTest extends AbstractElasticsearchTestCase
      */
     public function testMultipleFields()
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
 
-        $query = new MatchQuery('title.title', 'Bar');
+//        throw new \Exception('Fuck you phpunit');
+
+        $query = new MatchQuery('title', 'Bar');
         $search = $repo->createSearch();
         $search->addQuery($query);
-
         $result = $repo->findDocuments($search);
-
         $this->assertEquals(2, count($result));
 
-        $query = new MatchQuery('title.raw', 'Bar');
+        $query = new TermQuery('title.raw', 'Bar');
         $search = $repo->createSearch();
         $search->addQuery($query);
-
         $result = $repo->findDocuments($search);
-
         $this->assertEquals(0, count($result));
 
         $query = new TermQuery('title.raw', 'Foo Product');
         $search = $repo->createSearch();
         $search->addQuery($query);
-
         $result = $repo->findDocuments($search);
-
         $this->assertEquals(1, count($result));
     }
 }

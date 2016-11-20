@@ -28,8 +28,8 @@ final class Property
      * @var string
      *
      * @Doctrine\Common\Annotations\Annotation\Required
-     * @Enum({"string", "boolean", "completion", "integer", "float", "long", "short", "byte", "double", "date",
-     *        "geo_point", "geo_shape", "ip", "binary", "token_count" })
+     * @Enum({"string", "text", "keyword", "boolean", "completion", "integer", "float", "long", "short", "byte",
+     *        "double", "date", "geo_point", "geo_shape", "ip", "binary", "token_count" })
      */
     public $type;
 
@@ -45,31 +45,21 @@ final class Property
      *
      * @var array
      */
-    public $options;
+    public $options = [];
 
     /**
      * {@inheritdoc}
      */
     public function dump(array $exclude = [])
     {
-        $array = array_diff_key(
-            array_filter(
-                get_object_vars($this),
-                function ($value) {
-                    return $value || is_bool($value);
-                }
+        return array_diff_key(
+            array_merge(
+                [
+                    'type' => $this->type
+                ],
+                $this->options
             ),
-            array_flip(array_merge(['name'], $exclude))
-        );
-
-        return array_combine(
-            array_map(
-                function ($key) {
-                    return Caser::snake($key);
-                },
-                array_keys($array)
-            ),
-            array_values($array)
+            $exclude
         );
     }
 }

@@ -12,12 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\ONGRElasticsearchExtension;
-use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
-use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Parameter;
-use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Unit tests for ElasticsearchExtension.

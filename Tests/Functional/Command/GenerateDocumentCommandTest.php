@@ -3,10 +3,11 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\DocumentGenerateCommand;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class GenerateDocumentCommandTest extends AbstractCommandTestCase
+class GenerateDocumentCommandTest extends WebTestCase
 {
     /**
      * Tests if exception is thrown when no interaction is set
@@ -34,7 +35,7 @@ class GenerateDocumentCommandTest extends AbstractCommandTestCase
     private function getCommand()
     {
         $command = new DocumentGenerateCommand();
-        $command->setContainer($this->getContainer());
+        $command->setContainer(self::createClient()->getContainer());
 
         return $command;
     }

@@ -57,7 +57,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
     public function testIteration()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
         $iterator = $repo->findDocuments($search);
@@ -68,14 +68,14 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
             $categories = $document->getRelatedCategories();
 
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
                 $document
             );
             $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $categories);
 
             foreach ($categories as $category) {
                 $this->assertInstanceOf(
-                    'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject',
+                    'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject',
                     $category
                 );
             }
@@ -87,7 +87,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
      */
     public function testCurrentWithEmptyIterator()
     {
-        $repo = $this->getManager('foo')->getRepository('AcmeFooBundle:Customer');
+        $repo = $this->getManager()->getRepository('TestBundle:User');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());
@@ -101,7 +101,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
      */
     public function testIteratorFirst()
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());

@@ -11,9 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
-use ONGR\ElasticsearchBundle\Service\Manager;
-
 /**
  * Class DocumentIterator.
  */

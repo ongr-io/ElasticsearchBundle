@@ -37,7 +37,7 @@ class MetadataCollectorTest extends WebTestCase
      */
     public function testGetBundleMappingWithTwoSameESTypes()
     {
-        $this->metadataCollector->getMappings(['AcmeBarBundle', 'AcmeBarBundle']);
+        $this->metadataCollector->getMappings(['TestBundle', 'TestBundle']);
     }
 
     /**
@@ -56,7 +56,7 @@ class MetadataCollectorTest extends WebTestCase
      */
     public function testGetBundleMapping()
     {
-        $mapping = $this->metadataCollector->getBundleMapping('AcmeBarBundle');
+        $mapping = $this->metadataCollector->getBundleMapping('TestBundle');
 
         $properties = $mapping['product']['properties'];
         $this->assertArrayNotHasKey('_id', $properties);

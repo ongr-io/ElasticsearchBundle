@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 
 use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchBundle\Service\Manager;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase
 {

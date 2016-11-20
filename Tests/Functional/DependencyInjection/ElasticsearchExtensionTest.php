@@ -30,10 +30,6 @@ class ElasticsearchExtensionTest extends WebTestCase
                 'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
-                'es.manager.foo',
-                'ONGR\ElasticsearchBundle\Service\Manager',
-            ],
-            [
                 'es.manager.default.product',
                 'ONGR\ElasticsearchBundle\Service\Repository',
             ],
@@ -67,7 +63,7 @@ class ElasticsearchExtensionTest extends WebTestCase
     {
         $container = $this->createClient()->getContainer();
 
-        $expectedManagers = ['default', 'foo', 'bar'];
+        $expectedManagers = ['default'];
         $actualManagers = $container->getParameter('es.managers');
 
         $this->assertEquals($expectedManagers, array_keys($actualManagers));

@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexImportCommand;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
@@ -59,6 +60,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
      */
     public function testIndexImport($bulkSize, $realSize, $filename)
     {
+        $manager = $this->getManager();
         $app = new Application();
         $app->add($this->getImportCommand());
 
@@ -72,18 +74,17 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $manager = $this->getManager();
-        $manager->dropIndex();
-        $repo = $manager->getRepository('AcmeBarBundle:Product');
+        $repo = $manager->getRepository('TestBundle:Product');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery())
             ->setSize($realSize);
-        $results = $repo->execute($search);
+        $results = $repo->findDocuments($search);
 
         $ids = [];
+        /** @var Product $doc */
         foreach ($results as $doc) {
-            $ids[] = substr($doc->id, 3);
+            $ids[] = substr($doc->getId(), 3);
         }
         sort($ids);
         $data = range(1, $realSize);
@@ -101,6 +102,8 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
      */
     public function testIndexImportWithGzipOption($bulkSize, $realSize, $filename)
     {
+        $manager = $this->getManager();
+
         $app = new Application();
         $app->add($this->getImportCommand());
 
@@ -115,18 +118,17 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $manager = $this->getManager();
-        $manager->dropIndex();
-        $repo = $manager->getRepository('AcmeBarBundle:Product');
+        $repo = $manager->getRepository('TestBundle:Product');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery())
             ->setSize($realSize);
-        $results = $repo->execute($search);
+        $results = $repo->findDocuments($search);
 
         $ids = [];
+        /** @var Product $doc */
         foreach ($results as $doc) {
-            $ids[] = substr($doc->id, 3);
+            $ids[] = substr($doc->getId(), 3);
         }
         sort($ids);
         $data = range(1, $realSize);
@@ -138,7 +140,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
      *
      * @return IndexImportCommand
      */
-    protected function getImportCommand()
+    private function getImportCommand()
     {
         $command = new IndexImportCommand();
         $command->setContainer($this->getContainer());
