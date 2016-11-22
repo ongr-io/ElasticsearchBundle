@@ -98,12 +98,14 @@ class ManagerFactory
      */
     public function createManager($managerName, $connection, $analysis, $managerConfig)
     {
-        foreach (array_keys($analysis) as $analyzerType) {
-            foreach ($connection['analysis'][$analyzerType] as $name) {
-                $connection['settings']['analysis'][$analyzerType][$name] = $analysis[$analyzerType][$name];
-            }
+        $managerAnalysis = [];
+        $mappings = $this->metadataCollector->getClientMapping($managerConfig['mappings']);
+
+        foreach ($mappings as $type) {
+            $this->extractAnalysisFromProperties($type['properties'], $analysis, $managerAnalysis);
         }
-        unset($connection['analysis']);
+
+        $connection['settings']['analysis'] = array_filter($managerAnalysis);
 
         if (!isset($connection['settings']['number_of_replicas'])) {
             $connection['settings']['number_of_replicas'] = 0;
@@ -160,5 +162,59 @@ class ManagerFactory
             $this->eventDispatcher->dispatch(Events::POST_MANAGER_CREATE, new PostCreateManagerEvent($manager));
 
         return $manager;
+    }
+
+    /**
+     * Extracts analysis configuration from all the documents
+     *
+     * @param array $properties      Properties of a type or an object
+     * @param array $analysis        The full analysis node from configuration
+     * @param array $managerAnalysis The data that is being formed for the manager
+     */
+    private function extractAnalysisFromProperties($properties, $analysis, &$managerAnalysis)
+    {
+        foreach ($properties as $property) {
+            if (isset($property['analyzer'])) {
+                $analyzer = $analysis['analyzer'][$property['analyzer']];
+                $managerAnalysis['analyzer'][$property['analyzer']] = $analyzer;
+
+                $this->extractSubData('filter', $analyzer, $analysis, $managerAnalysis);
+                $this->extractSubData('char_filter', $analyzer, $analysis, $managerAnalysis);
+                $this->extractSubData('tokenizer', $analyzer, $analysis, $managerAnalysis);
+            }
+
+            if (isset($property['properties'])) {
+                $this->extractAnalysisFromProperties($property['properties'], $analysis, $managerAnalysis);
+            }
+        }
+    }
+
+    /**
+     * Extracts tokenizers and filters from analysis configuration
+     *
+     * @param string $type     Either filter or tokenizer
+     * @param array  $analyzer The current analyzer
+     * @param array  $analysis The full analysis node from configuration
+     * @param array  $data     The data that is being formed for the manager
+     */
+    private function extractSubData($type, $analyzer, $analysis, &$data)
+    {
+        if (!isset($analyzer[$type])) {
+            return;
+        }
+
+        if (is_array($analyzer[$type])) {
+            foreach ($analyzer[$type] as $name) {
+                if (isset($analysis[$type][$name])) {
+                    $data[$type][$name] = $analysis[$type][$name];
+                }
+            }
+        } else {
+            $name = $analyzer[$type];
+
+            if (isset($analysis[$type][$name])) {
+                $data[$type][$name] = $analysis[$type][$name];
+            }
+        }
     }
 }
