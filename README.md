@@ -33,8 +33,8 @@ is the preferred and recommended way to ask questions about ONGR bundles and lib
 
 | Elasticsearch version | ElasticsearchBundle version |
 | --------------------- | --------------------------- |
-| >= 5.0                | ~2.x                        |
-| >= 2.0, < 5.0         | ~1.x                        |
+| >= 5.0                | ~5.x                        |
+| >= 2.0, < 5.0         | >=1.0, < 5.0                |
 | >= 1.0, < 2.0         | >= 0.10, < 1.0              |
 | <= 0.90.x             | < 0.10                      |
 
@@ -63,7 +63,7 @@ For contribution to the documentation you can find it in the [contribute][6] top
 Elasticsearch bundle is installed using [Composer][16].
 
 ```bash
-php composer.phar require ongr/elasticsearch-bundle "~2.0"
+php composer.phar require ongr/elasticsearch-bundle "~5.0"
 
 ```
 
