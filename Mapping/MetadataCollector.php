@@ -263,7 +263,7 @@ class MetadataCollector
             $this->extractAnalysisFromProperties($type['properties'], $managerAnalysis);
         }
 
-        if (true) {
+        if ($this->enableCache) {
             $cacheAnalysis[$manager] = array_filter($managerAnalysis);
             $this->cache->save('ongr.metadata.analysis', $cacheAnalysis);
         }

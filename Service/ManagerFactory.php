@@ -91,12 +91,11 @@ class ManagerFactory
      *
      * @param string $managerName   Manager name.
      * @param array  $connection    Connection configuration.
-     * @param array  $analysis      Analyzers, filters and tokenizers config.
      * @param array  $managerConfig Manager configuration.
      *
      * @return Manager
      */
-    public function createManager($managerName, $connection, $analysis, $managerConfig)
+    public function createManager($managerName, $connection, $managerConfig)
     {
         $connection['settings']['analysis'] = $this->metadataCollector
             ->getManagerAnalysis($managerName, $managerConfig['mappings']);
