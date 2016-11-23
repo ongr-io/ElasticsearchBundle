@@ -41,6 +41,11 @@ class MetadataCollector
     private $enableCache = false;
 
     /**
+     * @var array
+     */
+    private $analysisConfiguration;
+
+    /**
      * Bundles mappings local cache container. Could be stored as the whole bundle or as single document.
      * e.g. AcmeDemoBundle, AcmeDemoBundle:Product.
      *
@@ -72,6 +77,14 @@ class MetadataCollector
     public function setEnableCache($enableCache)
     {
         $this->enableCache = $enableCache;
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setAnalysisConfiguration(array $config)
+    {
+        $this->analysisConfiguration = $config;
     }
 
     /**
@@ -226,6 +239,39 @@ class MetadataCollector
     }
 
     /**
+     * Gets the analysis configuration from the documents of the specific bundles
+     *
+     * @param string $manager Manager name
+     * @param array  $bundles
+     *
+     * @return array
+     */
+    public function getManagerAnalysis($manager, array $bundles)
+    {
+        if ($this->cache) {
+            $cacheAnalysis = $this->cache->fetch('ongr.metadata.analysis');
+
+            if (isset($cacheAnalysis[$manager])) {
+                return $cacheAnalysis[$manager];
+            }
+        }
+
+        $managerAnalysis = [];
+        $mappings = $this->getClientMapping($bundles);
+
+        foreach ($mappings as $type) {
+            $this->extractAnalysisFromProperties($type['properties'], $managerAnalysis);
+        }
+
+        if (true) {
+            $cacheAnalysis[$manager] = array_filter($managerAnalysis);
+            $this->cache->save('ongr.metadata.analysis', $cacheAnalysis);
+        }
+
+        return array_filter($managerAnalysis);
+    }
+
+    /**
      * Gathers annotation data from class.
      *
      * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
@@ -284,5 +330,57 @@ class MetadataCollector
     public function getClassName($className)
     {
         return $this->finder->getNamespace($className);
+    }
+
+    /**
+     * Extracts analysis configuration from all the documents
+     *
+     * @param array $properties      Properties of a type or an object
+     * @param array $managerAnalysis The data that is being formed for the manager
+     */
+    private function extractAnalysisFromProperties($properties, &$managerAnalysis)
+    {
+        foreach ($properties as $property) {
+            if (isset($property['analyzer'])) {
+                $analyzer = $this->analysisConfiguration['analyzer'][$property['analyzer']];
+                $managerAnalysis['analyzer'][$property['analyzer']] = $analyzer;
+
+                $this->extractSubData('filter', $analyzer, $managerAnalysis);
+                $this->extractSubData('char_filter', $analyzer, $managerAnalysis);
+                $this->extractSubData('tokenizer', $analyzer, $managerAnalysis);
+            }
+
+            if (isset($property['properties'])) {
+                $this->extractAnalysisFromProperties($property['properties'], $managerAnalysis);
+            }
+        }
+    }
+
+    /**
+     * Extracts tokenizers and filters from analysis configuration
+     *
+     * @param string $type     Either filter or tokenizer
+     * @param array  $analyzer The current analyzer
+     * @param array  $data     The data that is being formed for the manager
+     */
+    private function extractSubData($type, $analyzer, &$data)
+    {
+        if (!isset($analyzer[$type])) {
+            return;
+        }
+
+        if (is_array($analyzer[$type])) {
+            foreach ($analyzer[$type] as $name) {
+                if (isset($this->analysisConfiguration[$type][$name])) {
+                    $data[$type][$name] = $this->analysisConfiguration[$type][$name];
+                }
+            }
+        } else {
+            $name = $analyzer[$type];
+
+            if (isset($this->analysisConfiguration[$type][$name])) {
+                $data[$type][$name] = $this->analysisConfiguration[$type][$name];
+            }
+        }
     }
 }

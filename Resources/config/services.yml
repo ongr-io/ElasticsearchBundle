@@ -35,6 +35,7 @@ services:
         arguments: ["@es.document_finder", "@es.document_parser", "@es.cache_engine"]
         calls:
             - [setEnableCache, ["%es.cache%"]]
+            - [setAnalysisConfiguration, ["%es.analysis%"]]
 
     es.logger.collection_handler:
         class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
