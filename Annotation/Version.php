@@ -1,5 +1,4 @@
 <?php
-namespace ONGR\ElasticsearchBundle\Annotation;
 
 /*
  * This file is part of the ONGR package.
@@ -10,10 +9,16 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  * file that was distributed with this source code.
  */
 
+namespace ONGR\ElasticsearchBundle\Annotation;
 
-class Version implements MetaField
+/**
+ * Associates document property with _version meta-field.
+ *
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+final class Version implements MetaField
 {
-
     /**
      * {@inheritdoc}
      */
