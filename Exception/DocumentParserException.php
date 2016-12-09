@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Mapping\Exception;
+namespace ONGR\ElasticsearchBundle\Exception;
 
 /**
  * This is the exception which should be thrown when document has invalid or incomplete annotations.
