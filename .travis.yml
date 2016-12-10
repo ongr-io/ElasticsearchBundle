@@ -12,6 +12,7 @@ env:
     - SYMFONY="~2.8"
     - SYMFONY="~3.0"
     - SYMFONY="~3.1"
+    - SYMFONY="~3.2"
 matrix:
   allow_failures:
     - php: hhvm
