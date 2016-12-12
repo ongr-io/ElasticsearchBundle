@@ -91,19 +91,14 @@ class ManagerFactory
      *
      * @param string $managerName   Manager name.
      * @param array  $connection    Connection configuration.
-     * @param array  $analysis      Analyzers, filters and tokenizers config.
      * @param array  $managerConfig Manager configuration.
      *
      * @return Manager
      */
-    public function createManager($managerName, $connection, $analysis, $managerConfig)
+    public function createManager($managerName, $connection, $managerConfig)
     {
-        foreach (array_keys($analysis) as $analyzerType) {
-            foreach ($connection['analysis'][$analyzerType] as $name) {
-                $connection['settings']['analysis'][$analyzerType][$name] = $analysis[$analyzerType][$name];
-            }
-        }
-        unset($connection['analysis']);
+        $connection['settings']['analysis'] = $this->metadataCollector
+            ->getManagerAnalysis($managerName, $managerConfig['mappings']);
 
         if (!isset($connection['settings']['number_of_replicas'])) {
             $connection['settings']['number_of_replicas'] = 0;

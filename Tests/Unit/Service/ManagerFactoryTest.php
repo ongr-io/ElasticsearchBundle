@@ -50,7 +50,6 @@ class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
                 'settings' => [],
                 'hosts' => []
             ],
-            [],
             [
                 'mappings' => [],
                 'logger' => [

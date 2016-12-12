@@ -26,7 +26,6 @@ class MappingPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $analysis = $container->getParameter('es.analysis');
         $managers = $container->getParameter('es.managers');
 
         $collector = $container->get('es.metadata_collector');
@@ -40,7 +39,6 @@ class MappingPass implements CompilerPassInterface
                 [
                     $managerName,
                     $connection,
-                    $analysis,
                     $manager,
                 ]
             );

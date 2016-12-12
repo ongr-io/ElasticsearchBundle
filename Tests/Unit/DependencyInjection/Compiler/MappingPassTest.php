@@ -68,7 +68,7 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $containerMock->expects($this->exactly(2))->method('getParameter')->with($this->anything())
+        $containerMock->expects($this->exactly(1))->method('getParameter')->with($this->anything())
             ->will(
                 $this->returnCallback(
                     function ($parameter) use ($managers) {
