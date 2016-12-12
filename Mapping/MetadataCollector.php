@@ -235,7 +235,7 @@ class MetadataCollector
      */
     public function getClientAnalysis(array $bundles, $analysisConfig = [])
     {
-        $cacheName = 'ongr.metadata.analysis.'.md5(implode(',',$bundles));
+        $cacheName = 'ongr.metadata.analysis.'.md5(implode(',', $bundles));
         $typesAnalysis = $this->cache->fetch($cacheName);
 
         if ($typesAnalysis) {
@@ -258,13 +258,22 @@ class MetadataCollector
                     $analyzer = $analysisConfig['analyzer'][$analyzerName];
                     $typesAnalysis['analyzer'][$analyzerName] = $analyzer;
                     $typesAnalysis['filter'] = $this->getAnalysisNodeConfiguration(
-                        'filter', $analyzer, $analysisConfig, $typesAnalysis['filter']
+                        'filter',
+                        $analyzer,
+                        $analysisConfig,
+                        $typesAnalysis['filter']
                     );
                     $typesAnalysis['tokenizer'] = $this->getAnalysisNodeConfiguration(
-                        'tokenizer', $analyzer, $analysisConfig, $typesAnalysis['tokenizer']
+                        'tokenizer',
+                        $analyzer,
+                        $analysisConfig,
+                        $typesAnalysis['tokenizer']
                     );
                     $typesAnalysis['char_filter'] = $this->getAnalysisNodeConfiguration(
-                        'char_filter', $analyzer, $analysisConfig, $typesAnalysis['char_filter']
+                        'char_filter',
+                        $analyzer,
+                        $analysisConfig,
+                        $typesAnalysis['char_filter']
                     );
                 }
             }
