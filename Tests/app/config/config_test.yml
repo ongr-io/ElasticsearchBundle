@@ -4,6 +4,19 @@ framework:
     test: ~
 
 ongr_elasticsearch:
+    analysis:
+        filter:
+            incremental_filter:
+                type: edge_ngram
+                min_gram: 1
+                max_gram: 20
+        analyzer:
+            incrementalAnalyzer:  #-> analyzer name
+                type: custom
+                tokenizer: standard
+                filter:
+                    - lowercase
+                    - incremental_filter
     managers:
         default:
             index:
@@ -14,5 +27,10 @@ ongr_elasticsearch:
                     refresh_interval: -1
                     number_of_replicas: 0
                     number_of_shards: 5
+                analysis:
+                    analyzer:
+                        - incrementalAnalyzer
+                    filter:
+                        - incremental_filter
             mappings:
                 - TestBundle

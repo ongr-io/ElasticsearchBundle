@@ -42,7 +42,8 @@ class Product
      *  name="title",
      *  options={
      *    "fields"={
-     *        "raw"={"type"="keyword"}
+     *        "raw"={"type"="keyword"},
+     *        "increment"={"type"="text", "analyzer"="incrementalAnalyzer"}
      *    }
      *  }
      * )
