@@ -18,8 +18,7 @@ use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Mapping\Exception\DocumentParserException;
-use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException;
+use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 
 /**
  * Document parser used for reading document annotations.
@@ -63,6 +62,13 @@ class DocumentParser
     private $properties = [];
 
     /**
+     * Analyzers used in documents.
+     *
+     * @var string[]
+     */
+    private $analyzers = [];
+
+    /**
      * @param Reader         $reader Used for reading annotations.
      * @param DocumentFinder $finder Used for resolving namespaces.
      */
@@ -79,7 +85,7 @@ class DocumentParser
      * @param \ReflectionClass $class
      *
      * @return array
-     * @throws DocumentParserException
+     * @throws MissingDocumentAnnotationException
      */
     public function parse(\ReflectionClass $class)
     {
