@@ -226,6 +226,84 @@ class MetadataCollector
     }
 
     /**
+     * Prepares analysis node for Elasticsearch client.
+     *
+     * @param array $bundles
+     * @param array $analysisConfig
+     *
+     * @return array
+     */
+    public function getClientAnalysis(array $bundles, $analysisConfig = [])
+    {
+        $cacheName = 'ongr.metadata.analysis.'.md5(implode(',',$bundles));
+        $typesAnalysis = $this->cache->fetch($cacheName);
+
+        if ($typesAnalysis) {
+            return $typesAnalysis;
+        }
+
+        $typesAnalysis = [
+            'analyzer' => [],
+            'filter' => [],
+            'tokenizer' => [],
+            'char_filter' => [],
+        ];
+
+        /** @var array $mappings All mapping info */
+        $mappings = $this->getMappings($bundles);
+
+        foreach ($mappings as $type => $metadata) {
+            foreach ($metadata['analyzers'] as $analyzerName) {
+                if (isset($analysisConfig['analyzer'][$analyzerName])) {
+                    $analyzer = $analysisConfig['analyzer'][$analyzerName];
+                    $typesAnalysis['analyzer'][$analyzerName] = $analyzer;
+                    $typesAnalysis['filter'] = $this->getAnalysisNodeConfiguration(
+                        'filter', $analyzer, $analysisConfig, $typesAnalysis['filter']
+                    );
+                    $typesAnalysis['tokenizer'] = $this->getAnalysisNodeConfiguration(
+                        'tokenizer', $analyzer, $analysisConfig, $typesAnalysis['tokenizer']
+                    );
+                    $typesAnalysis['char_filter'] = $this->getAnalysisNodeConfiguration(
+                        'char_filter', $analyzer, $analysisConfig, $typesAnalysis['char_filter']
+                    );
+                }
+            }
+        }
+
+        $this->cacheBundle($cacheName, $typesAnalysis);
+
+        return $typesAnalysis;
+    }
+
+    /**
+     * Prepares analysis node content for Elasticsearch client.
+     *
+     * @param string $type Node type: filter, tokenizer or char_filter
+     * @param array $analyzer Analyzer from which used helpers will be extracted.
+     * @param array $analysisConfig Pre configured analyzers container
+     * @param array $container Current analysis container where prepared helpers will be appended.
+     *
+     * @return array
+     */
+    private function getAnalysisNodeConfiguration($type, $analyzer, $analysisConfig, $container = [])
+    {
+        if (isset($analyzer[$type])) {
+            if (is_array($analyzer[$type])) {
+                foreach ($analyzer[$type] as $filter) {
+                    if (isset($analysisConfig[$type][$filter])) {
+                        $container[$filter] = $analysisConfig[$type][$filter];
+                    }
+                }
+            } else {
+                if (isset($analysisConfig[$type][$analyzer[$type]])) {
+                    $container[$analyzer[$type]] = $analysisConfig[$type][$analyzer[$type]];
+                }
+            }
+        }
+        return $container;
+    }
+
+    /**
      * Gathers annotation data from class.
      *
      * @param \ReflectionClass $reflectionClass Document reflection class to read mapping from.
