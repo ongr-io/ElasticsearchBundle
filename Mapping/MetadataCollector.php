@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Cache\CacheProvider;
-use ONGR\ElasticsearchBundle\Mapping\Exception\DocumentParserException;
-use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException;
+use ONGR\ElasticsearchBundle\Exception\DocumentParserException;
+use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 
 /**
  * DocumentParser wrapper for getting bundle documents mapping.
