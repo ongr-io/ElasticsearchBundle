@@ -641,6 +641,16 @@ class Manager
     }
 
     /**
+     * Calls "Get Settings API" will return you the currently configured settings for manager index.
+     *
+     * return array
+     */
+    public function getIndexSettings()
+    {
+        return $this->getClient()->indices()->getSettings(['index' => $this->getIndexName()]);
+    }
+
+    /**
      * Resolves type name by class name.
      *
      * @param string $className
