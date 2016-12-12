@@ -43,22 +43,11 @@ class ExportService
         OutputInterface $output,
         $maxLinesInFile = 300000
     ) {
-//        $params = [
-////            'search_type' => 'scroll',
-//            'scroll' => '10m',
-////            'size' => $chunkSize,
-//            '_source' => true,
-//            'body' => [
-//                'query' => [
-//                    'match_all' => new \stdClass(),
-//                ],
-//            ],
-//            'index' => $manager->getIndexName(),
-//            'type' => $types,
-//        ];
 
         $search = new Search();
         $search->addQuery(new MatchAllQuery());
+        $search->setSize($chunkSize);
+
         $queryParameters = [
                 '_source' => true,
                 'scroll' => '10m',
@@ -74,10 +63,6 @@ class ExportService
                 '_scroll_id' => $searchResults['_scroll_id'],
             ]
         );
-
-//        $results = new SearchHitIterator(
-//            new SearchResponseIterator($manager->getClient(), $params)
-//        );
 
         $progress = new ProgressBar($output, $results->count());
         $progress->setRedrawFrequency(100);

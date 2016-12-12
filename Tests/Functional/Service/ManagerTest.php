@@ -11,11 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
-use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -290,7 +288,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     /**
      * Test for remove() in case document has no annotation for ID field.
      *
-     * @expectedException \ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException
+     * @expectedException \ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException
      * @expectedExceptionMessage "stdClass" class cannot be parsed as document because @Document annotation is missing.
      */
     public function testRemoveException()
