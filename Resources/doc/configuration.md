@@ -1,6 +1,6 @@
 # Configuration tree
 
-Here's an example of full configuration with all options:
+Here's an example of full configuration with all possible options including default values:
 
 ```yml
 ongr_elasticsearch:
@@ -28,24 +28,17 @@ ongr_elasticsearch:
                 index_name: ongr-default
                 settings:
                     refresh_interval: -1
-                    number_of_replicas: 1
-                analysis:
-                  analyzer:
-                    - pathAnalyzer
-                  tokenizer:
-                    - pathTokenizer
+                    number_of_replicas: 0
+                    number_of_shards: 1
             logger: true #default %kernel.debug%
             mappings:
                 - AcmeBarBundle #Scans all bundle documents
-        foo:
+        custom:
             index: 
                 hosts:
                     - 10.0.0.1:9200 #default 127.0.0.1:9200
-                index_name: ongr-bar
-                settings:
-                    refresh_interval: 1 #default -1
-                    number_of_replicas: 0 #default 0
-                analysis:
-                    filter:
-                       - incremental_filter
+                index_name: ongr-custom
+                mappings:
+                    AcmeBundle:
+                        document_dir: Document
 ```
