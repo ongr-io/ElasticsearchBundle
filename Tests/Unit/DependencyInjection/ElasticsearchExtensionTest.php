@@ -49,13 +49,12 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'index' => [
                     'index_name' => 'test',
                     'hosts' => ['127.0.0.1:9200'],
-                    'settings' => [],
-                    'analysis' => [
-                        'tokenizer' => [],
-                        'filter' => [],
-                        'analyzer' => [],
-                        'char_filter' => [],
+                    'settings' => [
+                        'number_of_replicas' => 0,
+                        'number_of_shards' => 1,
+                        'refresh_interval' => -1,
                     ],
+                    'analysis' => [],
                 ],
                 'logger' => [
                     'enabled' => true,
@@ -91,13 +90,12 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                 'index' => [
                     'index_name' => 'test',
                     'hosts' => ['127.0.0.1:9200'],
-                    'settings' => [],
-                    'analysis' => [
-                        'tokenizer' => [],
-                        'filter' => [],
-                        'analyzer' => [],
-                        'char_filter' => [],
+                    'settings' => [
+                        'number_of_replicas' => 0,
+                        'number_of_shards' => 1,
+                        'refresh_interval' => -1,
                     ],
+                    'analysis' => [],
                 ],
                 'logger' => [
                     'enabled' => true,

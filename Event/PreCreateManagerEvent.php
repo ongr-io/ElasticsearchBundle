@@ -49,7 +49,7 @@ class PreCreateManagerEvent extends Event
     /**
      * @param ClientBuilder $client
      */
-    public function setClient($client)
+    public function setClient(ClientBuilder $client)
     {
         $this->client = $client;
     }

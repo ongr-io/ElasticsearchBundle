@@ -102,7 +102,6 @@ class DocumentParser
         }
 
         $fields = [];
-        $aliases = $this->getAliases($class, $fields);
 
         return [
             'type' => $document->type ?: Caser::snake($class->getShortName()),
@@ -113,7 +112,8 @@ class DocumentParser
                     $fields
                 )
             ),
-            'aliases' => $aliases,
+            'aliases' => $this->getAliases($class, $fields),
+            'analyzers' => $this->getAnalyzers($class),
             'objects' => $this->getObjects(),
             'namespace' => $class->getName(),
             'class' => $class->getShortName(),
@@ -416,6 +416,43 @@ class DocumentParser
         $this->properties[$reflectionClass->getName()] = $properties;
 
         return $properties;
+    }
+
+    /**
+     * Parses analyzers list from document mapping.
+     *
+     * @param \ReflectionClass $reflectionClass
+     * @return array
+     */
+    private function getAnalyzers(\ReflectionClass $reflectionClass)
+    {
+        $analyzers = [];
+        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
+            $type = $this->getPropertyAnnotationData($property);
+            $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
+
+            if ($type instanceof Embedded) {
+                $analyzers = array_merge(
+                    $analyzers,
+                    $this->getAnalyzers(new \ReflectionClass($this->finder->getNamespace($type->class)))
+                );
+            }
+
+            if ($type instanceof Property) {
+                if (isset($type->options['analyzer'])) {
+                    $analyzers[] = $type->options['analyzer'];
+                }
+
+                if (isset($type->options['fields'])) {
+                    foreach ($type->options['fields'] as $field) {
+                        if (isset($field['analyzer'])) {
+                            $analyzers[] = $field['analyzer'];
+                        }
+                    }
+                }
+            }
+        }
+        return array_unique($analyzers);
     }
 
     /**

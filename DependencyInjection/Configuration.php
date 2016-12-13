@@ -114,19 +114,19 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->arrayNode('settings')
-                                ->defaultValue([])
+                                ->defaultValue(
+                                    [
+                                        'number_of_replicas' => 0,
+                                        'number_of_shards' => 1,
+                                        'refresh_interval' => -1,
+                                    ]
+                                )
                                 ->info('Sets index settings for connection.')
                                 ->prototype('variable')->end()
                             ->end()
                             ->arrayNode('analysis')
-                                ->addDefaultsIfNotSet()
-                                ->info('Sets index analysis settings for connection.')
-                                ->children()
-                                    ->arrayNode('tokenizer')->prototype('scalar')->defaultValue([])->end()->end()
-                                    ->arrayNode('filter')->prototype('scalar')->defaultValue([])->end()->end()
-                                    ->arrayNode('analyzer')->prototype('scalar')->defaultValue([])->end()->end()
-                                    ->arrayNode('char_filter')->prototype('scalar')->defaultValue([])->end()->end()
-                                ->end()
+                                ->info('Deprecated node. Analysis configuration is collected from documents now.')
+                                ->prototype('variable')->end()
                             ->end()
                         ->end()
                     ->end()
@@ -181,7 +181,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->arrayNode('mappings')
                         ->info('Maps manager to the bundles. f.e. AppBundle')
-                        ->prototype('scalar')->end()
+                        ->prototype('variable')->end()
                     ->end()
                     ->booleanNode('force_commit')
                         ->info('Forces commit to the elasticsearch on kernel terminate event.')

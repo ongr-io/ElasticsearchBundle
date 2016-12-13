@@ -8,6 +8,8 @@ You can pass any settings along parameters you want. Simply just put them in the
 - Added `text` and `keyword` property types support.
 - Added `char_filter` analysis support.
 - All features and fixes from 1.2.x
+- Added `document_dir`. From now on you can change documents directory for each mapped bundle.
+- No more needed to define analysis in manager, it will be collected automatically from documents.
 
 ### Breaking changes
 - Removed all deprecations from 1.x version.
@@ -32,8 +34,6 @@ You can pass any settings along parameters you want. Simply just put them in the
  in our CI was very unstable. Now there is no sense to repeat failing tests again and again.
 - `AbstractElasticsearchTestCase::getNumberOfRetries()` was removed.
  If you write tests by extending `AbstractElasticsearchTestCase` delete your retries data provides.
-- 
-
 
 ## v1.2.5 (2016-11-14)
 - Set index for bulk operations globally #705

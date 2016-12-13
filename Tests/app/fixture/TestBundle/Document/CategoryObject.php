@@ -30,7 +30,7 @@ class CategoryObject
      * Public property to test converter if it can handle private and public properties.
      *
      * @var string
-     * @ES\Property(type="text")
+     * @ES\Property(type="text", options={"analyzer":"keyword"})
      */
     public $description;
 
