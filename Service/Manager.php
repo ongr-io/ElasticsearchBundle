@@ -641,13 +641,24 @@ class Manager
     }
 
     /**
-     * Calls "Get Settings API" will return you the currently configured settings for manager index.
+     * Calls "Get Settings API" in Elasticsearch and will return you the currently configured settings.
      *
      * return array
      */
-    public function getIndexSettings()
+    public function getSettings()
     {
         return $this->getClient()->indices()->getSettings(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Gets Elasticsearch aliases information.
+     * @param $params
+     *
+     * @return array
+     */
+    public function getAliases($params = [])
+    {
+        return $this->getClient()->indices()->getAliases(array_merge(['index' => $this->getIndexName()], $params));
     }
 
     /**
