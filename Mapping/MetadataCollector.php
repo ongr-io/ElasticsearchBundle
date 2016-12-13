@@ -41,14 +41,6 @@ class MetadataCollector
     private $enableCache = false;
 
     /**
-     * Bundles mappings local cache container. Could be stored as the whole bundle or as single document.
-     * e.g. AcmeDemoBundle, AcmeDemoBundle:Product.
-     *
-     * @var mixed
-     */
-    private $mappings = [];
-
-    /**
      * @param DocumentFinder $finder For finding documents.
      * @param DocumentParser $parser For reading document annotations.
      * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
@@ -58,10 +50,6 @@ class MetadataCollector
         $this->finder = $finder;
         $this->parser = $parser;
         $this->cache = $cache;
-
-        if ($this->cache) {
-            $this->mappings = $this->cache->fetch('ongr.metadata.mappings');
-        }
     }
 
     /**
@@ -83,8 +71,13 @@ class MetadataCollector
     public function getMappings(array $bundles)
     {
         $output = [];
-        foreach ($bundles as $bundle) {
-            $mappings = $this->getBundleMapping($bundle);
+        foreach ($bundles as $name => $bundleConfig) {
+            // Backward compatibility hack for support.
+            if (!is_array($bundleConfig)) {
+                $name = $bundleConfig;
+                $bundleConfig = [];
+            }
+            $mappings = $this->getBundleMapping($name, $bundleConfig);
 
             $alreadyDefinedTypes = array_intersect_key($mappings, $output);
             if (count($alreadyDefinedTypes)) {
@@ -105,30 +98,38 @@ class MetadataCollector
      * Searches for documents in the bundle and tries to read them.
      *
      * @param string $name
+     * @param array $config Bundle configuration
      *
      * @return array Empty array on containing zero documents.
      */
-    public function getBundleMapping($name)
+    public function getBundleMapping($name, $config = [])
     {
         if (!is_string($name)) {
             throw new \LogicException('getBundleMapping() in the Metadata collector expects a string argument only!');
         }
 
-        if (isset($this->mappings[$name])) {
-            return $this->mappings[$name];
+        $cacheName =  'ongr.metadata.mapping.' . md5($name.serialize($config));
+
+        $this->enableCache && $mappings = $this->cache->contains($cacheName);
+
+        if (isset($mappings)) {
+            return $mappings;
         }
 
+        $mappings = [];
+        $documentDir = isset($config['document_dir']) ? $config['document_dir'] : DocumentFinder::DOCUMENT_DIR;
+
         // Handle the case when single document mapping requested
+        // Usage od ":" in name is deprecated. This if is only for BC.
         if (strpos($name, ':') !== false) {
             list($bundle, $documentClass) = explode(':', $name);
             $documents = $this->finder->getBundleDocumentClasses($bundle);
             $documents = in_array($documentClass, $documents) ? [$documentClass] : [];
         } else {
-            $documents = $this->finder->getBundleDocumentClasses($name);
+            $documents = $this->finder->getBundleDocumentClasses($name, $documentDir);
             $bundle = $name;
         }
 
-        $mappings = [];
         $bundleNamespace = $this->finder->getBundleClass($bundle);
         $bundleNamespace = substr($bundleNamespace, 0, strrpos($bundleNamespace, '\\'));
 
@@ -140,7 +141,7 @@ class MetadataCollector
         foreach ($documents as $document) {
             $documentReflection = new \ReflectionClass(
                 $bundleNamespace .
-                '\\' . DocumentFinder::DOCUMENT_DIR .
+                '\\' . $documentDir .
                 '\\' . $document
             );
 
@@ -162,7 +163,7 @@ class MetadataCollector
             }
         }
 
-        $this->cacheBundle($name, $mappings);
+        $this->enableCache && $this->cache->save($cacheName, $mappings);
 
         return $mappings;
     }
@@ -235,10 +236,10 @@ class MetadataCollector
      */
     public function getClientAnalysis(array $bundles, $analysisConfig = [])
     {
-        $cacheName = 'ongr.metadata.analysis.'.md5(implode(',', $bundles));
-        $typesAnalysis = $this->cache->fetch($cacheName);
+        $cacheName = 'ongr.metadata.analysis.'.md5(serialize($bundles));
+        $this->enableCache && $typesAnalysis = $this->cache->fetch($cacheName);
 
-        if ($typesAnalysis) {
+        if (isset($typesAnalysis)) {
             return $typesAnalysis;
         }
 
@@ -279,7 +280,7 @@ class MetadataCollector
             }
         }
 
-        $this->cacheBundle($cacheName, $typesAnalysis);
+        $this->enableCache && $this->cache->save($cacheName, $mappings);
 
         return $typesAnalysis;
     }
@@ -335,30 +336,20 @@ class MetadataCollector
      */
     public function getMapping($namespace)
     {
-        $namespace = $this->getClassName($namespace);
+        $cacheName = 'ongr.metadata.document.'.md5($namespace);
 
-        if (isset($this->mappings[$namespace])) {
-            return $this->mappings[$namespace];
+        $namespace = $this->getClassName($namespace);
+        $this->enableCache && $mapping = $this->cache->fetch($cacheName);
+
+        if (isset($mapping)) {
+            return $mapping;
         }
 
         $mapping = $this->getDocumentReflectionMapping(new \ReflectionClass($namespace));
-        $this->cacheBundle($namespace, $mapping);
+
+        $this->enableCache && $this->cache->save($cacheName, $mapping);
 
         return $mapping;
-    }
-
-    /**
-     * Adds metadata information to the cache storage.
-     *
-     * @param string $bundle
-     * @param array  $mapping
-     */
-    private function cacheBundle($bundle, array $mapping)
-    {
-        if ($this->enableCache) {
-            $this->mappings[$bundle] = $mapping;
-            $this->cache->save('ongr.metadata.mappings', $this->mappings);
-        }
     }
 
     /**

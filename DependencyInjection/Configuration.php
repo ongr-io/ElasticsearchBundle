@@ -181,7 +181,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->arrayNode('mappings')
                         ->info('Maps manager to the bundles. f.e. AppBundle')
-                        ->prototype('scalar')->end()
+                        ->prototype('variable')->end()
                     ->end()
                     ->booleanNode('force_commit')
                         ->info('Forces commit to the elasticsearch on kernel terminate event.')

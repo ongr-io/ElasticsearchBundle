@@ -18,6 +18,14 @@ ongr_elasticsearch:
                     - lowercase
                     - incremental_filter
     managers:
+        custom_dir:
+            index:
+                hosts:
+                    - 127.0.0.1:9200
+                index_name: ongr-custom-document-dir-test
+            mappings:
+                TestBundle:
+                    document_dir: Entity
         default:
             index:
                 hosts:

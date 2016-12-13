@@ -1,7 +1,7 @@
 # Mapping
 
-Elasticsearch bundle requires mapping definitions in order for it to work with complex operations,
-like insert and update documents, do a full text search and etc.
+Elasticsearch bundle requires mapping definitions for it to work with complex operations,
+like insert and update documents, do a full-text search, etc.
 
 ### Mapping configuration
 
@@ -32,11 +32,38 @@ ongr_elasticsearch:
                 - AppBundle
 ```
 
-At the very top you can see `analysis` node. It represents [Elasticsearch analysis][1]. 
-You can define here analyzers, filters, tokenizers, token filters and character filters.
-Once you define any analysis then it can be used in any document mapping.
+From 5.0 version mapping was enchased, and now you can change documents directory. See the example below:
 
-E.g. lets say you want to use incremental analyzer and custom lowercase filter analyzer in your index.
+```yml
+#...
+    managers:
+        custom_dir:
+            index:
+                index_name: your_index_name
+                hosts:
+                    - 127.0.0.1:9200
+            mappings:
+                AppBundle: ~ #Document dir will be Document.
+                CustomBundle:
+                    document_dir: Entity #For this bundle will search documents in the Entity.
+                    
+        default:
+            index:
+                index_name: your_index_name
+                hosts:
+                    - 127.0.0.1:9200
+            mappings:
+                - AppBundle
+```
+
+> Both mappings are valid. In the above example, you can change the directory for the particular
+ bundles where to find documents. Default dir remains `Document`.
+
+At the very top, you can see `analysis` node. It represents [Elasticsearch analysis][1]. 
+You can define here analyzers, tokenizers, token filters and character filters.
+Once you define any analysis, then it can be used in any document mapping.
+
+e.g. let's say you want to use incremental analyzer and custom lowercase filter analyzer in your index.
 The elasticsearch settings mapping would like this:
 
 ```json
@@ -151,8 +178,8 @@ class Product
 }
 ```
 
-> There is no mandatory to have private properties, public will work as well.
- We strongly recommend to use private according OOP best practices.  
+> There is no mandatory to have private properties, and public will work as well.
+ We are firmly recommend using private according to OOP best practices.  
 
 #### Document annotation configuration
 
@@ -165,15 +192,15 @@ ElasticsearchBundle will create a type with lower cased class name.
 
 ### Properties annotations
 
-To define type properties there is `@ES\Property` annotation. The only required
-attribute is `type` - Elasticsearch field type to define what kind of information
-will be indexed. By default field name is generated from property name by converting
-it to "snake case" string. You can specify custom name by setting `name` attribute.
+For defining type properties, there is a `@ES\Property` annotation. The only required
+attribute is `type` - Elasticsearch field type to specify what kind of information
+will be indexed. By default, the field name generated from property name by converting
+it to "snake case" string. You can specify the custom name by setting `name` attribute.
 
 > Read more about elasticsearch supported types [in the official documentation][2].
 
-To add a custom settings for property like analyzer it has to be included in `options`.
-Analyzers names are defined in `config.yml` `analysis` [read more in the topic above](#Mapping configuration).
+To add a custom setting for the property like analyzer include it in the `options` variable.
+Analyzers names defined in `config.yml` `analysis` [read more in the topic above](#Mapping configuration).
 Here's an example how to add it:
 
 ```php
@@ -200,8 +227,8 @@ class Product
     //....
 ```
 
-> `options` container accepts any parameters in annotation array format. We leave mapping validation to elasticsearch and
- elasticsearch-php client. If there will be invalid format annotations reader will throw exception,
+>  `options` container accepts any parameters in annotation array format. We leave mapping validation
+ to elasticsearch and elasticsearch-php client. If there will be invalid format annotations reader will throw exception,
  otherwise elasticsearch-php or elasticsearch database will throw an exception if something is wrong.
 
 
@@ -308,9 +335,9 @@ To insert a document with mapping from example above you have to create 2 object
 ##### Multiple objects
 
 As shown in the example above, by ElasticsearchBundle default only a single object will be saved in the document.
-Meanwhile elasticsearch database don't care if in object is saved a single value or an array. 
+Meanwhile, Elasticsearch database doesn't care if in an object is stored as a single value or as an array. 
 If it is necessary to store multiple objects (array), you have to add `multiple=true` to the annotation. While
-initiating a document with multiple items you need to initialize property with new instance of `Collection()`.
+initiating a document with multiple items you need to initialize property with the new instance of `Collection()`.
 
 Here's an example:
 
@@ -409,14 +436,14 @@ Insert action will look like this:
 
 > Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
 
-The difference between `@ES\Embedded` and `@ES\Nested` is in the way that they are indexed by the Elasticsearch.
+The difference between `@ES\Embedded` and `@ES\Nested` is in the way that the Elasticsearch indexes them.
 While the values of the fields in embedded objects are extracted and put into the same array with all the other
 values of other embedded objects in the same field, during the indexation process, the values of the fields of
-nested objects are stored separately. This introduces differences when querying and filtering the index.
+nested objects stored separately. This introduces differences when querying and filtering the index.
 
 ### Multi field annotations and usage
 
-Within the properties annotation you can specify the `field` attribute. It enables you to map several core
+Within the properties annotation, you can specify the `field` attribute. It enables you to map several core
 types of the same value. This can come very handy, e.g. when you want to map a text type with analyzed and
 not analyzed values.
 

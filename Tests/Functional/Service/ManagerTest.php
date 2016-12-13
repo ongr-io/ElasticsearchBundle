@@ -332,4 +332,24 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
     }
+
+    /**
+     * Tests custom manager with custom directory behaviour.
+     */
+    public function testCustomManagerWithCustomMappingDir()
+    {
+        $manager = $this->getManager('custom_dir');
+
+        $product = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product();
+        $product->setId('custom');
+        $product->setTitle('Custom product');
+        $manager->persist($product);
+        $manager->commit();
+
+        $repo = $manager->getRepository('TestBundle:Product');
+        /** @var \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product $actualProduct */
+        $actualProduct = $repo->find('custom');
+
+        $this->assertEquals('Custom product', $actualProduct->getTitle());
+    }
 }
