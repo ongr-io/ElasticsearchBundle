@@ -191,7 +191,6 @@ class Repository
         return new Search();
     }
 
-
     /**
      * Parses scroll configuration from raw response.
      *
