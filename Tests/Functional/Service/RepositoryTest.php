@@ -149,6 +149,23 @@ class RepositoryTest extends AbstractElasticsearchTestCase
             1,
         ];
 
+        // Case #7 find when title not equal foo.
+        $out[] = [
+            [2, 3, 4],
+            ['!title' => 'foo'],
+        ];
+
+        // Case #8 find when title not equal foo or title not equal bar.
+        $out[] = [
+            [3, 4],
+            [
+                '!title' => [
+                    'foo',
+                    'bar',
+                ],
+            ],
+        ];
+
         return $out;
     }
 
