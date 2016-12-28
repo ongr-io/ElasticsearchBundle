@@ -110,9 +110,9 @@ class MetadataCollector
 
         $cacheName =  'ongr.metadata.mapping.' . md5($name.serialize($config));
 
-        $this->enableCache && $mappings = $this->cache->contains($cacheName);
+        $this->enableCache && $mappings = $this->cache->fetch($cacheName);
 
-        if (isset($mappings)) {
+        if (isset($mappings) && $mappings) {
             return $mappings;
         }
 
