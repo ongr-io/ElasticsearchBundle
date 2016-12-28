@@ -112,7 +112,7 @@ class MetadataCollector
 
         $this->enableCache && $mappings = $this->cache->fetch($cacheName);
 
-        if (isset($mappings) && false !== $mappings) {
+        if (isset($mappings) && $mappings) {
             return $mappings;
         }
 
