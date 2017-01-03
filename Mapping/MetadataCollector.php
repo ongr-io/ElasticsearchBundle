@@ -341,7 +341,7 @@ class MetadataCollector
         $namespace = $this->getClassName($namespace);
         $this->enableCache && $mapping = $this->cache->fetch($cacheName);
 
-        if (isset($mapping)) {
+        if (isset($mapping) && $mapping) {
             return $mapping;
         }
 
