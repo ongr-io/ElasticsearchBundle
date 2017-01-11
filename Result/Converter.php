@@ -91,6 +91,9 @@ class Converter
             if (isset($aliases[$name]['type'])) {
                 switch ($aliases[$name]['type']) {
                     case 'date':
+                        if (is_null($value)) {
+                            break;
+                        }
                         if (is_numeric($value) && (int)$value == $value) {
                             $time = $value;
                         } else {
