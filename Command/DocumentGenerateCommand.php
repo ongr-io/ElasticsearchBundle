@@ -584,7 +584,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
 
         return $this
             ->getContainer()
-            ->get('annotations.cached_reader')
+            ->get('es.annotations.cached_reader')
             ->getPropertyAnnotation($reflection->getProperty('type'), 'Doctrine\Common\Annotations\Annotation\Enum')
             ->value;
     }
