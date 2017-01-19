@@ -442,11 +442,17 @@ class DocumentParser
                 if (isset($type->options['analyzer'])) {
                     $analyzers[] = $type->options['analyzer'];
                 }
+                if (isset($type->options['search_analyzer'])) {
+                    $analyzers[] = $type->options['search_analyzer'];
+                }
 
                 if (isset($type->options['fields'])) {
                     foreach ($type->options['fields'] as $field) {
                         if (isset($field['analyzer'])) {
                             $analyzers[] = $field['analyzer'];
+                        }
+                        if (isset($field['search_analyzer'])) {
+                            $analyzers[] = $field['search_analyzer'];
                         }
                     }
                 }
