@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
-use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
+use ONGR\ElasticsearchDSL\Query\FullText\QueryStringQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
@@ -274,7 +274,7 @@ class Repository
      */
     private function executeSearch(Search $search)
     {
-        return $this->getManager()->search([$this->getType()], $search->toArray(), $search->getQueryParams());
+        return $this->getManager()->search([$this->getType()], $search->toArray(), $search->getUriParams());
     }
 
     /**
