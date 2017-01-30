@@ -22,6 +22,14 @@ class CacheClearCommandTest extends AbstractElasticsearchTestCase
     const COMMAND_NAME = 'ongr:es:cache:clear';
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getDataArray()
+    {
+        return ['default' => []];
+    }
+
+    /**
      * Tests if command is being executed.
      */
     public function testExecute()
