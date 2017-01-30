@@ -35,6 +35,7 @@ class DocumentParser
     const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
     const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
     const ROUTING_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Routing';
+    const VERSION_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Version';
 
     /**
      * @var Reader Used to read document annotations.
@@ -181,6 +182,7 @@ class DocumentParser
         $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::PARENT_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::ROUTING_ANNOTATION);
+        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::VERSION_ANNOTATION);
 
         if ($annotation === null) {
             return null;
@@ -361,6 +363,7 @@ class DocumentParser
             'Id',
             'ParentDocument',
             'Routing',
+            'Version',
         ];
 
         foreach ($annotations as $annotation) {
@@ -442,11 +445,17 @@ class DocumentParser
                 if (isset($type->options['analyzer'])) {
                     $analyzers[] = $type->options['analyzer'];
                 }
+                if (isset($type->options['search_analyzer'])) {
+                    $analyzers[] = $type->options['search_analyzer'];
+                }
 
                 if (isset($type->options['fields'])) {
                     foreach ($type->options['fields'] as $field) {
                         if (isset($field['analyzer'])) {
                             $analyzers[] = $field['analyzer'];
+                        }
+                        if (isset($field['search_analyzer'])) {
+                            $analyzers[] = $field['search_analyzer'];
                         }
                     }
                 }

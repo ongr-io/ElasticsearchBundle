@@ -13,8 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchDSL\Query\PrefixQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\PrefixQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 
@@ -332,7 +333,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $search = $repository
             ->createSearch()
-            ->addFilter(new PrefixQuery('title', 'dummy'));
+            ->addQuery(new PrefixQuery('title', 'dummy'), BoolQuery::FILTER);
 
         $searchResult = $repository->findDocuments($search);
         $this->assertInstanceOf(
