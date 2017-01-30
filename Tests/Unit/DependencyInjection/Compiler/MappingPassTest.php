@@ -12,7 +12,6 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Unit tests for MappingPass.

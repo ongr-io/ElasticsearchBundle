@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchDSL\Query\MatchQuery;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 
 class DocumentWithMultipleFieldsTest extends AbstractElasticsearchTestCase
 {
