@@ -54,7 +54,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                         'number_of_shards' => 1,
                         'refresh_interval' => -1,
                     ],
-                    'analysis' => [],
                 ],
                 'logger' => [
                     'enabled' => true,
@@ -95,7 +94,6 @@ class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
                         'number_of_shards' => 1,
                         'refresh_interval' => -1,
                     ],
-                    'analysis' => [],
                 ],
                 'logger' => [
                     'enabled' => true,
