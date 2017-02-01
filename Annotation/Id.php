@@ -19,12 +19,14 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  */
 final class Id implements MetaField
 {
+    const NAME = '_id';
+
     /**
      * {@inheritdoc}
      */
     public function getName()
     {
-        return '_id';
+        return self::NAME;
     }
 
     /**

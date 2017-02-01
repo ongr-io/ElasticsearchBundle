@@ -22,4 +22,23 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  */
 final class Object
 {
+    const NAME = 'object';
+
+    /**
+     * In this field you can define options.
+     *
+     * @var array
+     */
+    public $options = [];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dump(array $exclude = [])
+    {
+        return array_diff_key(
+            $this->options,
+            $exclude
+        );
+    }
 }
