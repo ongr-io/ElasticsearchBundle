@@ -17,7 +17,21 @@ use ONGR\ElasticsearchBundle\Collection\Collection;
 /**
  * Product document for testing.
  *
- * @ES\Document()
+ * @ES\Document(
+ *     options={
+ *      "dynamic_templates"={
+ *          {
+ *              "custom_attributes_template"={
+ *                  "path_match"="custom_attributes.*",
+ *                  "mapping"={
+ *                      "type"="text",
+ *                      "analyzer"="keyword"
+ *                  }
+ *              }
+ *          }
+ *     }
+ *    }
+ * )
  */
 class Product
 {
@@ -87,11 +101,20 @@ class Product
     private $limited;
 
     /**
+     * @var array
+     * @ES\HashMap(name="custom_attributes", type="text")
+     */
+    private $customAttributes;
+
+    /**
      * @var \DateTime
      * @ES\Property(type="date", name="released")
      */
     private $released;
 
+    /**
+     * Product constructor.
+     */
     public function __construct()
     {
         $this->relatedCategories = new Collection();
@@ -247,6 +270,30 @@ class Product
     public function setLimited($limited)
     {
         $this->limited = $limited;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomAttributes()
+    {
+        return $this->customAttributes;
+    }
+
+    /**
+     * @param array $customAttributes
+     */
+    public function setCustomAttributes($customAttributes)
+    {
+        $this->customAttributes = $customAttributes;
+    }
+
+    /**
+     * @param mixed $customAttribute
+     */
+    public function addCustomAttribute($customAttribute)
+    {
+        $this->customAttributes[] = $customAttribute;
     }
 
     /**

@@ -19,6 +19,8 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  */
 final class ParentDocument implements MetaField
 {
+    const NAME = '_parent';
+
     /**
      * Parent document class name.
      *
@@ -33,7 +35,7 @@ final class ParentDocument implements MetaField
      */
     public function getName()
     {
-        return '_parent';
+        return self::NAME;
     }
 
     /**
