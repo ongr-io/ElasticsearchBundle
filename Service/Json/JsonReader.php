@@ -177,9 +177,9 @@ class JsonReader implements \Countable, \Iterator
     protected function configureResolver(OptionsResolver $resolver)
     {
         $resolver
-            ->setRequired(['_id', '_type', '_source'])
-            ->setDefaults(['_score' => null, 'fields' => []])
-            ->addAllowedTypes('_id', ['integer', 'string'])
+            ->setRequired(['_type', '_source'])
+            ->setDefaults(['_id' => null, '_score' => null, 'fields' => []])
+            ->addAllowedTypes('_id', ['integer', 'string', 'null'])
             ->addAllowedTypes('_type', 'string')
             ->addAllowedTypes('_source', 'array')
             ->addAllowedTypes('fields', 'array');
