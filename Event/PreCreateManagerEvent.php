@@ -29,7 +29,7 @@ class PreCreateManagerEvent extends Event
     /**
      * CreateManagerEvent constructor.
      *
-     * @param PreClientBuilder $client
+     * @param ClientBuilder $client
      * @param $indexSettings array
      */
     public function __construct(ClientBuilder $client, &$indexSettings)
@@ -49,7 +49,7 @@ class PreCreateManagerEvent extends Event
     /**
      * @param ClientBuilder $client
      */
-    public function setClient($client)
+    public function setClient(ClientBuilder $client)
     {
         $this->client = $client;
     }

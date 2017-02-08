@@ -9,13 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BlankBundle;
-
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+namespace ONGR\ElasticsearchBundle\Exception;
 
 /**
- * AcmeTestBundle for testing.
+ * This is the exception which should be thrown when document has invalid or incomplete annotations.
  */
-class AcmeBlankBundle extends Bundle
+class DocumentParserException extends \Exception
 {
 }

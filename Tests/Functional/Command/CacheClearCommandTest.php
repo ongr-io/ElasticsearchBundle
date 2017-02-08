@@ -18,6 +18,9 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class CacheClearCommandTest extends AbstractElasticsearchTestCase
 {
+
+    const COMMAND_NAME = 'ongr:es:cache:clear';
+
     /**
      * {@inheritdoc}
      */
@@ -31,9 +34,11 @@ class CacheClearCommandTest extends AbstractElasticsearchTestCase
      */
     public function testExecute()
     {
+        $this->getManager();
+
         $app = new Application();
         $app->add($this->getCommand());
-        $command = $app->find('ongr:es:cache:clear');
+        $command = $app->find(self::COMMAND_NAME);
         $tester = new CommandTester($command);
         $tester->execute(
             [

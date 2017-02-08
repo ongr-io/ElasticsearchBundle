@@ -50,7 +50,7 @@ class IndexDropCommand extends AbstractManagerAwareCommand
 
             $io->text(
                 sprintf(
-                    'Dropped index for the<comment>`%s`</comment> manager',
+                    'Dropped index for the <comment>`%s`</comment> manager',
                     $input->getOption('manager')
                 )
             );

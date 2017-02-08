@@ -58,7 +58,7 @@ class ObjectIteratorTest extends AbstractElasticsearchTestCase
     public function testIteration()
     {
         /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
         $match = new MatchAllQuery();
         $search = $repo->createSearch()->addQuery($match);
         $iterator = $repo->findDocuments($search);
@@ -69,7 +69,7 @@ class ObjectIteratorTest extends AbstractElasticsearchTestCase
             $categories = $document->getRelatedCategories();
 
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
                 $document
             );
 

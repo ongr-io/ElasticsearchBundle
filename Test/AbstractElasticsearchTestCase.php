@@ -34,51 +34,12 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    public function runTest()
-    {
-        if ($this->getNumberOfRetries() < 1) {
-            return parent::runTest();
-        }
-
-        for ($try = 1; $try <= $this->getNumberOfRetries(); $try++) {
-            try {
-                return parent::runTest();
-            } catch (\Exception $e) {
-                if (!($e instanceof ElasticsearchException)) {
-                    throw $e;
-                }
-                // If error was from elasticsearch re-setup tests and retry.
-                if ($try !== $this->getNumberOfRetries()) {
-                    $this->tearDown();
-                    $this->setUp();
-                } else {
-                    throw $e;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp()
     {
         foreach ($this->getDataArray() as $manager => $data) {
             // Create index and populate data
             $this->getManager($manager);
         }
-    }
-
-    /**
-     * Returns number of retries tests should execute.
-     *
-     * @return int
-     */
-    protected function getNumberOfRetries()
-    {
-        return 3;
     }
 
     /**

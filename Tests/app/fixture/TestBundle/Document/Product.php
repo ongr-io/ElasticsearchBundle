@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 use ONGR\ElasticsearchBundle\Collection\Collection;
@@ -17,7 +17,7 @@ use ONGR\ElasticsearchBundle\Collection\Collection;
 /**
  * Product document for testing.
  *
- * @ES\Document(type="product")
+ * @ES\Document()
  */
 class Product
 {
@@ -31,26 +31,19 @@ class Product
     /**
      * @var string
      *
-     * @ES\Ttl()
-     */
-    private $ttl;
-
-    /**
-     * @var string
-     *
      * @ES\Routing()
      */
     private $routing;
 
     /**
-     * @var string
+     * @var string|array
      * @ES\Property(
-     *  type="string",
+     *  type="text",
      *  name="title",
      *  options={
      *    "fields"={
-     *        "raw"={"type"="string", "index"="not_analyzed"},
-     *        "title"={"type"="string"}
+     *        "raw"={"type"="keyword"},
+     *        "increment"={"type"="text", "analyzer"="incrementalAnalyzer"}
      *    }
      *  }
      * )
@@ -58,37 +51,37 @@ class Product
     private $title;
 
     /**
-     * @var string
-     * @ES\Property(type="string", name="description")
+     * @var string|array
+     * @ES\Property(type="text", name="description")
      */
     private $description;
 
     /**
      * @var CategoryObject
-     * @ES\Embedded(class="AcmeBarBundle:CategoryObject")
+     * @ES\Embedded(class="TestBundle:CategoryObject")
      */
     private $category;
 
     /**
      * @var CategoryObject[]
-     * @ES\Embedded(class="AcmeBarBundle:CategoryObject", multiple=true)
+     * @ES\Embedded(class="TestBundle:CategoryObject", multiple=true)
      */
     private $relatedCategories;
 
     /**
-     * @var int
+     * @var float|array
      * @ES\Property(type="float", name="price")
      */
     private $price;
 
     /**
-     * @var string
+     * @var string|array
      * @ES\Property(type="geo_point", name="location")
      */
     private $location;
 
     /**
-     * @var string
+     * @var boolean
      * @ES\Property(type="boolean", name="limited")
      */
     private $limited;
@@ -99,28 +92,13 @@ class Product
      */
     private $released;
 
-    /**
-     * @var int
-     *
-     * @ES\Property(
-     *     type="string",
-     *     name="pieces_count",
-     *     options={
-     *        "fields"={
-     *          "count"={"type"="token_count", "analyzer"="whitespace"}
-     *        }
-     *     }
-     * )
-     */
-    private $tokenPiecesCount;
-
     public function __construct()
     {
         $this->relatedCategories = new Collection();
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getId()
     {
@@ -128,7 +106,7 @@ class Product
     }
 
     /**
-     * @param string $id
+     * @param string|array $id
      */
     public function setId($id)
     {
@@ -136,23 +114,23 @@ class Product
     }
 
     /**
-     * @return string
+     * @return string|array
      */
-    public function getTtl()
+    public function getRouting()
     {
-        return $this->ttl;
+        return $this->routing;
     }
 
     /**
-     * @param string $ttl
+     * @param string|array $routing
      */
-    public function setTtl($ttl)
+    public function setRouting($routing)
     {
-        $this->ttl = $ttl;
+        $this->routing = $routing;
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getTitle()
     {
@@ -160,7 +138,7 @@ class Product
     }
 
     /**
-     * @param string $title
+     * @param string|array $title
      */
     public function setTitle($title)
     {
@@ -168,7 +146,7 @@ class Product
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getDescription()
     {
@@ -176,7 +154,7 @@ class Product
     }
 
     /**
-     * @param string $description
+     * @param string|array $description
      */
     public function setDescription($description)
     {
@@ -224,7 +202,7 @@ class Product
     }
 
     /**
-     * @return int
+     * @return float|array
      */
     public function getPrice()
     {
@@ -232,7 +210,7 @@ class Product
     }
 
     /**
-     * @param int $price
+     * @param float|array $price
      */
     public function setPrice($price)
     {
@@ -240,7 +218,7 @@ class Product
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getLocation()
     {
@@ -248,7 +226,7 @@ class Product
     }
 
     /**
-     * @param string $location
+     * @param string|array $location
      */
     public function setLocation($location)
     {
@@ -256,7 +234,7 @@ class Product
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function getLimited()
     {
@@ -264,7 +242,7 @@ class Product
     }
 
     /**
-     * @param string $limited
+     * @param string|array $limited
      */
     public function setLimited($limited)
     {
@@ -286,38 +264,4 @@ class Product
     {
         $this->released = $released;
     }
-
-    /**
-     * @return int
-     */
-    public function getTokenPiecesCount()
-    {
-        return $this->tokenPiecesCount;
-    }
-
-    /**
-     * @param int $tokenPiecesCount
-     */
-    public function setTokenPiecesCount($tokenPiecesCount)
-    {
-        $this->tokenPiecesCount = $tokenPiecesCount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRouting()
-    {
-        return $this->routing;
-    }
-
-    /**
-     * @param string $routing
-     */
-    public function setRouting($routing)
-    {
-        $this->routing = $routing;
-    }
-
-
 }

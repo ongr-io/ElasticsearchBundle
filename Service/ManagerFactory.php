@@ -98,21 +98,6 @@ class ManagerFactory
      */
     public function createManager($managerName, $connection, $analysis, $managerConfig)
     {
-        foreach (array_keys($analysis) as $analyzerType) {
-            foreach ($connection['analysis'][$analyzerType] as $name) {
-                $connection['settings']['analysis'][$analyzerType][$name] = $analysis[$analyzerType][$name];
-            }
-        }
-        unset($connection['analysis']);
-
-        if (!isset($connection['settings']['number_of_replicas'])) {
-            $connection['settings']['number_of_replicas'] = 0;
-        }
-
-        if (!isset($connection['settings']['number_of_shards'])) {
-            $connection['settings']['number_of_shards'] = 1;
-        }
-
         $mappings = $this->metadataCollector->getClientMapping($managerConfig['mappings']);
 
         $client = ClientBuilder::create();
@@ -127,7 +112,13 @@ class ManagerFactory
             'index' => $connection['index_name'],
             'body' => array_filter(
                 [
-                    'settings' => $connection['settings'],
+                    'settings' => array_merge(
+                        $connection['settings'],
+                        [
+                            'analysis' =>
+                                $this->metadataCollector->getClientAnalysis($managerConfig['mappings'], $analysis),
+                        ]
+                    ),
                     'mappings' => $mappings,
                 ]
             ),
@@ -154,6 +145,7 @@ class ManagerFactory
 
         $manager->setCommitMode($managerConfig['commit_mode']);
         $manager->setEventDispatcher($this->eventDispatcher);
+        $manager->setCommitMode($managerConfig['commit_mode']);
         $manager->setBulkCommitSize($managerConfig['bulk_size']);
 
         $this->eventDispatcher &&

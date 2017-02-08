@@ -11,11 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\Service\Repository;
-use ONGR\ElasticsearchDSL\Aggregation\AbstractAggregation;
-use ONGR\ElasticsearchDSL\Aggregation\RangeAggregation;
-use ONGR\ElasticsearchDSL\Aggregation\TermsAggregation;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\RangeAggregation;
 
 class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
 {
@@ -57,48 +54,36 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
     {
         $expected = [
             [
-                'key' => 'weak',
+                'key' => '*-20.0',
                 'doc_count' => 2,
             ],
             [
-                'key' => 'solid',
+                'key' => '20.0-*',
                 'doc_count' => 1,
             ],
         ];
 
         $repository = $this
             ->getManager()
-            ->getRepository('AcmeBarBundle:Product');
+            ->getRepository('TestBundle:Product');
+
+        $rangeAggregation = new RangeAggregation('range', 'price');
+        $rangeAggregation->addRange(null, 20);
+        $rangeAggregation->addRange(20, null);
+
         $search = $repository
             ->createSearch()
-            ->addAggregation($this->buildAggregation());
+            ->addAggregation($rangeAggregation);
+
         $results = $repository->findDocuments($search);
-        $agg = $results->getAggregation('terms');
+        $rangeResult = $results->getAggregation('range');
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue', $agg);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue', $rangeResult);
 
-        foreach ($agg->getBuckets() as $aggKey => $subAgg) {
+        foreach ($rangeResult->getBuckets() as $aggKey => $subAgg) {
             $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue', $subAgg);
             $this->assertEquals($expected[$aggKey]['key'], $subAgg->getValue('key'));
             $this->assertEquals($expected[$aggKey]['doc_count'], $subAgg->getValue('doc_count'));
         }
-    }
-
-    /**
-     * Get aggregation collection with several aggregations registered.
-     *
-     * @return AbstractAggregation
-     */
-    private function buildAggregation()
-    {
-        $aggregation = new TermsAggregation('terms');
-        $aggregation->setField('description');
-        $aggregation2 = new RangeAggregation('range');
-        $aggregation2->setField('price');
-        $aggregation2->addRange(null, 20);
-        $aggregation2->addRange(20, null);
-        $aggregation->addAggregation($aggregation2);
-
-        return $aggregation;
     }
 }

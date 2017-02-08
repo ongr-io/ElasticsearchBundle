@@ -184,9 +184,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testBulk($expected, $calls)
     {
-        $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
+        $indices = $this->createMock('Elasticsearch\Namespaces\IndicesNamespace');
 
-        $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
+        $esClient = $this->createMock('Elasticsearch\Client');
         $esClient->expects($this->once())->method('bulk')->with($expected);
         $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
 
@@ -220,9 +220,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $expected = $this->getTestBulkData()['update_script']['expected'];
         $expected['refresh'] = true;
         $calls = $this->getTestBulkData()['update_script']['calls'];
-        $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
+        $indices = $this->createMock('Elasticsearch\Namespaces\IndicesNamespace');
 
-        $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
+        $esClient = $this->createMock('Elasticsearch\Client');
         $esClient->expects($this->any())->method('bulk')->with($expected)->willReturn(['errors' => false]);
         $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
 
@@ -263,7 +263,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testClearScroll()
     {
-        $esClient = $this->getMock('Elasticsearch\Client', ['clearScroll'], [], '', false);
+        $esClient = $this
+            ->getMockBuilder('Elasticsearch\Client')
+            ->setMethods(['clearScroll'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $esClient->expects($this->once())->method('clearScroll')->with(['scroll_id' => 'foo']);
 
         $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
@@ -284,6 +288,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetCommitModeException()
     {
+        /** @var Manager $manager */
         $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->disableOriginalConstructor()
             ->setMethods(null)
@@ -316,12 +321,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ],
-            $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
-                ->disableOriginalConstructor()
-                ->getMock(),
-            $this->getMockBuilder('ONGR\ElasticsearchBundle\Result\Converter')
-                ->disableOriginalConstructor()
-                ->getMock()
+            $this->createMock('ONGR\ElasticsearchBundle\Mapping\MetadataCollector'),
+            $this->createMock('ONGR\ElasticsearchBundle\Result\Converter')
         );
 
         return [$manager, $client, $search];
@@ -334,10 +335,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     public function testConvertToNormalizedArrayWhenSourceIsSet()
     {
         $configuration = $this->getPreparedConfiguration();
+        /** @var Manager $manager */
         $manager = $configuration[0];
         $client = $configuration[1];
         $search = $configuration[2];
-        $array = [
+        $dummyData = [
+            '_id' => '15',
             '_source' => [
                 [
                     'price' => 1,
@@ -345,9 +348,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $client->expects($this->any())->method('search')->willReturn($array);
-        $result = $manager->execute(['product'], $search, 'array');
-        $this->assertEquals($result, $array['_source']);
+        $client->expects($this->any())->method('search')->willReturn($dummyData);
+        $result = $manager->search(['product'], $search->toArray());
+        $this->assertEquals($dummyData, $result);
     }
 
     /**
@@ -360,30 +363,25 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $manager = $configuration[0];
         $client = $configuration[1];
         $search = $configuration[2];
-        $array = [
+        $dummyData['hits'] = [
             'hits' => [
-                'hits' => [
-                    [
-                        "fields" => [
-                            [
-                                'name' => 'url',
-                                'value' => 'http://ongr.io'
-                            ],
-                            [
-                                'name' => 'title',
-                                'value' => 'Elasticsearch test'
-                            ]
+                [
+                    "fields" => [
+                        [
+                            'name' => 'url',
+                            'value' => 'http://ongr.io'
+                        ],
+                        [
+                            'name' => 'title',
+                            'value' => 'Elasticsearch test'
                         ]
                     ]
                 ]
             ]
         ];
-        $expected = [
-            ['url', 'title']
-        ];
-        $client->expects($this->any())->method('search')->willReturn($array);
-        $result = $manager->execute(['product'], $search, 'array');
-        $this->assertEquals($result, $expected);
+        $client->expects($this->any())->method('search')->willReturn($dummyData);
+        $result = $manager->search(['product'], $search->toArray());
+        $this->assertEquals($dummyData, $result);
     }
 
     /**

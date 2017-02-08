@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
 
 use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DocumentFinderTest extends WebTestCase
 {
@@ -23,8 +23,8 @@ class DocumentFinderTest extends WebTestCase
     public function testGetBundleDocumentClasses()
     {
         $finder = new DocumentFinder($this->getContainer()->getParameter('kernel.bundles'));
-        $this->assertGreaterThan(0, count($finder->getBundleDocumentClasses('AcmeBarBundle')));
-        $this->assertEquals(0, count($finder->getBundleDocumentClasses('AcmeBlankBundle')));
+        $this->assertGreaterThan(0, count($finder->getBundleDocumentClasses('TestBundle')));
+        $this->assertEquals(0, count($finder->getBundleDocumentClasses('FrameworkBundle')));
     }
 
     /**
@@ -42,7 +42,7 @@ class DocumentFinderTest extends WebTestCase
     /**
      * Returns service container.
      *
-     * @return Container
+     * @return ContainerInterface
      */
     public function getContainer()
     {

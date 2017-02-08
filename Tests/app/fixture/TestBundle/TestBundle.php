@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\FooBundle;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * AcmeTestBundle for testing.
  */
-class AcmeFooBundle extends Bundle
+class TestBundle extends Bundle
 {
 }

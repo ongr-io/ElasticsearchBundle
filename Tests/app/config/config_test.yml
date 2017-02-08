@@ -4,38 +4,36 @@ framework:
     test: ~
 
 ongr_elasticsearch:
-    connections:
-        default:
-            hosts:
-                - 127.0.0.1:9200
-            index_name: ongr-esb-test
-            settings:
-                refresh_interval: -1
-                number_of_replicas: 0
-                number_of_shards: 5
-        bar:
-            hosts:
-                - 127.0.0.1:9200
-            index_name: ongr-esb-test-bar
+    analysis:
+        filter:
+            incremental_filter:
+                type: edge_ngram
+                min_gram: 1
+                max_gram: 20
+        analyzer:
+            incrementalAnalyzer:  #-> analyzer name
+                type: custom
+                tokenizer: standard
+                filter:
+                    - lowercase
+                    - incremental_filter
     managers:
+        custom_dir:
+            index:
+                hosts:
+                    - 127.0.0.1:9200
+                index_name: ongr-custom-document-dir-test
+            mappings:
+                TestBundle:
+                    document_dir: Entity
         default:
-            connection: default
-            logger: true
-            mappings:
-                - AcmeBarBundle
-        foo:
-            connection: bar
-            mappings:
-                - AcmeBarBundle
-                - AcmeFooBundle
-        bar:
             index:
                 hosts:
                     - 127.0.0.1:9200
                 index_name: ongr-esb-test
                 settings:
                     refresh_interval: -1
-                    number_of_replicas: 1
-                    number_of_shards: 2
+                    number_of_replicas: 0
+                    number_of_shards: 5
             mappings:
-                - AcmeBarBundle
+                - TestBundle

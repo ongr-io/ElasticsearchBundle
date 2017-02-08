@@ -30,10 +30,6 @@ class ElasticsearchExtensionTest extends WebTestCase
                 'ONGR\ElasticsearchBundle\Service\Manager',
             ],
             [
-                'es.manager.foo',
-                'ONGR\ElasticsearchBundle\Service\Manager',
-            ],
-            [
                 'es.manager.default.product',
                 'ONGR\ElasticsearchBundle\Service\Repository',
             ],
@@ -58,18 +54,5 @@ class ElasticsearchExtensionTest extends WebTestCase
 
         $this->assertTrue($container->has($id), 'Container should have set id.');
         $this->assertInstanceOf($instance, $container->get($id), 'Container has wrong instance set to id.');
-    }
-
-    /**
-     * Test if container sets the default values as expected.
-     */
-    public function testContainerDefaultParams()
-    {
-        $container = $this->createClient()->getContainer();
-
-        $expectedManagers = ['default', 'foo', 'bar'];
-        $actualManagers = $container->getParameter('es.managers');
-
-        $this->assertEquals($expectedManagers, array_keys($actualManagers));
     }
 }

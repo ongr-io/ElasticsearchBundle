@@ -13,8 +13,7 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
-use ONGR\ElasticsearchBundle\Result\Result;
-use ONGR\ElasticsearchDSL\Query\QueryStringQuery;
+use ONGR\ElasticsearchDSL\Query\FullText\QueryStringQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
@@ -164,7 +163,7 @@ class Repository
             $search->addSort(new FieldSort($field, $direction));
         }
 
-        return $this->execute($search);
+        return $this->findDocuments($search);
     }
 
     /**
@@ -193,23 +192,6 @@ class Repository
     }
 
     /**
-     * Executes given search.
-     *
-     * @deprecated Use strict execute functions instead. e.g. executeIterator, executeRawIterator.
-     * @param Search $search
-     * @param string $resultsType
-     *
-     * @return DocumentIterator|RawIterator|array
-     *
-     * @throws \Exception
-     */
-    public function execute(Search $search, $resultsType = Result::RESULTS_OBJECT)
-    {
-        return $this->manager->execute([$this->type], $search, $resultsType);
-    }
-
-
-    /**
      * Parses scroll configuration from raw response.
      *
      * @param array  $raw
@@ -227,21 +209,6 @@ class Repository
 
         return $scrollConfig;
     }
-
-
-    /**
-     * Returns DocumentIterator with composed Document objects from array response.
-     *
-     * @deprecated Miss type in the function name, use findDocuments() instead. Will remove in 2.0
-     *
-     * @param Search $search
-     * @return DocumentIterator
-     */
-    public function findDocument(Search $search)
-    {
-        return $this->findDocuments($search);
-    }
-
 
     /**
      * Returns DocumentIterator with composed Document objects from array response.
@@ -307,7 +274,7 @@ class Repository
      */
     private function executeSearch(Search $search)
     {
-        return $this->getManager()->search([$this->getType()], $search->toArray(), $search->getQueryParams());
+        return $this->getManager()->search([$this->getType()], $search->toArray(), $search->getUriParams());
     }
 
     /**

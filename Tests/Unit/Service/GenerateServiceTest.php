@@ -57,13 +57,8 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
                 [
                     'field_name' => 'embedded',
                     'annotation' => 'embedded',
-                    'property_class' => 'AcmeBarBundle:Product',
+                    'property_class' => 'TestBundle:Product',
                     'property_multiple' => true,
-                ],
-                [
-                    'field_name' => 'ttl',
-                    'annotation' => 'ttl',
-                    'property_default' => '12m',
                 ]
             ]
         );
@@ -76,7 +71,7 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
      */
     private function getBundle()
     {
-        $bundle = $this->getMock('Symfony\Component\HttpKernel\Bundle\BundleInterface');
+        $bundle = $this->createMock('Symfony\Component\HttpKernel\Bundle\BundleInterface');
         $bundle->expects($this->any())->method('getPath')->will($this->returnValue($this->tmpDir));
         $bundle->expects($this->any())->method('getName')->will($this->returnValue('FooBarBundle'));
         $bundle->expects($this->any())->method('getNamespace')->will($this->returnValue('Foo\BarBundle'));

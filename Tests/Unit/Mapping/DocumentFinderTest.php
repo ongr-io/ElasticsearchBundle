@@ -24,12 +24,12 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
-                'AcmeBarBundle:Product'
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
+                'TestBundle:Product'
             ],
             [
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Person\Address',
-                'AcmeBarBundle:Person\Address'
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\User',
+                'TestBundle:User'
             ],
         ];
     }
@@ -45,7 +45,7 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     public function testGetNamespace($expectedNamespace, $className)
     {
         $bundles = [
-            'AcmeBarBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle'
+            'TestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\TestBundle'
         ];
         $finder = new DocumentFinder($bundles);
 
@@ -58,14 +58,14 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     public function testGetBundleDocumentClasses()
     {
         $bundles = [
-            'AcmeBarBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\AcmeBarBundle'
+            'TestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\TestBundle'
         ];
         $finder = new DocumentFinder($bundles);
 
-        $documents = $finder->getBundleDocumentClasses('AcmeBarBundle');
+        $documents = $finder->getBundleDocumentClasses('TestBundle');
 
         $this->assertGreaterThan(0, count($documents));
         $this->assertContains('Product', $documents);
-        $this->assertContains('Person\Address', $documents);
+        $this->assertContains('User', $documents);
     }
 }

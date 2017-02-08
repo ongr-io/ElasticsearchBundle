@@ -18,12 +18,7 @@ use ONGR\ElasticsearchBundle\Event\BulkEvent;
 use ONGR\ElasticsearchBundle\Event\CommitEvent;
 use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use ONGR\ElasticsearchBundle\Result\AbstractResultsIterator;
 use ONGR\ElasticsearchBundle\Result\Converter;
-use ONGR\ElasticsearchBundle\Result\DocumentIterator;
-use ONGR\ElasticsearchBundle\Result\RawIterator;
-use ONGR\ElasticsearchBundle\Result\Result;
-use ONGR\ElasticsearchDSL\Search;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -277,7 +272,11 @@ class Manager
     {
         $params = [];
         $params['index'] = $this->getIndexName();
-        $params['type'] = implode(',', $types);
+        
+        if (!empty($types)) {
+            $params['type'] = implode(',', $types);
+        }
+        
         $params['body'] = $query;
 
         if (!empty($queryStringParams)) {
@@ -613,98 +612,10 @@ class Manager
     }
 
     /**
-     * Executes given search.
-     *
-     * @deprecated use strict return type functions from Repository instead.
-     *
-     * @param array  $types
-     * @param Search $search
-     * @param string $resultsType
-     *
-     * @return DocumentIterator|RawIterator|array
-     */
-    public function execute($types, Search $search, $resultsType = Result::RESULTS_OBJECT)
-    {
-        foreach ($types as &$type) {
-            $type = $this->resolveTypeName($type);
-        }
-
-        $results = $this->search($types, $search->toArray(), $search->getQueryParams());
-
-        return $this->parseResult($results, $resultsType, $search->getScroll());
-    }
-
-    /**
-     * Parses raw result.
-     *
-     * @deprecated use strict return type functions from Repository class instead.
-     *
-     * @param array  $raw
-     * @param string $resultsType
-     * @param string $scrollDuration
-     *
-     * @return DocumentIterator|RawIterator|array
-     *
-     * @throws \Exception
-     */
-    private function parseResult($raw, $resultsType, $scrollDuration = null)
-    {
-        $scrollConfig = [];
-        if (isset($raw['_scroll_id'])) {
-            $scrollConfig['_scroll_id'] = $raw['_scroll_id'];
-            $scrollConfig['duration'] = $scrollDuration;
-        }
-
-        switch ($resultsType) {
-            case Result::RESULTS_OBJECT:
-                return new DocumentIterator($raw, $this, $scrollConfig);
-            case Result::RESULTS_ARRAY:
-                return $this->convertToNormalizedArray($raw);
-            case Result::RESULTS_RAW:
-                return $raw;
-            case Result::RESULTS_RAW_ITERATOR:
-                return new RawIterator($raw, $this, $scrollConfig);
-            default:
-                throw new \Exception('Wrong results type selected');
-        }
-    }
-
-    /**
-     * Normalizes response array.
-     *
-     * @deprecated Use ArrayIterator from Result namespace instead.
-     *
-     * @param array $data
-     *
-     * @return array
-     */
-    private function convertToNormalizedArray($data)
-    {
-        if (array_key_exists('_source', $data)) {
-            return $data['_source'];
-        }
-
-        $output = [];
-
-        if (isset($data['hits']['hits'][0]['_source'])) {
-            foreach ($data['hits']['hits'] as $item) {
-                $output[] = $item['_source'];
-            }
-        } elseif (isset($data['hits']['hits'][0]['fields'])) {
-            foreach ($data['hits']['hits'] as $item) {
-                $output[] = array_map('reset', $item['fields']);
-            }
-        }
-
-        return $output;
-    }
-
-    /**
      * Fetches next set of results.
      *
      * @param string $scrollId
      * @param string $scrollDuration
-     * @param string $resultsType
      *
      * @return mixed
      *
@@ -712,21 +623,11 @@ class Manager
      */
     public function scroll(
         $scrollId,
-        $scrollDuration = '5m',
-        $resultsType = Result::RESULTS_OBJECT
+        $scrollDuration = '5m'
     ) {
         $results = $this->getClient()->scroll(['scroll_id' => $scrollId, 'scroll' => $scrollDuration]);
 
-        if ($resultsType == Result::RESULTS_RAW) {
-            return $results;
-        } else {
-            trigger_error(
-                '$resultsType parameter was deprecated in scroll() fucntion. ' .
-                'Use strict type findXXX functions from repository instead. Will be removed in 2.0',
-                E_USER_DEPRECATED
-            );
-            return $this->parseResult($results, $resultsType, $scrollDuration);
-        }
+        return $results;
     }
 
     /**
@@ -737,6 +638,27 @@ class Manager
     public function clearScroll($scrollId)
     {
         $this->getClient()->clearScroll(['scroll_id' => $scrollId]);
+    }
+
+    /**
+     * Calls "Get Settings API" in Elasticsearch and will return you the currently configured settings.
+     *
+     * return array
+     */
+    public function getSettings()
+    {
+        return $this->getClient()->indices()->getSettings(['index' => $this->getIndexName()]);
+    }
+
+    /**
+     * Gets Elasticsearch aliases information.
+     * @param $params
+     *
+     * @return array
+     */
+    public function getAliases($params = [])
+    {
+        return $this->getClient()->indices()->getAliases(array_merge(['index' => $this->getIndexName()], $params));
     }
 
     /**

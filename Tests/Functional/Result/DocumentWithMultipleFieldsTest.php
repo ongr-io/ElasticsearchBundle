@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchDSL\Query\MatchQuery;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
+use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 
 class DocumentWithMultipleFieldsTest extends AbstractElasticsearchTestCase
 {
@@ -55,30 +55,26 @@ class DocumentWithMultipleFieldsTest extends AbstractElasticsearchTestCase
      */
     public function testMultipleFields()
     {
-        $repo = $this->getManager()->getRepository('AcmeBarBundle:Product');
+        $repo = $this->getManager()->getRepository('TestBundle:Product');
 
-        $query = new MatchQuery('title.title', 'Bar');
+//        throw new \Exception('Fuck you phpunit');
+
+        $query = new MatchQuery('title', 'Bar');
         $search = $repo->createSearch();
         $search->addQuery($query);
-
         $result = $repo->findDocuments($search);
-
         $this->assertEquals(2, count($result));
 
-        $query = new MatchQuery('title.raw', 'Bar');
+        $query = new TermQuery('title.raw', 'Bar');
         $search = $repo->createSearch();
         $search->addQuery($query);
-
         $result = $repo->findDocuments($search);
-
         $this->assertEquals(0, count($result));
 
         $query = new TermQuery('title.raw', 'Foo Product');
         $search = $repo->createSearch();
         $search->addQuery($query);
-
         $result = $repo->findDocuments($search);
-
         $this->assertEquals(1, count($result));
     }
 }

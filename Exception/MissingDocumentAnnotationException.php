@@ -9,13 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Mapping\Exception;
+namespace ONGR\ElasticsearchBundle\Exception;
 
 /**
  * This is the exception which should be thrown when class does not have @ONGR\ElasticsearchBundle\Annotation\Document
  * annotation.
- *
- * @deprecated moved to ONGR\ElasticsearchBundle\Exception namespace
  */
 class MissingDocumentAnnotationException extends DocumentParserException
 {

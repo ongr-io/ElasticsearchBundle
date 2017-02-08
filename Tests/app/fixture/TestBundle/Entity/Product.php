@@ -9,19 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product as BaseProduct;
 
 /**
- * Document fixture with invalid embedded object.
+ * Product document for testing.
  *
- * @ES\Document
+ * @ES\Document()
  */
-class InvalidDocument
+class Product extends BaseProduct
 {
-    /**
-     * @ES\Embedded(class="AcmeBarBundle:Product")
-     */
-    public $category;
 }

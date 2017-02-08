@@ -9,37 +9,51 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * Product document for testing.
+ * User document for testing. Type name is different than class name.
  *
- * @ES\Document(type="person")
+ * @ES\Document(type="users")
  */
-class Person
+class User
 {
     /**
      * @var string
      *
-     * @ES\Property(type="string")
+     * @ES\Id()
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @ES\Property(type="text")
      */
     private $firstName;
 
     /**
      * @var string
-     *
-     * @ES\Property(type="string", name="family_name")
+     * @ES\Property(type="text", name="last_name")
      */
     private $lastName;
 
     /**
-     * @var int
-     *
-     * @ES\Property(type="integer")
+     * @return string
      */
-    private $age;
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
     /**
      * @return string
@@ -72,22 +86,4 @@ class Person
     {
         $this->lastName = $lastName;
     }
-
-    /**
-     * @return int
-     */
-    public function getAge()
-    {
-        return $this->age;
-    }
-
-    /**
-     * @param int $age
-     */
-    public function setAge($age)
-    {
-        $this->age = $age;
-    }
-
-
 }

@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -28,33 +27,12 @@ class MappingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $analysis = $container->getParameter('es.analysis');
-        $connections = $container->getParameter('es.connections');
         $managers = $container->getParameter('es.managers');
 
         $collector = $container->get('es.metadata_collector');
 
         foreach ($managers as $managerName => $manager) {
-            if (!empty($manager['index'])) {
-                $connection = $manager['index'];
-            } else {
-                if (!isset($manager['connection']) || !isset($connections[$manager['connection']])) {
-                    throw new InvalidConfigurationException(
-                        'There is an error in the ES connection configuration of the manager: ' . $managerName
-                    );
-                }
-
-                $connection = $connections[$manager['connection']];
-            }
-
-            if (isset($connection['auth'])) {
-                trigger_error(
-                    '`auth` usage in elasticsearch bundle configuration is deprecated, ' .
-                    'add your auth configuration directly in the host. This will be removed in v2.0. More: ' .
-                    'https://www.elastic.co/guide/en/elasticsearch/client/php-api/2.0/_security.html',
-                    E_USER_DEPRECATED
-                );
-            }
-
+            $connection = $manager['index'];
             $managerName = strtolower($managerName);
 
             $managerDefinition = new Definition(

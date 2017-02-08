@@ -18,8 +18,7 @@ use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Mapping\Exception\DocumentParserException;
-use ONGR\ElasticsearchBundle\Mapping\Exception\MissingDocumentAnnotationException;
+use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 
 /**
  * Document parser used for reading document annotations.
@@ -35,7 +34,6 @@ class DocumentParser
     // Meta fields
     const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
     const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
-    const TTL_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Ttl';
     const ROUTING_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Routing';
     const VERSION_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Version';
 
@@ -65,6 +63,13 @@ class DocumentParser
     private $properties = [];
 
     /**
+     * Analyzers used in documents.
+     *
+     * @var string[]
+     */
+    private $analyzers = [];
+
+    /**
      * @param Reader         $reader Used for reading annotations.
      * @param DocumentFinder $finder Used for resolving namespaces.
      */
@@ -81,7 +86,7 @@ class DocumentParser
      * @param \ReflectionClass $class
      *
      * @return array
-     * @throws DocumentParserException
+     * @throws MissingDocumentAnnotationException
      */
     public function parse(\ReflectionClass $class)
     {
@@ -98,7 +103,6 @@ class DocumentParser
         }
 
         $fields = [];
-        $aliases = $this->getAliases($class, $fields);
 
         return [
             'type' => $document->type ?: Caser::snake($class->getShortName()),
@@ -109,7 +113,8 @@ class DocumentParser
                     $fields
                 )
             ),
-            'aliases' => $aliases,
+            'aliases' => $this->getAliases($class, $fields),
+            'analyzers' => $this->getAnalyzers($class),
             'objects' => $this->getObjects(),
             'namespace' => $class->getName(),
             'class' => $class->getShortName(),
@@ -176,7 +181,6 @@ class DocumentParser
         /** @var MetaField $annotation */
         $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::PARENT_ANNOTATION);
-        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::TTL_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::ROUTING_ANNOTATION);
         $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::VERSION_ANNOTATION);
 
@@ -358,7 +362,6 @@ class DocumentParser
             'Nested',
             'Id',
             'ParentDocument',
-            'Ttl',
             'Routing',
             'Version',
         ];
@@ -416,6 +419,49 @@ class DocumentParser
         $this->properties[$reflectionClass->getName()] = $properties;
 
         return $properties;
+    }
+
+    /**
+     * Parses analyzers list from document mapping.
+     *
+     * @param \ReflectionClass $reflectionClass
+     * @return array
+     */
+    private function getAnalyzers(\ReflectionClass $reflectionClass)
+    {
+        $analyzers = [];
+        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
+            $type = $this->getPropertyAnnotationData($property);
+            $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
+
+            if ($type instanceof Embedded) {
+                $analyzers = array_merge(
+                    $analyzers,
+                    $this->getAnalyzers(new \ReflectionClass($this->finder->getNamespace($type->class)))
+                );
+            }
+
+            if ($type instanceof Property) {
+                if (isset($type->options['analyzer'])) {
+                    $analyzers[] = $type->options['analyzer'];
+                }
+                if (isset($type->options['search_analyzer'])) {
+                    $analyzers[] = $type->options['search_analyzer'];
+                }
+
+                if (isset($type->options['fields'])) {
+                    foreach ($type->options['fields'] as $field) {
+                        if (isset($field['analyzer'])) {
+                            $analyzers[] = $field['analyzer'];
+                        }
+                        if (isset($field['search_analyzer'])) {
+                            $analyzers[] = $field['search_analyzer'];
+                        }
+                    }
+                }
+            }
+        }
+        return array_unique($analyzers);
     }
 
     /**

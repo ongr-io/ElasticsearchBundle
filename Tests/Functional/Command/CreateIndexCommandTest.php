@@ -12,33 +12,13 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexCreateCommand;
+use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CreateIndexCommandTest extends AbstractCommandTestCase
+class CreateIndexCommandTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * Execution data provider.
-     *
-     * @return array
-     */
-    public function getTestExecuteData()
-    {
-        return [
-            [
-                'foo',
-                [
-                    '--no-mapping' => null,
-                ],
-                [],
-            ],
-            [
-                'default',
-                [],
-                [],
-            ],
-        ];
-    }
+    const COMMAND_NAME = 'ongr:es:index:create';
 
     /**
      * Tests creating index in case of existing this index. Configuration from tests yaml.
@@ -47,16 +27,9 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
     {
         $manager = $this->getManager();
 
-        if (!$manager->indexExists()) {
-            $manager->createIndex();
-        }
-
-        // Initialize command
-        $commandName = 'ongr:es:index:create';
-        $commandTester = $this->getCommandTester($commandName);
+        $commandTester = $this->getCommandTester();
         $options = [];
-        $arguments['command'] = $commandName;
-        $arguments['--manager'] = $manager->getName();
+        $arguments['command'] = self::COMMAND_NAME;
         $arguments['--if-not-exists'] = null;
 
         // Test if the command returns 0 or not
@@ -71,31 +44,29 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
             $manager->getName()
         );
 
-        // Test if the command output matches the expected output or not
-        $this->assertRegexp($expectedOutput, $commandTester->getDisplay());
+        $this->assertRegExp($expectedOutput, $commandTester->getDisplay());
     }
 
     /**
      * Tests creating index. Configuration from tests yaml.
-     *
-     * @param string $managerName
-     * @param array  $arguments
-     * @param array  $options
-     *
-     * @dataProvider getTestExecuteData
      */
-    public function testExecute($managerName, $arguments, $options)
+    public function testIndexCreateWhenThereIsNoIndex()
     {
-        $manager = $this->getManager($managerName);
+        $manager = $this->getManager();
+        $manager->dropIndex();
 
-        if ($manager->indexExists()) {
-            $manager->dropIndex();
-        }
+        $this->assertFalse($manager->indexExists(), 'Index should not exist.');
 
-        $this->runIndexCreateCommand($managerName, $arguments, $options);
+        $this->assertSame(
+            0,
+            $this->getCommandTester()->execute(
+                [
+                    'command' => self::COMMAND_NAME
+                ]
+            )
+        );
 
         $this->assertTrue($manager->indexExists(), 'Index should exist.');
-        $manager->dropIndex();
     }
 
     /**
@@ -103,57 +74,80 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
      */
     public function testAliasIsCreatedCorrectly()
     {
+        $commandTester = $this->getCommandTester();
         $manager = $this->getManager();
+        $manager->dropIndex();
 
         $aliasName = $manager->getIndexName();
-        $finder = $this->getContainer()->get('es.client.index_suffix_finder');
-        $finder->setNextFreeIndex($manager);
-        $oldIndexName = $manager->getIndexName();
-        $manager->createIndex();
 
-        $this->assertTrue($manager->indexExists());
+        $this->assertFalse($manager->indexExists());
         $this->assertFalse($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
 
-        $this->runIndexCreateCommand($manager->getName(), ['--time' => null, '--alias' => null], []);
+        $commandTester->execute(
+            [
+                'command' => self::COMMAND_NAME,
+                '-t' => null,
+                '-a' => null,
+            ]
+        );
 
-        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
-        $newIndexNames = array_keys($aliases);
-
-        $this->assertCount(1, $newIndexNames);
+        $indexName = $manager->getIndexName();
+        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $indexName]));
         $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
-        $this->assertNotEquals($manager->getIndexName(), $newIndexNames);
+        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
+        $indexNamesFromAlias = array_keys($aliases);
+        $this->assertCount(1, $indexNamesFromAlias);
+        $this->assertEquals($indexName, $indexNamesFromAlias[0]);
+        $this->assertNotEquals($manager->getIndexName(), $aliasName);
 
-        $manager->setIndexName($newIndexNames[0]);
-        $manager->dropIndex();
-        $manager->setIndexName($oldIndexName);
+        //Drop index manually.
         $manager->dropIndex();
     }
 
     /**
-     * Testing if aliases are correctly changed from one index to the next after multiple command calls
+     * Testing if aliases are correctly changed from one index to the next after multiple command calls.
      */
     public function testAliasIsChangedCorrectly()
     {
+        $commandTester = $this->getCommandTester();
         $manager = $this->getManager();
+        $manager->dropIndex();
+
         $aliasName = $manager->getIndexName();
 
-        $this->runIndexCreateCommand($manager->getName(), ['--time' => null, '--alias' => null], []);
+        $this->assertFalse($manager->indexExists());
+        $this->assertFalse($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
+
+        $commandTester->execute(
+            [
+                'command' => self::COMMAND_NAME,
+                '-t' => null,
+                '-a' => null,
+            ]
+        );
+
+        $indexName = $manager->getIndexName();
+        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $indexName]));
         $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
-        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
-        $this->assertCount(1, array_keys($aliases));
-        $aliasedIndex1 = array_keys($aliases)[0];
+        $this->assertNotEquals($manager->getIndexName(), $aliasName);
 
-        $this->assertNotEquals($manager->getIndexName(), $aliasedIndex1);
-        $this->runIndexCreateCommand($manager->getName(), ['--time' => null, '--alias' => null], []);
+        $manager->setIndexName($aliasName);
+        $commandTester->execute(
+            [
+                'command' => self::COMMAND_NAME,
+                '-t' => null,
+                '-a' => null,
+            ]
+        );
 
-        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
-        $this->assertCount(1, array_keys($aliases));
-        $aliasedIndex2 = array_keys($aliases)[0];
-        $this->assertNotEquals($aliasedIndex1, $aliasedIndex2);
+        $indexName2 = $manager->getIndexName();
+        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $indexName2]));
+        $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
 
-        $manager->setIndexName($aliasedIndex1);
+        //Drop index manually.
+        $manager->setIndexName($indexName);
         $manager->dropIndex();
-        $manager->setIndexName($aliasedIndex2);
+        $manager->setIndexName($indexName2);
         $manager->dropIndex();
     }
 
@@ -162,21 +156,18 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
      */
     public function testIndexMappingDump()
     {
+        $commandTester = $this->getCommandTester();
         $manager = $this->getManager();
+        $manager->dropIndex();
 
-        $commandName = 'ongr:es:index:create';
-        $commandTester = $this->getCommandTester($commandName);
-        $options = [];
-        $arguments['command'] = $commandName;
-        $arguments['--dump'] = null;
-
-        // Test if the command returns 0 or not
-        $this->assertSame(
-            0,
-            $commandTester->execute($arguments, $options)
+        $this->assertFalse($manager->indexExists());
+        $commandTester->execute(
+            [
+                'command' => self::COMMAND_NAME,
+                '--dump' => null,
+            ]
         );
 
-        // Test if the command output contains the expected output or not
         $this->assertContains(
             json_encode(
                 $manager->getIndexMappings(),
@@ -184,51 +175,23 @@ class CreateIndexCommandTest extends AbstractCommandTestCase
             ),
             $commandTester->getDisplay()
         );
-    }
-
-    /**
-     * Runs the index create command.
-     *
-     * @param string $managerName
-     * @param array  $arguments
-     * @param array  $options
-     */
-    protected function runIndexCreateCommand($managerName, array $arguments = [], array $options = [])
-    {
-        // Creates index.
-        $commandName = 'ongr:es:index:create';
-        $commandTester = $this->getCommandTester($commandName);
-        $arguments['command'] = $commandName;
-        $arguments['--manager'] = $managerName;
-
-        $commandTester->execute($arguments, $options);
-    }
-
-    /**
-     * Returns create index command with assigned container.
-     *
-     * @return IndexCreateCommand
-     */
-    protected function getCreateCommand()
-    {
-        $command = new IndexCreateCommand();
-        $command->setContainer($this->getContainer());
-
-        return $command;
+        $this->assertFalse($manager->indexExists());
     }
 
     /**
      * Returns command tester.
-     * @param string commandName
      *
      * @return CommandTester
      */
-    protected function getCommandTester($commandName)
+    private function getCommandTester()
     {
-        $app = new Application();
-        $app->add($this->getCreateCommand());
+        $indexCreateCommand = new IndexCreateCommand();
+        $indexCreateCommand->setContainer($this->getContainer());
 
-        $command = $app->find($commandName);
+        $app = new Application();
+        $app->add($indexCreateCommand);
+
+        $command = $app->find(self::COMMAND_NAME);
         $commandTester = new CommandTester($command);
 
         return $commandTester;

@@ -40,16 +40,21 @@ class DocumentFinder
      * Formats namespace from short syntax.
      *
      * @param string $namespace
+     * @param string $documentsDirectory Directory name where documents are stored in the bundle.
      *
      * @return string
      */
-    public function getNamespace($namespace)
+    public function getNamespace($namespace, $documentsDirectory = null)
     {
+        if (!$documentsDirectory) {
+            $documentsDirectory = self::DOCUMENT_DIR;
+        }
+
         if (strpos($namespace, ':') !== false) {
             list($bundle, $document) = explode(':', $namespace);
             $bundle = $this->getBundleClass($bundle);
             $namespace = substr($bundle, 0, strrpos($bundle, '\\')) . '\\' .
-                self::DOCUMENT_DIR . '\\' . $document;
+                $documentsDirectory . '\\' . $document;
         }
 
         return $namespace;
@@ -84,16 +89,21 @@ class DocumentFinder
      *         'SubDir\SomeObject'
      *     ]
      *
-     * @param string $bundle
+     * @param string $bundle Bundle name. E.g. AppBundle
+     * @param string $documentsDirectory Directory name where documents are stored in the bundle.
      *
      * @return array
      */
-    public function getBundleDocumentClasses($bundle)
+    public function getBundleDocumentClasses($bundle, $documentsDirectory = null)
     {
+        if (!$documentsDirectory) {
+            $documentsDirectory = self::DOCUMENT_DIR;
+        }
+
         $bundleReflection = new \ReflectionClass($this->getBundleClass($bundle));
 
-        $documentDirectory = DIRECTORY_SEPARATOR . self::DOCUMENT_DIR . DIRECTORY_SEPARATOR;
-        $directory = dirname($bundleReflection->getFileName()) . $documentDirectory;
+        $documentsDirectory = DIRECTORY_SEPARATOR . $documentsDirectory . DIRECTORY_SEPARATOR;
+        $directory = dirname($bundleReflection->getFileName()) . $documentsDirectory;
 
         if (!is_dir($directory)) {
             return [];
@@ -108,7 +118,7 @@ class DocumentFinder
             $documents[] = str_replace(
                 DIRECTORY_SEPARATOR,
                 '\\',
-                substr(strstr($file, $documentDirectory), strlen($documentDirectory), -4)
+                substr(strstr($file, $documentsDirectory), strlen($documentsDirectory), -4)
             );
         }
 

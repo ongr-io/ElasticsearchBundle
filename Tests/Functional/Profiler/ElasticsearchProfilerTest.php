@@ -12,11 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Profiler;
 
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
-use ONGR\ElasticsearchDSL\Aggregation\GlobalAggregation;
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
-use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\GlobalAggregation;
+use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,7 +69,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     public function testGetTime()
     {
         $manager = $this->getManager();
-        $manager->find('AcmeBarBundle:Product', 3);
+        $manager->find('TestBundle:Product', 3);
 
         $this->assertGreaterThan(0.0, $this->getCollector()->getTime(), 'Time should be greater than 0ms');
     }
@@ -82,7 +80,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     public function testGetQueries()
     {
         $manager = $this->getManager();
-        $manager->find('AcmeBarBundle:Product', 2);
+        $manager->find('TestBundle:Product', 2);
         $queries = $this->getCollector()->getQueries();
 
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
@@ -108,7 +106,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
+        $repository = $manager->getRepository('TestBundle:Product');
         $search = $repository
             ->createSearch()
             ->addQuery(new TermQuery('title', 'pizza'));
@@ -168,7 +166,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
+        $repository = $manager->getRepository('TestBundle:Product');
         $search = $repository
             ->createSearch()
             ->addAggregation(new GlobalAggregation('g'));

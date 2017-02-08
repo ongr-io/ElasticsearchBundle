@@ -13,7 +13,10 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Helper\Iterators\SearchHitIterator;
 use Elasticsearch\Helper\Iterators\SearchResponseIterator;
+use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
+use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Search;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -40,21 +43,25 @@ class ExportService
         OutputInterface $output,
         $maxLinesInFile = 300000
     ) {
-        $params = [
-            'scroll' => '10m',
-            'size' => $chunkSize,
-            'source' => true,
-            'body' => [
-                'query' => [
-                    'match_all' => [],
-                ],
-            ],
-            'index' => $manager->getIndexName(),
-            'type' => $types,
-        ];
 
-        $results = new SearchHitIterator(
-            new SearchResponseIterator($manager->getClient(), $params)
+        $search = new Search();
+        $search->addQuery(new MatchAllQuery());
+        $search->setSize($chunkSize);
+
+        $queryParameters = [
+                '_source' => true,
+                'scroll' => '10m',
+            ];
+
+        $searchResults = $manager->search($types, $search->toArray(), $queryParameters);
+
+        $results = new RawIterator(
+            $searchResults,
+            $manager,
+            [
+                'duration' => $queryParameters['scroll'],
+                '_scroll_id' => $searchResults['_scroll_id'],
+            ]
         );
 
         $progress = new ProgressBar($output, $results->count());
@@ -73,6 +80,7 @@ class ExportService
         $filename = str_replace('.json', '', $filename);
         $writer = $this->getWriter($this->getFilePath($filename.'.json'), $metadata);
 
+        $file = [];
         foreach ($results as $data) {
             if ($counter >= $maxLinesInFile) {
                 $writer->finalize();
@@ -87,8 +95,9 @@ class ExportService
                 $counter = 0;
             }
 
-            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source', 'fields']));
+            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source']));
             $writer->push($doc);
+            $file[] = $doc;
             $progress->advance();
             $counter++;
         }

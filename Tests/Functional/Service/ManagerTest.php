@@ -11,11 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\WithoutId;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchDSL\Query\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -31,7 +29,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     protected function getDataArray()
     {
         return [
-            'foo' => [
+            'default' => [
                 'product' => [
                     [
                         '_id' => 1,
@@ -49,14 +47,14 @@ class ManagerTest extends AbstractElasticsearchTestCase
                         'price' => 20,
                     ],
                 ],
-                'customer' => [
+                'users' => [
                     [
                         '_id' => 1,
-                        'name' => 'foo',
+                        'first_name' => 'foo',
                     ],
                     [
                         '_id' => 2,
-                        'name' => 'acme',
+                        'first_name' => 'acme',
                     ],
                 ],
             ],
@@ -84,9 +82,9 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->commit();
 
         /** @var Product $actualProduct */
-        $actualProduct = $manager->find('AcmeBarBundle:Product', 1);
+        $actualProduct = $manager->find('TestBundle:Product', 1);
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
             $actualProduct
         );
 
@@ -102,7 +100,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->persist($actualProduct);
         $manager->commit();
 
-        $actualProduct = $manager->find('AcmeBarBundle:Product', 1);
+        $actualProduct = $manager->find('TestBundle:Product', 1);
 
         $this->assertTrue($actualProduct->getLimited());
     }
@@ -124,8 +122,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $out[] = [
             $product,
             'Expected object of type ' .
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject, ' .
-            'got ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product.',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject, ' .
+            'got ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product.',
         ];
 
         // Case #1: a single link is set, although field is set to multiple.
@@ -139,7 +137,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $out[] = [
             $product,
             'Expected object of type ' .
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\CategoryObject, got stdClass.',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject, got stdClass.',
         ];
 
         // Case #3: invalid type of object is set in single field.
@@ -184,16 +182,14 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         $product = new Product();
         $product->setId('testId');
-        $product->setTtl(500000);
         $product->setTitle('acme');
 
         $manager->persist($product);
         $manager->commit();
 
-        $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
+        $actualProduct = $manager->find('TestBundle:Product', 'testId');
 
         $this->assertEquals($product->getId(), $actualProduct->getId());
-        $this->assertLessThan($product->getTtl(), $actualProduct->getTtl());
     }
 
     /**
@@ -210,31 +206,9 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        $actualProduct = $manager->find('AcmeBarBundle:Product', 'testId');
+        $actualProduct = $manager->find('TestBundle:Product', 'testId');
 
         $this->assertGreaterThan(time(), $actualProduct->getReleased()->getTimestamp());
-    }
-
-    /**
-     * Check if `token_count` field works as expected.
-     */
-    public function testPersistTokenCountField()
-    {
-        $manager = $this->getManager();
-        $product = new Product();
-        $product->setTokenPiecesCount('t e s t');
-        $manager->persist($product);
-        $manager->commit();
-        $repo = $manager->getRepository('AcmeBarBundle:Product');
-        // Analyzer is whitespace, so there are four tokens.
-        $search = new Search();
-        $search->addQuery(new TermQuery('pieces_count.count', '4'));
-        $this->assertEquals(1, $repo->findDocuments($search)->count());
-
-        // Test with invalid count.
-        $search = new Search();
-        $search->addQuery(new TermQuery('pieces_count.count', '6'));
-        $this->assertEquals(0, $repo->findDocuments($search)->count());
     }
 
     /**
@@ -243,12 +217,17 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testIndexName()
     {
         $uniqueIndexName = 'test_index_' . uniqid();
-
         $manager = $this->getManager();
-        $this->assertNotEquals($uniqueIndexName, $manager->getIndexName());
-
+        $indexName = $manager->getIndexName();
+        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $indexName]));
         $manager->setIndexName($uniqueIndexName);
-        $this->assertEquals($uniqueIndexName, $manager->getIndexName());
+        $manager->createIndex();
+        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $uniqueIndexName]));
+        $manager->dropIndex();
+        $this->assertFalse($manager->getClient()->indices()->exists(['index' => $uniqueIndexName]));
+        $manager->setIndexName($indexName);
+        $manager->dropIndex();
+        $this->assertFalse($manager->getClient()->indices()->exists(['index' => $indexName]));
     }
 
     /**
@@ -257,8 +236,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testGetRepository()
     {
         $manager = $this->getManager();
-        $expected = $manager->getRepository('AcmeBarBundle:Product');
-        $repository = $manager->getRepository('AcmeBarBundle:Product');
+        $expected = $manager->getRepository('TestBundle:Product');
+        $repository = $manager->getRepository('TestBundle:Product');
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Service\Repository', $repository);
         $this->assertSame($expected, $repository);
@@ -281,8 +260,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testExecuteQueryOnMultipleTypes()
     {
-        $result = $this->getManager('foo')->search(
-            ['product', 'customer'],
+        $result = $this->getManager()->search(
+            ['product', 'users'],
             (new Search())->toArray()
         );
 
@@ -294,27 +273,27 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testRemove()
     {
-        $manager = $this->getManager('foo');
+        $manager = $this->getManager();
 
-        $product = $manager->find('AcmeBarBundle:Product', 1);
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\Acme\BarBundle\Document\Product', $product);
+        $product = $manager->find('TestBundle:Product', 1);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product', $product);
 
         $manager->remove($product);
         $manager->commit();
 
-        $product = $manager->find('AcmeBarBundle:Product', 1);
+        $product = $manager->find('TestBundle:Product', 1);
         $this->assertNull($product);
     }
 
     /**
      * Test for remove() in case document has no annotation for ID field.
      *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage must have property with @Id annotation
+     * @expectedException \ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException
+     * @expectedExceptionMessage "stdClass" class cannot be parsed as document because @Document annotation is missing.
      */
     public function testRemoveException()
     {
-        $this->getManager()->remove(new WithoutId());
+        $this->getManager()->remove(new \stdClass());
     }
 
     /**
@@ -322,43 +301,19 @@ class ManagerTest extends AbstractElasticsearchTestCase
      */
     public function testParseResultsWithDifferentResultTypes()
     {
-        $fooManager = $this->getManager('foo');
-        $defaultManager = $this->getManager();
+        $manager = $this->getManager();
 
-        $repo = $fooManager->getRepository('AcmeBarBundle:Product');
+        $repo = $manager->getRepository('TestBundle:Product');
         $search = $repo->createSearch();
         $search->addQuery(new MatchAllQuery());
         $products = $repo->findArray($search);
         $this->assertArrayHasKey(0, $products);
 
-        $repo = $defaultManager->getRepository('AcmeBarBundle:Product');
-        $search = $repo->createSearch();
-        $search->addQuery(new MatchAllQuery());
-        $products = $repo->findArray($search);
-        $this->assertArrayNotHasKey(0, $products);
-
-        $repo = $fooManager->getRepository('AcmeBarBundle:Product');
+        $repo = $manager->getRepository('TestBundle:Product');
         $search = $repo->createSearch();
         $search->addQuery(new MatchAllQuery());
         $products = $repo->findRaw($search);
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\RawIterator', $products);
-    }
-
-    /**
-     * Tests exception that is thrown by parseResults()
-     * when a bad result type is provided
-     *
-     * @deprecated Function will be removed in 2.0
-     *
-     * @expectedException \Exception
-     */
-    public function testParseResultsException()
-    {
-        $manager = $this->getManager();
-        $repo = $manager->getRepository('AcmeBarBundle:Product');
-        $search = $repo->createSearch();
-        $search->addQuery(new MatchAllQuery());
-        $repo->execute($search, 'non_existant_type');
     }
 
     /**
@@ -376,5 +331,25 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         $manager->persist($product);
         $manager->commit();
+    }
+
+    /**
+     * Tests custom manager with custom directory behaviour.
+     */
+    public function testCustomManagerWithCustomMappingDir()
+    {
+        $manager = $this->getManager('custom_dir');
+
+        $product = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product();
+        $product->setId('custom');
+        $product->setTitle('Custom product');
+        $manager->persist($product);
+        $manager->commit();
+
+        $repo = $manager->getRepository('TestBundle:Product');
+        /** @var \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product $actualProduct */
+        $actualProduct = $repo->find('custom');
+
+        $this->assertEquals('Custom product', $actualProduct->getTitle());
     }
 }
