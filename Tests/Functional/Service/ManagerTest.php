@@ -13,7 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -351,5 +353,53 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $actualProduct = $repo->find('custom');
 
         $this->assertEquals('Custom product', $actualProduct->getTitle());
+    }
+
+    public function testMultiSearch()
+    {
+        $manager = $this->getManager();
+        $product = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product();
+        $product->setId('multi1');
+        $product->setTitle('Multi1');
+        $manager->persist($product);
+        $manager->commit();
+
+        $customManager = $this->getManager('custom_dir');
+        $product = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product();
+        $product->setId('multi2');
+        $product->setTitle('Multi2');
+        $customManager->persist($product);
+        $customManager->commit();
+
+        $product = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product();
+        $product->setId('multi3');
+        $product->setTitle('Multi3');
+
+        $customManager->persist($product);
+        $customManager->commit();
+
+        $queries = [
+            [
+                'index' => $manager->getIndexName(),
+                'type' => 'product',
+            ],
+            [
+                 'query' => (new MatchQuery('title', 'Multi1'))->toArray()
+            ],
+            [
+                'index' => $customManager->getIndexName()
+            ],
+            [
+                'query' => (new MatchQuery('title', 'Multi2'))->toArray(),
+            ],
+            [],
+            [
+                'query' => (new MatchQuery('title', 'Multi3'))->toArray(),
+            ]
+        ];
+        $result = $manager->msearch($queries);
+
+        $this->assertArrayHasKey('responses', $result);
+        $this->assertTrue(count($result['responses']) === 3);
     }
 }
