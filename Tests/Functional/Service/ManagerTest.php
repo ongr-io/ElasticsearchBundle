@@ -323,7 +323,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testParseResultsWithDifferentResultTypes()
     {
         $fooManager = $this->getManager('foo');
-        $defaultManager = $this->getManager();
+        $defaultManager = $this->getManager('default');
+        sleep(2); //Needs few seconds to manage index creation.
 
         $repo = $fooManager->getRepository('AcmeBarBundle:Product');
         $search = $repo->createSearch();

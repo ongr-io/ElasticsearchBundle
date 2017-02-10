@@ -87,7 +87,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
      */
     public function testCurrentWithEmptyIterator()
     {
-        $repo = $this->getManager('foo')->getRepository('AcmeFooBundle:Customer');
+        $repo = $this->getManager('default')->getRepository('AcmeFooBundle:Customer');
         $search = $repo
             ->createSearch()
             ->addQuery(new MatchAllQuery());
