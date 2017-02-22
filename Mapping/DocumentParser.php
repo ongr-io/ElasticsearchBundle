@@ -270,7 +270,6 @@ class DocumentParser
 
                 if ($type instanceof HashMap) {
                     $alias[$type->name]['type'] = HashMap::NAME;
-                    $alias[$type->name]['aliases'] = [];
                 }
 
                 $alias[$type->name][HashMap::NAME] = $type instanceof HashMap;
