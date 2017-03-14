@@ -24,7 +24,7 @@ For all chapters below we will use a data example inserted in the elasticsearch 
 
 ## Results iterator
 
-Whenever any search action is performed and `Result::RESULTS_OBJECT` is selected as the result type the `DocumentIterator` will be returned. It has plenty of helper functions to aggregate more efficiently with the results.
+Usually when any search action is performed the `DocumentIterator` will be returned. It has plenty of helper functions to aggregate more efficiently with the results.
 
 
 Lets assume you search the index with:
@@ -34,7 +34,7 @@ Lets assume you search the index with:
 $repo = $this->get('es.manager.default.content');
 $search = $repo->createSearch();
 $termQuery = new MatchAllQuery();
-$results = $repo->execute($search, Result::RESULTS_OBJECT); // Result::RESULTS_OBJECT is the default value
+$results = $repo->findDocuments($search);
 
 ```
 
@@ -68,7 +68,7 @@ cannot be associated with document. You can get document's score from results it
 while iterating:
 
 ```php
-$results = $repository->execute($search);
+$results = $repository->findDocuments($search);
 
 foreach ($results as $document) {
     echo $document->title, $results->getDocumentScore();
@@ -95,9 +95,9 @@ foreach ($results as $document) {
 
 `DocumentIterator` doesn't cache or store generated document object. `Converter` directly returns the instance after it's requested and will generate again if it will be requested.
 
-We highly recommend to `unset()` document instance after you dont need it or manage memory at your own way.
+We highly recommend to `unset()` document instance after you don't need it or manage memory at your own way.
 
-There is a possibility to change the `DocumentIterator` behaviour. Take a look at the [overwriting bundle parts](overwriting_bundle.md).
+There is a possibility to change the `DocumentIterator` behaviour. Take a look at the [overwriting bundle parts](http://docs.ongr.io/ElasticsearchBundle/overwriting_bundle).
 
 ## Aggregations
 
@@ -118,7 +118,7 @@ $brandTermAggregation->addAggregation($avgPriceAggregation);
 $query = new Search();
 $query->addAggregation($brandTermAggregation);
 
-$result = $this->get('es.manager')->execute(['AppBundle:Product'], $query);
+$result = $this->get('es.manager.default.content')->findDocuments($query);
 
 // Build a list of available choices
 $choices = [];

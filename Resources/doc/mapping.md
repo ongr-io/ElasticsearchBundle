@@ -178,14 +178,14 @@ class Product
 }
 ```
 
-> There is no mandatory to have private properties, and public will work as well.
- We are firmly recommend using private according to OOP best practices.  
+> It is not mandatory to have private properties, and public will work as well.
+ However, we firmly recommend using private according to OOP best practices.  
 
 #### Document annotation configuration
 
 - `@ES\Document(type="product")` Annotation defines that this class will represent elasticsearch type with name `content`.
-- You can append any options from elasticsearch type options in `options` variable.
- E.g. you want to add `enable:false` so it will look like: `@ES\Document(type="product", options={"enable":"false"})`
+- You can append any valid elasticsearch type options to the `options` variable.
+ E.g. if you want to add `enable:false` it will look like this: `@ES\Document(type="product", options={"enable":"false"})`
 - `type` parameter is for type name. This parameter is optional, if there will be no parameter set,
 ElasticsearchBundle will create a type with lower cased class name.
 
@@ -194,13 +194,13 @@ ElasticsearchBundle will create a type with lower cased class name.
 
 For defining type properties, there is a `@ES\Property` annotation. The only required
 attribute is `type` - Elasticsearch field type to specify what kind of information
-will be indexed. By default, the field name generated from property name by converting
-it to "snake case" string. You can specify the custom name by setting `name` attribute.
+will be indexed. By default, the field name is generated from property name by converting
+it to "snake case" string. You can specify a custom name by setting the `name` attribute.
 
 > Read more about elasticsearch supported types [in the official documentation][2].
 
 To add a custom setting for the property like analyzer include it in the `options` variable.
-Analyzers names defined in `config.yml` `analysis` [read more in the topic above](#Mapping configuration).
+Analyzers names must be defined in `config.yml` under the `analysis` node (read more in the topic above).
 Here's an example how to add it:
 
 ```php
@@ -289,7 +289,7 @@ class CategoryObject
 
 ```
 
-> Class name can be anything, we called it `CategoryObject` to make it more readable and notice that is an object.
+> Class name can be anything, we called it `CategoryObject` to make it more readable. Notice that it is an object, not a document.
 
 For this particular example the mapping in elasticsearch will look like this:
 
@@ -317,7 +317,7 @@ For this particular example the mapping in elasticsearch will look like this:
 
 To insert a document with mapping from example above you have to create 2 objects:
  
- ```php
+```php
  
   $category = new CategoryObject();
   $category->setTitle('Jeans');
@@ -330,11 +330,11 @@ To insert a document with mapping from example above you have to create 2 object
   $manager->persist($product);
   $manager->commit();
  
- ```
+```
 
 ##### Multiple objects
 
-As shown in the example above, by ElasticsearchBundle default only a single object will be saved in the document.
+As shown in the example above, by ElasticsearchBundle default, only a single object will be saved in the document.
 Meanwhile, Elasticsearch database doesn't care if in an object is stored as a single value or as an array. 
 If it is necessary to store multiple objects (array), you have to add `multiple=true` to the annotation. While
 initiating a document with multiple items you need to initialize property with the new instance of `Collection()`.
@@ -347,6 +347,7 @@ Here's an example:
 namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use ONGR\ElasticsearchBundle\Collection\Collection;
 
 /**
  * @ES\Document()
@@ -396,7 +397,6 @@ And the object:
 namespace AppBundle\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Collection\Collection;
 
 /**
  * @ES\Object
@@ -512,7 +512,7 @@ look like this:
 
 ### Meta-Fields Annotations
 
-There are other meta field for different behaviours of elasticsearch.
+There are specialized meta fields that introduce different behaviours of elasticsearch.
 Read the dedicated page about meta-field annotations [here](http://docs.ongr.io/ElasticsearchBundle/meta_fields).
 
 > More information about mapping can be found in the [Elasticsearch mapping documentation][3].

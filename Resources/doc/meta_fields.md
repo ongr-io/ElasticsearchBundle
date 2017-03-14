@@ -47,32 +47,25 @@ attribute is `class`, where you need to specify class of parent document.
     public $parent;
 ```
 
-### @Ttl (_ttl)
+### @Routing (_routing)
 
-This field allows to configure how long a document should live before it is automatically
-deleted. After you add property with `@Ttl` annotation, TTL feature is automatically enabled. 
-
-```php     
-    /**
-     * @ES\Ttl()
-     */
-    public $ttl;
-```
-
-You can set default TTL with optional `default` attribute:
+Custom routing patterns can be implemented by specifying a custom routing value per document. 
+The same routing value needs to be provided when getting, deleting, or updating the document.
+It is represented by the `@Routing` annotation. Here is an example of such a field:
 
 ```php     
     /**
-     * @ES\Ttl(default="5m")
+     * @ES\Routing()
      */
-    public $ttl;
+    public $routing;
 ```
 
-Example above sets default TTL to 5 minutes. See Elasticsearch [documentation][2]
-for supported time value formats.
+Forgetting the routing value can lead to a document being indexed on more than one shard. 
+As a safeguard, the _routing field can be configured to make a custom routing value 
+required for all CRUD operations. This can be implemented by setting the `equired` 
+attribute to true (`@ES\Routing(required=true)`).
 
-> __Note:__ The current `_ttl` implementation is deprecated by Elasticsearch and
-> might be replaced with a different implementation in a future version.
+More information on routing can be found in the [dedicated docs][2]
 
 [1]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html
-[2]: https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#time-units
+[2]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-routing-field.html

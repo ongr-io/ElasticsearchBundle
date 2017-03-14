@@ -5,7 +5,12 @@
 - Array iterator now returns document _id field as well.
 - Document annotation now has an options support.
 You can pass any settings along parameters you want. Simply just put them in the options.
+- `Manager::getSettings()` was added. Returns the currently configured settings for manager index.
+- `Manager::getAliases()` was added. Gets Elasticsearch aliases information.
 - Added `text` and `keyword` property types support.
+- Added `murmur3`, `attachments`, `percolator` property type support
+- Added `hash_map` annotation. #747
+- Added `ONGR\ElasticsearchBundle\Exception` namespace.
 - Added `char_filter` analysis support.
 - All features and fixes from 1.2.x
 - Added `document_dir`. From now on you can change documents directory for each mapped bundle.
@@ -13,16 +18,18 @@ You can pass any settings along parameters you want. Simply just put them in the
 
 ### Breaking changes
 - Removed all deprecations from 1.x version.
+- Removed `_ttl` metafield annotation.
 - Service name `@annotations.cached_reader` changed to `@es.annotations.cached_reader` #717
 - From Document annotation removed all properties except `type`. From now on everything has to be defined in the `options`.
-- `string` property type was deprecated in elasticsearch 5.0, please use text or keyword accordingly.
+- `string` property type was deprecated in elasticsearch 5.0, please use `text` or `keyword` accordingly.
  More info: https://www.elastic.co/blog/strings-are-dead-long-live-strings
 - `auth` in the configuration was removed. Use authentication information directly in host or create event listener
  to modify client creation. There are too many ways to authenticate elasticsearch. That said we leaving this customisation to the user due difficult support. 
 - `connections` node in configuration was removed. Use `index` from now on. There was absolute
  misunderstanding to have exposed connections, we never saw any benefits to use single connection
  between several managers.  
-- `analysis` node in `index`/`connection` was deprecated. From now on used analyzers, filters and other
+- Changed the namespace of the `DocumentParserException` to `ONGR\ElasticsearchBundle\Mapping\Exception`. #722
+- `analysis` node in `index`/`connection` was deprecated. From now on used analyzers, filters, etc. must be provided in document annotations
 - `Results` (constants container for result type definitions) class was removed in favor for
  new find functions with predefined types in the names.
 - Export service now uses own query calling instead of elasticsearch-php. It was changes due a bug
