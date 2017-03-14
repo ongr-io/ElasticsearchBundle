@@ -1,3 +1,41 @@
+UPGRADE FROM 1.x to 5.0
+===
+
+#### Breaking changes
+* Removed all deprecations from 1.x version.
+* Removed `_ttl` metafield annotation.
+* Service name `@annotations.cached_reader` changed to `@es.annotations.cached_reader` #717
+* From Document annotation removed all properties except `type`. From now on everything has to be defined in the `options`.
+* `string` property type was deprecated in elasticsearch 5.0, please use `text` or `keyword` accordingly.
+ More info: https://www.elastic.co/blog/strings-are-dead-long-live-strings
+* `auth` in the configuration was removed. Use authentication information directly in host or create event listener
+ to modify client creation. There are too many ways to authenticate elasticsearch. That said we leaving this customisation to the user due difficult support. 
+* `connections` node in configuration was removed. Use `index` from now on. There was absolute
+ misunderstanding to have exposed connections, we never saw any benefits to use single connection
+ between several managers.  
+* Changed the namespace of the `DocumentParserException` to `ONGR\ElasticsearchBundle\Mapping\Exception`. #722
+* `analysis` node in `index`/`connection` was deprecated. From now on used analyzers, filters, etc. must be provided in document annotations
+* `Results` (constants container for result type definitions) class was removed in favor for
+ new find functions with predefined types in the names.
+* Export service now uses own query calling instead of elasticsearch-php. It was changes due a bug
+ in hits iterator in elasticsearch-php. We will try to help them to resolve this issue.
+* `Manager::execute()` was removed. Use `Manager::search()` instead.
+* `Repository::execute()` was removed. Use `findDocuments()`, `findArray()` or `findRaw()` instead.
+* `Manager::scroll()` third argument with result type definition was removed.
+ Now you can get only raw result data from scroll.
+* `AbstractElasticsearchTestCase::runTest()` was removed. It was introduced when elasticsearch
+ in our CI was very unstable. Now there is no sense to repeat failing tests again and again.
+* `AbstractElasticsearchTestCase::getNumberOfRetries()` was removed.
+ If you write tests by extending `AbstractElasticsearchTestCase` delete your retries data provides.
+ 
+#### Changes which should not impact the functionality
+
+* Minimum PHP required version now is 5.6
+* Minimum Symfony required version now is 2.8
+* Minimum ES version was upped to 5.0
+* Document annotation now has an options support.
+* No more needed to define analysis in manager, it will be collected automatically from documents.
+ 
 UPGRADE FROM 0.x to 1.0
 ===
 
