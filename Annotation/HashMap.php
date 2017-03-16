@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+
 /**
  * Annotation for property which points to inner object.
  *
