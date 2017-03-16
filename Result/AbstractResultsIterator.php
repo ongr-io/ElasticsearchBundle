@@ -84,6 +84,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
         Manager $manager,
         array $scroll = []
     ) {
+        $this->raw = $rawData;
         $this->manager = $manager;
         $this->converter = $manager->getConverter();
         $this->managerConfig = $manager->getConfig();
