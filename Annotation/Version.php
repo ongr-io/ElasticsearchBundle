@@ -19,12 +19,14 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  */
 final class Version implements MetaField
 {
+    const NAME = '_version';
+
     /**
      * {@inheritdoc}
      */
     public function getName()
     {
-        return '_version';
+        return self::NAME;
     }
 
     /**

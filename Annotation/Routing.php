@@ -19,6 +19,8 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  */
 final class Routing implements MetaField
 {
+    const NAME = '_routing';
+
     /**
      * @var bool
      */
@@ -29,7 +31,7 @@ final class Routing implements MetaField
      */
     public function getName()
     {
-        return '_routing';
+        return self::NAME;
     }
 
     /**

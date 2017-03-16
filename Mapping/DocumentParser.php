@@ -15,7 +15,9 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
+use ONGR\ElasticsearchBundle\Annotation\HashMap;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
+use ONGR\ElasticsearchBundle\Annotation\Nested;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
@@ -36,6 +38,7 @@ class DocumentParser
     const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
     const ROUTING_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Routing';
     const VERSION_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Version';
+    const HASH_MAP_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\HashMap';
 
     /**
      * @var Reader Used to read document annotations.
@@ -61,13 +64,6 @@ class DocumentParser
      * @var array Local cache for document properties.
      */
     private $properties = [];
-
-    /**
-     * Analyzers used in documents.
-     *
-     * @var string[]
-     */
-    private $analyzers = [];
 
     /**
      * @param Reader         $reader Used for reading annotations.
@@ -126,7 +122,7 @@ class DocumentParser
      *
      * @param \ReflectionClass $document
      *
-     * @return Document|null
+     * @return Document|object|null
      */
     private function getDocumentAnnotationData($document)
     {
@@ -138,7 +134,7 @@ class DocumentParser
      *
      * @param \ReflectionProperty $property
      *
-     * @return Property|null
+     * @return Property|object|null
      */
     private function getPropertyAnnotationData(\ReflectionProperty $property)
     {
@@ -156,11 +152,29 @@ class DocumentParser
      *
      * @param \ReflectionProperty $property
      *
-     * @return Embedded|null
+     * @return Embedded|object|null
      */
     private function getEmbeddedAnnotationData(\ReflectionProperty $property)
     {
         $result = $this->reader->getPropertyAnnotation($property, self::EMBEDDED_ANNOTATION);
+
+        if ($result !== null && $result->name === null) {
+            $result->name = Caser::snake($property->getName());
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns HashMap annotation data from reader.
+     *
+     * @param \ReflectionProperty $property
+     *
+     * @return HashMap|object|null
+     */
+    private function getHashMapAnnotationData(\ReflectionProperty $property)
+    {
+        $result = $this->reader->getPropertyAnnotation($property, self::HASH_MAP_ANNOTATION);
 
         if ($result !== null && $result->name === null) {
             $result->name = Caser::snake($property->getName());
@@ -237,6 +251,8 @@ class DocumentParser
         foreach ($properties as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
+            $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
+
             if ($type === null && $metaFields !== null
                 && ($metaData = $this->getMetaFieldAnnotationData($property)) !== null) {
                 $metaFields[$metaData['name']] = $metaData['settings'];
@@ -251,6 +267,12 @@ class DocumentParser
                 if ($type instanceof Property) {
                     $alias[$type->name]['type'] = $type->type;
                 }
+
+                if ($type instanceof HashMap) {
+                    $alias[$type->name]['type'] = HashMap::NAME;
+                }
+
+                $alias[$type->name][HashMap::NAME] = $type instanceof HashMap;
 
                 switch (true) {
                     case $property->isPublic():
@@ -283,7 +305,7 @@ class DocumentParser
                         [
                             'type' => $this->getObjectMapping($type->class)['type'],
                             'multiple' => $type->multiple,
-                            'aliases' => $this->getAliases($child),
+                            'aliases' => $this->getAliases($child, $metaFields),
                             'namespace' => $child->getName(),
                         ]
                     );
@@ -364,6 +386,7 @@ class DocumentParser
             'ParentDocument',
             'Routing',
             'Version',
+            'HashMap',
         ];
 
         foreach ($annotations as $annotation) {
@@ -480,6 +503,7 @@ class DocumentParser
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
+            $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
 
             if ((in_array($name, $properties) && !$flag)
                 || (!in_array($name, $properties) && $flag)
@@ -493,6 +517,14 @@ class DocumentParser
             // Inner object
             if ($type instanceof Embedded) {
                 $map = array_replace_recursive($map, $this->getObjectMapping($type->class));
+            }
+
+            // HashMap object
+            if ($type instanceof HashMap) {
+                $map = array_replace_recursive($map, [
+                    'type' => Nested::NAME,
+                    'dynamic' => true,
+                ]);
             }
 
             // If there is set some Raw options, it will override current ones.

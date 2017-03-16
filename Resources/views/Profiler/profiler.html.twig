@@ -51,7 +51,7 @@
                     <h3>Route: <i>{{ i }}</i></h3>
                     <ul>
                         {% for q, query in route %}
-                            <li class="{{ cycle(['odd', 'even'], i) }}" data-extra-info="{{ query.time }}" data-target-id="{{ i ~ q }}">
+                            <li class="{{ cycle(['odd', 'even'], q) }}" data-extra-info="{{ query.time }}" data-target-id="{{ i ~ q }}">
                                 <div id="queryNo-{{ i ~ q }}">
                                     <div>
                                             <span>

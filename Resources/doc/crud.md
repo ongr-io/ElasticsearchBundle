@@ -24,7 +24,7 @@ class Content
     public $id;
 
     /**
-     * @ES\Property(type="string")
+     * @ES\Property(type="keyword")
      */
     public $title;
 }
@@ -44,7 +44,9 @@ $manager = $this->get('es.manager');
 
 ## Repositories
 
-In addition manager provides repository access, which enables direct access to the elasticsearch type.  Repositories represents a document. Whenever you need to do any action with a repository to get it:
+In addition manager provides repository access, which enables direct access to the elasticsearch type.  
+Repository represents a document. Whenever you need to do any action with a repository, you can access 
+it like this:
 
 ```php
 
@@ -53,7 +55,7 @@ $repo = $manager->getRepository('AppBundle:Content');
 
 ```
 
-So instead you can call just:
+Alternatively:
 
 ```php
 
