@@ -283,7 +283,7 @@ class DocumentParser
                         [
                             'type' => $this->getObjectMapping($type->class)['type'],
                             'multiple' => $type->multiple,
-                            'aliases' => $this->getAliases($child),
+                            'aliases' => $this->getAliases($child, $metaFields),
                             'namespace' => $child->getName(),
                         ]
                     );
