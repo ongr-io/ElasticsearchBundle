@@ -137,7 +137,7 @@ class Customer
     /**
      * @var string
      *
-     * @ES\Property(name="name", type="string")
+     * @ES\Property(type="text")
      */
     public $name;
 }
