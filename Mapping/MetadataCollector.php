@@ -356,11 +356,12 @@ class MetadataCollector
      * Returns fully qualified class name.
      *
      * @param string $className
+     * @param string $directory The name of the directory
      *
      * @return string
      */
-    public function getClassName($className)
+    public function getClassName($className, $directory = null)
     {
-        return $this->finder->getNamespace($className);
+        return $this->finder->getNamespace($className, $directory);
     }
 }

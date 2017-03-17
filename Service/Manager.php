@@ -183,7 +183,17 @@ class Manager
             throw new \InvalidArgumentException('Document class must be a string.');
         }
 
-        $namespace = $this->getMetadataCollector()->getClassName($className);
+        $directory = null;
+
+        if (strpos($className, ':')) {
+            $bundle = explode(':', $className)[0];
+
+            if (isset($this->config['mappings'][$bundle]['document_dir'])) {
+                $directory = $this->config['mappings'][$bundle]['document_dir'];
+            }
+        }
+
+        $namespace = $this->getMetadataCollector()->getClassName($className, $directory);
 
         if (isset($this->repositories[$namespace])) {
             return $this->repositories[$namespace];
