@@ -117,7 +117,7 @@ class MetadataCollector
         }
 
         $mappings = [];
-        $documentDir = isset($config['document_dir']) ? $config['document_dir'] : DocumentFinder::DOCUMENT_DIR;
+        $documentDir = isset($config['document_dir']) ? $config['document_dir'] : $this->finder->getDocumentDir();
 
         // Handle the case when single document mapping requested
         // Usage od ":" in name is deprecated. This if is only for BC.

@@ -66,6 +66,11 @@ class MappingPass implements CompilerPassInterface
                     'ONGR\ElasticsearchBundle\Service\Repository',
                     [$repositoryDetails['namespace']]
                 );
+
+                if (isset($repositoryDetails['directory_name']) && $managerName == 'default') {
+                    $container->get('es.document_finder')->setDocumentDir($repositoryDetails['directory_name']);
+                }
+
                 $repositoryDefinition->setFactory(
                     [
                         new Reference(sprintf('es.manager.%s', $managerName)),

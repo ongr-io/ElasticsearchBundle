@@ -24,7 +24,7 @@ class DocumentFinder
     /**
      * @var string Directory in bundle to load documents from.
      */
-    const DOCUMENT_DIR = 'Document';
+    private $documentDir;
 
     /**
      * Constructor.
@@ -33,7 +33,24 @@ class DocumentFinder
      */
     public function __construct(array $bundles)
     {
+        $this->documentDir = 'Document';
         $this->bundles = $bundles;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDocumentDir()
+    {
+        return $this->documentDir;
+    }
+
+    /**
+     * @param string $documentDir
+     */
+    public function setDocumentDir($documentDir)
+    {
+        $this->documentDir = $documentDir;
     }
 
     /**
@@ -47,7 +64,7 @@ class DocumentFinder
     public function getNamespace($namespace, $documentsDirectory = null)
     {
         if (!$documentsDirectory) {
-            $documentsDirectory = self::DOCUMENT_DIR;
+            $documentsDirectory = $this->documentDir;
         }
 
         if (strpos($namespace, ':') !== false) {
@@ -113,7 +130,7 @@ class DocumentFinder
     public function getBundleDocumentClasses($bundle, $documentsDirectory = null)
     {
         if (!$documentsDirectory) {
-            $documentsDirectory = self::DOCUMENT_DIR;
+            $documentsDirectory = $this->documentDir;
         }
 
         $bundleReflection = new \ReflectionClass($this->getBundleClass($bundle));
