@@ -16,11 +16,11 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 /**
  * @ES\Object
  */
-class Variant
+class CategoryObject
 {
     /**
      * @var string
      * @ES\Property(type="text", options={"index"="not_analyzed"})
      */
-    public $color;
+    public $title;
 }

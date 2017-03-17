@@ -340,12 +340,12 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager('custom_dir');
 
-        $variant = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Variant();
-        $variant->color = 'green';
+        $category = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\CategoryObject();
+        $category->title = 'foo';
         $product = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product();
         $product->id = 'custom';
-        $product->description = 'Custom product';
-        $product->variants[] = $variant;
+        $product->title = 'Custom product';
+        $product->categories[] = $category;
         $manager->persist($product);
         $manager->commit();
 
@@ -354,8 +354,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $this->assertEquals(get_class($product), $repo->getClassName());
 
         /** @var \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product $actualProduct */
-        $actualProduct = $repo->findOneBy(['variants.color' => 'green']);
+        $actualProduct = $repo->findOneBy(['categories.title' => 'foo']);
 
-        $this->assertEquals('Custom product', $actualProduct->description);
+        $this->assertEquals('Custom product', $actualProduct->title);
     }
 }

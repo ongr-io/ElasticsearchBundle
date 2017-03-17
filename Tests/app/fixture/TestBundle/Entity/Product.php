@@ -29,20 +29,20 @@ class Product
     public $id;
 
     /**
-     * @var string|array
-     * @ES\Property(type="text", name="description")
+     * @var string
+     * @ES\Property(type="keyword", name="title")
      */
-    public $description;
+    public $title;
 
     /**
-     * @var Variant[]
+     * @var CategoryObject[]
      *
-     * @ES\Embedded(class="TestBundle:Variant", multiple=true)
+     * @ES\Embedded(class="TestBundle:CategoryObject", multiple=true)
      */
-    public $variants;
+    public $categories;
 
     public function __construct()
     {
-        $this->variants = new Collection();
+        $this->categories = new Collection();
     }
 }
