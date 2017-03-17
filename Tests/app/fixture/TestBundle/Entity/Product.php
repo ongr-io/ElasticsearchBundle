@@ -12,13 +12,37 @@
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product as BaseProduct;
+use ONGR\ElasticsearchBundle\Collection\Collection;
 
 /**
  * Product document for testing.
  *
  * @ES\Document()
  */
-class Product extends BaseProduct
+class Product
 {
+    /**
+     * @var string
+     *
+     * @ES\Id()
+     */
+    public $id;
+
+    /**
+     * @var string
+     * @ES\Property(type="keyword", name="title")
+     */
+    public $title;
+
+    /**
+     * @var CategoryObject[]
+     *
+     * @ES\Embedded(class="TestBundle:CategoryObject", multiple=true)
+     */
+    public $categories;
+
+    public function __construct()
+    {
+        $this->categories = new Collection();
+    }
 }

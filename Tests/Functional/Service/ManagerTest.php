@@ -340,16 +340,22 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager('custom_dir');
 
+        $category = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\CategoryObject();
+        $category->title = 'foo';
         $product = new \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product();
-        $product->setId('custom');
-        $product->setTitle('Custom product');
+        $product->id = 'custom';
+        $product->title = 'Custom product';
+        $product->categories[] = $category;
         $manager->persist($product);
         $manager->commit();
 
         $repo = $manager->getRepository('TestBundle:Product');
-        /** @var \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product $actualProduct */
-        $actualProduct = $repo->find('custom');
 
-        $this->assertEquals('Custom product', $actualProduct->getTitle());
+        $this->assertEquals(get_class($product), $repo->getClassName());
+
+        /** @var \ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\Product $actualProduct */
+        $actualProduct = $repo->findOneBy(['categories.title' => 'foo']);
+
+        $this->assertEquals('Custom product', $actualProduct->title);
     }
 }
