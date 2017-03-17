@@ -53,6 +53,22 @@ class DocumentFinder
         if (strpos($namespace, ':') !== false) {
             list($bundle, $document) = explode(':', $namespace);
             $bundle = $this->getBundleClass($bundle);
+
+            // If bundle has a sub-namespace it needs to be replaced
+            if (strpos($documentsDirectory, '\\')) {
+                $bundleSubNamespace = substr(
+                    $bundle,
+                    $start = strpos($bundle, '\\') + 1,
+                    strrpos($bundle, '\\') - $start + 1
+                );
+
+                $documentsDirectory = str_replace(
+                    $bundleSubNamespace,
+                    '',
+                    $documentsDirectory
+                );
+            }
+
             $namespace = substr($bundle, 0, strrpos($bundle, '\\')) . '\\' .
                 $documentsDirectory . '\\' . $document;
         }
