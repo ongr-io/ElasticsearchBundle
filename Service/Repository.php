@@ -116,15 +116,19 @@ class Repository
 
         $mgetResponse = $manager->getClient()->mget($args);
 
-        $return = [];
+        $return = [
+            'hits' => [
+                'hits' => [],
+                'total' => 0,
+            ]
+        ];
 
         foreach ($mgetResponse['docs'] as $item) {
             if ($item['found']) {
                 $return['hits']['hits'][] = $item;
+                $return['hits']['total']++;
             }
         }
-
-        $return['hits']['total'] = count($return['hits']['hits']);
 
         return new DocumentIterator($return, $manager);
     }
