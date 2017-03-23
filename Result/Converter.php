@@ -104,7 +104,7 @@ class Converter
                         break;
                     case Object::NAME:
                     case Nested::NAME:
-                        if ($aliases[$name]['multiple']) {
+                        if (isset($aliases[$name]['multiple'])) {
                             $value = new ObjectIterator($this, $value, $aliases[$name]);
                         } else {
                             if (!isset($value)) {
