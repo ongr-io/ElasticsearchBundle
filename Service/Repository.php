@@ -95,7 +95,7 @@ class Repository
     /**
      * Returns documents by a set of ids
      *
-     * @param array  $ids
+     * @param array $ids
      *
      * @return DocumentIterator The objects.
      */
@@ -115,7 +115,12 @@ class Repository
 
         $mgetResponse = $manager->getClient()->mget($args);
 
-        $return = [];
+        $return = [
+            'hits' => [
+                'hits' => [],
+                'total' => 0,
+            ]
+        ];
 
         foreach ($mgetResponse['docs'] as $item) {
             if ($item['found']) {
