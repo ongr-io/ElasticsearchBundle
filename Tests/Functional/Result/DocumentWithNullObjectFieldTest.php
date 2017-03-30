@@ -27,6 +27,7 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
                         '_id' => 'foo',
                         'title' => 'Bar Product',
                         'location' => null,
+                        'released' => null,
                     ],
                 ],
             ],
@@ -47,5 +48,6 @@ class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
         );
 
         $this->assertNull($document->getLocation());
+        $this->assertNull($document->getReleased());
     }
 }

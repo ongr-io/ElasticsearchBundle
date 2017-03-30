@@ -117,7 +117,7 @@ class MetadataCollector
         }
 
         $mappings = [];
-        $documentDir = isset($config['document_dir']) ? $config['document_dir'] : DocumentFinder::DOCUMENT_DIR;
+        $documentDir = isset($config['document_dir']) ? $config['document_dir'] : $this->finder->getDocumentDir();
 
         // Handle the case when single document mapping requested
         // Usage od ":" in name is deprecated. This if is only for BC.
@@ -356,11 +356,12 @@ class MetadataCollector
      * Returns fully qualified class name.
      *
      * @param string $className
+     * @param string $directory The name of the directory
      *
      * @return string
      */
-    public function getClassName($className)
+    public function getClassName($className, $directory = null)
     {
-        return $this->finder->getNamespace($className);
+        return $this->finder->getNamespace($className, $directory);
     }
 }

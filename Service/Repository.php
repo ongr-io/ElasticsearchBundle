@@ -95,7 +95,7 @@ class Repository
     /**
      * Returns documents by a set of ids
      *
-     * @param array  $ids
+     * @param array $ids
      *
      * @return DocumentIterator The objects.
      */
@@ -115,7 +115,12 @@ class Repository
 
         $mgetResponse = $manager->getClient()->mget($args);
 
-        $return = [];
+        $return = [
+            'hits' => [
+                'hits' => [],
+                'total' => 0,
+            ]
+        ];
 
         foreach ($mgetResponse['docs'] as $item) {
             if ($item['found']) {
@@ -199,7 +204,7 @@ class Repository
      *
      * @return array
      */
-    private function getScrollConfiguration($raw, $scrollDuration)
+    public function getScrollConfiguration($raw, $scrollDuration)
     {
         $scrollConfig = [];
         if (isset($raw['_scroll_id'])) {

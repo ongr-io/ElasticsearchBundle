@@ -187,10 +187,11 @@ class DocumentParser
      * Returns meta field annotation data from reader.
      *
      * @param \ReflectionProperty $property
+     * @param string              $directory The name of the Document directory in the bundle
      *
      * @return array
      */
-    private function getMetaFieldAnnotationData($property)
+    private function getMetaFieldAnnotationData($property, $directory)
     {
         /** @var MetaField $annotation */
         $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
@@ -208,7 +209,7 @@ class DocumentParser
         ];
 
         if ($annotation instanceof ParentDocument) {
-            $data['settings']['type'] = $this->getDocumentType($annotation->class);
+            $data['settings']['type'] = $this->getDocumentType($annotation->class, $directory);
         }
 
         return $data;
@@ -235,6 +236,7 @@ class DocumentParser
     private function getAliases(\ReflectionClass $reflectionClass, array &$metaFields = null)
     {
         $reflectionName = $reflectionClass->getName();
+        $directory = $this->guessDirName($reflectionClass);
 
         // We skip cache in case $metaFields is given. This should not affect performance
         // because for each document this method is called only once. For objects it might
@@ -254,7 +256,7 @@ class DocumentParser
             $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
 
             if ($type === null && $metaFields !== null
-                && ($metaData = $this->getMetaFieldAnnotationData($property)) !== null) {
+                && ($metaData = $this->getMetaFieldAnnotationData($property, $directory)) !== null) {
                 $metaFields[$metaData['name']] = $metaData['settings'];
                 $type = new \stdClass();
                 $type->name = $metaData['name'];
@@ -299,11 +301,11 @@ class DocumentParser
                 $alias[$type->name]['propertyType'] = $propertyType;
 
                 if ($type instanceof Embedded) {
-                    $child = new \ReflectionClass($this->finder->getNamespace($type->class));
+                    $child = new \ReflectionClass($this->finder->getNamespace($type->class, $directory));
                     $alias[$type->name] = array_merge(
                         $alias[$type->name],
                         [
-                            'type' => $this->getObjectMapping($type->class)['type'],
+                            'type' => $this->getObjectMapping($type->class, $directory)['type'],
                             'multiple' => $type->multiple,
                             'aliases' => $this->getAliases($child, $metaFields),
                             'namespace' => $child->getName(),
@@ -397,13 +399,14 @@ class DocumentParser
     /**
      * Returns document type.
      *
-     * @param string $document Format must be like AcmeBundle:Document.
+     * @param string $document  Format must be like AcmeBundle:Document.
+     * @param string $directory The Document directory name of the bundle.
      *
      * @return string
      */
-    private function getDocumentType($document)
+    private function getDocumentType($document, $directory)
     {
-        $namespace = $this->finder->getNamespace($document);
+        $namespace = $this->finder->getNamespace($document, $directory);
         $reflectionClass = new \ReflectionClass($namespace);
         $document = $this->getDocumentAnnotationData($reflectionClass);
 
@@ -453,6 +456,8 @@ class DocumentParser
     private function getAnalyzers(\ReflectionClass $reflectionClass)
     {
         $analyzers = [];
+        $directory = $this->guessDirName($reflectionClass);
+
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
@@ -460,7 +465,7 @@ class DocumentParser
             if ($type instanceof Embedded) {
                 $analyzers = array_merge(
                     $analyzers,
-                    $this->getAnalyzers(new \ReflectionClass($this->finder->getNamespace($type->class)))
+                    $this->getAnalyzers(new \ReflectionClass($this->finder->getNamespace($type->class, $directory)))
                 );
             }
 
@@ -499,6 +504,8 @@ class DocumentParser
     private function getProperties(\ReflectionClass $reflectionClass, $properties = [], $flag = false)
     {
         $mapping = [];
+        $directory = $this->guessDirName($reflectionClass);
+
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $type = $this->getPropertyAnnotationData($property);
@@ -516,7 +523,7 @@ class DocumentParser
 
             // Inner object
             if ($type instanceof Embedded) {
-                $map = array_replace_recursive($map, $this->getObjectMapping($type->class));
+                $map = array_replace_recursive($map, $this->getObjectMapping($type->class, $directory));
             }
 
             // HashMap object
@@ -546,12 +553,13 @@ class DocumentParser
      * Loads from cache if it's already loaded.
      *
      * @param string $className
+     * @param string $directory Name of the directory where the Document is
      *
      * @return array
      */
-    private function getObjectMapping($className)
+    private function getObjectMapping($className, $directory)
     {
-        $namespace = $this->finder->getNamespace($className);
+        $namespace = $this->finder->getNamespace($className, $directory);
 
         if (array_key_exists($namespace, $this->objects)) {
             return $this->objects[$namespace];
@@ -581,5 +589,19 @@ class DocumentParser
         ];
 
         return $this->objects[$namespace];
+    }
+
+    /**
+     * @param \ReflectionClass $reflection
+     *
+     * @return string
+     */
+    private function guessDirName(\ReflectionClass $reflection)
+    {
+        return substr(
+            $directory = $reflection->getName(),
+            $start = strpos($directory, '\\') + 1,
+            strrpos($directory, '\\') - $start
+        );
     }
 }

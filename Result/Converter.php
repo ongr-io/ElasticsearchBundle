@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Annotation\HashMap;
 use ONGR\ElasticsearchBundle\Annotation\Nested;
 use ONGR\ElasticsearchBundle\Annotation\Object;
 use ONGR\ElasticsearchBundle\Collection\Collection;
@@ -41,7 +40,7 @@ class Converter
     /**
      * Converts raw array to document.
      *
-     * @param array   $rawData
+     * @param array $rawData
      * @param Manager $manager
      *
      * @return object
@@ -78,9 +77,9 @@ class Converter
     /**
      * Assigns all properties to object.
      *
-     * @param array            $array
-     * @param \ReflectionClass $object
-     * @param array            $aliases
+     * @param array  $array
+     * @param object $object
+     * @param array  $aliases
      *
      * @return object
      */
@@ -94,6 +93,9 @@ class Converter
             if (isset($aliases[$name]['type'])) {
                 switch ($aliases[$name]['type']) {
                     case 'date':
+                        if (is_null($value) || (is_object($value) && $value instanceof \DateTimeInterface)) {
+                            continue;
+                        }
                         if (is_numeric($value) && (int)$value == $value) {
                             $time = $value;
                         } else {
@@ -115,6 +117,11 @@ class Converter
                                 new $aliases[$name]['namespace'](),
                                 $aliases[$name]['aliases']
                             );
+                        }
+                        break;
+                    case 'boolean':
+                        if (!is_bool($value)) {
+                            $value = (bool)$value;
                         }
                         break;
                     default:
@@ -217,7 +224,7 @@ class Converter
      * Check if class matches the expected one.
      *
      * @param object $object
-     * @param array  $expectedClasses
+     * @param array $expectedClasses
      *
      * @throws \InvalidArgumentException
      */
@@ -238,7 +245,7 @@ class Converter
      * Check if value is instance of Collection.
      *
      * @param string $property
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @throws \InvalidArgumentException
      */
