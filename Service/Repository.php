@@ -204,7 +204,7 @@ class Repository
      *
      * @return array
      */
-    private function getScrollConfiguration($raw, $scrollDuration)
+    public function getScrollConfiguration($raw, $scrollDuration)
     {
         $scrollConfig = [];
         if (isset($raw['_scroll_id'])) {
