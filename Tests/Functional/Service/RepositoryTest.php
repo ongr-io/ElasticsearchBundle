@@ -512,5 +512,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
                 $product->getPrice()
             );
         }
+
+        $this->assertEquals(count($repository->findByIds(['non-existant-id'])), 0);
     }
 }
