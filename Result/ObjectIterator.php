@@ -11,12 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Collection\Collection;
+use Closure;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ObjectIterator class.
  */
-class ObjectIterator extends Collection
+class ObjectIterator extends ArrayCollection
 {
     /**
      * @var Converter
@@ -34,6 +35,11 @@ class ObjectIterator extends Collection
     private $rawObjects;
 
     /**
+     * @var \Closure
+     */
+    private $convertCallback;
+
+    /**
      * Using part of abstract iterator functionality only.
      *
      * @param Converter $converter
@@ -46,12 +52,37 @@ class ObjectIterator extends Collection
         $this->rawObjects = $objects;
         $this->alias = $alias;
 
+        // On-demand conversion callback for ArrayAccess/IteratorAggregate
+        $this->convertCallback = function ($key) {
+            $value = $this->convertDocument($this->rawObjects[$key]);
+            $this->rawObjects[$key] = null;
+            $this->offsetSet($key, $value);
+            return $value;
+        };
+
         $callback = function ($v) {
             return null;
         };
 
         // Pass array with available keys and no values
         parent::__construct(array_map($callback, $objects));
+    }
+
+    /**
+     * Converts all existing array values into their document equivalents.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $all = parent::toArray();
+        $callback = $this->convertCallback;
+        array_walk($all, function (&$value, $key) use ($callback) {
+            if ($value === null) {
+                $value = $callback($key);
+            }
+        });
+        return $all;
     }
 
     /**
@@ -67,18 +98,101 @@ class ObjectIterator extends Collection
     }
 
     /**
+     * Converts a raw object when the key for the object must be determined first.
+     *
+     * @param array $rawObject
+     *
+     * @return bool|object
+     */
+    protected function convertFromValue(array $rawObject)
+    {
+        if (false === $rawObject) {
+            return false;
+        }
+        $callback = $this->convertCallback;
+        $key = key($this->rawObjects);
+        return $callback($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        $callback = $this->convertCallback;
+        return new ObjectCallbackIterator($callback, $this->toArray());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function first()
+    {
+        $first = parent::first();
+        if ($first === null) {
+            $first = reset($this->rawObjects);
+            return $this->convertFromValue($first);
+        }
+
+        return $first;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function last()
+    {
+        $last = parent::last();
+
+        if ($last === null) {
+            $last = end($this->rawObjects);
+            return $this->convertFromValue($last);
+        }
+
+        return $last;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function next()
+    {
+        $next = parent::next();
+
+        if ($next === null) {
+            $next = next($this->rawObjects);
+            return $this->convertFromValue($next);
+        }
+
+        return $next;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function current()
     {
-        $value = parent::current();
+        $current = parent::current();
+
+        if ($current === null) {
+            $current = current($this->rawObjects);
+            return $this->convertFromValue($current);
+        }
+
+        return $current;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get($offset)
+    {
+        $value = parent::get($offset);
 
         // Generate objects on demand
-        if ($value === null && $this->valid()) {
-            $key = $this->key();
-            $value = $this->convertDocument($this->rawObjects[$key]);
-            $this->rawObjects[$key] = null;
-            $this->offsetSet($key, $value);
+        if ($value === null && $this->containsKey($this->key())) {
+            $callback = $this->convertCallback;
+            return $callback($offset);
         }
 
         return $value;
@@ -87,17 +201,32 @@ class ObjectIterator extends Collection
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function getValues()
     {
-        $value = parent::offsetGet($offset);
+        return array_values($this->toArray());
+    }
 
-        // Generate objects on demand
-        if ($value === null && $this->valid()) {
-            $value = $this->convertDocument($this->rawObjects[$offset]);
-            $this->rawObjects[$offset] = null;
-            $this->offsetSet($offset, $value);
-        }
+    /**
+     * {@inheritdoc}
+     */
+    public function map(Closure $func)
+    {
+        return new ArrayCollection(array_map($func, $this->toArray()));
+    }
 
-        return $value;
+    /**
+     * {@inheritdoc}
+     */
+    public function filter(Closure $p)
+    {
+        return new ArrayCollection(array_filter($this->toArray(), $p));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createFrom(array $elements)
+    {
+        return new static($this->converter, $elements, $this->alias);
     }
 }
