@@ -11,12 +11,13 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Collection\Collection;
+use Doctrine\Common\Collections\AbstractLazyCollection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ObjectIterator class.
  */
-class ObjectIterator extends Collection
+class ObjectIterator extends AbstractLazyCollection
 {
     /**
      * @var Converter
@@ -29,12 +30,7 @@ class ObjectIterator extends Collection
     private $alias;
 
     /**
-     * @var array
-     */
-    private $rawObjects;
-
-    /**
-     * Using part of abstract iterator functionality only.
+     * Converts raw document data to objects when requested.
      *
      * @param Converter $converter
      * @param array     $objects
@@ -43,15 +39,8 @@ class ObjectIterator extends Collection
     public function __construct($converter, $objects, $alias)
     {
         $this->converter = $converter;
-        $this->rawObjects = $objects;
         $this->alias = $alias;
-
-        $callback = function ($v) {
-            return null;
-        };
-
-        // Pass array with available keys and no values
-        parent::__construct(array_map($callback, $objects));
+        $this->collection = new ArrayCollection($objects);
     }
 
     /**
@@ -67,37 +56,12 @@ class ObjectIterator extends Collection
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function current()
+    protected function doInitialize()
     {
-        $value = parent::current();
-
-        // Generate objects on demand
-        if ($value === null && $this->valid()) {
-            $key = $this->key();
-            $value = $this->convertDocument($this->rawObjects[$key]);
-            $this->rawObjects[$key] = null;
-            $this->offsetSet($key, $value);
-        }
-
-        return $value;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        $value = parent::offsetGet($offset);
-
-        // Generate objects on demand
-        if ($value === null && $this->valid()) {
-            $value = $this->convertDocument($this->rawObjects[$offset]);
-            $this->rawObjects[$offset] = null;
-            $this->offsetSet($offset, $value);
-        }
-
-        return $value;
+        $this->collection = $this->collection->map(function ($rawObject) {
+            return $this->convertDocument($rawObject);
+        });
     }
 }
