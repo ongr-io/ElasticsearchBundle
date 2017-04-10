@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Generator;
 
+use Doctrine\Common\Inflector\Inflector;
+
 /**
  * Document Generator
  */
@@ -249,8 +251,8 @@ public function __construct()
             [
                 $this->getClassName($metadata),
                 ucfirst($metadata['annotation']),
-                $metadata['type'] != lcfirst($this->getClassName($metadata))
-                    ? sprintf('type="%s"', $metadata['type']) : '',
+                $metadata['annotation'] != 'object' ? ($metadata['type'] != lcfirst($this->getClassName($metadata))
+                    ? sprintf('type="%s"', $metadata['type']) : '') : '',
             ],
             '/**
  * <className>
