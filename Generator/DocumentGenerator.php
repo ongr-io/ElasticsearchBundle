@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Generator;
 
+use Doctrine\Common\Inflector\Inflector;
+
 /**
  * Document Generator
  */
@@ -31,6 +33,20 @@ class DocumentGenerator
  * @return string
  */
 public function get<methodName>()
+{
+<spaces>return $this-><fieldName>;
+}';
+
+    /**
+     * @var string
+     */
+    private $isMethodTemplate =
+        '/**
+ * Returns <fieldName>
+ *
+ * @return string
+ */
+public function is<methodName>()
 {
 <spaces>return $this-><fieldName>;
 }';
@@ -141,7 +157,15 @@ public function __construct()
 
         foreach ($metadata['properties'] as $property) {
             $lines[] = $this->generateDocumentMethod($property, $this->setMethodTemplate) . "\n";
-            $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
+            if (isset($property['property_type'])) {
+                if ($property['property_type'] === 'boolean') {
+                    $lines[] = $this->generateDocumentMethod($property, $this->isMethodTemplate) . "\n";
+                } else {
+                    $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
+                }
+            } else {
+                $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
+            }
         }
 
         return implode("\n", $lines);
@@ -249,8 +273,8 @@ public function __construct()
             [
                 $this->getClassName($metadata),
                 ucfirst($metadata['annotation']),
-                $metadata['type'] != lcfirst($this->getClassName($metadata))
-                    ? sprintf('type="%s"', $metadata['type']) : '',
+                $metadata['annotation'] != 'object' ? ($metadata['type'] != lcfirst($this->getClassName($metadata))
+                    ? sprintf('type="%s"', $metadata['type']) : '') : '',
             ],
             '/**
  * <className>
