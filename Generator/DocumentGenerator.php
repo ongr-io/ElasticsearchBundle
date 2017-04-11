@@ -40,6 +40,20 @@ public function get<methodName>()
     /**
      * @var string
      */
+    private $isMethodTemplate =
+        '/**
+ * Returns <fieldName>
+ *
+ * @return string
+ */
+public function is<methodName>()
+{
+<spaces>return $this-><fieldName>;
+}';
+
+    /**
+     * @var string
+     */
     private $setMethodTemplate =
         '/**
  * Sets <fieldName>
@@ -143,7 +157,15 @@ public function __construct()
 
         foreach ($metadata['properties'] as $property) {
             $lines[] = $this->generateDocumentMethod($property, $this->setMethodTemplate) . "\n";
-            $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
+            if (isset($property['property_type'])) {
+                if ($property['property_type'] === 'boolean') {
+                    $lines[] = $this->generateDocumentMethod($property, $this->isMethodTemplate) . "\n";
+                } else {
+                    $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
+                }
+            } else {
+                $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
+            }
         }
 
         return implode("\n", $lines);
