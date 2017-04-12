@@ -43,8 +43,8 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Store\Article',
-                'TestBundle:Article',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Store\Product',
+                'TestBundle:Product',
                 'Document\Store'
             ],
         ];
@@ -102,6 +102,5 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThan(0, count($documents));
         $this->assertContains('Product', $documents);
         $this->assertContains('User', $documents);
-        $this->assertContains('Store\Article', $documents);
     }
 }
