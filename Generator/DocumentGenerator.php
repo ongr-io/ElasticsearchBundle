@@ -59,10 +59,14 @@ public function is<methodName>()
  * Sets <fieldName>
  *
  * @param string $<fieldName>
+ *
+ * @return self
  */
 public function set<methodName>($<fieldName>)
 {
 <spaces>$this-><fieldName> = $<fieldName>;
+
+<spaces>return $this;
 }';
 
     /**
@@ -160,7 +164,7 @@ public function __construct()
             if (isset($property['property_type']) && $property['property_type'] === 'boolean') {
                 $lines[] = $this->generateDocumentMethod($property, $this->isMethodTemplate) . "\n";
             }
-            
+
             $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
         }
 
