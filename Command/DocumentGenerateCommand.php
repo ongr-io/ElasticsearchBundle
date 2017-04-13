@@ -170,7 +170,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                 continue;
             }
 
-            $this->propertyVisibilities  = ['private', 'protected'];
+            $this->propertyVisibilities  = ['private', 'protected', 'public'];
             $output->writeln($this->getOptionsLabel($this->propertyVisibilities, 'Available visibilities'));
             $property['visibility'] = $this->questionHelper->ask(
                 $input,

@@ -156,6 +156,9 @@ public function __construct()
         $lines = [];
 
         foreach ($metadata['properties'] as $property) {
+            if (isset($property['visibility']) && $property['visibility'] === 'public') {
+                continue;
+            }
             $lines[] = $this->generateDocumentMethod($property, $this->setMethodTemplate) . "\n";
             if (isset($property['property_type']) && $property['property_type'] === 'boolean') {
                 $lines[] = $this->generateDocumentMethod($property, $this->isMethodTemplate) . "\n";
