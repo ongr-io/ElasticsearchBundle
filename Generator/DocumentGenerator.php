@@ -138,7 +138,7 @@ public function __construct()
 
         foreach ($metadata['properties'] as $property) {
             $lines[] = $this->generatePropertyDocBlock($property);
-            $lines[] = $this->spaces . 'private $' . $property['field_name'] . ";\n";
+            $lines[] = $this->spaces . $property['visibility'] . ' $' . $property['field_name'] . ";\n";
         }
 
         return implode("\n", $lines);
@@ -160,7 +160,7 @@ public function __construct()
             if (isset($property['property_type']) && $property['property_type'] === 'boolean') {
                 $lines[] = $this->generateDocumentMethod($property, $this->isMethodTemplate) . "\n";
             }
-            
+
             $lines[] = $this->generateDocumentMethod($property, $this->getMethodTemplate) . "\n";
         }
 
