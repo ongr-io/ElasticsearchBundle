@@ -106,17 +106,19 @@ class Converter
                         break;
                     case Object::NAME:
                     case Nested::NAME:
-                        if ($aliases[$name]['multiple']) {
+                        if (isset($aliases[$name]['multiple'])) {
                             $value = new ObjectIterator($this, $value, $aliases[$name]);
                         } else {
                             if (!isset($value)) {
                                 break;
                             }
-                            $value = $this->assignArrayToObject(
-                                $value,
-                                new $aliases[$name]['namespace'](),
-                                $aliases[$name]['aliases']
-                            );
+                            if (isset($aliases[$name]['namespace']) && isset($aliases[$name]['aliases'])) {
+                                $value = $this->assignArrayToObject(
+                                    $value,
+                                    new $aliases[$name]['namespace'](),
+                                    $aliases[$name]['aliases']
+                                );
+                            }
                         }
                         break;
                     case 'boolean':
