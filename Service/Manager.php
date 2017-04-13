@@ -506,6 +506,26 @@ class Manager
     }
 
     /**
+     * Update elasticsearch index if exists.
+     *
+     * @return array
+     */
+    public function updateIndex()
+    {
+        $params = [];
+
+        foreach ($this->getIndexMappings() as $key => $mapping) {
+            $params = [
+                'index' => $this->getIndexName(),
+                'type' => $key,
+                'body' => $mapping
+            ];
+        }
+
+        return $this->getClient()->indices()->putMapping($params);
+    }
+
+    /**
      * Drops elasticsearch index.
      */
     public function dropIndex()
