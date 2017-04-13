@@ -337,7 +337,7 @@ To insert a document with mapping from example above you have to create 2 object
 As shown in the example above, by ElasticsearchBundle default, only a single object will be saved in the document.
 Meanwhile, Elasticsearch database doesn't care if in an object is stored as a single value or as an array. 
 If it is necessary to store multiple objects (array), you have to add `multiple=true` to the annotation. While
-initiating a document with multiple items you need to initialize property with the new instance of `Collection()`.
+initiating a document with multiple items you need to initialize property with the new instance of `ArrayCollection()`.
 
 Here's an example:
 
@@ -346,8 +346,8 @@ Here's an example:
 
 namespace AppBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use ONGR\ElasticsearchBundle\Collection\Collection;
 
 /**
  * @ES\Document()
@@ -368,7 +368,7 @@ class Product
     
     public function __construct()
     {
-        $this->variants = new Collection();
+        $this->variants = new ArrayCollection();
     }
     
     /**
@@ -379,7 +379,7 @@ class Product
      */
     public function addVariant(VariantObject $variant)
     {
-        $this->variants[] => $variant;
+        $this->variants[] = $variant;
 
         return $this;
     }
