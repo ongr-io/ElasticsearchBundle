@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Collection;
 
-use ONGR\ElasticsearchBundle\Collection\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testCountable()
     {
-        $this->assertCount(count($this->data), new Collection($this->data));
+        $this->assertCount(count($this->data), new ArrayCollection($this->data));
     }
 
     /**
@@ -36,7 +36,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testIterator()
     {
-        $this->assertEquals($this->data, iterator_to_array(new Collection($this->data)));
+        $this->assertEquals($this->data, iterator_to_array(new ArrayCollection($this->data)));
     }
 
     /**
@@ -44,7 +44,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testArrayAccess()
     {
-        $collection = new Collection($this->data);
+        $collection = new ArrayCollection($this->data);
 
         $this->assertArrayHasKey('foo', $collection);
         $this->assertEquals($this->data['foo'], $collection['foo']);
