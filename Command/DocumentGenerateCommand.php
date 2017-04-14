@@ -33,6 +33,11 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
     private $propertyAnnotations;
 
     /**
+     * @var string[]
+     */
+    private $propertyVisibilities;
+
+    /**
      * {@inheritdoc}
      */
     protected function configure()
@@ -165,6 +170,19 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                 continue;
             }
 
+            $this->propertyVisibilities  = ['private', 'protected', 'public'];
+            $output->writeln($this->getOptionsLabel($this->propertyVisibilities, 'Available visibilities'));
+            $property['visibility'] = $this->questionHelper->ask(
+                $input,
+                $output,
+                $this->getQuestion(
+                    'Property visibility',
+                    'private',
+                    [$this, 'validatePropertyVisibility'],
+                    $this->propertyVisibilities
+                )
+            );
+
             $output->writeln($this->getOptionsLabel($this->propertyAnnotations, 'Available annotations'));
             $property['annotation'] = $this->questionHelper->ask(
                 $input,
@@ -210,7 +228,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                         $output,
                         $this->getQuestion(
                             'Property type',
-                            'string',
+                            'text',
                             [$this, 'validatePropertyType'],
                             $this->getPropertyTypes()
                         )
@@ -513,6 +531,26 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         }
 
         return $annotation;
+    }
+
+    /**
+     * Validates property visibility
+     *
+     * @param string $visibility
+     *
+     * @return string
+     * @throws \InvalidArgumentException When the visibility is not found in the list of allowed ones.
+     */
+    public function validatePropertyVisibility($visibility)
+    {
+        if (!in_array($visibility, $this->propertyVisibilities)) {
+            throw $this->getException(
+                'The property visibility isn\'t valid ("%s" given, expecting one of following: %s)',
+                [$visibility, implode(', ', $this->propertyVisibilities)]
+            );
+        }
+
+        return $visibility;
     }
 
     /**
