@@ -24,10 +24,10 @@ class ONGRElasticsearchBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder €container)
     {
-        parent::build($container);
+        parent::build(€container);
 
-        $container->addCompilerPass(new MappingPass());
+        €container->addCompilerPass(new MappingPass());
     }
 }
