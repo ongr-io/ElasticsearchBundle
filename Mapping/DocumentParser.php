@@ -66,6 +66,11 @@ class DocumentParser
     private $properties = [];
 
     /**
+     * @var array Local cache for documents
+     */
+    private $documents = [];
+
+    /**
      * @param Reader         $reader Used for reading annotations.
      * @param DocumentFinder $finder Used for resolving namespaces.
      */
@@ -86,35 +91,40 @@ class DocumentParser
      */
     public function parse(\ReflectionClass $class)
     {
-        /** @var Document $document */
-        $document = $this->reader->getClassAnnotation($class, self::DOCUMENT_ANNOTATION);
+        $className = $class->getName();
 
-        if ($document === null) {
-            throw new MissingDocumentAnnotationException(
-                sprintf(
-                    '"%s" class cannot be parsed as document because @Document annotation is missing.',
-                    $class->getName()
-                )
-            );
+        if (!isset($this->documents[$className])) {
+            /** @var Document $document */
+            $document = $this->reader->getClassAnnotation($class, self::DOCUMENT_ANNOTATION);
+
+            if ($document === null) {
+                throw new MissingDocumentAnnotationException(
+                    sprintf(
+                        '"%s" class cannot be parsed as document because @Document annotation is missing.',
+                        $class->getName()
+                    )
+                );
+            }
+
+            $fields = [];
+
+            $this->documents[$className] = [
+                'type' => $document->type ?: Caser::snake($class->getShortName()),
+                'properties' => $this->getProperties($class),
+                'fields' => array_filter(
+                    array_merge(
+                        $document->dump(),
+                        $fields
+                    )
+                ),
+                'aliases' => $this->getAliases($class, $fields),
+                'analyzers' => $this->getAnalyzers($class),
+                'objects' => $this->getObjects(),
+                'namespace' => $class->getName(),
+                'class' => $class->getShortName(),
+            ];
         }
-
-        $fields = [];
-
-        return [
-            'type' => $document->type ?: Caser::snake($class->getShortName()),
-            'properties' => $this->getProperties($class),
-            'fields' => array_filter(
-                array_merge(
-                    $document->dump(),
-                    $fields
-                )
-            ),
-            'aliases' => $this->getAliases($class, $fields),
-            'analyzers' => $this->getAnalyzers($class),
-            'objects' => $this->getObjects(),
-            'namespace' => $class->getName(),
-            'class' => $class->getShortName(),
-        ];
+        return $this->documents[$className];
     }
 
     /**
