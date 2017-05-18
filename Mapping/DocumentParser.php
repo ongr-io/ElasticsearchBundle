@@ -429,7 +429,7 @@ class DocumentParser
         $properties = [];
 
         foreach ($reflectionClass->getProperties() as $property) {
-            if (!in_array($property->getName(), $properties)) {
+            if (!array_key_exists($property->getName(), $properties)) {
                 $properties[$property->getName()] = $property;
             }
         }
