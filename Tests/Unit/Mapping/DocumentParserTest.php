@@ -39,7 +39,9 @@ class DocumentParserTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnFalseOnTrait()
     {
-        $traitReflection = new \ReflectionClass('\\ONGR\\ElasticsearchBundle\\Tests\\app\\fixture\\TestBundle\\Document\\LongDescriptionTrait');
+        $traitReflection = new \ReflectionClass(
+            '\\ONGR\\ElasticsearchBundle\\Tests\\app\\fixture\\TestBundle\\Document\\LongDescriptionTrait'
+        );
 
         $parser = new DocumentParser($this->reader, $this->finder);
         $this->assertFalse($parser->parse($traitReflection));
