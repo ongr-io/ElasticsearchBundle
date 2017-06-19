@@ -147,6 +147,9 @@ class MetadataCollector
 
             try {
                 $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
+                if (!$documentMapping) {
+                    continue;
+                }
             } catch (MissingDocumentAnnotationException $exception) {
                 // Not a document, just ignore
                 continue;

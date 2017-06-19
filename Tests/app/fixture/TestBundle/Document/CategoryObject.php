@@ -34,6 +34,11 @@ class CategoryObject
      */
     public $description;
 
+    /*
+     * Test the use of traits
+     */
+    use LongDescriptionTrait;
+
     /**
      * @return string
      */
