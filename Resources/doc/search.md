@@ -99,7 +99,7 @@ cities and states with title "Indiana":
 $search = new Search();
 $search->addQuery(new TermQuery('title', 'Indiana'));
 
-$results = $manager->execute(
+$results = $manager->search(
     // Array of documents representing different types
     ['AppBundle:City', 'AppBundle:State'], 
     $search->toArray()
