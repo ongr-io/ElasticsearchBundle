@@ -150,6 +150,6 @@ Alternatively you can remove document by ID (requires to have repository service
 ```php
 
 $repo = $this->get('es.manager.default.content');
-$content = $repo->delete(5);
+$content = $repo->remove(5);
 
 ```
