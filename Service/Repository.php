@@ -190,9 +190,7 @@ class Repository
      */
     public function findOneBy(array $criteria, array $orderBy = [])
     {
-        $result = $this->findBy($criteria, $orderBy, null, null);
-
-        return $result->first();
+        return $this->findBy($criteria, $orderBy, 1, null)->current();
     }
 
     /**
