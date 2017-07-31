@@ -283,8 +283,13 @@ class Manager
         $params = [];
         $params['index'] = $this->getIndexName();
         
-        if (!empty($types)) {
-            $params['type'] = implode(',', $types);
+        $resolvedTypes = [];
+        foreach ($types as $type) {
+            $resolvedTypes[] = $this->resolveTypeName($type);
+        }
+        
+        if (!empty($resolvedTypes)) {
+            $params['type'] = implode(',', $resolvedTypes);
         }
         
         $params['body'] = $query;
