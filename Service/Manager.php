@@ -16,6 +16,7 @@ use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Event\BulkEvent;
 use ONGR\ElasticsearchBundle\Event\CommitEvent;
+use ONGR\ElasticsearchBundle\Event\PrePersistEvent;
 use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
@@ -312,6 +313,11 @@ class Manager
      */
     public function persist($document)
     {
+        $this->eventDispatcher->dispatch(
+            Events::PRE_PERSIST,
+            new PrePersistEvent($document)
+        );
+
         $documentArray = $this->converter->convertToArray($document);
         $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
 
