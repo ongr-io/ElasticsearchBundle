@@ -141,7 +141,7 @@ class MetadataCollector
         foreach ($documents as $document) {
             $documentReflection = new \ReflectionClass(
                 $bundleNamespace .
-                '\\' . $documentDir .
+                '\\' . str_replace('/', '\\', $documentDir) .
                 '\\' . $document
             );
 
