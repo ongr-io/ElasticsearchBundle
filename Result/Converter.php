@@ -98,11 +98,11 @@ class Converter
                         }
                         if (is_numeric($value) && (int)$value == $value) {
                             $time = $value;
+                            $value = new \DateTime();
+                            $value->setTimestamp($time);
                         } else {
-                            $time = strtotime($value);
+                            $value = new \DateTime($value);
                         }
-                        $value = new \DateTime();
-                        $value->setTimestamp($time);
                         break;
                     case Object::NAME:
                     case Nested::NAME:
