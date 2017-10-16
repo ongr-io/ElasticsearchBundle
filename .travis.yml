@@ -19,6 +19,8 @@ install:
   - unzip elasticsearch.zip
   - ./elasticsearch-*/bin/elasticsearch -d
 before_script:
+  - print $GITHUB_COMPOSER_AUTH
+  - composer config -l
   - composer require --no-update symfony/symfony:${SYMFONY}
   #- composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
   - composer install --no-interaction --prefer-dist
