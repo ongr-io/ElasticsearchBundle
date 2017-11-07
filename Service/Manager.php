@@ -523,7 +523,9 @@ class Manager
     public function dropAndCreateIndex($noMapping = false)
     {
         try {
-            $this->dropIndex();
+            if ($this->indexExists()) {
+                $this->dropIndex();
+            }
         } catch (\Exception $e) {
             // Do nothing, our target is to create new index.
         }
