@@ -4,19 +4,17 @@ php:
   - 5.6
   - 7.0
   - 7.1
-  - hhvm
 env:
   global:
     - JAVA_HOME="/usr/lib/jvm/java-8-oracle/jre"
-    - ES_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.2.zip"
+    - ES_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.3.zip"
   matrix:
     - SYMFONY="~2.8"
     - SYMFONY="~3.0"
     - SYMFONY="~3.1"
     - SYMFONY="~3.2"
-matrix:
-  allow_failures:
-    - php: hhvm
+    - SYMFONY="~3.3"
+    - SYMFONY="~3.4"
 addons:
   apt:
     packages:
