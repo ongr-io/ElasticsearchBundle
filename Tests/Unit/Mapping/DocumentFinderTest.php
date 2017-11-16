@@ -35,6 +35,22 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Data provider for testGetNamespaceWithSubDirInDocumentDirectory().
+     *
+     * @return array
+     */
+    public function getTestGetNamespaceDataWithSubDirInDocumentDir()
+    {
+        return [
+            [
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Store\Product',
+                'TestBundle:Product',
+                'Document\Store'
+            ],
+        ];
+    }
+
+    /**
      * Tests for getNamespace().
      *
      * @param string $expectedNamespace
@@ -50,6 +66,25 @@ class DocumentFinderTest extends \PHPUnit_Framework_TestCase
         $finder = new DocumentFinder($bundles);
 
         $this->assertEquals($expectedNamespace, $finder->getNamespace($className));
+    }
+
+    /**
+     * Tests for getNamespace() with a configured document directory.
+     *
+     * @param string $expectedNamespace
+     * @param string $className
+     * @param string $documentDir
+     *
+     * @dataProvider getTestGetNamespaceDataWithSubDirInDocumentDir()
+     */
+    public function testGetNamespaceWithSubDirInDocumentDirectory($expectedNamespace, $className, $documentDir)
+    {
+        $bundles = [
+            'TestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\TestBundle'
+        ];
+        $finder = new DocumentFinder($bundles);
+
+        $this->assertEquals($expectedNamespace, $finder->getNamespace($className, $documentDir));
     }
 
     /**

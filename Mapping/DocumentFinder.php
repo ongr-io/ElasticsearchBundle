@@ -135,7 +135,7 @@ class DocumentFinder
 
         $bundleReflection = new \ReflectionClass($this->getBundleClass($bundle));
 
-        $documentsDirectory = DIRECTORY_SEPARATOR . $documentsDirectory . DIRECTORY_SEPARATOR;
+        $documentsDirectory = DIRECTORY_SEPARATOR . str_replace('\\', '/', $documentsDirectory) . DIRECTORY_SEPARATOR;
         $directory = dirname($bundleReflection->getFileName()) . $documentsDirectory;
 
         if (!is_dir($directory)) {

@@ -479,7 +479,14 @@ class RepositoryTest extends AbstractElasticsearchTestCase
             'failed' => 0,
         ];
 
-        $this->assertEquals($shards, $count['_shards']);
+        $this->assertEquals($shards['total'], $count['_shards']['total']);
+        $this->assertEquals($shards['successful'], $count['_shards']['successful']);
+        $this->assertEquals($shards['failed'], $count['_shards']['failed']);
+
+        #TODO remove if statement after bundle drops sf 3.0 support
+        if (isset($count['_shards']['skipped'])) {
+            $this->assertEquals(0, $count['_shards']['skipped']);
+        }
     }
 
     /**
