@@ -11,9 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
+use Doctrine\Common\Collections\Collection;
 use ONGR\ElasticsearchBundle\Annotation\Nested;
 use ONGR\ElasticsearchBundle\Annotation\Object;
-use ONGR\ElasticsearchBundle\Collection\Collection;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Service\Manager;
 
