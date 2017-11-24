@@ -235,8 +235,9 @@ class Converter
             throw new \InvalidArgumentException($msg);
         }
 
-        $class = get_class($object);
-        if (!in_array($class, $expectedClasses)) {
+        $classes = class_parents($object);
+        $classes[] = $class = get_class($object);
+        if (empty(array_intersect($classes, $expectedClasses))) {
             throw new \InvalidArgumentException("Expected object of type {$expectedClasses[0]}, got {$class}.");
         }
     }
