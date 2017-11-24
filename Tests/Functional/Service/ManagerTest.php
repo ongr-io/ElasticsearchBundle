@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\SubcategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
@@ -79,6 +80,18 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $product->setId(1);
         $product->setTitle('test');
         $product->setCategory($category);
+
+        $manager->persist($product);
+        $manager->commit();
+
+        // Inheritance
+        $subcategory = new SubcategoryObject();
+        $subcategory->setTitle('acme');
+
+        $product = new Product();
+        $product->setId(1);
+        $product->setTitle('test');
+        $product->setCategory($subcategory);
 
         $manager->persist($product);
         $manager->commit();
