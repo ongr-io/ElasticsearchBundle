@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use ONGR\ElasticsearchBundle\Collection\Collection;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
@@ -43,6 +43,6 @@ class Product
 
     public function __construct()
     {
-        $this->categories = new ArrayCollection();
+        $this->categories = new Collection();
     }
 }
