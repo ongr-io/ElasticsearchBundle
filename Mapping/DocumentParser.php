@@ -86,12 +86,16 @@ class DocumentParser
      *
      * @param \ReflectionClass $class
      *
-     * @return array
+     * @return array|null
      * @throws MissingDocumentAnnotationException
      */
     public function parse(\ReflectionClass $class)
     {
         $className = $class->getName();
+
+        if ($class->isTrait()) {
+            return false;
+        }
 
         if (!isset($this->documents[$className])) {
             /** @var Document $document */

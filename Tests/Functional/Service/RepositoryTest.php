@@ -149,6 +149,23 @@ class RepositoryTest extends AbstractElasticsearchTestCase
             1,
         ];
 
+        // Case #7 find when title not equal foo.
+        $out[] = [
+            [2, 3, 4],
+            ['!title' => 'foo'],
+        ];
+
+        // Case #8 find when title not equal foo or title not equal bar.
+        $out[] = [
+            [3, 4],
+            [
+                '!title' => [
+                    'foo',
+                    'bar',
+                ],
+            ],
+        ];
+
         return $out;
     }
 
@@ -479,7 +496,14 @@ class RepositoryTest extends AbstractElasticsearchTestCase
             'failed' => 0,
         ];
 
-        $this->assertEquals($shards, $count['_shards']);
+        $this->assertEquals($shards['total'], $count['_shards']['total']);
+        $this->assertEquals($shards['successful'], $count['_shards']['successful']);
+        $this->assertEquals($shards['failed'], $count['_shards']['failed']);
+
+        #TODO remove if statement after bundle drops sf 3.0 support
+        if (isset($count['_shards']['skipped'])) {
+            $this->assertEquals(0, $count['_shards']['skipped']);
+        }
     }
 
     /**
