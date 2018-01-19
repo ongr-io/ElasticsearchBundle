@@ -127,14 +127,14 @@ class ManagerFactory
         $this->eventDispatcher &&
             $this->eventDispatcher->dispatch(
                 Events::PRE_MANAGER_CREATE,
-                new PreCreateManagerEvent($client, $indexSettings)
+                $preCreateEvent = new PreCreateManagerEvent($client, $indexSettings)
             );
 
         $manager = new Manager(
             $managerName,
             $managerConfig,
             $client->build(),
-            $indexSettings,
+            $preCreateEvent->getIndexSettings(),
             $this->metadataCollector,
             $this->converter
         );
