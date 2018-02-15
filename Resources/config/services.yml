@@ -3,6 +3,11 @@ parameters:
     es.profiler.template: ONGRElasticsearchBundle:Profiler:profiler.html.twig
 
 services:
+    ONGR\ElasticsearchBundle\Command\:
+        resource: '../../Command'
+        tags:
+            - { name: console.command }
+
     es.export:
         class: ONGR\ElasticsearchBundle\Service\ExportService
 
