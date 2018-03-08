@@ -1,4 +1,4 @@
-{% extends app.request.isXmlHttpRequest ? 'WebProfilerBundle:Profiler:ajax_layout.html.twig' : 'WebProfilerBundle:Profiler:layout.html.twig' %}
+{% extends app.request.isXmlHttpRequest ? '@WebProfiler/Profiler/ajax_layout.html.twig' : '@WebProfiler/Profiler/layout.html.twig' %}
 
 {% block toolbar %}
     {% set icon -%}
@@ -24,7 +24,7 @@
         <span class="sf-toolbar-status">{{ collector.time }} ms</span>
     </div>
     {% endset %}
-    {% include 'WebProfilerBundle:Profiler:toolbar_item.html.twig' with { 'link': profiler_url } %}
+    {% include '@WebProfiler/Profiler/toolbar_item.html.twig' with { 'link': profiler_url } %}
 {% endblock %}
 
 {% block menu %}
@@ -120,7 +120,7 @@
     {{ block('queries') }}
     <h2>Managers</h2>
     {% if collector.managers %}
-        {% include 'WebProfilerBundle:Profiler:table.html.twig' with {data: collector.managers} only %}
+        {% include '@WebProfiler/Profiler/table.html.twig' with {data: collector.managers} only %}
     {% else %}
         <p>
             <em>No managers.</em>
