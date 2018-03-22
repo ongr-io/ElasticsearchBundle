@@ -22,6 +22,11 @@ final class Events
     const BULK = 'es.bulk';
 
     /**
+     * The PRE_PERSIST event occurs before persisting document.
+     */
+    const PRE_PERSIST = 'es.pre_persist';
+
+    /**
      * The PRE_COMMIT event occurs before committing queries to ES
      */
     const PRE_COMMIT = 'es.pre_commit';
