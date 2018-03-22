@@ -111,6 +111,7 @@ class DocumentParser
             }
 
             $fields = [];
+            $aliases = $this->getAliases($class, $fields);
 
             $this->documents[$className] = [
                 'type' => $document->type ?: Caser::snake($class->getShortName()),
@@ -121,7 +122,7 @@ class DocumentParser
                         $fields
                     )
                 ),
-                'aliases' => $this->getAliases($class, $fields),
+                'aliases' => $aliases,
                 'analyzers' => $this->getAnalyzers($class),
                 'objects' => $this->getObjects(),
                 'namespace' => $class->getName(),
