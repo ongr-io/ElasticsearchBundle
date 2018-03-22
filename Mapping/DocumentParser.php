@@ -250,7 +250,6 @@ class DocumentParser
     private function getAliases(\ReflectionClass $reflectionClass, array &$metaFields = null)
     {
         $reflectionName = $reflectionClass->getName();
-        $directory = $this->guessDirName($reflectionClass);
 
         // We skip cache in case $metaFields is given. This should not affect performance
         // because for each document this method is called only once. For objects it might
@@ -265,6 +264,8 @@ class DocumentParser
         $properties = $this->getDocumentPropertiesReflection($reflectionClass);
 
         foreach ($properties as $name => $property) {
+            $directory = $this->guessDirName($property->getDeclaringClass());
+
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
             $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
@@ -470,9 +471,10 @@ class DocumentParser
     private function getAnalyzers(\ReflectionClass $reflectionClass)
     {
         $analyzers = [];
-        $directory = $this->guessDirName($reflectionClass);
 
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
+            $directory = $this->guessDirName($property->getDeclaringClass());
+
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
 
@@ -518,10 +520,11 @@ class DocumentParser
     private function getProperties(\ReflectionClass $reflectionClass, $properties = [], $flag = false)
     {
         $mapping = [];
-        $directory = $this->guessDirName($reflectionClass);
 
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
+            $directory = $this->guessDirName($property->getDeclaringClass());
+
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
             $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
