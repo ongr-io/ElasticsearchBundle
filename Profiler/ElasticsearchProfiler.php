@@ -76,6 +76,16 @@ class ElasticsearchProfiler implements DataCollectorInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function reset()
+    {
+        $this->queries = [];
+        $this->count = 0;
+        $this->time = 0;
+    }
+
+    /**
      * Returns total time queries took.
      *
      * @return string

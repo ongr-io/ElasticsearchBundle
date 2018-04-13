@@ -50,12 +50,14 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
                 [
                     'field_name' => 'test',
                     'annotation' => 'property',
+                    'visibility' => 'private',
                     'property_type' => 'string',
                     'property_name' => 'testProperty',
                     'property_options' => 'test',
                 ],
                 [
                     'field_name' => 'embedded',
+                    'visibility' => 'protected',
                     'annotation' => 'embedded',
                     'property_class' => 'TestBundle:Product',
                     'property_multiple' => true,

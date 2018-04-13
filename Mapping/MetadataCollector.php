@@ -141,12 +141,15 @@ class MetadataCollector
         foreach ($documents as $document) {
             $documentReflection = new \ReflectionClass(
                 $bundleNamespace .
-                '\\' . $documentDir .
+                '\\' . str_replace('/', '\\', $documentDir) .
                 '\\' . $document
             );
 
             try {
                 $documentMapping = $this->getDocumentReflectionMapping($documentReflection);
+                if (!$documentMapping) {
+                    continue;
+                }
             } catch (MissingDocumentAnnotationException $exception) {
                 // Not a document, just ignore
                 continue;

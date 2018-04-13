@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Service;
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchDSL\Query\FullText\QueryStringQuery;
+use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
@@ -159,8 +160,16 @@ class Repository
         }
 
         foreach ($criteria as $field => $value) {
+            if (preg_match('/^!(.+)$/', $field)) {
+                $boolType = BoolQuery::MUST_NOT;
+                $field = preg_replace('/^!/', '', $field);
+            } else {
+                $boolType = BoolQuery::MUST;
+            }
+
             $search->addQuery(
-                new QueryStringQuery(is_array($value) ? implode(' OR ', $value) : $value, ['default_field' => $field])
+                new QueryStringQuery(is_array($value) ? implode(' OR ', $value) : $value, ['default_field' => $field]),
+                $boolType
             );
         }
 

@@ -98,11 +98,11 @@ class Converter
                         }
                         if (is_numeric($value) && (int)$value == $value) {
                             $time = $value;
+                            $value = new \DateTime();
+                            $value->setTimestamp($time);
                         } else {
-                            $time = strtotime($value);
+                            $value = new \DateTime($value);
                         }
-                        $value = new \DateTime();
-                        $value->setTimestamp($time);
                         break;
                     case Object::NAME:
                     case Nested::NAME:
@@ -235,8 +235,9 @@ class Converter
             throw new \InvalidArgumentException($msg);
         }
 
-        $class = get_class($object);
-        if (!in_array($class, $expectedClasses)) {
+        $classes = class_parents($object);
+        $classes[] = $class = get_class($object);
+        if (empty(array_intersect($classes, $expectedClasses))) {
             throw new \InvalidArgumentException("Expected object of type {$expectedClasses[0]}, got {$class}.");
         }
     }

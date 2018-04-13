@@ -306,6 +306,24 @@ class Manager
     }
 
     /**
+     * Execute search queries using multisearch api
+     * $body - is array of requests described in elastic Multi Search API
+     *
+     * @param $body
+     * @return array
+     */
+    public function msearch(array $body)
+    {
+        $result = $this->client->msearch(
+            [
+                'index' => $this->getIndexName(), // set default index
+                'body' => $body
+            ]
+        );
+        return $result;
+    }
+
+    /**
      * Adds document to next flush.
      *
      * @param object $document
@@ -528,7 +546,9 @@ class Manager
     public function dropAndCreateIndex($noMapping = false)
     {
         try {
-            $this->dropIndex();
+            if ($this->indexExists()) {
+                $this->dropIndex();
+            }
         } catch (\Exception $e) {
             // Do nothing, our target is to create new index.
         }
