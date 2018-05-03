@@ -6,34 +6,23 @@ framework:
 ongr_elasticsearch:
     analysis:
         filter:
-            incremental_filter:
+            incremental_filter: #-> analyzer name
                 type: edge_ngram
                 min_gram: 1
                 max_gram: 20
         analyzer:
-            incrementalAnalyzer:  #-> analyzer name
+            incrementalAnalyzer: #-> analyzer name
                 type: custom
                 tokenizer: standard
                 filter:
                     - lowercase
                     - incremental_filter
-    managers:
-        custom_dir:
-            index:
-                hosts:
-                    - 127.0.0.1:9200
-                index_name: ongr-custom-document-dir-test
-            mappings:
-                TestBundle:
-                    document_dir: Entity
-        default:
-            index:
-                hosts:
-                    - 127.0.0.1:9200
-                index_name: ongr-esb-test
-                settings:
-                    refresh_interval: -1
-                    number_of_replicas: 0
-                    number_of_shards: 5
-            mappings:
-                - TestBundle
+    indexes:
+        ongr-product-test:
+            hosts:
+                - 127.0.0.1:9200
+            settings:
+                refresh_interval: -1
+                number_of_replicas: 0
+                number_of_shards: 2
+            mapping: ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product
