@@ -275,7 +275,7 @@ namespace AppBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType
  */
 class CategoryObject
 {
@@ -399,7 +399,7 @@ namespace AppBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType
  */
 class VariantObject
 {
@@ -434,9 +434,9 @@ Insert action will look like this:
 
 > There is no bounds to define other objects within objects.
 
-> Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
+> Nested types can be defined the same way as objects, except `@ES\NestedType` annotation must be used.
 
-The difference between `@ES\Embedded` and `@ES\Nested` is in the way that the Elasticsearch indexes them.
+The difference between `@ES\Embedded` and `@ES\NestedType` is in the way that the Elasticsearch indexes them.
 While the values of the fields in embedded objects are extracted and put into the same array with all the other
 values of other embedded objects in the same field, during the indexation process, the values of the fields of
 nested objects stored separately. This introduces differences when querying and filtering the index.

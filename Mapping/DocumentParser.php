@@ -17,7 +17,7 @@ use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\HashMap;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
-use ONGR\ElasticsearchBundle\Annotation\Nested;
+use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
 use ONGR\ElasticsearchBundle\Annotation\Property;
 use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
@@ -30,8 +30,8 @@ class DocumentParser
     const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
     const EMBEDDED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Embedded';
     const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
-    const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Object';
-    const NESTED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Nested';
+    const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ObjectType';
+    const NESTED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\NestedType';
 
     // Meta fields
     const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
@@ -398,8 +398,8 @@ class DocumentParser
             'Document',
             'Property',
             'Embedded',
-            'Object',
-            'Nested',
+            'ObjectType',
+            'NestedType',
             'Id',
             'ParentDocument',
             'Routing',
@@ -547,7 +547,7 @@ class DocumentParser
             // HashMap object
             if ($type instanceof HashMap) {
                 $map = array_replace_recursive($map, [
-                    'type' => Nested::NAME,
+                    'type' => NestedType::NAME,
                     'dynamic' => true,
                 ]);
             }
@@ -595,7 +595,7 @@ class DocumentParser
             default:
                 throw new \LogicException(
                     sprintf(
-                        '%s should have @Object or @Nested annotation to be used as embeddable object.',
+                        '%s should have @ObjectType or @NestedType annotation to be used as embeddable object.',
                         $className
                     )
                 );

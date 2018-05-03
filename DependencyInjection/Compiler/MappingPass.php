@@ -23,6 +23,7 @@ class MappingPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
+     * @throws \Exception
      */
     public function process(ContainerBuilder $container)
     {

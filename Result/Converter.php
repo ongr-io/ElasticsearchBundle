@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 use Doctrine\Common\Collections\Collection;
-use ONGR\ElasticsearchBundle\Annotation\Nested;
-use ONGR\ElasticsearchBundle\Annotation\Object;
+use ONGR\ElasticsearchBundle\Annotation\NestedType;
+use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Service\Manager;
 
@@ -104,8 +104,8 @@ class Converter
                             $value = new \DateTime($value);
                         }
                         break;
-                    case Object::NAME:
-                    case Nested::NAME:
+                    case ObjectType::NAME:
+                    case NestedType::NAME:
                         if ($aliases[$name]['multiple']) {
                             $value = new ObjectIterator($this, $value, $aliases[$name]);
                         } else {
