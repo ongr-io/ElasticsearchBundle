@@ -16,10 +16,8 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  *
  * @Annotation
  * @Target("CLASS")
- *
- * @deprecated Object is reserved word in PHP 7.2 This class due Object class will be changed to NestedType as well.
  */
-final class Nested
+final class NestedType
 {
     const NAME = 'nested';
 
