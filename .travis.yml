@@ -1,22 +1,15 @@
 sudo: false
 language: php
 php:
-  - 5.6
   - 7.0
   - 7.1
   - 7.2
 env:
   global:
-    - ES_VERSION=5.6.8 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
+    - ES_VERSION=6.2.3 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
   matrix:
-    - SYMFONY="~2.8"
-    - SYMFONY="~3.0"
-    - SYMFONY="~3.1"
-    - SYMFONY="~3.2"
-    - SYMFONY="~3.3"
-    - SYMFONY="~3.4"
     - SYMFONY="~3.5"
-    - SYMFONY="~3.6"
+    - SYMFONY="^4.0"
 install:
   - wget ${ES_DOWNLOAD_URL}
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
