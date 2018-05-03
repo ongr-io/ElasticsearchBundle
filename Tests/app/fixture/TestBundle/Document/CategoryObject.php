@@ -16,13 +16,13 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 /**
  * Category object for testing.
  *
- * @ES\Object
+ * @ES\ObjectType()
  */
 class CategoryObject
 {
     /**
      * @var string
-     * @ES\Property(type="text", options={"index"="not_analyzed"})
+     * @ES\Property(type="text", options={"index"="false"})
      */
     private $title;
 

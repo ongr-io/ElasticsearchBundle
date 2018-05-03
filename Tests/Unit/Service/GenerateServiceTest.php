@@ -6,7 +6,7 @@ use ONGR\ElasticsearchBundle\Generator\DocumentGenerator;
 use ONGR\ElasticsearchBundle\Service\GenerateService;
 use Symfony\Component\Filesystem\Filesystem;
 
-class GenerateServiceTest extends \PHPUnit_Framework_TestCase
+class GenerateServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string

@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Mapping;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\LongDescriptionTrait;
 
-class DocumentParserTest extends \PHPUnit_Framework_TestCase
+class DocumentParserTest extends \PHPUnit\Framework\TestCase
 {
     /*
      * @var \Doctrine\Common\Annotations\Reader

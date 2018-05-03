@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service\Json;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
 use org\bovigo\vfs\vfsStream;
 
-class JsonWriterTest extends \PHPUnit_Framework_TestCase
+class JsonWriterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * {@inheritdoc}

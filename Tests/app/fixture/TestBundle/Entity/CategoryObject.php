@@ -14,13 +14,13 @@ namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType()
  */
 class CategoryObject
 {
     /**
      * @var string
-     * @ES\Property(type="text", options={"index"="not_analyzed"})
+     * @ES\Property(type="text", options={"index"="false"})
      */
     public $title;
 }

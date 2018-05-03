@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Collection;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class CollectionTest extends \PHPUnit_Framework_TestCase
+class CollectionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var array

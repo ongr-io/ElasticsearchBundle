@@ -32,9 +32,7 @@ class AppKernel extends Kernel
     }
 
     /**
-     * Register container configuration.
-     *
-     * @param LoaderInterface $loader
+     * @inheritdoc
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {

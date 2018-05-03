@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 
-class RawIteratorTest extends \PHPUnit_Framework_TestCase
+class RawIteratorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test for getAggregations().

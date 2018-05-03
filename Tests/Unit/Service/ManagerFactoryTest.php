@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 use ONGR\ElasticsearchBundle\Service\ManagerFactory;
 use ONGR\ElasticsearchBundle\Service\Manager;
 
-class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
+class ManagerFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tests createManager with logger

@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\EventListener\TerminateListener;
 /**
  * Tests TerminateListener class
  */
-class TerminateListenerTest extends \PHPUnit_Framework_TestCase
+class TerminateListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tests kernel terminate event

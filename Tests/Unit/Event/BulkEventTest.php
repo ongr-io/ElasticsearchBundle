@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Event;
 
 use ONGR\ElasticsearchBundle\Event\BulkEvent;
 
-class BulkEventTest extends \PHPUnit_Framework_TestCase
+class BulkEventTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetters()
     {

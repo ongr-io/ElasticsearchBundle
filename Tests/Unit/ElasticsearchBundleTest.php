@@ -20,7 +20,7 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * Unit test for ONGR\ElasticsearchBundle.
  */
-class ElasticsearchBundleTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchBundleTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var array List of passes, which should not be added to compiler.

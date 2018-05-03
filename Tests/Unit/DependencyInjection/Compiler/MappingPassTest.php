@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
 /**
  * Unit tests for MappingPass.
  */
-class MappingPassTest extends \PHPUnit_Framework_TestCase
+class MappingPassTest extends \PHPUnit\Framework\TestCase
 {
 
     public function getConfigurationData()

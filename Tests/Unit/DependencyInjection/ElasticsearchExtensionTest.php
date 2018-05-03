@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * Unit tests for ElasticsearchExtension.
  */
-class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchExtensionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return array

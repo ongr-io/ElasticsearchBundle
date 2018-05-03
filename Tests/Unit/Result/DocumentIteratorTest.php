@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 
-class DocumentIteratorTest extends \PHPUnit_Framework_TestCase
+class DocumentIteratorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test for getAggregation() in case requested aggregation is not set.

@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 
 use ONGR\ElasticsearchBundle\Service\Repository;
 
-class RepositoryTest extends \PHPUnit_Framework_TestCase
+class RepositoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Data provider for testConstructorException().
@@ -25,27 +25,24 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 12345,
-                '\InvalidArgumentException',
-                'must be a string',
+                'InvalidArgumentException',
             ],
             [
                 'Non\Existing\ClassName',
-                '\InvalidArgumentException',
-                'non-existing class',
+                'InvalidArgumentException',
             ],
         ];
     }
 
     /**
      * @param $className
-     * @param $expectedException
      * @param $expectedExceptionMessage
      *
      * @dataProvider getTestConstructorExceptionData()
      */
-    public function testConstructorException($className, $expectedException, $expectedExceptionMessage)
+    public function testConstructorException($className, $expectedExceptionMessage)
     {
-        $this->setExpectedException($expectedException, $expectedExceptionMessage);
+        $this->expectException($expectedExceptionMessage);
 
         new Repository(null, $className);
     }

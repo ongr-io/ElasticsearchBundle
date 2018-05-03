@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Result\Aggregation;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
 
-class AggregationValueTest extends \PHPUnit_Framework_TestCase
+class AggregationValueTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Returns sample aggregations response.
