@@ -16,7 +16,7 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 /**
  * Category object for testing.
  *
- * @ES\Object
+ * @ES\ObjectType
  */
 class CategoryObject
 {

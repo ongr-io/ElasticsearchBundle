@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use Doctrine\Common\Collections\Collection;
 use ONGR\ElasticsearchBundle\Annotation\Nested;
-use ONGR\ElasticsearchBundle\Annotation\Object;
+use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Service\Manager;
 
@@ -43,7 +43,7 @@ class Converter
      * @param array $rawData
      * @param Manager $manager
      *
-     * @return object
+     * @return ObjectType
      *
      * @throws \LogicException
      */
@@ -77,11 +77,11 @@ class Converter
     /**
      * Assigns all properties to object.
      *
-     * @param array  $array
-     * @param object $object
-     * @param array  $aliases
+     * @param array      $array
+     * @param ObjectType $object
+     * @param array      $aliases
      *
-     * @return object
+     * @return ObjectType
      */
     public function assignArrayToObject(array $array, $object, array $aliases)
     {
@@ -104,7 +104,7 @@ class Converter
                             $value = new \DateTime($value);
                         }
                         break;
-                    case Object::NAME:
+                    case ObjectType::NAME:
                     case Nested::NAME:
                         if ($aliases[$name]['multiple']) {
                             $value = new ObjectIterator($this, $value, $aliases[$name]);
@@ -223,8 +223,8 @@ class Converter
     /**
      * Check if class matches the expected one.
      *
-     * @param object $object
-     * @param array $expectedClasses
+     * @param ObjectType $object
+     * @param array      $expectedClasses
      *
      * @throws \InvalidArgumentException
      */
@@ -264,7 +264,7 @@ class Converter
     /**
      * Returns aliases for certain document.
      *
-     * @param object $document
+     * @param ObjectType $document
      *
      * @return array
      */

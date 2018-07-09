@@ -232,7 +232,7 @@ class Product
  otherwise elasticsearch-php or elasticsearch database will throw an exception if something is wrong.
 
 
-#### Object and Nested types
+#### ObjectType and Nested types
 
 To define a nested or object type you have to use `@ES\Embedded` annotation and create a separate
 class for this annotation. Here's an example, lets assume we have a `Product` type with `Variant` object field.
@@ -275,7 +275,7 @@ namespace AppBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType
  */
 class CategoryObject
 {
@@ -399,7 +399,7 @@ namespace AppBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType
  */
 class VariantObject
 {

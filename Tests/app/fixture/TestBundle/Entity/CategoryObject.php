@@ -14,7 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType
  */
 class CategoryObject
 {

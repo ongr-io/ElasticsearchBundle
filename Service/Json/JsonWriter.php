@@ -99,7 +99,7 @@ class JsonWriter
     /**
      * Writes single document to stream.
      *
-     * @param mixed $document Object to insert into stream.
+     * @param mixed $document ObjectType to insert into stream.
      *
      * @throws \OverflowException
      */
