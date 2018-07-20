@@ -50,7 +50,7 @@ UPGRADE FROM 0.x to 1.0
 * `config.yml` structure lightly was changed. The `analysis` section appeared where you can define analyzers, filters etc and then reuse them in connections. See [configuration chapter](connection.md) for more information.
 * `document_dir` option in `config.yml` was removed. From now on `Document` namespace for ElasticsearchBundle's documents is mandatory.
 * Removed `createDocument()` from `Repository` class. To create documents use normal object creation way with `new`.
-* Mapping annotations were simplified. In the `Document` annotations `Skip` and `Inherit` annotations were removed. In `Property` there are only `type`, `name` and `options` attributes left. Fields containing `Object` and `Nested` now must be defined using `Embedded` annotation. From now on all custom fields has to be defined in `options` (e.g. index_analyzer). See [mapping chapter](mapping.md) for more info.
+* Mapping annotations were simplified. In the `Document` annotations `Skip` and `Inherit` annotations were removed. In `Property` there are only `type`, `name` and `options` attributes left. Fields containing `ObjectType` and `Nested` now must be defined using `Embedded` annotation. From now on all custom fields has to be defined in `options` (e.g. index_analyzer). See [mapping chapter](mapping.md) for more info.
 * `AbstractDocument` and `DocumentInterface` were removed. Now any class with correct annotations can be used as a document.
 * `@Id`, `@Ttl`, `@ParentDocument` annotations were introduced to define Elasticsearch meta-fields like `_id`, `_ttl`, `_parent`.
 * From now on `Repository` always represents single document. To execute search on multiple types use `Manager`.

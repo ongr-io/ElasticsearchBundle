@@ -30,7 +30,7 @@ class DocumentParser
     const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
     const EMBEDDED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Embedded';
     const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
-    const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Object';
+    const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ObjectType';
     const NESTED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Nested';
 
     // Meta fields
@@ -398,7 +398,7 @@ class DocumentParser
             'Document',
             'Property',
             'Embedded',
-            'Object',
+            'ObjectType',
             'Nested',
             'Id',
             'ParentDocument',
@@ -595,7 +595,7 @@ class DocumentParser
             default:
                 throw new \LogicException(
                     sprintf(
-                        '%s should have @Object or @Nested annotation to be used as embeddable object.',
+                        '%s should have @ObjectType or @Nested annotation to be used as embeddable object.',
                         $className
                     )
                 );
