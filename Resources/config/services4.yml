@@ -1,4 +1,4 @@
-servics:
+services:
     ONGR\ElasticsearchBundle\Command\:
         resource: '../../Command'
         tags:
