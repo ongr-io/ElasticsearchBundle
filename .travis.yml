@@ -22,7 +22,7 @@ install:
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
   - ./elasticsearch-${ES_VERSION}/bin/elasticsearch -d
 before_script:
-  - echo 'memory_limit = 1Gb' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'memory_limit=-1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - php -i
   - composer require --no-update symfony/symfony:${SYMFONY}
   - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
