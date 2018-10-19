@@ -21,7 +21,7 @@ ongr_elasticsearch:
         custom_dir:
             index:
                 hosts:
-                    - es:9200
+                    - 127.0.0.1:9200
                 index_name: ongr-custom-document-dir-test
             mappings:
                 TestBundle:
@@ -29,7 +29,7 @@ ongr_elasticsearch:
         default:
             index:
                 hosts:
-                    - es:9200
+                    - 127.0.0.1:9200
                 index_name: ongr-esb-test
                 settings:
                     refresh_interval: -1
