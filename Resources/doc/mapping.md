@@ -275,7 +275,7 @@ namespace AppBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType
  */
 class CategoryObject
 {
@@ -399,7 +399,7 @@ namespace AppBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Object
+ * @ES\ObjectType
  */
 class VariantObject
 {
