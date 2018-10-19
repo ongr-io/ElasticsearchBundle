@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
+use Symfony\Component\DependencyInjection\Alias;
 
 /**
  * Unit tests for MappingPass.
@@ -102,6 +103,15 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
                 [$this->equalTo('es.manager.default.product')]
             )
             ->willReturn(null);
+
+        $containerMock
+            ->expects($this->exactly(1))
+            ->method('setAlias')
+            ->withConsecutive(
+                [$this->equalTo('es.manager')],
+                [$this->equalTo('es.manager.default')]
+            )
+            ->willReturn(new Alias('es.manager', 'es.manager.default'));
 
         return $containerMock;
     }

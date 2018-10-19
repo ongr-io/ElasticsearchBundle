@@ -3,69 +3,81 @@ parameters:
 
 services:
     es.export:
-        class: ONGR\ElasticsearchBundle\Service\ExportService
+        class: 'ONGR\ElasticsearchBundle\Service\ExportService'
+        public: true
 
     es.import:
-        class: ONGR\ElasticsearchBundle\Service\ImportService
+        class: 'ONGR\ElasticsearchBundle\Service\ImportService'
+        public: true
 
     es.client.index_suffix_finder:
-        class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
+        class: 'ONGR\ElasticsearchBundle\Service\IndexSuffixFinder'
+        public: true
 
     es.cache_engine:
-        class: Doctrine\Common\Cache\FilesystemCache
+        class: 'Doctrine\Common\Cache\FilesystemCache'
+        public: true
         arguments: ["%kernel.cache_dir%/ongr/elasticsearch", ".ongr.data"]
 
     es.annotations.cached_reader:
-        class: Doctrine\Common\Annotations\CachedReader
+        class: 'Doctrine\Common\Annotations\CachedReader'
+        public: true
         arguments: ["@annotations.reader", "@es.cache_engine", "%kernel.debug%"]
 
     es.document_finder:
-        class: ONGR\ElasticsearchBundle\Mapping\DocumentFinder
+        class: 'ONGR\ElasticsearchBundle\Mapping\DocumentFinder'
+        public: true
         arguments: ["%kernel.bundles%"]
-        public: false
 
     es.document_parser:
-        class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
+        class: 'ONGR\ElasticsearchBundle\Mapping\DocumentParser'
+        public: true
         arguments: ["@es.annotations.cached_reader", "@es.document_finder"]
-        public: false
 
     es.metadata_collector:
-        class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
+        class: 'ONGR\ElasticsearchBundle\Mapping\MetadataCollector'
+        public: true
         arguments: ["@es.document_finder", "@es.document_parser", "@es.cache_engine"]
         calls:
             - [setEnableCache, ["%es.cache%"]]
 
     es.logger.collection_handler:
-        class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
+        class: 'ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler'
         public: false
 
     es.tracer:
-        class: Monolog\Logger
+        class: 'Monolog\Logger'
+        public: true
         arguments: ['ongr']
         calls:
-            - [pushHandler, ["@es.logger.collection_handler"]]
+            - ['pushHandler', ["@es.logger.collection_handler"]]
 
     es.profiler:
-        class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
+        class: 'ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler'
+        public: true
         calls:
-            - [setManagers, ["%es.managers%"]]
-            - [addLogger, ["@es.tracer"]]
+            - ['setManagers', ["%es.managers%"]]
+            - ['addLogger', ["@es.tracer"]]
         tags:
-            - {name: data_collector, template: "@ONGRElasticsearch/Profiler/profiler.html.twig", id: ongr.profiler}
+            - { name: 'data_collector', template: "@ONGRElasticsearch/Profiler/profiler.html.twig", id: 'ongr.profiler' }
 
     es.result_converter:
-        class: ONGR\ElasticsearchBundle\Result\Converter
+        class: 'ONGR\ElasticsearchBundle\Result\Converter'
+        public: true
         arguments: ["@es.metadata_collector"]
 
     es.terminate_listener:
-        class: ONGR\ElasticsearchBundle\EventListener\TerminateListener
+        class: 'ONGR\ElasticsearchBundle\EventListener\TerminateListener'
+        public: true
         arguments: ["@service_container", "%es.managers%"]
         tags:
-            - { name: kernel.event_listener, event: kernel.terminate }
+            - { name: 'kernel.event_listener', event: 'kernel.terminate' }
 
     es.generator.document:
-        class: ONGR\ElasticsearchBundle\Generator\DocumentGenerator
+        class: 'ONGR\ElasticsearchBundle\Generator\DocumentGenerator'
+        public: true
 
     es.generate:
-        class: ONGR\ElasticsearchBundle\Service\GenerateService
+        class: 'ONGR\ElasticsearchBundle\Service\GenerateService'
+        public: true
         arguments: ["@es.generator.document", "@filesystem"]

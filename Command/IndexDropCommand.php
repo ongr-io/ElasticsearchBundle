@@ -21,6 +21,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexDropCommand extends AbstractManagerAwareCommand
 {
+    public static $defaultName = 'ongr:es:index:drop';
+
+
     /**
      * {@inheritdoc}
      */
@@ -29,7 +32,7 @@ class IndexDropCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:index:drop')
+            ->setName(static::$defaultName)
             ->setDescription('Drops elasticsearch index.')
             ->addOption(
                 'force',

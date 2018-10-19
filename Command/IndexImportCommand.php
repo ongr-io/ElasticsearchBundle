@@ -23,6 +23,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexImportCommand extends AbstractManagerAwareCommand
 {
+    public static $defaultName = 'ongr:es:index:import';
+
     /**
      * {@inheritdoc}
      */
@@ -31,7 +33,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:index:import')
+            ->setName(static::$defaultName)
             ->setDescription('Imports data to elasticsearch index.')
             ->addArgument(
                 'filename',

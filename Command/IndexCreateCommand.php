@@ -22,6 +22,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexCreateCommand extends AbstractManagerAwareCommand
 {
+    public static $defaultName = 'ongr:es:index:create';
+
     /**
      * {@inheritdoc}
      */
@@ -30,7 +32,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:index:create')
+            ->setName(static::$defaultName)
             ->setDescription('Creates elasticsearch index.')
             ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to the new index name')
             ->addOption(

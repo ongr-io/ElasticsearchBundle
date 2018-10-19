@@ -23,6 +23,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexExportCommand extends AbstractManagerAwareCommand
 {
+    public static $defaultName = 'ongr:es:index:export';
+
     /**
      * {@inheritdoc}
      */
@@ -31,7 +33,7 @@ class IndexExportCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:index:export')
+            ->setName(static::$defaultName)
             ->setDescription('Exports data from elasticsearch index.')
             ->addArgument(
                 'filename',

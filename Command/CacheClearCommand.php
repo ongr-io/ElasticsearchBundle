@@ -20,6 +20,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class CacheClearCommand extends AbstractManagerAwareCommand
 {
+    public static $defaultName = 'ongr:es:cache:clear';
+
     /**
      * {@inheritdoc}
      */
@@ -28,7 +30,7 @@ class CacheClearCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:cache:clear')
+            ->setName(static::$defaultName)
             ->setDescription('Clears elasticsearch client cache.');
     }
 

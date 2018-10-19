@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
 
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use ONGR\ElasticsearchBundle\Tests\WebTestCase;
 
 class MetadataCollectorTest extends WebTestCase
 {

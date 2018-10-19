@@ -11,9 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
-use Elasticsearch\Common\Exceptions\ElasticsearchException;
 use ONGR\ElasticsearchBundle\Service\Manager;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use ONGR\ElasticsearchBundle\Tests\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -25,11 +24,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      * @var Manager[] Holds used managers.
      */
     private $managers = [];
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
 
     /**
      * {@inheritdoc}
@@ -172,6 +166,16 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      */
     protected function getContainer($reinitialize = false, $kernelOptions = [])
     {
+        //sf4
+        if (property_exists(get_called_class(), 'container')) {
+            if (static::$container === null || $reinitialize) {
+                static::bootKernel($kernelOptions);
+                static::$container = static::$kernel->getContainer();
+            }
+
+            return static::$container;
+        }
+
         if ($this->container === null || $reinitialize) {
             static::bootKernel($kernelOptions);
             $this->container = static::$kernel->getContainer();

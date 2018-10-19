@@ -44,6 +44,7 @@ class MappingPass implements CompilerPassInterface
                     $manager,
                 ]
             );
+            $managerDefinition->setPublic(true);
             $managerDefinition->setFactory(
                 [
                     new Reference('es.manager_factory'),
@@ -55,7 +56,9 @@ class MappingPass implements CompilerPassInterface
 
             // Make es.manager.default as es.manager service.
             if ($managerName === 'default') {
-                $container->setAlias('es.manager', 'es.manager.default');
+                $container->setAlias('es.manager', 'es.manager.default')
+                    ->setPublic(true)
+                ;
             }
 
             $mappings = $collector->getMappings($manager['mappings']);
@@ -66,6 +69,7 @@ class MappingPass implements CompilerPassInterface
                     'ONGR\ElasticsearchBundle\Service\Repository',
                     [$repositoryDetails['namespace']]
                 );
+                $repositoryDefinition->setPublic(true);
 
                 if (isset($repositoryDetails['directory_name']) && $managerName == 'default') {
                     $container->get('es.document_finder')->setDocumentDir($repositoryDetails['directory_name']);
