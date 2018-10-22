@@ -15,8 +15,6 @@ env:
     - SYMFONY="~3.2"
     - SYMFONY="~3.3"
     - SYMFONY="~3.4"
-    - SYMFONY="~3.5"
-    - SYMFONY="~3.6"
 install:
   - wget ${ES_DOWNLOAD_URL}
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
