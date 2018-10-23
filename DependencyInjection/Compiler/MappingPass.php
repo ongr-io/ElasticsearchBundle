@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Compiles elastic search data.
@@ -56,9 +57,13 @@ class MappingPass implements CompilerPassInterface
 
             // Make es.manager.default as es.manager service.
             if ($managerName === 'default') {
-                $container->setAlias('es.manager', 'es.manager.default')
-                    ->setPublic(true)
-                ;
+                $container->setAlias('es.manager', 'es.manager.default');
+
+                if (Kernel::MAJOR_VERSION >= 4) {
+                    $container->getAlias('es.manager')
+                        ->setPublic(true)
+                    ;
+                }
             }
 
             $mappings = $collector->getMappings($manager['mappings']);
