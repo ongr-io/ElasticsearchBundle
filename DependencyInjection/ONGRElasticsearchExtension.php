@@ -39,6 +39,7 @@ class ONGRElasticsearchExtension extends Extension
 
         if (Kernel::MAJOR_VERSION >= 4) {
             $loader->load('services4.yaml');
+            
         }
 
         $config['cache'] = isset($config['cache']) ?
