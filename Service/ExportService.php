@@ -17,6 +17,7 @@ use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Search;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -47,6 +48,7 @@ class ExportService
         $search = new Search();
         $search->addQuery(new MatchAllQuery());
         $search->setSize($chunkSize);
+        $search->addSort(new FieldSort('_doc'));
 
         $queryParameters = [
                 '_source' => true,
