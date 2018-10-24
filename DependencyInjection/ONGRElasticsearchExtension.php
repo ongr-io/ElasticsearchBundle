@@ -18,6 +18,8 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * This is the class that loads and manages bundle configuration.
@@ -34,6 +36,11 @@ class ONGRElasticsearchExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+
+        if (Kernel::MAJOR_VERSION >= 4) {
+            $loader->load('services4.yaml');
+        }
+
         $config['cache'] = isset($config['cache']) ?
             $config['cache'] : !$container->getParameter('kernel.debug');
         $config['profiler'] = isset($config['profiler']) ?
