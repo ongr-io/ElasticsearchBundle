@@ -64,6 +64,7 @@ class ONGRElasticsearchExtension extends Extension
                 new Reference('debug.stopwatch', ContainerInterface::NULL_ON_INVALID_REFERENCE)
             ]
         );
+        $definition->setPublic(true);
         $container->setDefinition('es.manager_factory', $definition);
     }
 }

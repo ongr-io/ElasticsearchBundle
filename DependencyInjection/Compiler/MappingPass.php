@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Compiles elastic search data.
@@ -44,6 +45,7 @@ class MappingPass implements CompilerPassInterface
                     $manager,
                 ]
             );
+            $managerDefinition->setPublic(true);
             $managerDefinition->setFactory(
                 [
                     new Reference('es.manager_factory'),
@@ -56,6 +58,12 @@ class MappingPass implements CompilerPassInterface
             // Make es.manager.default as es.manager service.
             if ($managerName === 'default') {
                 $container->setAlias('es.manager', 'es.manager.default');
+
+                if (Kernel::MAJOR_VERSION >= 4) {
+                    $container->getAlias('es.manager')
+                        ->setPublic(true)
+                    ;
+                }
             }
 
             $mappings = $collector->getMappings($manager['mappings']);
@@ -66,6 +74,7 @@ class MappingPass implements CompilerPassInterface
                     'ONGR\ElasticsearchBundle\Service\Repository',
                     [$repositoryDetails['namespace']]
                 );
+                $repositoryDefinition->setPublic(true);
 
                 if (isset($repositoryDetails['directory_name']) && $managerName == 'default') {
                     $container->get('es.document_finder')->setDocumentDir($repositoryDetails['directory_name']);

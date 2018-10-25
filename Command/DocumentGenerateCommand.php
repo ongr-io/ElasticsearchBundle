@@ -22,6 +22,8 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class DocumentGenerateCommand extends AbstractManagerAwareCommand
 {
+    public static $defaultName = 'ongr:es:document:generate';
+
     /**
      * @var QuestionHelper
      */
@@ -45,7 +47,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:document:generate')
+            ->setName(static::$defaultName)
             ->setDescription('Generates a new Elasticsearch document inside a bundle');
     }
 

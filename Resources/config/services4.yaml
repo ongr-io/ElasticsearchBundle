@@ -1,5 +1,6 @@
 services:
     ONGR\ElasticsearchBundle\Command\:
         resource: '../../Command'
+        public: true
         tags:
             - { name: console.command }

@@ -11,9 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
-use Elasticsearch\Common\Exceptions\ElasticsearchException;
 use ONGR\ElasticsearchBundle\Service\Manager;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use ONGR\ElasticsearchBundle\Tests\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -29,13 +28,14 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * @var ContainerInterface
      */
-    private $container;
+    private static $container;
 
     /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
+        self::$container = null;
         foreach ($this->getDataArray() as $manager => $data) {
             // Create index and populate data
             $this->getManager($manager);
@@ -165,19 +165,18 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * Returns service container.
      *
-     * @param bool  $reinitialize  Force kernel reinitialization.
      * @param array $kernelOptions Options used passed to kernel if it needs to be initialized.
      *
      * @return ContainerInterface
      */
-    protected function getContainer($reinitialize = false, $kernelOptions = [])
+    protected function getContainer($kernelOptions = [])
     {
-        if ($this->container === null || $reinitialize) {
-            static::bootKernel($kernelOptions);
-            $this->container = static::$kernel->getContainer();
+        if (null === self::$container) {
+            self::bootKernel($kernelOptions);
+            self::$container = static::$kernel->getContainer();
         }
 
-        return $this->container;
+        return self::$container;
     }
 
     /**

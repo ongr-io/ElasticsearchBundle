@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use ONGR\ElasticsearchBundle\Tests\WebTestCase;
 
 class ElasticsearchExtensionTest extends WebTestCase
 {
