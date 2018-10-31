@@ -60,7 +60,7 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('analysis');
 
         $node
-            ->info('Defines analyzers, tokenizers and filters')
+            ->info('Defines analyzers, normalizers, tokenizers and filters')
             ->addDefaultsIfNotSet()
             ->children()
                 ->arrayNode('tokenizer')
@@ -72,6 +72,10 @@ class Configuration implements ConfigurationInterface
                     ->prototype('variable')->end()
                 ->end()
                 ->arrayNode('analyzer')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
+                ->arrayNode('normalizer')
                     ->defaultValue([])
                     ->prototype('variable')->end()
                 ->end()
