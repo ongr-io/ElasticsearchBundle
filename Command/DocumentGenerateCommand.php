@@ -636,7 +636,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      */
     private function getDocumentAnnotations()
     {
-        return ['document', 'nested', 'object'];
+        return ['document', 'nested', 'object_type'];
     }
 
     /**
