@@ -251,6 +251,7 @@ class MetadataCollector
             'filter' => [],
             'tokenizer' => [],
             'char_filter' => [],
+            'normalizer' => [],
         ];
 
         /** @var array $mappings All mapping info */
@@ -281,6 +282,10 @@ class MetadataCollector
                     );
                 }
             }
+        }
+
+        if (isset($analysisConfig['normalizer'])) {
+            $typesAnalysis['normalizer'] = $analysisConfig['normalizer'];
         }
 
         $this->enableCache && $this->cache->save($cacheName, $typesAnalysis);
