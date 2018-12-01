@@ -184,9 +184,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testBulk($expected, $calls)
     {
-        $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
+        $indices = $this->createMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
 
-        $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
+        $esClient = $this->createMock('Elasticsearch\Client', [], [], '', false);
         $esClient->expects($this->once())->method('bulk')->with($expected);
         $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
 
@@ -220,9 +220,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $expected = $this->getTestBulkData()['update_script']['expected'];
         $expected['refresh'] = true;
         $calls = $this->getTestBulkData()['update_script']['calls'];
-        $indices = $this->getMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
+        $indices = $this->createMock('Elasticsearch\Namespaces\IndicesNamespace', [], [], '', false);
 
-        $esClient = $this->getMock('Elasticsearch\Client', [], [], '', false);
+        $esClient = $this->createMock('Elasticsearch\Client', [], [], '', false);
         $esClient->expects($this->any())->method('bulk')->with($expected)->willReturn(['errors' => false]);
         $esClient->expects($this->any())->method('indices')->will($this->returnValue($indices));
 
@@ -263,7 +263,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testClearScroll()
     {
-        $esClient = $this->getMock('Elasticsearch\Client', ['clearScroll'], [], '', false);
+        $esClient = $this->createMock('Elasticsearch\Client', ['clearScroll'], [], '', false);
         $esClient->expects($this->once())->method('clearScroll')->with(['scroll_id' => 'foo']);
 
         $metadataCollector = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\MetadataCollector')
