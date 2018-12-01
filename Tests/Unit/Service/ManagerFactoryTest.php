@@ -33,7 +33,7 @@ class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $logger = $this->createMock('Psr\Log\LoggerInterface');
+        $logger = $this->getMock('Psr\Log\LoggerInterface');
         $managerFactory = new ManagerFactory(
             $metadataCollector,
             $converter,

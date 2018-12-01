@@ -76,7 +76,7 @@ class GenerateServiceTest extends \PHPUnit_Framework_TestCase
      */
     private function getBundle()
     {
-        $bundle = $this->createMock('Symfony\Component\HttpKernel\Bundle\BundleInterface');
+        $bundle = $this->getMock('Symfony\Component\HttpKernel\Bundle\BundleInterface');
         $bundle->expects($this->any())->method('getPath')->will($this->returnValue($this->tmpDir));
         $bundle->expects($this->any())->method('getName')->will($this->returnValue('FooBarBundle'));
         $bundle->expects($this->any())->method('getNamespace')->will($this->returnValue('Foo\BarBundle'));
