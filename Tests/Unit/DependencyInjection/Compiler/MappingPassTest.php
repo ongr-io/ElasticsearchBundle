@@ -140,6 +140,10 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessWithSeveralManagers(array $connections, array $managers)
     {
+        if (version_compare(PHP_VERSION, '5.6.0') > 0) {
+            $this->markTestSkipped('Skipped because of a bug in phpunit 4 mock which is needed for php 5.5 tests');
+        }
+
         $compilerPass = new MappingPass();
         $compilerPass->process($this->getContainerMock($connections, $managers));
     }

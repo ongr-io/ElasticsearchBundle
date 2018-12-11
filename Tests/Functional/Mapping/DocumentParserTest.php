@@ -22,7 +22,7 @@ class DocumentParserTest extends WebTestCase
      * Test if exception is thrown when Document is used as embeddable.
      *
      * @expectedException \LogicException
-     * @expectedExceptionMessage should have @Object or @Nested annotation
+     * @expectedExceptionMessage should have @ObjectType or @Nested annotation
      */
     public function testGetDocumentTypeException()
     {
