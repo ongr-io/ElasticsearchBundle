@@ -94,7 +94,7 @@ class Converter
                 switch ($aliases[$name]['type']) {
                     case 'date':
                         if (is_null($value) || (is_object($value) && $value instanceof \DateTimeInterface)) {
-                            continue;
+                            continue 2;
                         }
                         if (is_numeric($value) && (int)$value == $value) {
                             $time = $value;
