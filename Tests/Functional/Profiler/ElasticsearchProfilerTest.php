@@ -18,6 +18,7 @@ use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
 {
@@ -81,8 +82,13 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
         $manager->find('TestBundle:Product', 2);
-        $queries = $this->getCollector()->getQueries();
 
+        // guard
+        $queries = $this->getCollector()->getQueries();
+        $this->assertInstanceOf(Data::class, $queries);
+        $this->assertCount(1, $queries);
+
+        $queries = $this->readAttribute($this->getCollector(), 'data')['queries'];
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
         $this->checkQueryParameters($lastQuery);
 
@@ -112,7 +118,12 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
             ->addQuery(new TermQuery('title', 'pizza'));
         $repository->findDocuments($search);
 
+        // guard
         $queries = $this->getCollector()->getQueries();
+        $this->assertInstanceOf(Data::class, $queries);
+        $this->assertCount(1, $queries);
+
+        $queries = $this->readAttribute($this->getCollector(), 'data')['queries'];
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
         $this->checkQueryParameters($lastQuery);
 
@@ -172,7 +183,12 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
             ->addAggregation(new GlobalAggregation('g'));
         $repository->findDocuments($search);
 
+        // guard
         $queries = $this->getCollector()->getQueries();
+        $this->assertInstanceOf(Data::class, $queries);
+        $this->assertCount(1, $queries);
+
+        $queries = $this->readAttribute($this->getCollector(), 'data')['queries'];
         $lastQuery = end($queries[ElasticsearchProfiler::UNDEFINED_ROUTE]);
         $this->checkQueryParameters($lastQuery);
         $lastQuery['body'] = trim(preg_replace('/\s+/', '', $lastQuery['body']));

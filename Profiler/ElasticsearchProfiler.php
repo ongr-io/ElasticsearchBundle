@@ -15,12 +15,17 @@ use Monolog\Logger;
 use ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
+use Symfony\Component\VarDumper\Caster\CutStub;
+use Symfony\Component\VarDumper\Cloner\Data;
+use Symfony\Component\VarDumper\Cloner\Stub;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 /**
  * Data collector for profiling elasticsearch bundle.
  */
-class ElasticsearchProfiler implements DataCollectorInterface
+class ElasticsearchProfiler extends DataCollector
 {
     const UNDEFINED_ROUTE = 'undefined_route';
 
@@ -29,25 +34,10 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     private $loggers = [];
 
-    /**
-     * @var array Queries array.
-     */
-    private $queries = [];
-
-    /**
-     * @var int Query count.
-     */
-    private $count = 0;
-
-    /**
-     * @var float Time all queries took.
-     */
-    private $time = .0;
-
-    /**
-     * @var array Registered managers.
-     */
-    private $managers = [];
+    public function __construct()
+    {
+        $this->reset();
+    }
 
     /**
      * Adds logger to look for collector handler.
@@ -80,9 +70,12 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     public function reset()
     {
-        $this->queries = [];
-        $this->count = 0;
-        $this->time = 0;
+        $this->data = [
+            'managers' => [],
+            'queries' => [],
+            'count' => 0,
+            'time' => .0,
+        ];
     }
 
     /**
@@ -92,7 +85,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     public function getTime()
     {
-        return round($this->time * 1000, 2);
+        return round($this->data['time'] * 1000, 2);
     }
 
     /**
@@ -102,7 +95,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     public function getQueryCount()
     {
-        return $this->count;
+        return $this->data['count'];
     }
 
     /**
@@ -118,7 +111,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     public function getQueries()
     {
-        return $this->queries;
+        return $this->cloneVar($this->data['queries']);
     }
 
     /**
@@ -126,21 +119,20 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     public function getManagers()
     {
-        if (is_array(reset($this->managers))) {
-            foreach ($this->managers as $name => &$manager) {
-                $manager = $name === 'default' ? 'es.manager' : sprintf('es.manager.%s', $name);
-            }
+        $viewManagers = [];
+        foreach ($this->data['managers'] as $name => $manager) {
+            $viewManagers[$name] = $this->cloneVar($name === 'default' ? 'es.manager' : sprintf('es.manager.%s', $name));
         }
 
-        return $this->managers;
+        return $viewManagers;
     }
 
     /**
      * @param array $managers
      */
-    public function setManagers($managers)
+    public function setManagers(array $managers)
     {
-        $this->managers = $managers;
+        $this->data['managers'] = $managers;
     }
 
     /**
@@ -159,12 +151,12 @@ class ElasticsearchProfiler implements DataCollectorInterface
      */
     private function handleRecords($route, $records)
     {
-        $this->count += count($records) / 2;
+        $this->data['count'] += count($records) / 2;
         $queryBody = '';
         foreach ($records as $record) {
             // First record will never have context.
             if (!empty($record['context'])) {
-                $this->time += $record['context']['duration'];
+                $this->data['time'] += $record['context']['duration'];
                 $this->addQuery($route, $record, $queryBody);
             } else {
                 $position = strpos($record['message'], ' -d');
@@ -184,7 +176,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
     {
         parse_str(parse_url($record['context']['uri'], PHP_URL_QUERY), $httpParameters);
         $body = json_decode(trim($queryBody, " '\r\t\n"));
-        $this->queries[$route][] = array_merge(
+        $this->data['queries'][$route][] = array_merge(
             [
                 'body' => $body !== null ? json_encode($body, JSON_PRETTY_PRINT) : '',
                 'method' => $record['context']['method'],

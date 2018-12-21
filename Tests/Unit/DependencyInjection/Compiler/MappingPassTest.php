@@ -113,6 +113,12 @@ class MappingPassTest extends \PHPUnit_Framework_TestCase
             )
             ->willReturn(new Alias('es.manager', 'es.manager.default'));
 
+        $containerMock
+            ->expects($this->exactly(1))
+            ->method('getAlias')
+            ->with('es.manager')
+            ->willReturn(new Alias('es.manager', 'es.manager.default'));
+
         return $containerMock;
     }
 

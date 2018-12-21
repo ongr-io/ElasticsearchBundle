@@ -28,7 +28,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * @var ContainerInterface
      */
-    private static $container;
+    protected static $container;
 
     /**
      * {@inheritdoc}
