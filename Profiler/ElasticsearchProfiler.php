@@ -121,7 +121,11 @@ class ElasticsearchProfiler extends DataCollector
     {
         $viewManagers = [];
         foreach ($this->data['managers'] as $name => $manager) {
-            $viewManagers[$name] = $this->cloneVar($name === 'default' ? 'es.manager' : sprintf('es.manager.%s', $name));
+            $viewManagers[$name] = $this->cloneVar(
+                $name === 'default'
+                    ? 'es.manager'
+                    : sprintf('es.manager.%s', $name)
+            );
         }
 
         return $viewManagers;
