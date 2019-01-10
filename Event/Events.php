@@ -17,6 +17,11 @@ namespace ONGR\ElasticsearchBundle\Event;
 final class Events
 {
     /**
+     * The PRE_PERSIST event occurs before convert to Array
+     */
+    const PRE_PERSIST = 'es.pre_persist';
+
+    /**
      * The BULK event occurs before during the processing of bulk method
      */
     const BULK = 'es.bulk';

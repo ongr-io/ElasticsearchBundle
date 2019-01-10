@@ -187,7 +187,7 @@ public function __construct()
 
         foreach ($metadata['properties'] as $prop) {
             if ($prop['annotation'] == 'embedded' && isset($prop['property_multiple']) && $prop['property_multiple']) {
-                $fields[] = sprintf('%s$this->%s = new Collection();', $this->spaces, $prop['field_name']);
+                $fields[] = sprintf('%s$this->%s = new ArrayCollection();', $this->spaces, $prop['field_name']);
             }
         }
 
@@ -255,7 +255,8 @@ public function __construct()
             $column[] = 'options={' . $metadata['property_options'] . '}';
         }
 
-        $lines[] = $this->spaces . ' * @ES\\' . ucfirst($metadata['annotation']) . '(' . implode(', ', $column) . ')';
+        $lines[] = $this->spaces . ' * @ES\\' . Inflector::classify($metadata['annotation'])
+            . '(' . implode(', ', $column) . ')';
 
         $lines[] = $this->spaces . ' */';
 
@@ -275,9 +276,8 @@ public function __construct()
             ['<className>', '<annotation>', '<options>'],
             [
                 $this->getClassName($metadata),
-                ucfirst($metadata['annotation']),
-                $metadata['annotation'] != 'object' ? ($metadata['type'] != lcfirst($this->getClassName($metadata))
-                    ? sprintf('type="%s"', $metadata['type']) : '') : '',
+                Inflector::classify($metadata['annotation']),
+                $this->getAnnotationOptions($metadata),
             ],
             '/**
  * <className>
@@ -319,6 +319,26 @@ public function __construct()
     }
 
     /**
+     * Returns annotation options
+     *
+     * @param array $metadata
+     *
+     * @return string
+     */
+    private function getAnnotationOptions(array $metadata)
+    {
+        if (in_array($metadata['annotation'], ['object', 'object_type'])) {
+            return '';
+        }
+
+        if ($metadata['type'] === Inflector::tableize($this->getClassName($metadata))) {
+            return '';
+        }
+
+        return sprintf('type="%s"', $metadata['type']);
+    }
+
+    /**
      * Generates document use statements
      *
      * @param array $metadata
@@ -330,7 +350,7 @@ public function __construct()
         $uses = ['use ONGR\ElasticsearchBundle\Annotation as ES;'];
 
         if ($this->hasMultipleEmbedded($metadata)) {
-            $uses[] = 'use ONGR\ElasticsearchBundle\Collection\Collection;';
+            $uses[] = 'use Doctrine\Common\Collections\ArrayCollection;';
         }
 
         return implode("\n", $uses) . "\n";
