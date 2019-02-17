@@ -42,6 +42,11 @@
         "psr-4": { "ONGR\\ElasticsearchBundle\\": "" },
         "exclude-from-classmap": ["/Tests/", "/Test/"]
     },
+    "autoload-dev": {
+        "files": [
+            "Tests/app/AppKernel.php"
+        ]
+    },
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
