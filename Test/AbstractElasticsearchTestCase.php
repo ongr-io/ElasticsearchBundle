@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
-use Elasticsearch\Common\Exceptions\ElasticsearchException;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,11 +24,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      * @var Manager[] Holds used managers.
      */
     private $managers = [];
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
 
     /**
      * {@inheritdoc}
@@ -95,21 +89,8 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     private function ignoreVersions(Manager $manager)
     {
         $currentVersion = $manager->getVersionNumber();
-        $ignore = null;
 
-        foreach ($this->getIgnoredVersions() as $ignoredVersion) {
-            if (version_compare($currentVersion, $ignoredVersion[0], $ignoredVersion[1]) === true) {
-                $ignore = true;
-                if (isset($ignoredVersion[2])) {
-                    if ($ignoredVersion[2] === $this->getName()) {
-                        break;
-                    }
-                    $ignore = false;
-                }
-            }
-        }
-
-        if ($ignore === true) {
+        if (version_compare($currentVersion, 6, 'lt')) {
             $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
         }
     }
@@ -172,12 +153,11 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      */
     protected function getContainer($reinitialize = false, $kernelOptions = [])
     {
-        if ($this->container === null || $reinitialize) {
+        if ($reinitialize) {
             static::bootKernel($kernelOptions);
-            $this->container = static::$kernel->getContainer();
         }
 
-        return $this->container;
+        return static::createClient()->getContainer();
     }
 
     /**
