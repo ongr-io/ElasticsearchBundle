@@ -33,17 +33,18 @@ class Configuration implements ConfigurationInterface
             ->booleanNode('cache')
                 ->info(
                     'Enables cache handler to store metadata and other data to the cache. '.
-                    'By default it is enabled in prod environment and disabled in dev.'
+                    'Default value is kernel.debug parameter.'
                 )
             ->end()
             ->booleanNode('profiler')
                 ->info(
-                    'Enables ElasticsearchBundle query profiler. Default value is kernel.debug parameter. '.
-                    'If profiler is disabled the tracer service will be disabled as well.'
+                    'Enables Symfony profiler for elasticsearch executed queries.'.
+                    'Default value is kernel.debug parameter. '
                 )
             ->end()
             ->append($this->getAnalysisNode())
             ->append($this->getManagersNode())
+            ->append($this->getIndexesNode())
             ->end();
 
         return $treeBuilder;
@@ -75,6 +76,10 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue([])
                     ->prototype('variable')->end()
                 ->end()
+                ->arrayNode('normalizer')
+                    ->defaultValue([])
+                    ->prototype('variable')->end()
+                ->end()
                 ->arrayNode('char_filter')
                     ->defaultValue([])
                     ->prototype('variable')->end()
@@ -87,6 +92,9 @@ class Configuration implements ConfigurationInterface
     /**
      * Managers configuration node.
      *
+     * @deprecated Elasticsearch 6 deprecated es types, there will be 1 type per index only, so the managers makes no sense anymore.
+     * Will be removed in v7, use indexes node instead.
+     *
      * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
      */
     private function getManagersNode()
@@ -95,8 +103,6 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('managers');
 
         $node
-            ->isRequired()
-            ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->info('Maps managers to connections and bundles')
             ->prototype('array')
@@ -170,7 +176,7 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->scalarNode('log_file_name')
-                                ->info('Log filename. By default it is a manager name.')
+                                ->info('Log filename. The default name is the index name.')
                                 ->defaultValue(null)
                             ->end()
                         ->end()
@@ -185,6 +191,110 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+
+        return $node;
+    }
+
+    /**
+     * Indexes configuration node.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
+    private function getIndexesNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('indexes');
+
+        $node
+//            ->isRequired()
+//            ->requiresAtLeastOneElement()
+            ->useAttributeAsKey('name')
+            ->info('Creates index service for the specific document. The configuration key is the index name.')
+            ->prototype('array')
+            ->children()
+                ->arrayNode('hosts')
+                    ->info('Defines hosts to connect to.')
+                    ->defaultValue(['127.0.0.1:9200'])
+                    ->prototype('scalar')->end()
+                ->end()
+
+                ->scalarNode('mapping')
+                    ->info('Namespace of the elasticsearch index/type document class.')
+                    ->isRequired()
+                ->end()
+
+                ->arrayNode('settings')
+                    ->defaultValue(
+                        [
+                            'number_of_replicas' => 0,
+                            'number_of_shards' => 1,
+                            'refresh_interval' => -1,
+                        ]
+                    )
+                    ->info('Sets index settings for connection.')
+                    ->prototype('variable')->end()
+                ->end()
+
+                ->booleanNode('force_commit')
+                    ->info('Forces commit to the elasticsearch on kernel terminate event.')
+                    ->defaultTrue()
+                ->end()
+
+                ->integerNode('bulk_size')
+                    ->min(0)
+                    ->defaultValue(100)
+                    ->info(
+                        'Maximum documents size in the bulk container. ' .
+                        'When the limit is reached it will auto-commit.'
+                    )
+                ->end()
+
+                    ->enumNode('commit_mode')
+                    ->values(['refresh', 'flush', 'none'])
+                    ->defaultValue('refresh')
+                    ->info(
+                        'The default type of commit for bulk queries.'
+                    )
+                ->end()
+
+                ->arrayNode('logger')
+                    ->info('Enables elasticsearch queries logging')
+                    ->addDefaultsIfNotSet()
+                    ->beforeNormalization()
+                    ->ifTrue(
+                        function ($v) {
+                            return is_bool($v);
+                        }
+                    )
+                    ->then(
+                        function ($v) {
+                            return ['enabled' => $v];
+                        }
+                    )->end()
+                    ->children()
+                        ->booleanNode('enabled')
+                            ->info('enables logging')
+                            ->defaultFalse()
+                        ->end()
+                        ->scalarNode('level')
+                            ->info('Sets PSR logging level.')
+                            ->defaultValue(LogLevel::WARNING)
+                            ->validate()
+                            ->ifNotInArray((new \ReflectionClass('Psr\Log\LogLevel'))->getConstants())
+                            ->thenInvalid('Invalid PSR log level.')
+                        ->end()
+                    ->end()
+                    ->scalarNode('log_file_name')
+                    ->info('Log filename. The default name is the index name.')
+                    ->defaultValue(null)->end()
+                    ->end()
+                ->end()
+
+            ->end()
+            ->end()
+            ->end()
+
+            ;
 
         return $node;
     }
