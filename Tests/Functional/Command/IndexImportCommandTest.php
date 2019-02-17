@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
 use ONGR\ElasticsearchBundle\Command\IndexImportCommand;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
@@ -82,7 +82,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
         $results = $repo->findDocuments($search);
 
         $ids = [];
-        /** @var Product $doc */
+        /** @var DummyDocument $doc */
         foreach ($results as $doc) {
             $ids[] = substr($doc->getId(), 3);
         }
@@ -126,7 +126,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
         $results = $repo->findDocuments($search);
 
         $ids = [];
-        /** @var Product $doc */
+        /** @var DummyDocument $doc */
         foreach ($results as $doc) {
             $ids[] = substr($doc->getId(), 3);
         }

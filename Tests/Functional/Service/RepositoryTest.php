@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\PrefixQuery;
@@ -287,7 +287,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $product = new Product;
+        $product = new DummyDocument;
         $product->setId('123');
         $product->setTitle('foo');
 
@@ -298,7 +298,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
         $result = $repo->find(123);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product', $result);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument', $result);
         $this->assertEquals($product->getId(), $result->getId());
     }
 
@@ -368,7 +368,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
         $repository = $manager->getRepository('TestBundle:Product');
 
-        $document = new Product;
+        $document = new DummyDocument;
 
         $document->setId(5);
         $document->setTitle('acme');
@@ -377,7 +377,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $manager->commit();
 
         // Creates document.
-        /** @var Product $document */
+        /** @var DummyDocument $document */
         $document = $repository->find(5);
         $this->assertEquals(
             [
@@ -429,7 +429,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
         $repository = $manager->getRepository('TestBundle:Product');
 
-        /** @var Product $product */
+        /** @var DummyDocument $product */
         $product = $repository->find(1);
         $this->assertEquals($product->getTitle(), 'foo');
 
@@ -519,7 +519,7 @@ class RepositoryTest extends AbstractElasticsearchTestCase
         $this->assertEquals(2, count($results));
         $i = 0;
         foreach ($results as $product) {
-            $this->assertInstanceOf(Product::class, $product);
+            $this->assertInstanceOf(DummyDocument::class, $product);
             $this->assertEquals(
                 $this->getDataArray()['default']['product'][$i++]['price'],
                 $product->getPrice()

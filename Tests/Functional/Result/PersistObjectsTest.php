@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 
 class PersistObjectsTest extends AbstractElasticsearchTestCase
 {
@@ -55,7 +55,7 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $category2 = new CategoryObject();
         $category2->setTitle('Baz Category');
 
-        $product = new Product();
+        $product = new DummyDocument();
         $product->setId('foo');
         $product->setTitle('Test Document');
         $product->addRelatedCategory($category);
@@ -75,7 +75,7 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        /** @var Product $product */
+        /** @var DummyDocument $product */
         $product = $manager->find('TestBundle:Product', 'doc1');
 
         $this->assertCount(2, $product->getRelatedCategories());
@@ -101,7 +101,7 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $prices = [8.95, 2.68, 5.66];
-        $product = new Product();
+        $product = new DummyDocument();
         $product->setId('foo');
         $product->setTitle('Test Document');
         $product->setPrice(['8.95', '2.68', '5.66']);
@@ -116,11 +116,11 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
     public function testDocumentPersistWithDate()
     {
-        $product1 = new Product();
+        $product1 = new DummyDocument();
         $product1->setId('1');
         $product1->setReleased('1458206100');
 
-        $product2 = new Product();
+        $product2 = new DummyDocument();
         $product2->setId('2');
         $product2->setReleased('2016-11-11T11:22:11');
 
@@ -130,9 +130,9 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
         $manager->commit();
 
-        /** @var Product $product1FromES */
+        /** @var DummyDocument $product1FromES */
         $product1FromES = $manager->find('TestBundle:Product', '1');
-        /** @var Product $product2FromES */
+        /** @var DummyDocument $product2FromES */
         $product2FromES = $manager->find('TestBundle:Product', '2');
 
         $this->assertEquals($product1->getReleased(), $product1FromES->getReleased()->getTimestamp());
@@ -141,8 +141,8 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
     public function testPersistAndRemoveDocumentWithRouting()
     {
-        $product1 = new Product();
-        $product2 = new Product();
+        $product1 = new DummyDocument();
+        $product2 = new DummyDocument();
         $manager = $this->getManager();
         $repo = $manager->getRepository('TestBundle:Product');
 
@@ -158,11 +158,11 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $this->assertNull($repo->find('1'));
         $this->assertNull($repo->find('2'));
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument',
             $repo->find('1', 'foo')
         );
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument',
             $repo->find('2', 'foo')
         );
 

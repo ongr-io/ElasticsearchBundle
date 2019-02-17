@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\SubcategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
@@ -76,7 +76,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $category->setTitle('acme');
 
         // Multiple urls.
-        $product = new Product();
+        $product = new DummyDocument();
         $product->setId(1);
         $product->setTitle('test');
         $product->setCategory($category);
@@ -88,7 +88,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $subcategory = new SubcategoryObject();
         $subcategory->setTitle('acme');
 
-        $product = new Product();
+        $product = new DummyDocument();
         $product->setId(1);
         $product->setTitle('test');
         $product->setCategory($subcategory);
@@ -96,10 +96,10 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager->persist($product);
         $manager->commit();
 
-        /** @var Product $actualProduct */
+        /** @var DummyDocument $actualProduct */
         $actualProduct = $manager->find('TestBundle:Product', 1);
         $this->assertInstanceOf(
-            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
+            'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument',
             $actualProduct
         );
 
@@ -130,8 +130,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $out = [];
 
         // Case #0: multiple cdns are put into url object, although it isn't a multiple field.
-        $category = new Product();
-        $product = new Product;
+        $category = new DummyDocument();
+        $product = new DummyDocument;
         $product->setCategory($category);
 
         $out[] = [
@@ -142,12 +142,12 @@ class ManagerTest extends AbstractElasticsearchTestCase
         ];
 
         // Case #1: a single link is set, although field is set to multiple.
-        $product = new Product();
+        $product = new DummyDocument();
         $product->setRelatedCategories(new CategoryObject());
         $out[] = [$product, "must be an instance of Collection"];
 
         // Case #2: invalid type of object is set to the field.
-        $product = new Product;
+        $product = new DummyDocument;
         $product->setCategory(new \stdClass());
         $out[] = [
             $product,
@@ -156,7 +156,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         ];
 
         // Case #3: invalid type of object is set in single field.
-        $product = new Product;
+        $product = new DummyDocument;
         $product->setCategory([new CategoryObject()]);
         $out[] = [
             $product,
@@ -169,14 +169,14 @@ class ManagerTest extends AbstractElasticsearchTestCase
     /**
      * Check if expected exceptions are thrown while trying to persist an invalid object.
      *
-     * @param Product $product
+     * @param DummyDocument $product
      * @param string  $exceptionMessage
      * @param string  $exception
      *
      * @dataProvider getPersistExceptionsData()
      */
     public function testPersistExceptions(
-        Product $product,
+        DummyDocument $product,
         $exceptionMessage,
         $exception = 'InvalidArgumentException'
     ) {
@@ -195,7 +195,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $product = new Product();
+        $product = new DummyDocument();
         $product->setId('testId');
         $product->setTitle('acme');
 
@@ -214,7 +214,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $product = new Product();
+        $product = new DummyDocument();
         $product->setId('testId');
         $product->setReleased(new \DateTime('2100-01-02 03:04:05.889342'));
 
@@ -291,7 +291,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $manager = $this->getManager();
 
         $product = $manager->find('TestBundle:Product', 1);
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product', $product);
+        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument', $product);
 
         $manager->remove($product);
         $manager->commit();
@@ -339,8 +339,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
     public function testCommitException()
     {
         $manager = $this->getManager();
-        $product = new Product();
-        $nestedProduct = new Product();
+        $product = new DummyDocument();
+        $nestedProduct = new DummyDocument();
         $nestedProduct->setTitle('test');
         $product->setTitle($nestedProduct);
 

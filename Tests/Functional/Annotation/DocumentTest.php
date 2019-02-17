@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Annotation;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 
 class DocumentTest extends AbstractElasticsearchTestCase
 {
@@ -21,14 +22,14 @@ class DocumentTest extends AbstractElasticsearchTestCase
     public function testDocumentMapping()
     {
         $manager = $this->getManager();
-        $repo = $manager->getRepository('TestBundle:Product');
+        $repo = $manager->getRepository(DummyDocument::class);
 
         $type = $repo->getType();
         $mappings = $manager->getClient()->indices()->getMapping(['index' => $manager->getIndexName()]);
 
         $this->assertArrayHasKey($type, $mappings[$manager->getIndexName()]['mappings']);
 
-        $managerMappings = $manager->getMetadataCollector()->getMapping('TestBundle:Product');
+        $managerMappings = $manager->getMetadataCollector()->getMapping(DummyDocument::class);
 
         $this->assertEquals(
             sort($managerMappings['properties']),

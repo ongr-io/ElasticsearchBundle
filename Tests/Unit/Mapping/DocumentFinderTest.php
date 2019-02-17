@@ -24,28 +24,8 @@ class DocumentFinderTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
-                'TestBundle:Product'
-            ],
-            [
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\User',
-                'TestBundle:User'
-            ],
-        ];
-    }
-
-    /**
-     * Data provider for testGetNamespaceWithSubDirInDocumentDirectory().
-     *
-     * @return array
-     */
-    public function getTestGetNamespaceDataWithSubDirInDocumentDir()
-    {
-        return [
-            [
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Store\Product',
-                'TestBundle:Product',
-                'Document\Store'
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument',
+                'TestBundle:DummyDocument'
             ],
         ];
     }
@@ -69,25 +49,6 @@ class DocumentFinderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests for getNamespace() with a configured document directory.
-     *
-     * @param string $expectedNamespace
-     * @param string $className
-     * @param string $documentDir
-     *
-     * @dataProvider getTestGetNamespaceDataWithSubDirInDocumentDir()
-     */
-    public function testGetNamespaceWithSubDirInDocumentDirectory($expectedNamespace, $className, $documentDir)
-    {
-        $bundles = [
-            'TestBundle' => 'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\TestBundle'
-        ];
-        $finder = new DocumentFinder($bundles);
-
-        $this->assertEquals($expectedNamespace, $finder->getNamespace($className, $documentDir));
-    }
-
-    /**
      * Test for getBundleDocumentClasses().
      */
     public function testGetBundleDocumentClasses()
@@ -100,7 +61,6 @@ class DocumentFinderTest extends \PHPUnit\Framework\TestCase
         $documents = $finder->getBundleDocumentClasses('TestBundle');
 
         $this->assertGreaterThan(0, count($documents));
-        $this->assertContains('Product', $documents);
-        $this->assertContains('User', $documents);
+        $this->assertContains('DummyDocument', $documents);
     }
 }

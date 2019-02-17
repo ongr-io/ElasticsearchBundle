@@ -68,7 +68,7 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
             $categories = $document->getRelatedCategories();
 
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument',
                 $document
             );
             $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $categories);

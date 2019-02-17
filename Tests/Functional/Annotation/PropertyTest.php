@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Annotation;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 
 class PropertyTest extends AbstractElasticsearchTestCase
 {
@@ -20,7 +21,7 @@ class PropertyTest extends AbstractElasticsearchTestCase
      */
     public function testIfNamesFormedCorrectly()
     {
-        $mappings = $this->getManager()->getMetadataCollector()->getMapping('TestBundle:User');
+        $mappings = $this->getManager()->getMetadataCollector()->getMapping(DummyDocument::class);
 
         $expected = [
             'first_name' => [

@@ -19,11 +19,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class ElasticsearchExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @return array
-     */
     public function getData()
     {
+        #Expected legacy configuration
         $parameters = [
             'elasticsearch' => [
                 'managers' => [
@@ -43,30 +41,30 @@ class ElasticsearchExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-
         $expectedManagers = [
-            'test' => [
-                'index' => [
-                    'index_name' => 'test',
-                    'hosts' => ['127.0.0.1:9200'],
-                    'settings' => [
-                        'number_of_replicas' => 0,
-                        'number_of_shards' => 1,
-                        'refresh_interval' => -1,
+            'managers' => [
+                'test' => [
+                    'index' => [
+                        'index_name' => 'test',
+                        'hosts' => ['127.0.0.1:9200'],
+                        'settings' => [
+                            'number_of_replicas' => 0,
+                            'number_of_shards' => 1,
+                            'refresh_interval' => -1,
+                        ],
                     ],
+                    'logger' => [
+                        'enabled' => true,
+                        'level' => 'warning',
+                        'log_file_name' => null,
+                    ],
+                    'mappings' => ['testBundle'],
+                    'bulk_size' => 100,
+                    'commit_mode' => 'refresh',
+                    'force_commit' => true,
                 ],
-                'logger' => [
-                    'enabled' => true,
-                    'level' => 'warning',
-                    'log_file_name' => null,
-                ],
-                'mappings' => ['testBundle'],
-                'bulk_size' => 100,
-                'commit_mode' => 'refresh',
-                'force_commit' => true,
-            ],
+            ]
         ];
-
         $out[] = [
             $parameters,
             $expectedManagers,
@@ -83,33 +81,77 @@ class ElasticsearchExtensionTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-
         $expectedManagers = [
-            'test' => [
-                'index' => [
-                    'index_name' => 'test',
+            'managers' => [
+                'test' => [
+                    'index' => [
+                        'index_name' => 'test',
+                        'hosts' => ['127.0.0.1:9200'],
+                        'settings' => [
+                            'number_of_replicas' => 0,
+                            'number_of_shards' => 1,
+                            'refresh_interval' => -1,
+                        ],
+                    ],
+                    'logger' => [
+                        'enabled' => true,
+                        'level' => 'warning',
+                        'log_file_name' => null,
+                    ],
+                    'mappings' => ['testBundle'],
+                    'bulk_size' => 100,
+                    'commit_mode' => 'refresh',
+                    'force_commit' => true,
+                ],
+            ]
+        ];
+        $out[] = [
+            $parameters,
+            $expectedManagers,
+        ];
+
+        $parameters = [
+            'elasticsearch' => [
+                'indexes' => [
+                    'test' => [
+                        'hosts' => [
+                            '127.0.0.1:9200'
+                        ],
+                        'logger' => [
+                            'enabled' => true,
+                            'level' => 'warning',
+                        ],
+                        'mapping' => '',
+                    ],
+                ],
+            ],
+        ];
+
+        $expectedIndexes = [
+            'indexes' => [
+                'test' => [
                     'hosts' => ['127.0.0.1:9200'],
                     'settings' => [
                         'number_of_replicas' => 0,
                         'number_of_shards' => 1,
                         'refresh_interval' => -1,
                     ],
+                    'logger' => [
+                        'enabled' => true,
+                        'level' => 'warning',
+                        'log_file_name' => null,
+                    ],
+                    'mapping' => '',
+                    'bulk_size' => 100,
+                    'commit_mode' => 'refresh',
+                    'force_commit' => true,
                 ],
-                'logger' => [
-                    'enabled' => true,
-                    'level' => 'warning',
-                    'log_file_name' => null,
-                ],
-                'mappings' => ['testBundle'],
-                'bulk_size' => 100,
-                'commit_mode' => 'refresh',
-                'force_commit' => true,
-            ],
+            ]
         ];
 
         $out[] = [
             $parameters,
-            $expectedManagers,
+            $expectedIndexes,
         ];
 
         return $out;
@@ -136,10 +178,13 @@ class ElasticsearchExtensionTest extends \PHPUnit\Framework\TestCase
             $container
         );
 
+        $extensionData['managers'] = $container->getParameter('es.managers');
+        $extensionData['indexes'] = $container->getParameter('es.indexes');
+
         $this->assertEquals(
             $expectedManagers,
-            $container->getParameter('es.managers'),
-            'Incorrect managers parameter'
+            array_filter($extensionData),
+            'Incorrect managers/indexes parameters'
         );
         $this->assertTrue(
             $container->hasDefinition('es.metadata_collector'),

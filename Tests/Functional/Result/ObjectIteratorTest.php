@@ -13,7 +13,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use Doctrine\Common\Collections\Collection;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -65,7 +65,7 @@ class ObjectIteratorTest extends AbstractElasticsearchTestCase
         /** @var Repository $repo */
         $repo = $this->getManager()->getRepository('TestBundle:Product');
 
-        /** @var Product $document */
+        /** @var DummyDocument $document */
         $document = $repo->find($id);
 
         return $document->getRelatedCategories();
@@ -88,7 +88,7 @@ class ObjectIteratorTest extends AbstractElasticsearchTestCase
             $categories = $document->getRelatedCategories();
 
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument',
                 $document
             );
 

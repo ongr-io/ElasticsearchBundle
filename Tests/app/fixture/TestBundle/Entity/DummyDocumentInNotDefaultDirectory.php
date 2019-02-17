@@ -14,11 +14,22 @@ namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * Subcategory object for testing.
+ * Document to test if it works from a not default directory.
  *
- * @ES\ObjectType
+ * @ES\Document()
  */
-class SubcategoryObject extends CategoryObject
+class DummyDocumentInNotDefaultDirectory
 {
+    /**
+     * @var string
+     *
+     * @ES\Id()
+     */
+    public $id;
 
+    /**
+     * @var string
+     * @ES\Property(type="keyword", name="keyword_field")
+     */
+    public$keywordField;
 }

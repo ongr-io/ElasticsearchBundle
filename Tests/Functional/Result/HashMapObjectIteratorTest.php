@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -74,10 +74,10 @@ class HashMapObjectIteratorTest extends AbstractElasticsearchTestCase
 
         $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
 
-        /** @var Product $document */
+        /** @var DummyDocument $document */
         foreach ($iterator as $document) {
             $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
+                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument',
                 $document
             );
 

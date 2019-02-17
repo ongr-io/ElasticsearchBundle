@@ -12,7 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Profiler;
 
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 use ONGR\ElasticsearchDSL\Aggregation\Bucketing\GlobalAggregation;
 use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
@@ -53,7 +53,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
     {
         $manager = $this->getManager();
 
-        $document = new Product();
+        $document = new DummyDocument();
         $document->setTitle('tuna');
 
         $manager->persist($document);
