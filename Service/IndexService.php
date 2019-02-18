@@ -12,124 +12,146 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
+use ONGR\ElasticsearchBundle\Event\BulkEvent;
+use ONGR\ElasticsearchBundle\Event\CommitEvent;
+use ONGR\ElasticsearchBundle\Event\Events;
+use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
+use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchDSL\Query\FullText\QueryStringQuery;
 use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\IdsQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Document repository class.
  */
 class IndexService
 {
-    /**
-     * @var Client
-     */
     private $client;
 
-    /**
-     * @var string Fully qualified class name
-     */
-    private $className;
+    private $indexName;
+
+    private $converter;
+
+    private $eventDispatcher;
+
+    private $stopwatch;
+
+    private $bulkCommitSize = 100;
+
+    private $bulkQueries = [];
+
+    private $commitMode = 'refresh';
 
     /**
      * @deprecated will be removed in v7 since there will be no more types in the indexes.
-     *
-     * @var string Elasticsearch type name
      */
     private $typeName;
 
-    /**
-     * @var string Elasticsearch index name
-     */
-    private $indexName;
-
-    /**
-     * Constructor.
-     *
-     * @param Client $client
-     * @param string  $className
-     */
-    public function __construct($client, $className)
+    public function __construct(Client $client, Converter $converter, EventDispatcherInterface $eventDispatcher, array $mapping = [])
     {
-        if (!is_string($className)) {
-            throw new \InvalidArgumentException('Class name must be a string.');
-        }
-
-        if (!class_exists($className)) {
-            throw new \InvalidArgumentException(
-                sprintf('Cannot create a service for non-existing class "%s".', $className)
-            );
-        }
-
         $this->client = $client;
-        $this->className = $className;
-        $this->type = $this->resolveType($className);
+        $this->typeName = $mapping['type'];
+        $this->converter = $converter;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
-     * @return array
+     * @deprecated will be removed in v7 since there will be no more types in the indexes.
      */
-    public function getType()
+    public function getTypeName(): string
     {
-        return $this->type;
+        return $this->typeName;
     }
 
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    public function getIndexName(): string
+    {
+        return $this->indexName;
+    }
+
+    public function getConverter(): Converter
+    {
+        return $this->converter;
+    }
+
+    public function getEventDispatcher(): EventDispatcherInterface
+    {
+        return $this->eventDispatcher;
+    }
+
+    public function getBulkCommitSize(): int
+    {
+        return $this->bulkCommitSize;
+    }
+
+    public function setBulkCommitSize(int $bulkCommitSize)
+    {
+        $this->bulkCommitSize = $bulkCommitSize;
+        return $this;
+    }
+
+    public function getCommitMode(): string
+    {
+        return $this->commitMode;
+    }
+
+    public function setCommitMode(string $commitMode): IndexService
+    {
+        $this->commitMode = $commitMode;
+        return $this;
+    }
+
+    public function getStopwatch()
+    {
+        return $this->stopwatch;
+    }
+
+    public function setStopwatch($stopwatch)
+    {
+        $this->stopwatch = $stopwatch;
+        return $this;
+    }
+
+
     /**
-     * Returns a single document data by ID or null if document is not found.
+     * Returns a single document by provided ID or null if a document was not found.
      *
      * @param string $id      Document ID to find
-     * @param string $routing Custom routing for the document
+     * @param array  $params  Custom parameters added to the query url
      *
      * @return object
      */
-    public function find($id, $routing = null)
+    public function find($id, $params = [])
     {
-        return $this->manager->find($this->type, $id, $routing);
-    }
-
-    /**
-     * Returns documents by a set of ids
-     *
-     * @param array $ids
-     *
-     * @return DocumentIterator The objects.
-     */
-    public function findByIds(array $ids)
-    {
-        $args = [];
-        $manager = $this->getManager();
-        $args['body']['docs'] = [];
-        $args['index'] = $manager->getIndexName();
-        $args['type'] = $this->getType();
-
-        foreach ($ids as $id) {
-            $args['body']['docs'][] = [
-                '_id' => $id
-            ];
-        }
-
-        $mgetResponse = $manager->getClient()->mget($args);
-
-        $return = [
-            'hits' => [
-                'hits' => [],
-                'total' => 0,
-            ]
+        $requestParams = [
+            'index' => $this->getIndexName(),
+            'type' => $this->getTypeName(),
+            'id' => $id,
         ];
 
-        foreach ($mgetResponse['docs'] as $item) {
-            if ($item['found']) {
-                $return['hits']['hits'][] = $item;
-            }
-        }
+        $requestParams = array_merge($requestParams, $params);
 
-        $return['hits']['total'] = count($return['hits']['hits']);
+        $result = $this->getClient()->get($requestParams);
 
-        return new DocumentIterator($return, $manager);
+        return $this->getConverter()->convertToDocument($result, $this);
+    }
+
+    public function findByIds(array $ids): DocumentIterator
+    {
+        $search = $this->createSearch();
+        $search->addQuery(new IdsQuery($ids));
+
+        return $this->findDocuments($search);
     }
 
     /**
@@ -137,25 +159,20 @@ class IndexService
      *
      * @param array      $criteria   Example: ['group' => ['best', 'worst'], 'job' => 'medic'].
      * @param array|null $orderBy    Example: ['name' => 'ASC', 'surname' => 'DESC'].
-     * @param int|null   $limit      Example: 5.
-     * @param int|null   $offset     Example: 30.
+     * @param int|null   $limit      Default is 10.
+     * @param int|null   $offset     Default is 0.
      *
      * @return array|DocumentIterator The objects.
      */
     public function findBy(
         array $criteria,
         array $orderBy = [],
-        $limit = null,
-        $offset = null
+        int $limit = 10,
+        int $offset = 0
     ) {
         $search = $this->createSearch();
-
-        if ($limit !== null) {
-            $search->setSize($limit);
-        }
-        if ($offset !== null) {
-            $search->setFrom($offset);
-        }
+        $search->setSize($limit);
+        $search->setFrom($offset);
 
         foreach ($criteria as $field => $value) {
             if (preg_match('/^!(.+)$/', $field)) {
@@ -191,25 +208,12 @@ class IndexService
         return $this->findBy($criteria, $orderBy, 1, null)->current();
     }
 
-    /**
-     * Returns search instance.
-     *
-     * @return Search
-     */
-    public function createSearch()
+    public function createSearch(): Search
     {
         return new Search();
     }
 
-    /**
-     * Parses scroll configuration from raw response.
-     *
-     * @param array  $raw
-     * @param string $scrollDuration
-     *
-     * @return array
-     */
-    public function getScrollConfiguration($raw, $scrollDuration)
+    public function getScrollConfiguration($raw, $scrollDuration): array
     {
         $scrollConfig = [];
         if (isset($raw['_scroll_id'])) {
@@ -220,14 +224,7 @@ class IndexService
         return $scrollConfig;
     }
 
-    /**
-     * Returns DocumentIterator with composed Document objects from array response.
-     *
-     * @param Search $search
-     *
-     * @return DocumentIterator
-     */
-    public function findDocuments(Search $search)
+    public function findDocuments(Search $search): DocumentIterator
     {
         $results = $this->executeSearch($search);
 
@@ -238,15 +235,7 @@ class IndexService
         );
     }
 
-
-    /**
-     * Returns ArrayIterator with access to unmodified documents directly.
-     *
-     * @param Search $search
-     *
-     * @return ArrayIterator
-     */
-    public function findArray(Search $search)
+    public function findArray(Search $search): ArrayIterator
     {
         $results = $this->executeSearch($search);
 
@@ -257,14 +246,7 @@ class IndexService
         );
     }
 
-    /**
-     * Returns RawIterator with access to node with all returned values included.
-     *
-     * @param Search $search
-     *
-     * @return RawIterator
-     */
-    public function findRaw(Search $search)
+    public function findRaw(Search $search): RawIterator
     {
         $results = $this->executeSearch($search);
 
@@ -275,64 +257,29 @@ class IndexService
         );
     }
 
-    /**
-     * Executes search to the elasticsearch and returns raw response.
-     *
-     * @param Search $search
-     *
-     * @return array
-     */
-    private function executeSearch(Search $search)
+    private function executeSearch(Search $search): array
     {
-        return $this->getManager()->search([$this->getType()], $search->toArray(), $search->getUriParams());
+        return $this->search([$this->getTypeName()], $search->toArray(), $search->getUriParams());
     }
 
-    /**
-     * Counts documents by given search.
-     *
-     * @param Search $search
-     * @param array  $params
-     * @param bool   $returnRaw If set true returns raw response gotten from client.
-     *
-     * @return int|array
-     */
-    public function count(Search $search, array $params = [], $returnRaw = false)
+    public function getIndexDocumentCount(): int
     {
-        $body = array_merge(
-            [
-                'index' => $this->getManager()->getIndexName(),
-                'type' => $this->type,
-                'body' => $search->toArray(),
-            ],
-            $params
-        );
+        $body = [
+            'index' => $this->getIndexName(),
+            'type' => $this->getTypeName(),
+            'body' => [],
+        ];
 
-        $results = $this
-            ->getManager()
-            ->getClient()->count($body);
+        $results = $this->getClient()->count($body);
 
-        if ($returnRaw) {
-            return $results;
-        } else {
-            return $results['count'];
-        }
+        return $results['count'];
     }
 
-    /**
-     * Removes a single document data by ID.
-     *
-     * @param string $id      Document ID to remove
-     * @param string $routing Custom routing for the document
-     *
-     * @return array
-     *
-     * @throws \LogicException
-     */
     public function remove($id, $routing = null)
     {
         $params = [
-            'index' => $this->getManager()->getIndexName(),
-            'type' => $this->type,
+            'index' => $this->getIndexName(),
+            'type' => $this->getTypeName(),
             'id' => $id,
         ];
 
@@ -340,22 +287,12 @@ class IndexService
             $params['routing'] = $routing;
         }
 
-        $response = $this->getManager()->getClient()->delete($params);
+        $response = $this->getClient()->delete($params);
 
         return $response;
     }
 
-    /**
-     * Partial document update.
-     *
-     * @param string $id     Document id to update.
-     * @param array  $fields Fields array to update.
-     * @param string $script Groovy script to update fields.
-     * @param array  $params Additional parameters to pass to the client.
-     *
-     * @return array
-     */
-    public function update($id, array $fields = [], $script = null, array $params = [])
+    public function update($id, array $fields = [], $script = null, array $params = []): array
     {
         $body = array_filter(
             [
@@ -367,35 +304,130 @@ class IndexService
         $params = array_merge(
             [
                 'id' => $id,
-                'index' => $this->getManager()->getIndexName(),
-                'type' => $this->type,
+                'index' => $this->getIndexName(),
+                'type' => $this->getTypeName(),
                 'body' => $body,
             ],
             $params
         );
 
-        return $this->getManager()->getClient()->update($params);
+        return $this->getClient()->update($params);
+    }
+
+    public function search(array $query, array $params = []): array
+    {
+        $requestParams = [
+            'index' => $this->getIndexName(),
+            'type' => $this->getTypeName(),
+            'body' => $query,
+        ];
+
+
+        if (!empty($params)) {
+            $params = array_merge($requestParams, $params);
+        }
+
+//        $this->stopwatch('start', 'search');
+        $result = $this->client->search($requestParams);
+//        $this->stopwatch('stop', 'search');
+
+        return $result;
+    }
+
+    public function bulk(string $operation, array $header, array $query = []): array
+    {
+        $this->eventDispatcher->dispatch(
+            Events::BULK,
+            new BulkEvent($operation, $this->getTypeName(), $header, $query)
+        );
+
+        $this->bulkQueries[] = $header;
+
+        if (!empty($query)) $this->bulkQueries[] = $query;
+
+        $response = [];
+        // %2 is not very accurate, but better than use counter. This place is experimental for now.
+        if ($this->getBulkCommitSize() >= count($this->bulkQueries % 2)) {
+            $response = $this->commit();
+        }
+
+        return $response;
     }
 
     /**
-     * Resolves elasticsearch type by class name.
+     * Adds document to next flush.
      *
-     * @param string $className
-     *
-     * @return array
+     * @param object $document
      */
-    private function resolveType($className)
+    public function persist($document)
     {
-        return $this->getManager()->getMetadataCollector()->getDocumentType($className);
+        $documentArray = $this->converter->convertToArray($document);
+        $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
+
+        $this->bulk('index', $type, $documentArray);
     }
 
-    /**
-     * Returns fully qualified class name.
-     *
-     * @return string
-     */
-    public function getClassName()
+    public function commit(array $params = []): array
     {
-        return $this->className;
+        $bulkResponse = [];
+        if (!empty($this->bulkQueries)) {
+            $this->eventDispatcher->dispatch(
+                Events::PRE_COMMIT,
+                new CommitEvent($this->getCommitMode(), $this->bulkQueries)
+            );
+
+//            $this->stopwatch('start', 'bulk');
+            $bulkResponse = $this->client->bulk(
+                array_merge(
+                    [
+                    'index' => $this->getIndexName(),
+                    'body' => $this->bulkQueries,
+                    ],
+                    $params
+                )
+            );
+//            $this->stopwatch('stop', 'bulk');
+
+            if ($bulkResponse['errors']) {
+                throw new BulkWithErrorsException(
+                    json_encode($bulkResponse),
+                    0,
+                    null,
+                    $bulkResponse
+                );
+            }
+
+            $this->stopwatch('start', 'refresh');
+
+            switch ($this->getCommitMode()) {
+                case 'flush':
+                    $this->getClient()->indices()->flush();
+                    break;
+                case 'flush_synced':
+                    $this->getClient()->indices()->flushSynced();
+                    break;
+                case 'refresh':
+                    $this->getClient()->indices()->refresh();
+                    break;
+            }
+
+            $this->eventDispatcher->dispatch(
+                Events::POST_COMMIT,
+                new CommitEvent($this->getCommitMode(), $this->bulkQueries, $bulkResponse)
+            );
+
+            $this->bulkQueries = [];
+
+            $this->stopwatch('stop', $this->getCommitMode());
+        }
+
+        return $bulkResponse;
+    }
+
+    private function stopwatch($action, $name): void
+    {
+        if ($this->stopwatch && ($action == 'start' || $action == 'stop')) {
+            $this->stopwatch->$action('ongr_es: '.$name, 'ongr_es');
+        }
     }
 }
