@@ -1,4 +1,15 @@
 # CHANGELOG
+## v6.0.0
+- Added Elasticsearch v6 support. This includes heavy refactor to support upcoming Elasticsearch v7.
+- IndexService was introduced to support one type per index only for the new Elasticsearch v6 behaviour.
+- New bulk function in the IndexService always returns array now.
+- Index annotation was introduce, no need to define index in the configuration anymore.
+- `RepositoryService`, `Manager`, `DocumentFinder` services was deprecated.
+- `Document` annotation was deprecated.
+- All internal service names were changed to the namespaces.
+- Added Symfony 4 support
+- Dropped Symfony 2 support.
+
 ## v5.0.0 (2016-x)
 - Drop PHP 5.5 support. Now only PHP >=5.6 are supported.
 - Added support for Elasticsearch 5.0
