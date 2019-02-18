@@ -37,7 +37,7 @@ class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
         $managerFactory = new ManagerFactory(
             $metadataCollector,
             $converter,
-            null,
+            $logger,
             $logger
         );
 
