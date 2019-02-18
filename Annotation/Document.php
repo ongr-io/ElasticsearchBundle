@@ -14,6 +14,8 @@ namespace ONGR\ElasticsearchBundle\Annotation;
 use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
 
 /**
+ * @deprecated it will be deleted in v7. Use Index annotation instead.
+ *
  * Annotation to mark a class as an Elasticsearch document.
  *
  * @Annotation

@@ -12,6 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 /**
+ * @deprecated will be removed in v7. All documents are as indexes defined via annotation.
+ *
  * Finds documents in bundles.
  */
 class DocumentFinder

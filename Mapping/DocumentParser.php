@@ -30,6 +30,7 @@ class DocumentParser
     const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
     const EMBEDDED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Embedded';
     const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
+    const INDEX_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Index';
     const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ObjectType';
     const NESTED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\NestedType';
 
@@ -395,6 +396,7 @@ class DocumentParser
     private function registerAnnotations()
     {
         $annotations = [
+            'Index',
             'Document',
             'Property',
             'Embedded',
