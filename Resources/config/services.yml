@@ -7,40 +7,40 @@ services:
         tags:
             - { name: console.command }
 
-    es.export:
+    ONGR\ElasticsearchBundle\Service\ExportService:
         class: ONGR\ElasticsearchBundle\Service\ExportService
 
-    es.import:
+    ONGR\ElasticsearchBundle\Service\ImportService:
         class: ONGR\ElasticsearchBundle\Service\ImportService
 
-    es.client.index_suffix_finder:
+    ONGR\ElasticsearchBundle\Service\IndexSuffixFinder:
         class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
 
-    es.cache_engine:
+    Doctrine\Common\Cache\FilesystemCache:
         class: Doctrine\Common\Cache\FilesystemCache
         arguments: ["%kernel.cache_dir%/ongr/elasticsearch", ".ongr.data"]
 
-    es.annotations.cached_reader:
+    Doctrine\Common\Annotations\CachedReader:
         class: Doctrine\Common\Annotations\CachedReader
-        arguments: ["@annotations.reader", "@es.cache_engine", "%kernel.debug%"]
+        arguments: ["@annotations.reader", "@Doctrine\Common\Cache\FilesystemCache", "%kernel.debug%"]
 
-    es.document_finder:
+    ONGR\ElasticsearchBundle\Mapping\DocumentFinder:
         class: ONGR\ElasticsearchBundle\Mapping\DocumentFinder
         arguments: ["%kernel.bundles%"]
         public: false
 
-    es.document_parser:
+    ONGR\ElasticsearchBundle\Mapping\DocumentParser:
         class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
-        arguments: ["@es.annotations.cached_reader", "@es.document_finder"]
+        arguments: ["@Doctrine\Common\Annotations\CachedReader", "@ONGR\ElasticsearchBundle\Mapping\DocumentFinder"]
         public: false
 
-    es.metadata_collector:
+    ONGR\ElasticsearchBundle\Mapping\MetadataCollector:
         class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
         arguments: ["@es.document_finder", "@es.document_parser", "@es.cache_engine"]
         calls:
             - [setEnableCache, ["%es.cache%"]]
 
-    es.logger.collection_handler:
+    ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler:
         class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
         public: false
 
@@ -48,9 +48,9 @@ services:
         class: Monolog\Logger
         arguments: ['ongr']
         calls:
-            - [pushHandler, ["@es.logger.collection_handler"]]
+            - [pushHandler, ["@ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler"]]
 
-    es.profiler:
+    ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler:
         class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
         calls:
             - [setManagers, ["%es.managers%"]]
@@ -58,19 +58,19 @@ services:
         tags:
             - {name: data_collector, template: "@ONGRElasticsearch/Profiler/profiler.html.twig", id: ongr.profiler}
 
-    es.result_converter:
+    ONGR\ElasticsearchBundle\Result\Converter:
         class: ONGR\ElasticsearchBundle\Result\Converter
         arguments: ["@es.metadata_collector"]
 
-    es.terminate_listener:
+    ONGR\ElasticsearchBundle\EventListener\TerminateListener:
         class: ONGR\ElasticsearchBundle\EventListener\TerminateListener
         arguments: ["@service_container", "%es.managers%"]
         tags:
             - { name: kernel.event_listener, event: kernel.terminate }
 
-    es.generator.document:
+    ONGR\ElasticsearchBundle\Generator\DocumentGenerator:
         class: ONGR\ElasticsearchBundle\Generator\DocumentGenerator
 
-    es.generate:
+    ONGR\ElasticsearchBundle\Service\GenerateService:
         class: ONGR\ElasticsearchBundle\Service\GenerateService
         arguments: ["@es.generator.document", "@filesystem"]
