@@ -15,59 +15,47 @@ use Symfony\Component\EventDispatcher\Event;
 
 class CommitEvent extends Event
 {
-    /**
-     * @var string
-     */
     private $commitMode;
+    private $bulkQuery;
+    private $bulkResponse;
 
-    /**
-     * @var array
-     */
-    private $bulkParams;
-
-    /**
-     * @param string $commitMode
-     * @param array|null  $bulkParams BulkQueries or BulkResponse, depending on event
-     */
-    public function __construct($commitMode, $bulkParams = [])
+    public function __construct(string $commitMode, array $bulkQuery = [], array $bulkResponse = [])
     {
         $this->commitMode = $commitMode;
-        $this->bulkParams = $bulkParams;
+        $this->bulkQuery = $bulkQuery;
+        $this->bulkResponse = $bulkResponse;
     }
 
-    /**
-     * Returns commit mode
-     *
-     * @return string
-     */
     public function getCommitMode()
     {
         return $this->commitMode;
     }
 
-    /**
-     * @param string $commitMode
-     */
     public function setCommitMode($commitMode)
     {
         $this->commitMode = $commitMode;
+        return $this;
     }
 
-    /**
-     * Returns params
-     *
-     * @return array
-     */
-    public function getBulkParams()
+    public function getBulkQuery(): array
     {
-        return $this->bulkParams;
+        return $this->bulkQuery;
     }
 
-    /**
-     * @param array $bulkParams
-     */
-    public function setBulkParams($bulkParams)
+    public function setBulkQuery(array $bulkQuery): CommitEvent
     {
-        $this->bulkParams = $bulkParams;
+        $this->bulkQuery = $bulkQuery;
+        return $this;
+    }
+
+    public function getBulkResponse(): array
+    {
+        return $this->bulkResponse;
+    }
+
+    public function setBulkResponse(array $bulkResponse): CommitEvent
+    {
+        $this->bulkResponse = $bulkResponse;
+        return $this;
     }
 }

@@ -15,77 +15,55 @@ use Symfony\Component\EventDispatcher\Event;
 
 class BulkEvent extends Event
 {
-    /**
-     * @var string
-     */
     private $operation;
-
-    /**
-     * @var string|array
-     */
     private $type;
-
-    /**
-     * @var array
-     */
+    private $header;
     private $query;
 
-    /**
-     * @param string       $operation
-     * @param string|array $type
-     * @param array        $query
-     */
-    public function __construct($operation, $type, array $query)
+    public function __construct($operation, $type, array $header, array $query)
     {
         $this->type = $type;
+        $this->header = $header;
         $this->query = $query;
         $this->operation = $operation;
     }
 
-    /**
-     * @return array|string
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param array|string $type
-     */
-    public function setType($type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return array
-     */
-    public function getQuery()
+    public function getHeader(): array
+    {
+        return $this->header;
+    }
+
+    public function setHeader(array $header): void
+    {
+        $this->header = $header;
+    }
+
+    public function getQuery(): array
     {
         return $this->query;
     }
 
-    /**
-     * @param array $query
-     */
-    public function setQuery($query)
+    public function setQuery(array $query): void
     {
         $this->query = $query;
     }
 
-    /**
-     * @return array
-     */
-    public function getOperation()
+    public function getOperation(): string
     {
         return $this->operation;
     }
 
-    /**
-     * @param string $operation
-     */
-    public function setOperation($operation)
+    public function setOperation(string $operation)
     {
         $this->operation = $operation;
     }
