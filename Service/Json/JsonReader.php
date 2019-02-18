@@ -16,6 +16,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Reads records one by one.
+ *
+ * Sample input:
+ * <p>
+ * [
+ * {"count":2},
+ * {"_id":"doc1","title":"Document 1"},
+ * {"_id":"doc2","title":"Document 2"}
+ * ]
+ * </p>
  */
 class JsonReader implements \Countable, \Iterator
 {
