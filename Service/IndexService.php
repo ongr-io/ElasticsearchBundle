@@ -122,6 +122,33 @@ class IndexService
         return $this;
     }
 
+    public function createIndex($noMapping = false): array
+    {
+        return $this->getClient()->indices()->create($this->indexSettings);
+    }
+
+    public function dropIndex(): array
+    {
+        return $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
+    }
+
+    public function dropAndCreateIndex($noMapping = false)
+    {
+        try {
+            if ($this->indexExists()) {
+                $this->dropIndex();
+            }
+        } catch (\Exception $e) {
+            // Do nothing, our target is to create new index.
+        }
+
+        return $this->createIndex($noMapping);
+    }
+
+    public function indexExists(): bool
+    {
+        return $this->getClient()->indices()->exists(['index' => $this->getIndexName()]);
+    }
 
     /**
      * Returns a single document by provided ID or null if a document was not found.
@@ -422,6 +449,33 @@ class IndexService
         }
 
         return $bulkResponse;
+    }
+
+    public function flush(array $params = []): array
+    {
+        return $this->client->indices()->flush(array_merge(['index' => $this->getIndexName()], $params));
+    }
+
+    public function refresh(array $params = []): array
+    {
+        return $this->client->indices()->refresh(array_merge(['index' => $this->getIndexName()], $params));
+    }
+
+    public function scroll($scrollId, $scrollDuration = '5m'): array
+    {
+        $results = $this->getClient()->scroll(['scroll_id' => $scrollId, 'scroll' => $scrollDuration]);
+
+        return $results;
+    }
+
+    public function clearScroll($scrollId): array
+    {
+        return $this->getClient()->clearScroll(['scroll_id' => $scrollId]);
+    }
+
+    public function clearElasticIndexCache(): array
+    {
+        return $this->getClient()->indices()->clearCache(['index' => $this->getIndexName()]);
     }
 
     private function stopwatch($action, $name): void

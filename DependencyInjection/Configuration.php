@@ -20,6 +20,10 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+    CONST ONGR_CACHE_CONFIG = 'ongr.esb.cache';
+    CONST ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
+    CONST ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
+
     /**
      * {@inheritdoc}
      */
@@ -30,21 +34,29 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+
             ->booleanNode('cache')
                 ->info(
-                    'Enables cache handler to store metadata and other data to the cache. '.
+                    'Enables the cache handler to store important data to the cache. '.
                     'Default value is kernel.debug parameter.'
                 )
             ->end()
+
             ->booleanNode('profiler')
                 ->info(
-                    'Enables Symfony profiler for elasticsearch executed queries.'.
+                    'Enables Symfony profiler for the elasticsearch queries debug.'.
                     'Default value is kernel.debug parameter. '
                 )
             ->end()
+
+            ->arrayNode('include_dir')
+                ->info('Here you can include additional directories if you have index documents somewhere out of your project `src/` directory.')
+                ->defaultValue([])
+                ->prototype('scalar')->end()
+            ->end()
+
             ->append($this->getAnalysisNode())
-            ->append($this->getManagersNode())
-            ->append($this->getIndexesNode())
+
             ->end();
 
         return $treeBuilder;
@@ -61,7 +73,7 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('analysis');
 
         $node
-            ->info('Defines analyzers, tokenizers and filters')
+            ->info('Defines analyzers, normalizers, tokenizers and filters')
             ->addDefaultsIfNotSet()
             ->children()
                 ->arrayNode('tokenizer')
@@ -85,216 +97,6 @@ class Configuration implements ConfigurationInterface
                     ->prototype('variable')->end()
                 ->end()
             ->end();
-
-        return $node;
-    }
-
-    /**
-     * Managers configuration node.
-     *
-     * @deprecated Elasticsearch 6 deprecated es types, there will be 1 type per index only, so the managers makes no sense anymore.
-     * Will be removed in v7, use indexes node instead.
-     *
-     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
-     */
-    private function getManagersNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('managers');
-
-        $node
-            ->useAttributeAsKey('name')
-            ->info('Maps managers to connections and bundles')
-            ->prototype('array')
-                ->children()
-                    ->arrayNode('index')
-                        ->children()
-                            ->scalarNode('index_name')
-                                ->isRequired()
-                                ->info('Sets index name for connection.')
-                            ->end()
-                            ->arrayNode('hosts')
-                                ->info('Defines hosts to connect to.')
-                                ->defaultValue(['127.0.0.1:9200'])
-                                ->prototype('scalar')
-                                ->end()
-                            ->end()
-                            ->arrayNode('settings')
-                                ->defaultValue(
-                                    [
-                                        'number_of_replicas' => 0,
-                                        'number_of_shards' => 1,
-                                        'refresh_interval' => -1,
-                                    ]
-                                )
-                                ->info('Sets index settings for connection.')
-                                ->prototype('variable')->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->integerNode('bulk_size')
-                        ->min(0)
-                        ->defaultValue(100)
-                        ->info(
-                            'Maximum documents size in the bulk container. ' .
-                            'When the limit is reached it will auto-commit.'
-                        )
-                    ->end()
-                    ->enumNode('commit_mode')
-                        ->values(['refresh', 'flush', 'none'])
-                        ->defaultValue('refresh')
-                        ->info(
-                            'The default type of commit for bulk queries.'
-                        )
-                    ->end()
-                    ->arrayNode('logger')
-                        ->info('Enables elasticsearch queries logging')
-                        ->addDefaultsIfNotSet()
-                        ->beforeNormalization()
-                            ->ifTrue(
-                                function ($v) {
-                                    return is_bool($v);
-                                }
-                            )
-                            ->then(
-                                function ($v) {
-                                    return ['enabled' => $v];
-                                }
-                            )
-                        ->end()
-                        ->children()
-                            ->booleanNode('enabled')
-                                ->info('enables logging')
-                                ->defaultFalse()
-                            ->end()
-                            ->scalarNode('level')
-                                ->info('Sets PSR logging level.')
-                                ->defaultValue(LogLevel::WARNING)
-                                ->validate()
-                                ->ifNotInArray((new \ReflectionClass('Psr\Log\LogLevel'))->getConstants())
-                                    ->thenInvalid('Invalid PSR log level.')
-                                ->end()
-                            ->end()
-                            ->scalarNode('log_file_name')
-                                ->info('Log filename. The default name is the index name.')
-                                ->defaultValue(null)
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('mappings')
-                        ->info('Maps manager to the bundles. f.e. AppBundle')
-                        ->prototype('variable')->end()
-                    ->end()
-                    ->booleanNode('force_commit')
-                        ->info('Forces commit to the elasticsearch on kernel terminate event.')
-                        ->defaultTrue()
-                    ->end()
-                ->end()
-            ->end();
-
-        return $node;
-    }
-
-    /**
-     * Indexes configuration node.
-     *
-     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
-     */
-    private function getIndexesNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('indexes');
-
-        $node
-//            ->isRequired()
-//            ->requiresAtLeastOneElement()
-            ->useAttributeAsKey('name')
-            ->info('Creates index service for the specific document. The configuration key is the index name.')
-            ->prototype('array')
-            ->children()
-                ->arrayNode('hosts')
-                    ->info('Defines hosts to connect to.')
-                    ->defaultValue(['127.0.0.1:9200'])
-                    ->prototype('scalar')->end()
-                ->end()
-
-                ->scalarNode('mapping')
-                    ->info('Namespace of the elasticsearch index/type document class.')
-                    ->isRequired()
-                ->end()
-
-                ->arrayNode('settings')
-                    ->defaultValue(
-                        [
-                            'number_of_replicas' => 0,
-                            'number_of_shards' => 1,
-                            'refresh_interval' => -1,
-                        ]
-                    )
-                    ->info('Sets index settings for connection.')
-                    ->prototype('variable')->end()
-                ->end()
-
-                ->booleanNode('force_commit')
-                    ->info('Forces commit to the elasticsearch on kernel terminate event.')
-                    ->defaultTrue()
-                ->end()
-
-                ->integerNode('bulk_size')
-                    ->min(0)
-                    ->defaultValue(100)
-                    ->info(
-                        'Maximum documents size in the bulk container. ' .
-                        'When the limit is reached it will auto-commit.'
-                    )
-                ->end()
-
-                    ->enumNode('commit_mode')
-                    ->values(['refresh', 'flush', 'none'])
-                    ->defaultValue('refresh')
-                    ->info(
-                        'The default type of commit for bulk queries.'
-                    )
-                ->end()
-
-                ->arrayNode('logger')
-                    ->info('Enables elasticsearch queries logging')
-                    ->addDefaultsIfNotSet()
-                    ->beforeNormalization()
-                    ->ifTrue(
-                        function ($v) {
-                            return is_bool($v);
-                        }
-                    )
-                    ->then(
-                        function ($v) {
-                            return ['enabled' => $v];
-                        }
-                    )->end()
-                    ->children()
-                        ->booleanNode('enabled')
-                            ->info('enables logging')
-                            ->defaultFalse()
-                        ->end()
-                        ->scalarNode('level')
-                            ->info('Sets PSR logging level.')
-                            ->defaultValue(LogLevel::WARNING)
-                            ->validate()
-                            ->ifNotInArray((new \ReflectionClass('Psr\Log\LogLevel'))->getConstants())
-                            ->thenInvalid('Invalid PSR log level.')
-                        ->end()
-                    ->end()
-                    ->scalarNode('log_file_name')
-                    ->info('Log filename. The default name is the index name.')
-                    ->defaultValue(null)->end()
-                    ->end()
-                ->end()
-
-            ->end()
-            ->end()
-            ->end()
-
-            ;
 
         return $node;
     }

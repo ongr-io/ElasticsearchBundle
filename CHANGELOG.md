@@ -9,6 +9,7 @@
 - All internal service names were changed to the namespaces.
 - Added Symfony 4 support
 - Dropped Symfony 2 support.
+- Added normalizers to the analyzers config.
 
 ## v5.0.0 (2016-x)
 - Drop PHP 5.5 support. Now only PHP >=5.6 are supported.

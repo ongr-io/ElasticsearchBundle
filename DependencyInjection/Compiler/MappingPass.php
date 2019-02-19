@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
+use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -27,10 +28,30 @@ class MappingPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $analysis = $container->getParameter('es.analysis');
-        $managers = $container->getParameter('es.managers');
+        $analysis = $container->getParameter(Configuration::ONGR_ANALYSIS_CONFIG);
 
         $collector = $container->get('es.metadata_collector');
+
+        $kernelProjectDir = $container->getParameter('kernel.project_dir');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         foreach ($managers as $managerName => $manager) {
             $connection = $manager['index'];
@@ -67,10 +88,6 @@ class MappingPass implements CompilerPassInterface
                     'ONGR\ElasticsearchBundle\Service\Repository',
                     [$repositoryDetails['namespace']]
                 );
-
-                if (isset($repositoryDetails['directory_name']) && $managerName == 'default') {
-                    $container->get('es.document_finder')->setDocumentDir($repositoryDetails['directory_name']);
-                }
 
                 $repositoryDefinition->setFactory(
                     [
