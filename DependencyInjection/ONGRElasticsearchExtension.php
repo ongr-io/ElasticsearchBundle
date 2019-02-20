@@ -18,9 +18,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class ONGRElasticsearchExtension extends Extension
 {
-    /**
-     * {@inheritdoc}
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
@@ -38,6 +35,13 @@ class ONGRElasticsearchExtension extends Extension
             Configuration::ONGR_PROFILER_CONFIG,
             $config['profiler'] ?? $container->getParameter('kernel.debug')
             );
+
+        $container->setParameter(
+            Configuration::ONGR_LOGGER_CONFIG,
+            $config['logger'] ?? $container->getParameter('kernel.debug')
+            );
+
+        $container->setParameter(Configuration::ONGR_INCLUDE_DIR_CONFIG, $config['include_dir']);
 
         $container->setParameter(Configuration::ONGR_ANALYSIS_CONFIG, $config['analysis']);
     }

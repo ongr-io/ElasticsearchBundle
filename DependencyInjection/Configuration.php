@@ -12,21 +12,19 @@
 namespace ONGR\ElasticsearchBundle\DependencyInjection;
 
 use Psr\Log\LogLevel;
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-/**
- * This is the class that validates and merges configuration from app/config files.
- */
 class Configuration implements ConfigurationInterface
 {
+
     CONST ONGR_CACHE_CONFIG = 'ongr.esb.cache';
     CONST ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
+    CONST ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
     CONST ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
+    CONST ONGR_INCLUDE_DIR_CONFIG = 'ongr.esb.include_dir';
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
@@ -49,8 +47,17 @@ class Configuration implements ConfigurationInterface
                 )
             ->end()
 
+            ->booleanNode('logger')
+                ->info(
+                    'Enables executed queries logging. Log file names are the same as index.'
+                )
+            ->end()
+
             ->arrayNode('include_dir')
-                ->info('Here you can include additional directories if you have index documents somewhere out of your project `src/` directory.')
+                ->info(
+                    'Here you can include additional directories if you have index documents '.
+                    'somewhere out of the project\'s `src/` directory. It\'s useful to include something '.
+                    'from the vendors if necessary.' )
                 ->defaultValue([])
                 ->prototype('scalar')->end()
             ->end()
@@ -62,12 +69,7 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    /**
-     * Analysis configuration node.
-     *
-     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
-     */
-    private function getAnalysisNode()
+    private function getAnalysisNode(): NodeDefinition
     {
         $builder = new TreeBuilder();
         $node = $builder->root('analysis');
