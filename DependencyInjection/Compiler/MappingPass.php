@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -36,101 +37,62 @@ class MappingPass implements CompilerPassInterface
 
         $kernelProjectDir = $container->getParameter('kernel.project_dir');
 
-        $namespaces = array();
+        $namespaces = $this->getNamespaces($kernelProjectDir . '/src');
 
-        $finder = new Finder();
-        $projectFiles = $finder->files()->in(
-            array_merge([
-                $kernelProjectDir . '/src'
-            ], $additionalDirs)
-        )->name('*.php');
-
-        foreach ($projectFiles as $file) {
-            $namespaces[] = $this->getFullNamespace($file) . '\\' . $this->getClassname($file);
+        foreach ($additionalDirs as $directory) {
+            $namespaces = array_merge($namespaces, $this->getNamespaces($directory));
         }
 
-        $indexDefinition = new Definition(
-            'ONGR\ElasticsearchBundle\Service\IndexService',
-            []
-        );
+        foreach ($namespaces as $namespace) {
+            $indexMapping = $collector->getMapping($namespace);
+            $definition = new Definition(IndexService::class, [
 
-        $container->autowire()
+            ]);
 
+//            $container->autowire($namespace, IndexService::class);
+        }
     }
 
+    private function getNamespaces($directory) {
+        $documentsDirectory = DIRECTORY_SEPARATOR . str_replace('\\', '/', $directory) . DIRECTORY_SEPARATOR;
 
-        private function getFullNamespace($filename) {
-            $lines = file($filename);
-            $namespaceLine = array_shift(preg_grep('/^namespace /', $lines));
-            $match = array();
-            preg_match('/^namespace (.*);$/', $namespaceLine, $match);
-            $fullNamespace = array_pop($match);
-
-            return $fullNamespace;
+        if (!is_dir($directory)) {
+            return [];
         }
 
-       private function getClassname($filename) {
-            $directoriesAndFilename = explode('/', $filename);
-            $filename = array_pop($directoriesAndFilename);
-            $nameAndExtension = explode('.', $filename);
-            $className = array_shift($nameAndExtension);
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
+        $files = new \RegexIterator($iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
 
-            return $className;
+        $documents = [];
+
+        foreach ($files as $file => $v) {
+            $documents[] = str_replace(
+                DIRECTORY_SEPARATOR,
+                '\\',
+                substr(strstr($file, $documentsDirectory), strlen($documentsDirectory), -4)
+            );
         }
 
-
-
-
-
+        return $documents;
+    }
 
 //
+//        private function getFullNamespace($filename) {
+//            $lines = file($filename);
+//            $namespaceLine = array_shift(preg_grep('/^namespace /', $lines));
+//            $match = array();
+//            preg_match('/^namespace (.*);$/', $namespaceLine, $match);
+//            $fullNamespace = array_pop($match);
 //
-//        foreach ($managers as $managerName => $manager) {
-//            $connection = $manager['index'];
-//            $managerName = strtolower($managerName);
-//
-//            $managerDefinition = new Definition(
-//                'ONGR\ElasticsearchBundle\Service\Manager',
-//                [
-//                    $managerName,
-//                    $connection,
-//                    $analysis,
-//                    $manager,
-//                ]
-//            );
-//            $managerDefinition->setFactory(
-//                [
-//                    new Reference('es.manager_factory'),
-//                    'createManager',
-//                ]
-//            );
-//
-//            $container->setDefinition(sprintf('es.manager.%s', $managerName), $managerDefinition);
-//
-//            // Make es.manager.default as es.manager service.
-//            if ($managerName === 'default') {
-//                $container->setAlias('es.manager', 'es.manager.default');
-//            }
-//
-//            $mappings = $collector->getMappings($manager['mappings']);
-//
-//            // Building repository services.
-//            foreach ($mappings as $repositoryType => $repositoryDetails) {
-//                $repositoryDefinition = new Definition(
-//                    'ONGR\ElasticsearchBundle\Service\Repository',
-//                    [$repositoryDetails['namespace']]
-//                );
-//
-//                $repositoryDefinition->setFactory(
-//                    [
-//                        new Reference(sprintf('es.manager.%s', $managerName)),
-//                        'getRepository',
-//                    ]
-//                );
-//
-//                $repositoryId = sprintf('es.manager.%s.%s', $managerName, $repositoryType);
-//                $container->setDefinition($repositoryId, $repositoryDefinition);
-//            }
+//            return $fullNamespace;
 //        }
-//    }
+//
+//       private function getClassname($filename) {
+//            $directoriesAndFilename = explode('/', $filename);
+//            $filename = array_pop($directoriesAndFilename);
+//            $nameAndExtension = explode('.', $filename);
+//            $className = array_shift($nameAndExtension);
+//
+//            return $className;
+//        }
 }

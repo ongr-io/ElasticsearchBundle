@@ -12,9 +12,11 @@
 namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
+use Elasticsearch\ClientBuilder;
 use ONGR\ElasticsearchBundle\Event\BulkEvent;
 use ONGR\ElasticsearchBundle\Event\CommitEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
+use ONGR\ElasticsearchBundle\Event\PostCreateClientEvent;
 use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
 use ONGR\ElasticsearchBundle\Result\Converter;
@@ -36,6 +38,8 @@ class IndexService
 
     private $indexName;
 
+    private $config;
+
     private $converter;
 
     private $eventDispatcher;
@@ -53,10 +57,10 @@ class IndexService
      */
     private $typeName;
 
-    public function __construct(Client $client, Converter $converter, EventDispatcherInterface $eventDispatcher, array $mapping = [])
+    public function __construct(Converter $converter, EventDispatcherInterface $eventDispatcher, array $config = [])
     {
-        $this->client = $client;
-        $this->typeName = $mapping['type'];
+        $this->config = $config;
+        $this->typeName = $config['type'];
         $this->converter = $converter;
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -71,6 +75,17 @@ class IndexService
 
     public function getClient(): Client
     {
+        if (!$this->client) {
+            $client = ClientBuilder::create();
+            $client->setHosts($this->config['hosts']);
+//            $this->client->set($this->config['hosts']);
+
+            $this->eventDispatcher->dispatch(
+                Events::POST_CLIENT_CREATE,
+                new PostCreateClientEvent($client, $this->config)
+            );
+            $this->client = $client->build();
+        }
         return $this->client;
     }
 
@@ -122,9 +137,14 @@ class IndexService
         return $this;
     }
 
+    public function getIndexSettings(): array
+    {
+
+    }
+
     public function createIndex($noMapping = false): array
     {
-        return $this->getClient()->indices()->create($this->indexSettings);
+        return $this->getClient()->indices()->create($this->getIndexSettings());
     }
 
     public function dropIndex(): array

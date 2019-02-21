@@ -32,13 +32,8 @@ final class Events
     const POST_COMMIT = 'es.post_commit';
 
     /**
-     * The PRE_MANAGER_CREATE event occurs before manager is created, right after client is initiated.
-     *  You can modify anything in the core elasticsearch-php client by this event.
+     * The POST_CLIENT_CREATE event occurs after client is formed. It is still not build,
+     * so you can modify or add another information to it. After this event the build() method is called.
      */
-    const PRE_MANAGER_CREATE = 'es.pre_manager_create';
-
-    /**
-     * The POST_MANAGER_CREATE event occurs after manager is created.
-     */
-    const POST_MANAGER_CREATE = 'es.post_manager_create';
+    const POST_CLIENT_CREATE = 'es.post_client_create';
 }

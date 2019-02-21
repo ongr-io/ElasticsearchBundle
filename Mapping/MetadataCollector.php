@@ -15,83 +15,27 @@ use Doctrine\Common\Cache\CacheProvider;
 use ONGR\ElasticsearchBundle\Exception\DocumentParserException;
 use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 
-/**
- * DocumentParser wrapper for getting bundle documents mapping.
- */
 class MetadataCollector
 {
-    /**
-     * @var DocumentFinder
-     */
-    private $finder;
-
-    /**
-     * @var DocumentParser
-     */
     private $parser;
+    private $cache;
 
-    /**
-     * @var CacheProvider
-     */
-    private $cache = null;
-
-    /**
-     * @var bool
-     */
-    private $enableCache = false;
-
-    /**
-     * @param DocumentFinder $finder For finding documents.
-     * @param DocumentParser $parser For reading document annotations.
-     * @param CacheProvider  $cache  Cache provider to store the meta data for later use.
-     */
-    public function __construct($finder, $parser, $cache = null)
+    public function __construct(DocumentParser $parser, CacheProvider $cache = null)
     {
-        $this->finder = $finder;
         $this->parser = $parser;
         $this->cache = $cache;
     }
 
-    /**
-     * Enables metadata caching.
-     *
-     * @param bool $enableCache
-     */
-    public function setEnableCache($enableCache)
-    {
-        $this->enableCache = $enableCache;
-    }
+    public function getMapping($namespace) {
 
-    /**
-     * Fetches bundles mapping from documents.
-     *
-     * @param string[] $bundles Elasticsearch manager config. You can get bundles list from 'mappings' node.
-     * @return array
-     */
-    public function getMappings(array $bundles)
-    {
-        $output = [];
-        foreach ($bundles as $name => $bundleConfig) {
-            // Backward compatibility hack for support.
-            if (!is_array($bundleConfig)) {
-                $name = $bundleConfig;
-                $bundleConfig = [];
-            }
-            $mappings = $this->getBundleMapping($name, $bundleConfig);
-
-            $alreadyDefinedTypes = array_intersect_key($mappings, $output);
-            if (count($alreadyDefinedTypes)) {
-                throw new \LogicException(
-                    implode(',', array_keys($alreadyDefinedTypes)) .
-                    ' type(s) already defined in other document, you can use the same ' .
-                    'type only once in a manager definition.'
-                );
-            }
-
-            $output = array_merge($output, $mappings);
+        if ($this->cache && $this->cache->contains($namespace)) {
+            return $this->cache->fetch($namespace);
         }
 
-        return $output;
+
+
+
+
     }
 
     /**
@@ -172,18 +116,6 @@ class MetadataCollector
     }
 
     /**
-     * @param array $manager
-     *
-     * @return array
-     */
-    public function getManagerTypes($manager)
-    {
-        $mapping = $this->getMappings($manager['mappings']);
-
-        return array_keys($mapping);
-    }
-
-    /**
      * Resolves Elasticsearch type by document class.
      *
      * @param string $className FQCN or string in AppBundle:Document format
@@ -248,6 +180,7 @@ class MetadataCollector
 
         $typesAnalysis = [
             'analyzer' => [],
+            'normalizers' => [],
             'filter' => [],
             'tokenizer' => [],
             'char_filter' => [],
