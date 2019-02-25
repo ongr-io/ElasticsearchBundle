@@ -25,18 +25,6 @@ class ElasticsearchExtensionTest extends WebTestCase
                 'es.manager',
                 'ONGR\ElasticsearchBundle\Service\Manager',
             ],
-            [
-                'es.manager.default',
-                'ONGR\ElasticsearchBundle\Service\Manager',
-            ],
-            [
-                'es.manager.default.product',
-                'ONGR\ElasticsearchBundle\Service\Repository',
-            ],
-            [
-                'es.metadata_collector',
-                'ONGR\ElasticsearchBundle\Mapping\MetadataCollector',
-            ],
         ];
     }
 

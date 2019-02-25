@@ -14,9 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * Dummy document for the functional testing.
+ * Dummy index document for the functional testing.
  *
- * @ES\Document()
+ * @ES\Index(alias="dummy")
  */
 class DummyDocument
 {

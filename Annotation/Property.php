@@ -51,21 +51,5 @@ final class Property
      *
      * @var array
      */
-    public $options = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function dump(array $exclude = [])
-    {
-        return array_diff_key(
-            array_merge(
-                [
-                    'type' => $this->type
-                ],
-                $this->options
-            ),
-            $exclude
-        );
-    }
+    public $settings = [];
 }

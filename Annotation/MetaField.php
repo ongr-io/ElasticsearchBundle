@@ -16,17 +16,5 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  */
 interface MetaField
 {
-    /**
-     * Returns meta-field name.
-     *
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * Returns meta-field settings.
-     *
-     * @return array
-     */
-    public function getSettings();
+    public function getName(): string;
 }

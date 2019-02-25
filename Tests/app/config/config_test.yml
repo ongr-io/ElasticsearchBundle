@@ -6,7 +6,7 @@ framework:
 ongr_elasticsearch:
     analysis:
         filter:
-            incremental_filter: #-> analyzer name
+            edge_ngram_filter: #-> analyzer name
                 type: edge_ngram #-> all options are not strict, it will be passed as an array
                 min_gram: 1
                 max_gram: 20
@@ -16,13 +16,4 @@ ongr_elasticsearch:
                 tokenizer: standard
                 filter:
                     - lowercase
-                    - incremental_filter
-    indexes:
-        ongr-product-test:
-            hosts:
-                - 127.0.0.1:9200
-            settings:
-                refresh_interval: -1
-                number_of_replicas: 0
-                number_of_shards: 2
-            mapping: ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument
+                    - edge_ngram_filter

@@ -41,8 +41,6 @@ class ONGRElasticsearchExtension extends Extension
             $config['logger'] ?? $container->getParameter('kernel.debug')
             );
 
-        $container->setParameter(Configuration::ONGR_INCLUDE_DIR_CONFIG, $config['include_dir']);
-
         $container->setParameter(Configuration::ONGR_ANALYSIS_CONFIG, $config['analysis']);
     }
 }

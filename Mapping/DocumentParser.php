@@ -11,11 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Mapping;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
-use ONGR\ElasticsearchBundle\Annotation\Document;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\HashMap;
+use ONGR\ElasticsearchBundle\Annotation\Index;
 use ONGR\ElasticsearchBundle\Annotation\MetaField;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
@@ -47,11 +46,6 @@ class DocumentParser
     private $reader;
 
     /**
-     * @var DocumentFinder Used to find documents.
-     */
-    private $finder;
-
-    /**
      * @var array Contains gathered objects which later adds to documents.
      */
     private $objects = [];
@@ -73,39 +67,29 @@ class DocumentParser
 
     /**
      * @param Reader         $reader Used for reading annotations.
-     * @param DocumentFinder $finder Used for resolving namespaces.
      */
-    public function __construct(Reader $reader, DocumentFinder $finder)
+    public function __construct(Reader $reader)
     {
         $this->reader = $reader;
-        $this->finder = $finder;
-        $this->registerAnnotations();
     }
 
-    /**
-     * Parses documents by used annotations and returns mapping for elasticsearch with some extra metadata.
-     *
-     * @param \ReflectionClass $class
-     *
-     * @return array|null
-     * @throws MissingDocumentAnnotationException
-     */
-    public function parse(\ReflectionClass $class)
+    public function parse($namespace): array
     {
+        $class = new \ReflectionClass($namespace);
         $className = $class->getName();
 
         if ($class->isTrait()) {
-            return false;
+            return [];
         }
 
         if (!isset($this->documents[$className])) {
-            /** @var Document $document */
-            $document = $this->reader->getClassAnnotation($class, self::DOCUMENT_ANNOTATION);
+            /** @var Index $document */
+            $document = $this->reader->getClassAnnotation($class, self::INDEX_ANNOTATION);
 
             if ($document === null) {
                 throw new MissingDocumentAnnotationException(
                     sprintf(
-                        '"%s" class cannot be parsed as document because @Document annotation is missing.',
+                        '"%s" class cannot be parsed as document because @Index annotation is missing.',
                         $class->getName()
                     )
                 );
@@ -115,7 +99,8 @@ class DocumentParser
             $aliases = $this->getAliases($class, $fields);
 
             $this->documents[$className] = [
-                'type' => $document->type ?: Caser::snake($class->getShortName()),
+                'alias' => $document->alias ?: Caser::snake($class->getShortName()),
+                'type' => $document->typeName ?: Caser::snake($class->getShortName()),
                 'properties' => $this->getProperties($class),
                 'fields' => array_filter(
                     array_merge(
@@ -131,18 +116,6 @@ class DocumentParser
             ];
         }
         return $this->documents[$className];
-    }
-
-    /**
-     * Returns document annotation data from reader.
-     *
-     * @param \ReflectionClass $document
-     *
-     * @return Document|object|null
-     */
-    private function getDocumentAnnotationData($document)
-    {
-        return $this->reader->getClassAnnotation($document, self::DOCUMENT_ANNOTATION);
     }
 
     /**
@@ -203,29 +176,19 @@ class DocumentParser
      * Returns meta field annotation data from reader.
      *
      * @param \ReflectionProperty $property
-     * @param string              $directory The name of the Document directory in the bundle
      *
      * @return array
      */
-    private function getMetaFieldAnnotationData($property, $directory)
+    private function getMetaFieldAnnotationData($property)
     {
-        /** @var MetaField $annotation */
-        $annotation = $this->reader->getPropertyAnnotation($property, self::ID_ANNOTATION);
-        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::PARENT_ANNOTATION);
-        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::ROUTING_ANNOTATION);
-        $annotation = $annotation ?: $this->reader->getPropertyAnnotation($property, self::VERSION_ANNOTATION);
+        /** @var MetaField[] $propertyAnnotations */
+        $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
 
-        if ($annotation === null) {
-            return null;
-        }
-
-        $data = [
-            'name' => $annotation->getName(),
-            'settings' => $annotation->getSettings(),
-        ];
-
-        if ($annotation instanceof ParentDocument) {
-            $data['settings']['type'] = $this->getDocumentType($annotation->class, $directory);
+        foreach ($propertyAnnotations as $annotation) {
+            $data = [
+                'name' => $annotation->getName(),
+                'settings' => $annotation->getSettings(),
+            ];
         }
 
         return $data;
@@ -236,7 +199,7 @@ class DocumentParser
      *
      * @return array
      */
-    private function getObjects()
+    private function getObjects(): array
     {
         return array_keys($this->objects);
     }
@@ -266,14 +229,12 @@ class DocumentParser
         $properties = $this->getDocumentPropertiesReflection($reflectionClass);
 
         foreach ($properties as $name => $property) {
-            $directory = $this->guessDirName($property->getDeclaringClass());
-
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
             $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
 
             if ($type === null && $metaFields !== null
-                && ($metaData = $this->getMetaFieldAnnotationData($property, $directory)) !== null) {
+                && ($metaData = $this->getMetaFieldAnnotationData($property)) !== null) {
                 $metaFields[$metaData['name']] = $metaData['settings'];
                 $type = new \stdClass();
                 $type->name = $metaData['name'];
@@ -318,11 +279,11 @@ class DocumentParser
                 $alias[$type->name]['propertyType'] = $propertyType;
 
                 if ($type instanceof Embedded) {
-                    $child = new \ReflectionClass($this->finder->getNamespace($type->class, $directory));
+                    $child = new \ReflectionClass($type->class);
                     $alias[$type->name] = array_merge(
                         $alias[$type->name],
                         [
-                            'type' => $this->getObjectMapping($type->class, $directory)['type'],
+                            'type' => $this->getObjectMapping($type->class)['type'],
                             'multiple' => $type->multiple,
                             'aliases' => $this->getAliases($child, $metaFields),
                             'namespace' => $child->getName(),
@@ -391,47 +352,6 @@ class DocumentParser
     }
 
     /**
-     * Registers annotations to registry so that it could be used by reader.
-     */
-    private function registerAnnotations()
-    {
-        $annotations = [
-            'Index',
-            'Document',
-            'Property',
-            'Embedded',
-            'ObjectType',
-            'NestedType',
-            'Id',
-            'ParentDocument',
-            'Routing',
-            'Version',
-            'HashMap',
-        ];
-
-        foreach ($annotations as $annotation) {
-            AnnotationRegistry::registerFile(__DIR__ . "/../Annotation/{$annotation}.php");
-        }
-    }
-
-    /**
-     * Returns document type.
-     *
-     * @param string $document  Format must be like AcmeBundle:Document.
-     * @param string $directory The Document directory name of the bundle.
-     *
-     * @return string
-     */
-    private function getDocumentType($document, $directory)
-    {
-        $namespace = $this->finder->getNamespace($document, $directory);
-        $reflectionClass = new \ReflectionClass($namespace);
-        $document = $this->getDocumentAnnotationData($reflectionClass);
-
-        return empty($document->type) ? Caser::snake($reflectionClass->getShortName()) : $document->type;
-    }
-
-    /**
      * Returns all defined properties including private from parents.
      *
      * @param \ReflectionClass $reflectionClass
@@ -476,7 +396,6 @@ class DocumentParser
         $analyzers = [];
 
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
-            $directory = $this->guessDirName($property->getDeclaringClass());
 
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
@@ -484,7 +403,7 @@ class DocumentParser
             if ($type instanceof Embedded) {
                 $analyzers = array_merge(
                     $analyzers,
-                    $this->getAnalyzers(new \ReflectionClass($this->finder->getNamespace($type->class, $directory)))
+                    $this->getAnalyzers(new \ReflectionClass($type->class))
                 );
             }
 
@@ -526,8 +445,6 @@ class DocumentParser
 
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
-            $directory = $this->guessDirName($property->getDeclaringClass());
-
             $type = $this->getPropertyAnnotationData($property);
             $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
             $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
@@ -543,7 +460,7 @@ class DocumentParser
 
             // Inner object
             if ($type instanceof Embedded) {
-                $map = array_replace_recursive($map, $this->getObjectMapping($type->class, $directory));
+                $map = array_replace_recursive($map, $this->getObjectMapping($type->class));
             }
 
             // HashMap object
@@ -573,14 +490,11 @@ class DocumentParser
      * Loads from cache if it's already loaded.
      *
      * @param string $className
-     * @param string $directory Name of the directory where the Document is
      *
      * @return array
      */
-    private function getObjectMapping($className, $directory)
+    private function getObjectMapping($namespace)
     {
-        $namespace = $this->finder->getNamespace($className, $directory);
-
         if (array_key_exists($namespace, $this->objects)) {
             return $this->objects[$namespace];
         }
@@ -598,7 +512,7 @@ class DocumentParser
                 throw new \LogicException(
                     sprintf(
                         '%s should have @ObjectType or @NestedType annotation to be used as embeddable object.',
-                        $className
+                        $namespace
                     )
                 );
         }
@@ -609,19 +523,5 @@ class DocumentParser
         ];
 
         return $this->objects[$namespace];
-    }
-
-    /**
-     * @param \ReflectionClass $reflection
-     *
-     * @return string
-     */
-    private function guessDirName(\ReflectionClass $reflection)
-    {
-        return substr(
-            $directory = $reflection->getName(),
-            $start = strpos($directory, '\\') + 1,
-            strrpos($directory, '\\') - $start
-        );
     }
 }

@@ -21,19 +21,8 @@ final class Id implements MetaField
 {
     const NAME = '_id';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSettings()
-    {
-        return [];
     }
 }

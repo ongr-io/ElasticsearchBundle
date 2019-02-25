@@ -31,29 +31,21 @@ class MappingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $analysis = $container->getParameter(Configuration::ONGR_ANALYSIS_CONFIG);
-        $additionalDirs = $container->getParameter(Configuration::ONGR_INCLUDE_DIR_CONFIG);
 
         $collector = $container->get('es.metadata_collector');
 
         $kernelProjectDir = $container->getParameter('kernel.project_dir');
 
-        $namespaces = $this->getNamespaces($kernelProjectDir . '/src');
-
-        foreach ($additionalDirs as $directory) {
-            $namespaces = array_merge($namespaces, $this->getNamespaces($directory));
-        }
-
-        foreach ($namespaces as $namespace) {
+        foreach ($this->getNamespaces($kernelProjectDir . '/src') as $namespace) {
             $indexMapping = $collector->getMapping($namespace);
             $definition = new Definition(IndexService::class, [
 
             ]);
-
-//            $container->autowire($namespace, IndexService::class);
         }
     }
 
-    private function getNamespaces($directory) {
+    private function getNamespaces($directory): array
+    {
         $documentsDirectory = DIRECTORY_SEPARATOR . str_replace('\\', '/', $directory) . DIRECTORY_SEPARATOR;
 
         if (!is_dir($directory)) {
@@ -75,24 +67,4 @@ class MappingPass implements CompilerPassInterface
 
         return $documents;
     }
-
-//
-//        private function getFullNamespace($filename) {
-//            $lines = file($filename);
-//            $namespaceLine = array_shift(preg_grep('/^namespace /', $lines));
-//            $match = array();
-//            preg_match('/^namespace (.*);$/', $namespaceLine, $match);
-//            $fullNamespace = array_pop($match);
-//
-//            return $fullNamespace;
-//        }
-//
-//       private function getClassname($filename) {
-//            $directoriesAndFilename = explode('/', $filename);
-//            $filename = array_pop($directoriesAndFilename);
-//            $nameAndExtension = explode('.', $filename);
-//            $className = array_shift($nameAndExtension);
-//
-//            return $className;
-//        }
 }

@@ -19,35 +19,28 @@ use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
  * @Annotation
  * @Target("CLASS")
  */
-final class Index implements DumperInterface
+final class Index
 {
     /**
-     * @var string
-     */
-    public $indexName;
-
-    /**
-     * @deprecated will be removed in v7 since there will be no more types in the indexes.
-     * @var string
-     */
-    public $typeName;
-
-    /**
-     * Options is a custom configuration to pass to the client when index is created.
-     *  e.g. you can use it for the dynamic templates
+     * Index alias name. By default the index name will be created with the timestamp appended to the alias.
      *
-     * @var array
+     * @var string
      */
-    public $options = [];
+    public $alias;
 
     /**
-     * {@inheritdoc}
+     * We strongly reccomend to not use this parameter in the index annotation. By default it will be set as `_doc`
+     * type name. Eventually it will be removed.
+     *
+     * @deprecated will be removed in v7 since there will be no more types in the indexes.
      */
-    public function dump(array $exclude = [])
-    {
-        return array_diff_key(
-            $this->options,
-            $exclude
-        );
-    }
+    public $typeName = '_doc';
+
+    /**
+     * Settings is a custom index configuration to pass to the client when the index is created.
+     *  e.g. you can use it for the dynamic templates, number of shards or replicas.
+     *
+     * @var string
+     */
+    public $settings = [];
 }

@@ -29,16 +29,5 @@ final class ObjectType
      *
      * @var array
      */
-    public $options = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function dump(array $exclude = [])
-    {
-        return array_diff_key(
-            $this->options,
-            $exclude
-        );
-    }
+    public $settings = [];
 }

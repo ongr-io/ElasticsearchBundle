@@ -23,7 +23,6 @@ class Configuration implements ConfigurationInterface
     CONST ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
     CONST ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
     CONST ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
-    CONST ONGR_INCLUDE_DIR_CONFIG = 'ongr.esb.include_dir';
 
     public function getConfigTreeBuilder()
     {
@@ -51,15 +50,6 @@ class Configuration implements ConfigurationInterface
                 ->info(
                     'Enables executed queries logging. Log file names are the same as index.'
                 )
-            ->end()
-
-            ->arrayNode('include_dir')
-                ->info(
-                    'Here you can include additional directories if you have index documents '.
-                    'somewhere out of the project\'s `src/` directory. It\'s useful to include something '.
-                    'from the vendors if necessary.' )
-                ->defaultValue([])
-                ->prototype('scalar')->end()
             ->end()
 
             ->append($this->getAnalysisNode())
