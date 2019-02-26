@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
-use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -21,28 +21,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class AbstractElasticsearchTestCase extends WebTestCase
 {
     /**
-     * @var Manager[] Holds used managers.
-     */
-    private $managers = [];
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
-        foreach ($this->getDataArray() as $manager => $data) {
-            // Create index and populate data
-            $this->getManager($manager);
-        }
+        #make sure test data is inserted to teh ES
     }
 
     /**
      * Can be overwritten in child class to populate elasticsearch index with the data.
      *
      * Example:
-     *      "manager_name" =>
+     *      "/This/Should/Be/Index/Document/Namespace" =>
      *      [
-     *          'type_name' => [
+     *          '_doc' => [
      *              [
      *                  '_id' => 1,
      *                  'title' => 'foo',
@@ -64,7 +56,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * Ignores versions specified.
      *
-     * Returns two dimensional array, first item in sub array is version to ignore, second is comparator,
+     * Returns two dimensional array, first item in sub array is version to ignore, second is the comparator,
      * last test name. If no test name is provided it will be used on all test class.
      *
      * Comparator types can be found in `version_compare` documentation.
@@ -81,49 +73,31 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         return [];
     }
 
-    /**
-     * Ignores version specified.
-     *
-     * @param Manager $manager
-     */
-    private function ignoreVersions(Manager $manager)
-    {
-        $currentVersion = $manager->getVersionNumber();
+//    /**
+//     * Ignores version specified.
+//     *
+//     * @param Manager $manager
+//     */
+//    private function ignoreVersions(Manager $manager)
+//    {
+//        $currentVersion = $manager->getVersionNumber();
+//
+//        if (version_compare($currentVersion, 6, 'lt')) {
+//            $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
+//        }
+//    }
 
-        if (version_compare($currentVersion, 6, 'lt')) {
-            $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
-        }
-    }
 
-    /**
-     * Removes manager from local cache and drops its index.
-     *
-     * @param string $name
-     */
-    protected function removeManager($name)
-    {
-        if (isset($this->managers[$name])) {
-            $this->managers[$name]->dropIndex();
-            unset($this->managers[$name]);
-        }
-    }
-
-    /**
-     * Populates elasticsearch with data.
-     *
-     * @param Manager $manager
-     * @param array   $data
-     */
-    private function populateElasticsearchWithData($manager, array $data)
+    private function populateElasticsearchWithData(IndexService $indexService, array $data)
     {
         if (!empty($data)) {
             foreach ($data as $type => $documents) {
                 foreach ($documents as $document) {
-                    $manager->bulk('index', $type, $document);
+                    $indexService->bulk('index', $type, $document);
                 }
             }
-            $manager->commit();
-            $manager->refresh();
+            $indexService->commit();
+            $indexService->refresh();
         }
     }
 

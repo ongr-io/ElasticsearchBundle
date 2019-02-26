@@ -9,27 +9,24 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
+namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
  * Document to test if it works from a not default directory.
  *
- * @ES\Document()
+ * @ES\Index()
  */
-class DummyDocumentInNotDefaultDirectory
+class DummyDocumentInTheEntityDirectory
 {
     /**
-     * @var string
-     *
      * @ES\Id()
      */
     public $id;
 
     /**
-     * @var string
-     * @ES\Property(type="keyword", name="keyword_field")
+     * @ES\Property(type="keyword")
      */
-    public$keywordField;
+    public $keywordField;
 }

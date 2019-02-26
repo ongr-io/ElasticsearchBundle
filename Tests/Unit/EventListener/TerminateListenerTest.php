@@ -23,11 +23,11 @@ class TerminateListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testKernelTerminate()
     {
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $indexService = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\IndexService')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $manager->expects($this->once())
+        $indexService->expects($this->once())
             ->method('commit');
 
         $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\Container')
@@ -37,7 +37,7 @@ class TerminateListenerTest extends \PHPUnit\Framework\TestCase
         $container->expects($this->any())
             ->method('get')
             ->with('es.manager.test_available')
-            ->willReturn($manager);
+            ->willReturn($indexService);
 
         $listener = new TerminateListener(
             $container,

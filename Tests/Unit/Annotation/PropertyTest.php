@@ -25,13 +25,5 @@ class PropertyTest extends \PHPUnit\Framework\TestCase
         $type->name = 'id';
         $type->index = 'no_index';
         $type->type = 'string';
-
-        $this->assertEquals(
-            [
-                'type' => 'string',
-            ],
-            $type->dump(),
-            'Properties should be filtered'
-        );
     }
 }

@@ -16,26 +16,14 @@ use Symfony\Component\EventDispatcher\Event;
 class BulkEvent extends Event
 {
     private $operation;
-    private $type;
     private $header;
     private $query;
 
-    public function __construct($operation, $type, array $header, array $query)
+    public function __construct(string $operation, array $header, array $query)
     {
-        $this->type = $type;
         $this->header = $header;
         $this->query = $query;
         $this->operation = $operation;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): void
-    {
-        $this->type = $type;
     }
 
     public function getHeader(): array
@@ -43,9 +31,10 @@ class BulkEvent extends Event
         return $this->header;
     }
 
-    public function setHeader(array $header): void
+    public function setHeader(array $header): BulkEvent
     {
         $this->header = $header;
+        return $this;
     }
 
     public function getQuery(): array
@@ -53,9 +42,10 @@ class BulkEvent extends Event
         return $this->query;
     }
 
-    public function setQuery(array $query): void
+    public function setQuery(array $query): BulkEvent
     {
         $this->query = $query;
+        return $this;
     }
 
     public function getOperation(): string
@@ -63,8 +53,9 @@ class BulkEvent extends Event
         return $this->operation;
     }
 
-    public function setOperation(string $operation)
+    public function setOperation(string $operation): BulkEvent
     {
         $this->operation = $operation;
+        return $this;
     }
 }

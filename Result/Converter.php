@@ -14,49 +14,25 @@ namespace ONGR\ElasticsearchBundle\Result;
 use Doctrine\Common\Collections\Collection;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
-use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * This class converts array to document object.
  */
 class Converter
 {
-    /**
-     * @var MetadataCollector
-     */
-    private $metadataCollector;
+    private $propertyAccessor;
+    private $documentParser;
 
-    /**
-     * Constructor.
-     *
-     * @param MetadataCollector $metadataCollector
-     */
-    public function __construct($metadataCollector)
+    public function __construct(PropertyAccessor $propertyAccessor, DocumentParser $documentParser)
     {
-        $this->metadataCollector = $metadataCollector;
+        $this->propertyAccessor = $propertyAccessor;
+        $this->documentParser = $documentParser;
     }
 
-    /**
-     * Converts raw array to document.
-     *
-     * @param array $rawData
-     * @param Manager $manager
-     *
-     * @return object
-     *
-     * @throws \LogicException
-     */
-    public function convertToDocument($rawData, Manager $manager)
+    public function convertArrayToDocument($rawData)
     {
-        $types = $this->metadataCollector->getMappings($manager->getConfig()['mappings']);
-
-        if (isset($types[$rawData['_type']])) {
-            $metadata = $types[$rawData['_type']];
-        } else {
-            throw new \LogicException("Got document of unknown type '{$rawData['_type']}'.");
-        }
-
         switch (true) {
             case isset($rawData['_source']):
                 $rawData = array_merge($rawData, $rawData['_source']);
@@ -69,9 +45,16 @@ class Converter
                 break;
         }
 
-        $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
+//        $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
+//        return $object;
+    }
 
-        return $object;
+    public function convertDocumentToArray($rawData): array
+    {
+
+
+//        $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
+//        return $object;
     }
 
     /**
@@ -138,141 +121,5 @@ class Converter
         }
 
         return $object;
-    }
-
-    /**
-     * Converts object to an array.
-     *
-     * @param mixed $object
-     * @param array $aliases
-     * @param array $fields
-     *
-     * @return array
-     */
-    public function convertToArray($object, $aliases = [], $fields = [])
-    {
-        if (empty($aliases)) {
-            $aliases = $this->getAlias($object);
-            if (count($fields) > 0) {
-                $aliases = array_intersect_key($aliases, array_flip($fields));
-            }
-        }
-
-        $array = [];
-
-        // Variable $name defined in client.
-        foreach ($aliases as $name => $alias) {
-            if ($aliases[$name]['propertyType'] == 'private') {
-                $value = $object->{$aliases[$name]['methods']['getter']}();
-            } else {
-                $value = $object->{$aliases[$name]['propertyName']};
-            }
-
-            if (isset($value)) {
-                if (array_key_exists('aliases', $alias)) {
-                    $new = [];
-                    if ($alias['multiple']) {
-                        $this->isCollection($aliases[$name]['propertyName'], $value);
-                        foreach ($value as $item) {
-                            $this->checkVariableType($item, [$alias['namespace']]);
-                            $new[] = $this->convertToArray($item, $alias['aliases']);
-                        }
-                    } else {
-                        $this->checkVariableType($value, [$alias['namespace']]);
-                        $new = $this->convertToArray($value, $alias['aliases']);
-                    }
-                    $value = $new;
-                }
-
-                if ($value instanceof \DateTime) {
-                    $value = $value->format(isset($alias['format']) ? $alias['format'] : \DateTime::ISO8601);
-                }
-
-                if (isset($alias['type'])) {
-                    switch ($alias['type']) {
-                        case 'float':
-                            if (is_array($value)) {
-                                foreach ($value as $key => $item) {
-                                    $value[$key] = (float)$item;
-                                }
-                            } else {
-                                $value = (float)$value;
-                            }
-                            break;
-                        case 'integer':
-                            if (is_array($value)) {
-                                foreach ($value as $key => $item) {
-                                    $value[$key] = (int)$item;
-                                }
-                            } else {
-                                $value = (int)$value;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                $array[$name] = $value;
-            }
-        }
-
-        return $array;
-    }
-
-    /**
-     * Check if class matches the expected one.
-     *
-     * @param object $object
-     * @param array $expectedClasses
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function checkVariableType($object, array $expectedClasses)
-    {
-        if (!is_object($object)) {
-            $msg = 'Expected variable of type object, got ' . gettype($object) . ". (field isn't multiple)";
-            throw new \InvalidArgumentException($msg);
-        }
-
-        $classes = class_parents($object);
-        $classes[] = $class = get_class($object);
-        if (empty(array_intersect($classes, $expectedClasses))) {
-            throw new \InvalidArgumentException("Expected object of type {$expectedClasses[0]}, got {$class}.");
-        }
-    }
-
-    /**
-     * Check if value is instance of Collection.
-     *
-     * @param string $property
-     * @param mixed $value
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function isCollection($property, $value)
-    {
-        if (!$value instanceof Collection) {
-            $got = is_object($value) ? get_class($value) : gettype($value);
-
-            throw new \InvalidArgumentException(
-                sprintf('Value of "%s" property must be an instance of Collection, got %s.', $property, $got)
-            );
-        }
-    }
-
-    /**
-     * Returns aliases for certain document.
-     *
-     * @param object $document
-     *
-     * @return array
-     */
-    private function getAlias($document)
-    {
-        $class = get_class($document);
-        $documentMapping = $this->metadataCollector->getMapping($class);
-
-        return $documentMapping['aliases'];
     }
 }

@@ -17,7 +17,6 @@ use ONGR\ElasticsearchBundle\Annotation\AbstractAnnotation;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\HashMap;
 use ONGR\ElasticsearchBundle\Annotation\Index;
-use ONGR\ElasticsearchBundle\Annotation\MetaFieldInterface;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Annotation\PropertiesAwareInterface;
@@ -34,11 +33,6 @@ class DocumentParser
     private $reader;
 
     /**
-     * @var array Contains gathered objects which later adds to documents.
-     */
-    private $objects = [];
-
-    /**
      * @var array Document properties aliases.
      */
     private $aliases = [];
@@ -47,11 +41,6 @@ class DocumentParser
      * @var array Local cache for document properties.
      */
     private $properties = [];
-
-    /**
-     * @var array Local cache for documents
-     */
-    private $documents = [];
 
     /**
      * @param Reader         $reader Used for reading annotations.
@@ -154,94 +143,6 @@ class DocumentParser
 
 
 
-
-
-
-    /**
-     * Returns property annotation data from reader.
-     *
-     * @param \ReflectionProperty $property
-     *
-     * @return Property|object|null
-     */
-    private function getPropertyAnnotationData(\ReflectionProperty $property)
-    {
-        $result = $this->reader->getPropertyAnnotation($property, self::PROPERTY_ANNOTATION);
-
-        if ($result !== null && $result->name === null) {
-            $result->name = Caser::snake($property->getName());
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns Embedded annotation data from reader.
-     *
-     * @param \ReflectionProperty $property
-     *
-     * @return Embedded|object|null
-     */
-    private function getEmbeddedAnnotationData(\ReflectionProperty $property)
-    {
-        $result = $this->reader->getPropertyAnnotation($property, self::EMBEDDED_ANNOTATION);
-
-        if ($result !== null && $result->name === null) {
-            $result->name = Caser::snake($property->getName());
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns HashMap annotation data from reader.
-     *
-     * @param \ReflectionProperty $property
-     *
-     * @return HashMap|object|null
-     */
-    private function getHashMapAnnotationData(\ReflectionProperty $property)
-    {
-        $result = $this->reader->getPropertyAnnotation($property, self::HASH_MAP_ANNOTATION);
-
-        if ($result !== null && $result->name === null) {
-            $result->name = Caser::snake($property->getName());
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns meta field annotation data from reader.
-     *
-     * @param \ReflectionProperty $property
-     *
-     * @return array
-     */
-    private function getMetaFieldAnnotationData($property)
-    {
-        /** @var MetaFieldInterface[] $propertyAnnotations */
-        $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
-
-        foreach ($propertyAnnotations as $annotation) {
-            $data = [
-                'name' => $annotation->getName(),
-                'settings' => $annotation->getSettings(),
-            ];
-        }
-
-        return $data;
-    }
-
-    /**
-     * Returns objects used in document.
-     *
-     * @return array
-     */
-    private function getObjects(): array
-    {
-        return array_keys($this->objects);
-    }
 
     /**
      * Finds aliases for every property used in document including parent classes.

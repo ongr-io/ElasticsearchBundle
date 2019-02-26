@@ -381,11 +381,18 @@ class IndexService
         return $result;
     }
 
+    /**
+     * Usage example
+     *
+     * $im->bulk('index', ['index' => 'foo', 'type' => '_doc', '_id' => 1], ['title' => 'foo']);
+     * $im->bulk('delete', ['index' => 'foo', 'type' => '_doc', '_id' => 2]);
+     * $im->bulk('create', ['index' => 'foo', 'type' => '_doc'], ['title' => 'foo']);
+     */
     public function bulk(string $operation, array $header, array $query = []): array
     {
         $this->eventDispatcher->dispatch(
             Events::BULK,
-            new BulkEvent($operation, $this->getTypeName(), $header, $query)
+            new BulkEvent($operation, $header, $query)
         );
 
         $this->bulkQueries[] = $header;
