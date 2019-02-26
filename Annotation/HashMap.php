@@ -19,9 +19,11 @@ use Doctrine\Common\Annotations\Annotation\Enum;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class HashMap
+final class HashMap extends AbstractAnnotation
 {
     const NAME = 'hash_map';
+
+    use PropertyTypeAwareTrait;
 
     /**
      * Name of the type field. Defaults to normalized property name.
@@ -29,27 +31,4 @@ final class HashMap
      * @var string
      */
     public $name;
-
-    /**
-     * Property type for nested structure values.
-     *
-     * @var mixed
-     * @Enum({
-     *     "text", "keyword",
-     *     "long", "integer", "short", "byte", "double", "float",
-     *     "date",
-     *     "boolean",
-     *     "binary",
-     *     "geo_point", "geo_shape",
-     *     "ip", "completion", "token_count", "murmur3", "attachments", "percolator"
-     * })
-     */
-    public $type;
-
-    /**
-     * In this field you can define options.
-     *
-     * @var array
-     */
-    public $options = [];
 }

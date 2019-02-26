@@ -12,10 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * @Annotation
- * @Target("CLASS")
+ * All meta-field annotations must implement this interface.
  */
-final class NestedType extends AbstractAnnotation
+interface MetaFieldInterface
 {
-    const TYPE = 'nested';
 }

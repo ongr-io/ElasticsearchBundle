@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
@@ -21,25 +22,20 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 class DummyDocument
 {
     /**
-     * @var string
-     *
      * @ES\Id()
      */
     private $id;
 
     /**
-     * @var string
-     *
      * @ES\Routing()
      */
     private $routing;
 
     /**
-     * @var string|array
      * @ES\Property(
      *  type="text",
      *  name="title",
-     *  options={
+     *  settings={
      *    "fields"={
      *        "raw"={"type"="keyword"},
      *        "increment"={"type"="text", "analyzer"="incrementalAnalyzer"}
@@ -50,10 +46,25 @@ class DummyDocument
     public $multipleAnalysis;
 
     /**
-     * @var string
      * @ES\Property(type="keyword", name="private_field")
      */
     private $privateField;
+
+    /**
+     * @ES\Embedded(class="ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CollectionNested", name="nested_collection")
+     */
+    public $nestedCollection;
+
+    /**
+     * @ES\Embedded(class="ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CollectionObject")
+     */
+    public $objectCollection;
+
+    public function __construct()
+    {
+        $this->nestedCollection = new ArrayCollection();
+        $this->objectCollection = new ArrayCollection();
+    }
 
     public function getId(): string
     {

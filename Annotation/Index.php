@@ -19,7 +19,7 @@ use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
  * @Annotation
  * @Target("CLASS")
  */
-final class Index
+final class Index extends AbstractAnnotation
 {
     /**
      * Index alias name. By default the index name will be created with the timestamp appended to the alias.
@@ -35,12 +35,4 @@ final class Index
      * @deprecated will be removed in v7 since there will be no more types in the indexes.
      */
     public $typeName = '_doc';
-
-    /**
-     * Settings is a custom index configuration to pass to the client when the index is created.
-     *  e.g. you can use it for the dynamic templates, number of shards or replicas.
-     *
-     * @var string
-     */
-    public $settings = [];
 }

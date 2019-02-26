@@ -11,35 +11,23 @@
 
 namespace ONGR\ElasticsearchBundle\Mapping;
 
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
+use ONGR\ElasticsearchBundle\Annotation\AbstractAnnotation;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\HashMap;
 use ONGR\ElasticsearchBundle\Annotation\Index;
-use ONGR\ElasticsearchBundle\Annotation\MetaField;
+use ONGR\ElasticsearchBundle\Annotation\MetaFieldInterface;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
-use ONGR\ElasticsearchBundle\Annotation\ParentDocument;
+use ONGR\ElasticsearchBundle\Annotation\ObjectType;
+use ONGR\ElasticsearchBundle\Annotation\PropertiesAwareInterface;
 use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 
 /**
  * Document parser used for reading document annotations.
  */
 class DocumentParser
 {
-    const PROPERTY_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Property';
-    const EMBEDDED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Embedded';
-    const DOCUMENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Document';
-    const INDEX_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Index';
-    const OBJECT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ObjectType';
-    const NESTED_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\NestedType';
-
-    // Meta fields
-    const ID_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Id';
-    const PARENT_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\ParentDocument';
-    const ROUTING_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Routing';
-    const VERSION_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\Version';
-    const HASH_MAP_ANNOTATION = 'ONGR\ElasticsearchBundle\Annotation\HashMap';
-
     /**
      * @var Reader Used to read document annotations.
      */
@@ -71,52 +59,103 @@ class DocumentParser
     public function __construct(Reader $reader)
     {
         $this->reader = $reader;
+
+        #Fix for annotations loader until doctrine/annotations 2.0 will be released with the full autoload support.
+        AnnotationRegistry::registerLoader('class_exists');
     }
 
-    public function parse($namespace): array
+    public function getIndexAliasName($namespace): string
     {
         $class = new \ReflectionClass($namespace);
-        $className = $class->getName();
+
+        /** @var Index $document */
+        $document = $this->reader->getClassAnnotation($class, Index::class);
+
+        return $document->alias ?? Caser::snake($class->getShortName());
+    }
+
+    public function getIndexMetadata($namespace): array
+    {
+        $class = new \ReflectionClass($namespace);
 
         if ($class->isTrait()) {
             return [];
         }
 
-        if (!isset($this->documents[$className])) {
-            /** @var Index $document */
-            $document = $this->reader->getClassAnnotation($class, self::INDEX_ANNOTATION);
+        /** @var Index $document */
+        $document = $this->reader->getClassAnnotation($class, Index::class);
 
-            if ($document === null) {
-                throw new MissingDocumentAnnotationException(
+        if ($document === null) {
+            return [];
+        }
+
+        return [
+            'settings' => $document->getSettings(),
+            'mapping' => $this->getClassMetadata($class)
+        ];
+    }
+
+    private function getClassMetadata(\ReflectionClass $reflectionClass): array
+    {
+        $mapping = [];
+
+        /** @var \ReflectionProperty $property */
+        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
+            $annotations = $this->reader->getPropertyAnnotations($property);
+
+            /** @var AbstractAnnotation $annotation */
+            foreach ($annotations as $annotation) {
+
+                if (!$annotation instanceof PropertiesAwareInterface) {
+                    continue;
+                }
+
+                $fieldMapping = $annotation->getSettings();
+
+                if ($annotation instanceof Property) {
+                    $fieldMapping['type'] = $annotation->type;
+                }
+
+                if ($annotation instanceof Embedded) {
+                    $embeddedClass = new \ReflectionClass($annotation->class);
+                    $fieldMapping['type'] = $this->getObjectMappingType($embeddedClass);
+                    $fieldMapping['properties'] = $this->getClassMetadata($embeddedClass);
+                }
+
+                $mapping[$annotation->getName() ?? Caser::snake($name)] = $fieldMapping;
+            }
+        }
+
+        return $mapping;
+    }
+
+    private function getObjectMappingType(\ReflectionClass $reflectionClass): string
+    {
+        switch (true) {
+            case $this->reader->getClassAnnotation($reflectionClass, ObjectType::class):
+                $type = ObjectType::TYPE;
+                break;
+            case $this->reader->getClassAnnotation($reflectionClass, NestedType::class):
+                $type = NestedType::TYPE;
+                break;
+            default:
+                throw new \LogicException(
                     sprintf(
-                        '"%s" class cannot be parsed as document because @Index annotation is missing.',
-                        $class->getName()
+                        '%s should have @ObjectType or @NestedType annotation to be used as embeddable object.',
+                        $reflectionClass->getName()
                     )
                 );
-            }
-
-            $fields = [];
-            $aliases = $this->getAliases($class, $fields);
-
-            $this->documents[$className] = [
-                'alias' => $document->alias ?: Caser::snake($class->getShortName()),
-                'type' => $document->typeName ?: Caser::snake($class->getShortName()),
-                'properties' => $this->getProperties($class),
-                'fields' => array_filter(
-                    array_merge(
-                        $document->dump(),
-                        $fields
-                    )
-                ),
-                'aliases' => $aliases,
-                'analyzers' => $this->getAnalyzers($class),
-                'objects' => $this->getObjects(),
-                'namespace' => $class->getName(),
-                'class' => $class->getShortName(),
-            ];
         }
-        return $this->documents[$className];
+
+        return $type;
     }
+
+
+
+
+
+
+
 
     /**
      * Returns property annotation data from reader.
@@ -181,7 +220,7 @@ class DocumentParser
      */
     private function getMetaFieldAnnotationData($property)
     {
-        /** @var MetaField[] $propertyAnnotations */
+        /** @var MetaFieldInterface[] $propertyAnnotations */
         $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
 
         foreach ($propertyAnnotations as $annotation) {
@@ -431,60 +470,6 @@ class DocumentParser
     }
 
     /**
-     * Returns properties of reflection class.
-     *
-     * @param \ReflectionClass $reflectionClass Class to read properties from.
-     * @param array            $properties      Properties to skip.
-     * @param bool             $flag            If false exludes properties, true only includes properties.
-     *
-     * @return array
-     */
-    private function getProperties(\ReflectionClass $reflectionClass, $properties = [], $flag = false)
-    {
-        $mapping = [];
-
-        /** @var \ReflectionProperty $property */
-        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
-            $type = $this->getPropertyAnnotationData($property);
-            $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
-            $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
-
-            if ((in_array($name, $properties) && !$flag)
-                || (!in_array($name, $properties) && $flag)
-                || empty($type)
-            ) {
-                continue;
-            }
-
-            $map = $type->dump();
-
-            // Inner object
-            if ($type instanceof Embedded) {
-                $map = array_replace_recursive($map, $this->getObjectMapping($type->class));
-            }
-
-            // HashMap object
-            if ($type instanceof HashMap) {
-                $map = array_replace_recursive($map, [
-                    'type' => NestedType::NAME,
-                    'dynamic' => true,
-                ]);
-            }
-
-            // If there is set some Raw options, it will override current ones.
-            if (isset($map['options'])) {
-                $options = $map['options'];
-                unset($map['options']);
-                $map = array_merge($map, $options);
-            }
-
-            $mapping[$type->name] = $map;
-        }
-
-        return $mapping;
-    }
-
-    /**
      * Returns object mapping.
      *
      * Loads from cache if it's already loaded.
@@ -500,6 +485,8 @@ class DocumentParser
         }
 
         $reflectionClass = new \ReflectionClass($namespace);
+
+        $documentAnnotation = $this->reader->getClassAnnotations($reflectionClass);
 
         switch (true) {
             case $this->reader->getClassAnnotation($reflectionClass, self::OBJECT_ANNOTATION):
@@ -519,7 +506,7 @@ class DocumentParser
 
         $this->objects[$namespace] = [
             'type' => $type,
-            'properties' => $this->getProperties($reflectionClass),
+            'properties' => $this->getClassProperties($reflectionClass),
         ];
 
         return $this->objects[$namespace];

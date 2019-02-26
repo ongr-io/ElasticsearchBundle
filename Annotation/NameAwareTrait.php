@@ -11,11 +11,12 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-/**
- * @Annotation
- * @Target("CLASS")
- */
-final class NestedType extends AbstractAnnotation
+trait NameAwareTrait
 {
-    const TYPE = 'nested';
+    public $name;
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 }

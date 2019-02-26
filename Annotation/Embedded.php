@@ -11,16 +11,14 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use ONGR\ElasticsearchBundle\Mapping\Caser;
-
 /**
- * Annotation for property which points to inner object.
- *
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Embedded
+final class Embedded extends AbstractAnnotation implements PropertiesAwareInterface
 {
+    use NameAwareTrait;
+
     /**
      * Inner object class name.
      *
@@ -29,18 +27,4 @@ final class Embedded
      * @Doctrine\Common\Annotations\Annotation\Required
      */
     public $class;
-
-    /**
-     * Name of the type field. Defaults to normalized property name.
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     * In this field you can define options.
-     *
-     * @var array
-     */
-    public $settings;
 }

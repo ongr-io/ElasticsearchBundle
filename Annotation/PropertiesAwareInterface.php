@@ -12,9 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * All meta-field annotations must implement this interface.
+ * Interface which defines if the property will be included in to the index metadata.
  */
-interface MetaField
+interface PropertiesAwareInterface
 {
-    public function getName(): string;
+    public function getName(): ?string;
 }
