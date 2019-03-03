@@ -21,6 +21,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class AbstractElasticsearchTestCase extends WebTestCase
 {
     /**
+     * @var IndexService[]
+     */
+    private $indexes = [];
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -53,41 +58,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         return [];
     }
 
-    /**
-     * Ignores versions specified.
-     *
-     * Returns two dimensional array, first item in sub array is version to ignore, second is the comparator,
-     * last test name. If no test name is provided it will be used on all test class.
-     *
-     * Comparator types can be found in `version_compare` documentation.
-     *
-     * Example: [
-     *   ['1.2.7', '<='],
-     *   ['1.2.9', '==', 'testSmth']
-     * ]
-     *
-     * @return array
-     */
-    protected function getIgnoredVersions()
-    {
-        return [];
-    }
-
-//    /**
-//     * Ignores version specified.
-//     *
-//     * @param Manager $manager
-//     */
-//    private function ignoreVersions(Manager $manager)
-//    {
-//        $currentVersion = $manager->getVersionNumber();
-//
-//        if (version_compare($currentVersion, 6, 'lt')) {
-//            $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
-//        }
-//    }
-
-
     private function populateElasticsearchWithData(IndexService $indexService, array $data)
     {
         if (!empty($data)) {
@@ -108,9 +78,9 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     {
         parent::tearDown();
 
-        foreach ($this->managers as $name => $manager) {
+        foreach ($this->indexes as $name => $index) {
             try {
-                $manager->dropIndex();
+                $index->dropIndex();
             } catch (\Exception $e) {
                 // Do nothing.
             }
@@ -134,41 +104,21 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         return static::createClient()->getContainer();
     }
 
-    /**
-     * Returns manager instance with injected connection if does not exist creates new one.
-     *
-     * @param string $name Manager name
-     *
-     * @return Manager
-     *
-     * @throws \LogicException
-     */
-    protected function getManager($name = 'default')
+    protected function getIndex($namespace): IndexService
     {
-        $serviceName = sprintf('es.manager.%s', $name);
-
-        // Looks for cached manager.
-        if (array_key_exists($name, $this->managers)) {
-            $this->ignoreVersions($this->managers[$name]);
-
-            return $this->managers[$name];
-        } elseif ($this->getContainer()->has($serviceName)) {
-            /** @var Manager $manager */
-            $manager = $this->getContainer()->get($serviceName);
-            $this->managers[$name] = $manager;
+        if (!array_key_exists($namespace, $this->indexes) && $this->getContainer()->has($namespace)) {
+            $this->indexes[$namespace] = $this->getContainer()->get($namespace);
         } else {
-            throw new \LogicException(sprintf("Manager '%s' does not exist", $name));
+            throw new \LogicException(sprintf("Manager '%s' does not exist", $namespace));
         }
-
-        $this->ignoreVersions($manager);
-        $manager->dropAndCreateIndex();
+        $this->indexes[$namespace]->dropAndCreateIndex();
 
         // Populates elasticsearch index with data
         $data = $this->getDataArray();
-        if (!empty($data[$name])) {
-            $this->populateElasticsearchWithData($manager, $data[$name]);
+        if (!empty($data[$namespace])) {
+            $this->populateElasticsearchWithData($this->indexes[$namespace], $data[$namespace]);
         }
 
-        return $manager;
+        return $this->indexes[$namespace];
     }
 }

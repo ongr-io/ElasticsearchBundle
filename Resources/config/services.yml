@@ -16,7 +16,7 @@ services:
     ONGR\ElasticsearchBundle\Service\IndexSuffixFinder:
         class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
 
-    Doctrine\Common\Cache\FilesystemCache:
+    ongr.esb.cache:
         class: Doctrine\Common\Cache\FilesystemCache
         arguments: ["%kernel.cache_dir%/ongr/elasticsearch", ".ongr.data"]
 

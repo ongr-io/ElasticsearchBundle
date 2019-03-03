@@ -43,10 +43,10 @@ class DummyDocument
      *  }
      * )
      */
-    public $multipleAnalysis;
+    public $title;
 
     /**
-     * @ES\Property(type="keyword", name="private_field")
+     * @ES\Property(type="keyword", name="private")
      */
     private $privateField;
 

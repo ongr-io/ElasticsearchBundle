@@ -21,6 +21,7 @@ use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Annotation\PropertiesAwareInterface;
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 
 /**
  * Document parser used for reading document annotations.
@@ -82,6 +83,12 @@ class DocumentParser
             'settings' => $document->getSettings(),
             'mapping' => $this->getClassMetadata($class)
         ];
+    }
+
+    #TODO implement
+    public function getDocumentNamespace(string $indexName): string
+    {
+        return DummyDocument::class;
     }
 
     private function getClassMetadata(\ReflectionClass $reflectionClass): array

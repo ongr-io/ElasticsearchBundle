@@ -16,6 +16,7 @@ use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * This class converts array to document object.
@@ -24,11 +25,13 @@ class Converter
 {
     private $propertyAccessor;
     private $documentParser;
+    private $serializer;
 
-    public function __construct(PropertyAccessor $propertyAccessor, DocumentParser $documentParser)
+    public function __construct(PropertyAccessor $propertyAccessor, DocumentParser $documentParser, Serializer $serializer)
     {
         $this->propertyAccessor = $propertyAccessor;
         $this->documentParser = $documentParser;
+        $this->serializer = $serializer;
     }
 
     public function convertArrayToDocument($rawData)
@@ -44,6 +47,14 @@ class Converter
                 // Do nothing.
                 break;
         }
+
+        $indexName = '';
+
+        $data = [];
+
+        $class = $this->documentParser->getDocumentNamespace($indexName);
+
+        return $this->serializer->denormalize($data, $class);
 
 //        $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
 //        return $object;
