@@ -18,18 +18,16 @@ use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class MappingPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
         $parser = $container->get(DocumentParser::class);
-        $converterDefinition = (new Definition(Converter::class))->setAutowired(true);
-        $eventDispatcherDefinition = (new Definition(EventDispatcher::class))->setAutowired(true);
-        $parserDefinition = new Definition(DocumentParser::class);
+        $cache = $container->get('ongr.esb.cache');
 
         $indexes = [];
+
         foreach (
             $this->getNamespaces(
                 $container->getParameter('kernel.project_dir')
@@ -41,15 +39,15 @@ class MappingPass implements CompilerPassInterface
             if (!empty($indexMapping)) {
                 $indexServiceDefinition = new Definition(IndexService::class, [
                     $namespace,
-                    $converterDefinition,
-                    $parserDefinition,
-                    $eventDispatcherDefinition
+                    $container->getDefinition(Converter::class),
+                    $container->getDefinition(DocumentParser::class),
+                    $container->getDefinition('event_dispatcher')
                 ]);
                 $indexServiceDefinition->setPublic(true);
 
                 $container->setDefinition($namespace, $indexServiceDefinition);
                 $container->setAlias($indexAlias, $namespace);
-                $indexes[] = $namespace;
+                $indexes[$indexAlias] = $namespace;
             }
         }
 

@@ -45,7 +45,5 @@ class ONGRElasticsearchExtension extends Extension
 
         $container->setParameter(Configuration::ONGR_ANALYSIS_CONFIG, $config['analysis']);
         $container->setParameter(Configuration::ONGR_SOURCE_DIR, $config['source_directory']);
-
-//        $container->autowire(Converter::class, Converter::class);
     }
 }

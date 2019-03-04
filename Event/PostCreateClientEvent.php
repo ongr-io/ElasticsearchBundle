@@ -16,13 +16,24 @@ use Symfony\Component\EventDispatcher\Event;
 
 class PostCreateClientEvent extends Event
 {
+    private $namespace;
     private $client;
-    private $indexConfig;
 
-    public function __construct(ClientBuilder $client, array $indexConfig = [])
+    public function __construct(string $namespace, ClientBuilder $client)
     {
+        $this->namespace = $namespace;
         $this->client = $client;
-        $this->indexConfig = $indexConfig;
+    }
+
+    public function getNamespace(): string
+    {
+        return $this->namespace;
+    }
+
+    public function setNamespace(string $namespace)
+    {
+        $this->namespace = $namespace;
+        return $this;
     }
 
     public function getClient(): ClientBuilder
@@ -33,17 +44,6 @@ class PostCreateClientEvent extends Event
     public function setClient(ClientBuilder $client): PostCreateClientEvent
     {
         $this->client = $client;
-        return $this;
-    }
-
-    public function getIndexConfig(): array
-    {
-        return $this->indexConfig;
-    }
-
-    public function setIndexConfig(array $indexConfig): PostCreateClientEvent
-    {
-        $this->indexConfig = $indexConfig;
         return $this;
     }
 }

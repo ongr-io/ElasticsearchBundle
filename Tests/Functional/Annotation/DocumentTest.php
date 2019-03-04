@@ -11,29 +11,21 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Annotation;
 
+use ONGR\App\Document\DummyDocument;
+use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 
 class DocumentTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * Test document mapping.
-     */
-    public function testDocumentMapping()
+    public function testDocumentTypeName()
     {
-        $manager = $this->getManager();
-        $repo = $manager->getRepository(DummyDocument::class);
+        $index = $this->getIndex(DummyDocumentInTheEntityDirectory::class, false);
+        $this->assertEquals('_doc', $index->getTypeName());
+    }
 
-        $type = $repo->getType();
-        $mappings = $manager->getClient()->indices()->getMapping(['index' => $manager->getIndexName()]);
-
-        $this->assertArrayHasKey($type, $mappings[$manager->getIndexName()]['mappings']);
-
-        $managerMappings = $manager->getMetadataCollector()->getMapping(DummyDocument::class);
-
-        $this->assertEquals(
-            sort($managerMappings['properties']),
-            sort($mappings[$manager->getIndexName()]['mappings'][$type])
-        );
+    public function testDocumentIndexName()
+    {
+        $index = $this->getIndex(DummyDocument::class, false);
+        $this->assertEquals(DummyDocument::INDEX_NAME, $index->getIndexName());
     }
 }

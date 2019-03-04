@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
     CONST ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
     CONST ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
     CONST ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
+    CONST ONGR_INDEXES = 'ongr.esb.indexes';
 
     public function getConfigTreeBuilder()
     {
@@ -48,6 +49,7 @@ class Configuration implements ConfigurationInterface
             ->end()
 
             ->booleanNode('logger')
+                ->defaultTrue()
                 ->info(
                     'Enables executed queries logging. Log file names are the same as index.'
                 )

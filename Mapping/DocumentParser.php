@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Cache\Cache;
 use ONGR\ElasticsearchBundle\Annotation\AbstractAnnotation;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\HashMap;
@@ -21,6 +22,7 @@ use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Annotation\PropertiesAwareInterface;
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
 
 /**
  * Document parser used for reading document annotations.
@@ -30,12 +32,14 @@ class DocumentParser
     private $reader;
     private $aliases = [];
     private $properties = [];
-    private $indexAnalysis = [];
+    private $analysisConfig = [];
+    private $cache;
 
-    public function __construct(Reader $reader, array $indexAnalysis)
+    public function __construct(Reader $reader, Cache $cache, array $analysisConfig = [])
     {
         $this->reader = $reader;
-        $this->indexAnalysis = $indexAnalysis;
+        $this->cache = $cache;
+        $this->analysisConfig = $analysisConfig;
 
         #Fix for annotations loader until doctrine/annotations 2.0 will be released with the full autoload support.
         AnnotationRegistry::registerLoader('class_exists');
@@ -49,6 +53,19 @@ class DocumentParser
         $document = $this->reader->getClassAnnotation($class, Index::class);
 
         return $document->alias ?? Caser::snake($class->getShortName());
+    }
+
+    /**
+     * @deprecated will be deleted in v7. Types are deleted from elasticsearch.
+     */
+    public function getTypeName($namespace): string
+    {
+        $class = new \ReflectionClass($namespace);
+
+        /** @var Index $document */
+        $document = $this->reader->getClassAnnotation($class, Index::class);
+
+        return $document->typeName ?? '_doc';
     }
 
     public function getIndexMetadata($namespace): array
@@ -72,10 +89,17 @@ class DocumentParser
         ];
     }
 
-    #TODO implement
-    public function getDocumentNamespace(string $indexName): string
+    public function getDocumentNamespace(string $indexAlias): ?string
     {
-        return DummyDocument::class;
+        if ($this->cache->hasItem(Configuration::ONGR_INDEXES)) {
+            $indexes = $this->cache->getItem(Configuration::ONGR_INDEXES);
+
+            if (isset($indexes[$indexAlias])) {
+                return $indexes[$indexAlias];
+            }
+        }
+
+        return null;
     }
 
     private function getClassMetadata(\ReflectionClass $reflectionClass): array
@@ -131,6 +155,33 @@ class DocumentParser
         }
 
         return $type;
+    }
+
+    private function getDocumentPropertiesReflection(\ReflectionClass $reflectionClass): array
+    {
+        if (in_array($reflectionClass->getName(), $this->properties)) {
+            return $this->properties[$reflectionClass->getName()];
+        }
+
+        $properties = [];
+
+        foreach ($reflectionClass->getProperties() as $property) {
+            if (!in_array($property->getName(), $properties)) {
+                $properties[$property->getName()] = $property;
+            }
+        }
+
+        $parentReflection = $reflectionClass->getParentClass();
+        if ($parentReflection !== false) {
+            $properties = array_merge(
+                $properties,
+                array_diff_key($this->getDocumentPropertiesReflection($parentReflection), $properties)
+            );
+        }
+
+        $this->properties[$reflectionClass->getName()] = $properties;
+
+        return $properties;
     }
 
 
@@ -298,40 +349,6 @@ class DocumentParser
             $reflectionClass->getName()
         );
         throw new \LogicException($message);
-    }
-
-    /**
-     * Returns all defined properties including private from parents.
-     *
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array
-     */
-    private function getDocumentPropertiesReflection(\ReflectionClass $reflectionClass)
-    {
-        if (in_array($reflectionClass->getName(), $this->properties)) {
-            return $this->properties[$reflectionClass->getName()];
-        }
-
-        $properties = [];
-
-        foreach ($reflectionClass->getProperties() as $property) {
-            if (!in_array($property->getName(), $properties)) {
-                $properties[$property->getName()] = $property;
-            }
-        }
-
-        $parentReflection = $reflectionClass->getParentClass();
-        if ($parentReflection !== false) {
-            $properties = array_merge(
-                $properties,
-                array_diff_key($this->getDocumentPropertiesReflection($parentReflection), $properties)
-            );
-        }
-
-        $this->properties[$reflectionClass->getName()] = $properties;
-
-        return $properties;
     }
 
     /**

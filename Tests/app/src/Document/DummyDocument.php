@@ -21,6 +21,9 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
  */
 class DummyDocument
 {
+    // This con't is only as a helper.
+    CONST INDEX_NAME = 'dummy';
+
     /**
      * @ES\Id()
      */

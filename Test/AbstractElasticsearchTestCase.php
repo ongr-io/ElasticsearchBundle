@@ -104,7 +104,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         return static::createClient(['environment' => 'test'])->getContainer();
     }
 
-    protected function getIndex($namespace): IndexService
+    protected function getIndex($namespace, $createIndex = true): IndexService
     {
         if (!array_key_exists($namespace, $this->indexes) && $this->getContainer()->has($namespace)) {
             $this->indexes[$namespace] = $this->getContainer()->get($namespace);
@@ -113,12 +113,15 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
                 sprintf("There is no Elastic index defined in the '%s' namespace", $namespace)
             );
         }
-        $this->indexes[$namespace]->dropAndCreateIndex();
 
-        // Populates elasticsearch index with the data
-        $data = $this->getDataArray();
-        if (!empty($data[$namespace])) {
-            $this->populateElasticsearchWithData($this->indexes[$namespace], $data[$namespace]);
+        if ($createIndex) {
+            $this->indexes[$namespace]->dropAndCreateIndex();
+
+            // Populates elasticsearch index with the data
+            $data = $this->getDataArray();
+            if (!empty($data[$namespace])) {
+                $this->populateElasticsearchWithData($this->indexes[$namespace], $data[$namespace]);
+            }
         }
 
         return $this->indexes[$namespace];

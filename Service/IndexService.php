@@ -33,14 +33,15 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class IndexService
 {
     private $client;
+    private $namespace;
     private $converter;
+    private $parser;
     private $eventDispatcher;
+
     private $stopwatch;
     private $bulkCommitSize = 100;
     private $bulkQueries = [];
     private $commitMode = 'refresh';
-    private $namespace;
-    private $parser;
 
     public function __construct(
         string $namespace,
@@ -49,11 +50,15 @@ class IndexService
         EventDispatcherInterface $eventDispatcher
     )
     {
-        $this->typeName = '';
-        $this->converter = $converter;
-        $this->eventDispatcher = $eventDispatcher;
         $this->namespace = $namespace;
+        $this->converter = $converter;
         $this->parser = $parser;
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    public function getNamespace(): string
+    {
+        return $this->namespace;
     }
 
     /**
@@ -61,7 +66,7 @@ class IndexService
      */
     public function getTypeName(): string
     {
-        return $this->typeName;
+        return $this->parser->getTypeName($this->namespace);
     }
 
     public function getClient(): Client
@@ -69,11 +74,10 @@ class IndexService
         if (!$this->client) {
             $client = ClientBuilder::create();
 //            $client->setHosts($this->config['hosts']);
-//            $this->client->set($this->config['hosts']);
 
             $this->eventDispatcher->dispatch(
                 Events::POST_CLIENT_CREATE,
-                new PostCreateClientEvent($client, $this->config)
+                new PostCreateClientEvent($this->namespace, $client)
             );
             $this->client = $client->build();
         }
@@ -82,12 +86,7 @@ class IndexService
 
     public function getIndexName(): string
     {
-        return $this->indexName;
-    }
-
-    public function getConverter(): Converter
-    {
-        return $this->converter;
+        return $this->parser->getIndexAliasName($this->namespace);
     }
 
     public function getEventDispatcher(): EventDispatcherInterface
@@ -128,20 +127,14 @@ class IndexService
         return $this;
     }
 
-    public function getIndexSettings(): array
+    public function createIndex($params = [], $noMapping = false): array
     {
+        $params = array_merge([
+            'index' => $this->getIndexName(),
+            'body' => $noMapping ? [] : $this->parser->getIndexMetadata($this->namespace)
+        ], $params);
 
-    }
-
-    public function setIndexSettings($settings): IndexService
-    {
-
-        return $this;
-    }
-
-    public function createIndex($noMapping = false): array
-    {
-        return $this->getClient()->indices()->create($this->getIndexSettings());
+        return $this->getClient()->indices()->create($params);
     }
 
     public function dropIndex(): array
@@ -149,7 +142,7 @@ class IndexService
         return $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
     }
 
-    public function dropAndCreateIndex($noMapping = false)
+    public function dropAndCreateIndex($params = [], $noMapping = false)
     {
         try {
             if ($this->indexExists()) {
@@ -159,7 +152,7 @@ class IndexService
             // Do nothing, our target is to create new index.
         }
 
-        return $this->createIndex($noMapping);
+        return $this->createIndex($params, $noMapping);
     }
 
     public function indexExists(): bool
@@ -169,11 +162,6 @@ class IndexService
 
     /**
      * Returns a single document by provided ID or null if a document was not found.
-     *
-     * @param string $id      Document ID to find
-     * @param array  $params  Custom parameters added to the query url
-     *
-     * @return object
      */
     public function find($id, $params = [])
     {
@@ -187,7 +175,7 @@ class IndexService
 
         $result = $this->getClient()->get($requestParams);
 
-        return $this->getConverter()->convertToDocument($result, $this);
+        return $this->converter->convertArrayToDocument($result);
     }
 
     public function findByIds(array $ids): DocumentIterator

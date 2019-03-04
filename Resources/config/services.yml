@@ -2,6 +2,9 @@ parameters:
     es.logging.path: "%kernel.logs_dir%/elasticsearch_%kernel.environment%.log"
 
 services:
+
+    _defaults: { public: true }
+
     ONGR\ElasticsearchBundle\Command\:
         resource: '../../Command'
         tags:
@@ -20,7 +23,10 @@ services:
         arguments: ["@annotations.reader", "@ongr.esb.cache", "%kernel.debug%"]
 
     ONGR\ElasticsearchBundle\Mapping\DocumentParser:
-        arguments: ["@ongr.es.cache_reader", "%ongr.esb.analysis%"]
+        arguments: ["@ongr.es.cache_reader", "@ongr.esb.cache", "%ongr.esb.analysis%"]
+
+    ONGR\ElasticsearchBundle\Mapping\Converter:
+        arguments: ['@ONGR\ElasticsearchBundle\Mapping\DocumentParser', "@serializer"]
 
     ongr.es.tracer.handler:
         class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
@@ -33,7 +39,6 @@ services:
             - [pushHandler, ["@ongr.es.tracer.handler"]]
 
     ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler:
-        class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
         calls:
             - [setManagers, ["%ongr.es.indexes%"]]
             - [addLogger, ["@ongr.es.tracer"]]
