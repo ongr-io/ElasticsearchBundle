@@ -12,8 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CollectionNested;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
+use ONGR\App\Document\CollectionNested;
+use ONGR\App\Document\DummyDocument;
 
 class PersistObjectsTest extends AbstractElasticsearchTestCase
 {

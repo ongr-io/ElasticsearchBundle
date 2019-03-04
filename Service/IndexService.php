@@ -18,8 +18,9 @@ use ONGR\ElasticsearchBundle\Event\CommitEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Event\PostCreateClientEvent;
 use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
+use ONGR\ElasticsearchBundle\Mapping\Converter;
+use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
-use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchDSL\Query\FullText\QueryStringQuery;
 use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
@@ -29,40 +30,30 @@ use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-/**
- * Document repository class.
- */
 class IndexService
 {
     private $client;
-
-    private $indexName;
-
-    private $config;
-
     private $converter;
-
     private $eventDispatcher;
-
     private $stopwatch;
-
     private $bulkCommitSize = 100;
-
     private $bulkQueries = [];
-
     private $commitMode = 'refresh';
+    private $namespace;
+    private $parser;
 
-    /**
-     * @deprecated will be removed in v7 since there will be no more types in the indexes.
-     */
-    private $typeName;
-
-    public function __construct(Converter $converter, EventDispatcherInterface $eventDispatcher, array $config = [])
+    public function __construct(
+        string $namespace,
+        Converter $converter,
+        DocumentParser $parser,
+        EventDispatcherInterface $eventDispatcher
+    )
     {
-        $this->config = $config;
-        $this->typeName = $config['type'];
+        $this->typeName = '';
         $this->converter = $converter;
         $this->eventDispatcher = $eventDispatcher;
+        $this->namespace = $namespace;
+        $this->parser = $parser;
     }
 
     /**
@@ -77,7 +68,7 @@ class IndexService
     {
         if (!$this->client) {
             $client = ClientBuilder::create();
-            $client->setHosts($this->config['hosts']);
+//            $client->setHosts($this->config['hosts']);
 //            $this->client->set($this->config['hosts']);
 
             $this->eventDispatcher->dispatch(
@@ -140,6 +131,12 @@ class IndexService
     public function getIndexSettings(): array
     {
 
+    }
+
+    public function setIndexSettings($settings): IndexService
+    {
+
+        return $this;
     }
 
     public function createIndex($noMapping = false): array

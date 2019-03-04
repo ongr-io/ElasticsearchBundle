@@ -7,70 +7,40 @@ services:
         tags:
             - { name: console.command }
 
-    ONGR\ElasticsearchBundle\Service\ExportService:
-        class: ONGR\ElasticsearchBundle\Service\ExportService
-
-    ONGR\ElasticsearchBundle\Service\ImportService:
-        class: ONGR\ElasticsearchBundle\Service\ImportService
-
-    ONGR\ElasticsearchBundle\Service\IndexSuffixFinder:
-        class: ONGR\ElasticsearchBundle\Service\IndexSuffixFinder
+    ONGR\ElasticsearchBundle\Service\ExportService: ~
+    ONGR\ElasticsearchBundle\Service\ImportService: ~
+    ONGR\ElasticsearchBundle\Service\IndexSuffixFinder: ~
 
     ongr.esb.cache:
         class: Doctrine\Common\Cache\FilesystemCache
         arguments: ["%kernel.cache_dir%/ongr/elasticsearch", ".ongr.data"]
 
-    Doctrine\Common\Annotations\CachedReader:
+    ongr.es.cache_reader:
         class: Doctrine\Common\Annotations\CachedReader
-        arguments: ["@annotations.reader", "@Doctrine\Common\Cache\FilesystemCache", "%kernel.debug%"]
-
-    ONGR\ElasticsearchBundle\Mapping\DocumentFinder:
-        class: ONGR\ElasticsearchBundle\Mapping\DocumentFinder
-        arguments: ["%kernel.bundles%"]
-        public: false
+        arguments: ["@annotations.reader", "@ongr.esb.cache", "%kernel.debug%"]
 
     ONGR\ElasticsearchBundle\Mapping\DocumentParser:
-        class: ONGR\ElasticsearchBundle\Mapping\DocumentParser
-        arguments: ["@Doctrine\Common\Annotations\CachedReader", "@ONGR\ElasticsearchBundle\Mapping\DocumentFinder"]
-        public: false
+        arguments: ["@ongr.es.cache_reader", "%ongr.esb.analysis%"]
 
-    ONGR\ElasticsearchBundle\Mapping\MetadataCollector:
-        class: ONGR\ElasticsearchBundle\Mapping\MetadataCollector
-        arguments: ["@es.document_finder", "@es.document_parser", "@es.cache_engine"]
-        calls:
-            - [setEnableCache, ["%es.cache%"]]
-
-    ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler:
+    ongr.es.tracer.handler:
         class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
         public: false
 
-    es.tracer:
+    ongr.es.tracer:
         class: Monolog\Logger
         arguments: ['ongr']
         calls:
-            - [pushHandler, ["@ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler"]]
+            - [pushHandler, ["@ongr.es.tracer.handler"]]
 
     ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler:
         class: ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler
         calls:
-            - [setManagers, ["%es.managers%"]]
-            - [addLogger, ["@es.tracer"]]
+            - [setManagers, ["%ongr.es.indexes%"]]
+            - [addLogger, ["@ongr.es.tracer"]]
         tags:
             - {name: data_collector, template: "@ONGRElasticsearch/Profiler/profiler.html.twig", id: ongr.profiler}
 
-    ONGR\ElasticsearchBundle\Result\Converter:
-        class: ONGR\ElasticsearchBundle\Result\Converter
-        arguments: ["@es.metadata_collector"]
-
     ONGR\ElasticsearchBundle\EventListener\TerminateListener:
-        class: ONGR\ElasticsearchBundle\EventListener\TerminateListener
-        arguments: ["@service_container", "%es.managers%"]
+        arguments: ["@service_container", "%ongr.es.indexes%"]
         tags:
             - { name: kernel.event_listener, event: kernel.terminate }
-
-    ONGR\ElasticsearchBundle\Generator\DocumentGenerator:
-        class: ONGR\ElasticsearchBundle\Generator\DocumentGenerator
-
-    ONGR\ElasticsearchBundle\Service\GenerateService:
-        class: ONGR\ElasticsearchBundle\Service\GenerateService
-        arguments: ["@es.generator.document", "@filesystem"]

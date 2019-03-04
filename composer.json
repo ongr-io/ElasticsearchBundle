@@ -42,12 +42,15 @@
     },
     "autoload": {
         "psr-4": { "ONGR\\ElasticsearchBundle\\": "" },
-        "exclude-from-classmap": ["/Tests/", "/Test/"]
+        "exclude-from-classmap": ["/Tests/"]
     },
     "autoload-dev": {
         "files": [
             "Tests/app/AppKernel.php"
-        ]
+        ],
+        "psr-4": {
+            "ONGR\\App\\": "\\Tests\\app\\src\\"
+        }
     },
     "minimum-stability": "dev",
     "extra": {

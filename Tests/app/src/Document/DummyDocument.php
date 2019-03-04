@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
+namespace ONGR\App\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -51,12 +51,12 @@ class DummyDocument
     private $privateField;
 
     /**
-     * @ES\Embedded(class="ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CollectionNested", name="nested_collection")
+     * @ES\Embedded(class="ONGR\App\Document\CollectionNested", name="nested_collection")
      */
     public $nestedCollection;
 
     /**
-     * @ES\Embedded(class="ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CollectionObject")
+     * @ES\Embedded(class="ONGR\App\Document\CollectionObject")
      */
     public $objectCollection;
 

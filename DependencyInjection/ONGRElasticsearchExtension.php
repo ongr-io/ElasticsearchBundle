@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection;
 
+use ONGR\ElasticsearchBundle\Mapping\Converter;
+use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -42,5 +44,8 @@ class ONGRElasticsearchExtension extends Extension
             );
 
         $container->setParameter(Configuration::ONGR_ANALYSIS_CONFIG, $config['analysis']);
+        $container->setParameter(Configuration::ONGR_SOURCE_DIR, $config['source_directory']);
+
+//        $container->autowire(Converter::class, Converter::class);
     }
 }

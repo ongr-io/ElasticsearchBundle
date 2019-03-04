@@ -101,7 +101,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
             static::bootKernel($kernelOptions);
         }
 
-        return static::createClient()->getContainer();
+        return static::createClient(['environment' => 'test'])->getContainer();
     }
 
     protected function getIndex($namespace): IndexService
@@ -109,11 +109,13 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         if (!array_key_exists($namespace, $this->indexes) && $this->getContainer()->has($namespace)) {
             $this->indexes[$namespace] = $this->getContainer()->get($namespace);
         } else {
-            throw new \LogicException(sprintf("Manager '%s' does not exist", $namespace));
+            throw new \LogicException(
+                sprintf("There is no Elastic index defined in the '%s' namespace", $namespace)
+            );
         }
         $this->indexes[$namespace]->dropAndCreateIndex();
 
-        // Populates elasticsearch index with data
+        // Populates elasticsearch index with the data
         $data = $this->getDataArray();
         if (!empty($data[$namespace])) {
             $this->populateElasticsearchWithData($this->indexes[$namespace], $data[$namespace]);

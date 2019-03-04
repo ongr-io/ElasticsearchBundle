@@ -20,6 +20,7 @@ class Configuration implements ConfigurationInterface
 {
 
     CONST ONGR_CACHE_CONFIG = 'ongr.esb.cache';
+    CONST ONGR_SOURCE_DIR = 'ongr.esb.source_dir';
     CONST ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
     CONST ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
     CONST ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
@@ -49,6 +50,14 @@ class Configuration implements ConfigurationInterface
             ->booleanNode('logger')
                 ->info(
                     'Enables executed queries logging. Log file names are the same as index.'
+                )
+            ->end()
+
+            ->scalarNode('source_directory')
+                ->defaultValue('/src')
+                ->info(
+                    'If your project has different than `/src` source directory, you can specify it here '.
+                    'to look automatically for ES documents.'
                 )
             ->end()
 

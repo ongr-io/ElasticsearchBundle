@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
+namespace ONGR\App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 

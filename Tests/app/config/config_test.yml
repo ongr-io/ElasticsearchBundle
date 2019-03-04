@@ -4,6 +4,7 @@ framework:
     test: ~
 
 ongr_elasticsearch:
+    source_directory: /Tests/app/src
     analysis:
         filter:
             edge_ngram_filter: #-> analyzer name

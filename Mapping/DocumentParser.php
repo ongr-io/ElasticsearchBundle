@@ -21,34 +21,21 @@ use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Annotation\PropertiesAwareInterface;
 use ONGR\ElasticsearchBundle\Annotation\Property;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\DummyDocument;
 
 /**
  * Document parser used for reading document annotations.
  */
 class DocumentParser
 {
-    /**
-     * @var Reader Used to read document annotations.
-     */
     private $reader;
-
-    /**
-     * @var array Document properties aliases.
-     */
     private $aliases = [];
-
-    /**
-     * @var array Local cache for document properties.
-     */
     private $properties = [];
+    private $indexAnalysis = [];
 
-    /**
-     * @param Reader         $reader Used for reading annotations.
-     */
-    public function __construct(Reader $reader)
+    public function __construct(Reader $reader, array $indexAnalysis)
     {
         $this->reader = $reader;
+        $this->indexAnalysis = $indexAnalysis;
 
         #Fix for annotations loader until doctrine/annotations 2.0 will be released with the full autoload support.
         AnnotationRegistry::registerLoader('class_exists');
@@ -145,6 +132,21 @@ class DocumentParser
 
         return $type;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

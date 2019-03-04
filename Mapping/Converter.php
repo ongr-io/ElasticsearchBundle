@@ -9,27 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Result;
+namespace ONGR\ElasticsearchBundle\Mapping;
 
-use Doctrine\Common\Collections\Collection;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
-use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * This class converts array to document object.
  */
 class Converter
 {
-    private $propertyAccessor;
     private $documentParser;
     private $serializer;
 
-    public function __construct(PropertyAccessor $propertyAccessor, DocumentParser $documentParser, Serializer $serializer)
+    public function __construct(DocumentParser $documentParser, SerializerInterface $serializer)
     {
-        $this->propertyAccessor = $propertyAccessor;
         $this->documentParser = $documentParser;
         $this->serializer = $serializer;
     }
@@ -62,7 +57,6 @@ class Converter
 
     public function convertDocumentToArray($rawData): array
     {
-
 
 //        $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
 //        return $object;
