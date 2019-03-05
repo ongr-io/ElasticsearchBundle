@@ -118,8 +118,6 @@ class DocumentParser
     {
         $mapping = [];
 
-        $analysis = [];
-
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
             $annotations = $this->reader->getPropertyAnnotations($property);
@@ -135,7 +133,9 @@ class DocumentParser
 
                 if ($annotation instanceof Property) {
                     $fieldMapping['type'] = $annotation->type;
-                    $annotation->
+                    $fieldMapping['analyzer'] = $annotation->analyzer;
+                    $fieldMapping['search_analyzer'] = $annotation->searchAnalyzer;
+                    $fieldMapping['search_quote_analyzer'] = $annotation->searchQuoteAnalyzer;
                 }
 
                 if ($annotation instanceof Embedded) {
@@ -144,11 +144,56 @@ class DocumentParser
                     $fieldMapping['properties'] = $this->getClassMetadata($embeddedClass);
                 }
 
-                $mapping[$annotation->getName() ?? Caser::snake($name)] = $fieldMapping;
+                $mapping[$annotation->getName() ?? Caser::snake($name)] = array_filter($fieldMapping);
             }
         }
 
         return $mapping;
+    }
+
+    public function getAnalysisConfig($namespace): array
+    {
+        $config = [];
+        $mapping = $this->getClassMetadata(new \ReflectionClass($namespace));
+        $analyzers = $this->getListFromArrayByKey('analyzer', $mapping);
+        $analyzers = array_merge($analyzers, $this->getListFromArrayByKey( 'search_analyzer', $mapping));
+        $analyzers = array_merge($analyzers, $this->getListFromArrayByKey('search_quote_analyzer', $mapping));
+
+        foreach ($analyzers as $analyzer) {
+            if (isset($this->analysisConfig['analyzer'][$analyzer]))
+            $config['analyzer'][$analyzer] = $this->analysisConfig['analyzer'][$analyzer];
+        }
+
+        foreach (['tokenizer', 'filter', 'normalizer', 'char_filter'] as $type) {
+            $list = $this->getListFromArrayByKey($type, $config);
+
+            foreach ($list as $listItem) {
+                if (isset($this->analysisConfig[$type][$listItem]))
+                    $config[$type][$listItem] = $this->analysisConfig[$type][$listItem];
+            }
+        }
+
+        return $config;
+    }
+
+    private function getListFromArrayByKey(string $searchKey, array $array): array
+    {
+        $list = [];
+
+        foreach (
+            new \RecursiveIteratorIterator(
+                new \RecursiveArrayIterator($array), \RecursiveIteratorIterator::SELF_FIRST
+            ) as $key => $value ){
+            if ($key === $searchKey) {
+                if (is_array($value)) {
+                    $list = array_merge($list, $value);
+                } else {
+                    $list[] = $value;
+                }
+            }
+        }
+
+        return array_unique($list);
     }
 
     private function getObjectMappingType(\ReflectionClass $reflectionClass): string

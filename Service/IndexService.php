@@ -130,10 +130,15 @@ class IndexService
 
     public function createIndex($noMapping = false, $params = []): array
     {
+        $bodySettings = $this->parser->getIndexMetadata($this->namespace);
+        $bodySettings['settings']['analysis'] = $this->parser->getAnalysisConfig($this->namespace);
+
         $params = array_merge([
             'index' => $this->getIndexName(),
-            'body' => $noMapping ? [] : $this->parser->getIndexMetadata($this->namespace)
+            'body' => $noMapping ? [] : $bodySettings,
         ], $params);
+
+        #TODO Add event here.
 
         return $this->getClient()->indices()->create($params);
     }
