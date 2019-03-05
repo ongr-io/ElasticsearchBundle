@@ -83,10 +83,14 @@ class DocumentParser
             return [];
         }
 
-        return [
+        return array_filter([
             'settings' => $document->getSettings(),
-            'mapping' => $this->getClassMetadata($class)
-        ];
+            'mappings' => [
+                $this->getTypeName($namespace) => [
+                    'properties' => $this->getClassMetadata($class)
+                ]
+            ]
+        ]);
     }
 
     public function getDocumentNamespace(string $indexAlias): ?string
@@ -102,9 +106,19 @@ class DocumentParser
         return null;
     }
 
+    public function getParsedDocument(string $namespace): Index
+    {
+        /** @var Index $document */
+        $document = $this->reader->getClassAnnotation(new \ReflectionClass($namespace), Index::class);
+
+        return $document;
+    }
+
     private function getClassMetadata(\ReflectionClass $reflectionClass): array
     {
         $mapping = [];
+
+        $analysis = [];
 
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
@@ -121,6 +135,7 @@ class DocumentParser
 
                 if ($annotation instanceof Property) {
                     $fieldMapping['type'] = $annotation->type;
+                    $annotation->
                 }
 
                 if ($annotation instanceof Embedded) {

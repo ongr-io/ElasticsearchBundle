@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use ONGR\ElasticsearchBundle\Mapping\DumperInterface;
+use Doctrine\Common\Annotations\Annotation\Attributes;
 
 /**
  * Annotation to mark a class as an Elasticsearch index.
@@ -23,13 +23,23 @@ final class Index extends AbstractAnnotation
 {
     /**
      * Index alias name. By default the index name will be created with the timestamp appended to the alias.
-     *
-     * @var string
      */
     public $alias;
 
     /**
-     * We strongly reccomend to not use this parameter in the index annotation. By default it will be set as `_doc`
+     * Index alias name. By default the index name will be created with the timestamp appended to the alias.
+     */
+    public $hosts = [
+        '127.0.0.1:9200'
+    ];
+
+    public $numberOfShards = 5;
+
+    public $numberOfReplicas = 1;
+    public $refreshInterval = 1;
+
+    /**
+     * We strongly recommend to not use this parameter in the index annotation. By default it will be set as `_doc`
      * type name. Eventually it will be removed.
      *
      * @deprecated will be removed in v7 since there will be no more types in the indexes.

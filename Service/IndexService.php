@@ -72,8 +72,9 @@ class IndexService
     public function getClient(): Client
     {
         if (!$this->client) {
+            $document = $this->parser->getParsedDocument($this->namespace);
             $client = ClientBuilder::create();
-//            $client->setHosts($this->config['hosts']);
+            $client->setHosts($document->hosts);
 
             $this->eventDispatcher->dispatch(
                 Events::POST_CLIENT_CREATE,
@@ -127,7 +128,7 @@ class IndexService
         return $this;
     }
 
-    public function createIndex($params = [], $noMapping = false): array
+    public function createIndex($noMapping = false, $params = []): array
     {
         $params = array_merge([
             'index' => $this->getIndexName(),
@@ -142,17 +143,17 @@ class IndexService
         return $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
     }
 
-    public function dropAndCreateIndex($params = [], $noMapping = false)
+    public function dropAndCreateIndex($noMapping = false, $params = []): array
     {
         try {
             if ($this->indexExists()) {
                 $this->dropIndex();
             }
         } catch (\Exception $e) {
-            // Do nothing, our target is to create new index.
+            // Do nothing, our target is to create the new index.
         }
 
-        return $this->createIndex($params, $noMapping);
+        return $this->createIndex($noMapping, $params);
     }
 
     public function indexExists(): bool
@@ -483,6 +484,11 @@ class IndexService
     public function clearScroll($scrollId): array
     {
         return $this->getClient()->clearScroll(['scroll_id' => $scrollId]);
+    }
+
+    public function resetClient(): void
+    {
+        $this->client = null;
     }
 
     public function clearElasticIndexCache(): array
