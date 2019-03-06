@@ -41,7 +41,6 @@ class IndexService
     private $stopwatch;
     private $bulkCommitSize = 100;
     private $bulkQueries = [];
-    private $commitMode = 'refresh';
 
     public function __construct(
         string $namespace,
@@ -103,17 +102,6 @@ class IndexService
     public function setBulkCommitSize(int $bulkCommitSize)
     {
         $this->bulkCommitSize = $bulkCommitSize;
-        return $this;
-    }
-
-    public function getCommitMode(): string
-    {
-        return $this->commitMode;
-    }
-
-    public function setCommitMode(string $commitMode): IndexService
-    {
-        $this->commitMode = $commitMode;
         return $this;
     }
 
@@ -181,7 +169,11 @@ class IndexService
 
         $result = $this->getClient()->get($requestParams);
 
-        return $this->converter->convertArrayToDocument($result);
+        if (!$result['found']) return null;
+
+        $result['_source']['_id'] = $result['_id'];
+
+        return $this->converter->convertArrayToDocument($this->namespace, $result['_source']);
     }
 
     public function findByIds(array $ids): DocumentIterator
@@ -386,13 +378,13 @@ class IndexService
             new BulkEvent($operation, $header, $query)
         );
 
-        $this->bulkQueries[] = $header;
+        $this->bulkQueries[] = [ $operation => $header ];
 
         if (!empty($query)) $this->bulkQueries[] = $query;
 
         $response = [];
         // %2 is not very accurate, but better than use counter. This place is experimental for now.
-        if ($this->getBulkCommitSize() >= count($this->bulkQueries % 2)) {
+        if ($this->getBulkCommitSize() >= count($this->bulkQueries % ($this->getBulkCommitSize() / 2))) {
             $response = $this->commit();
         }
 
@@ -404,21 +396,29 @@ class IndexService
      *
      * @param object $document
      */
-    public function persist($document)
+    public function persist($document): void
     {
-        $documentArray = $this->converter->convertToArray($document);
-        $type = $this->getMetadataCollector()->getDocumentType(get_class($document));
+        $documentArray = array_filter($this->converter->convertDocumentToArray($document));
 
-        $this->bulk('index', $type, $documentArray);
+        $headers = array_filter([
+            '_index' => $this->getIndexName(),
+            '_type' => $this->getTypeName(),
+            '_id' => $documentArray['_id'] ?? null
+        ]);
+
+        unset($documentArray['_id']);
+
+        $this->bulk('index', $headers, $documentArray);
     }
 
-    public function commit(array $params = []): array
+    public function commit($commitMode = 'flush', array $params = []): array
     {
         $bulkResponse = [];
         if (!empty($this->bulkQueries)) {
+
             $this->eventDispatcher->dispatch(
                 Events::PRE_COMMIT,
-                new CommitEvent($this->getCommitMode(), $this->bulkQueries)
+                new CommitEvent($commitMode, $this->bulkQueries, [])
             );
 
 //            $this->stopwatch('start', 'bulk');
@@ -442,9 +442,8 @@ class IndexService
                 );
             }
 
-            $this->stopwatch('start', 'refresh');
-
-            switch ($this->getCommitMode()) {
+//            $this->stopwatch('start', 'refresh');
+            switch ($commitMode) {
                 case 'flush':
                     $this->getClient()->indices()->flush();
                     break;
@@ -458,12 +457,12 @@ class IndexService
 
             $this->eventDispatcher->dispatch(
                 Events::POST_COMMIT,
-                new CommitEvent($this->getCommitMode(), $this->bulkQueries, $bulkResponse)
+                new CommitEvent($commitMode, $this->bulkQueries, $bulkResponse)
             );
 
             $this->bulkQueries = [];
 
-            $this->stopwatch('stop', $this->getCommitMode());
+//            $this->stopwatch('stop', $this->getCommitMode());
         }
 
         return $bulkResponse;

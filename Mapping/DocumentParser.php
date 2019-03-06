@@ -17,7 +17,9 @@ use Doctrine\Common\Cache\Cache;
 use ONGR\ElasticsearchBundle\Annotation\AbstractAnnotation;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
 use ONGR\ElasticsearchBundle\Annotation\HashMap;
+use ONGR\ElasticsearchBundle\Annotation\Id;
 use ONGR\ElasticsearchBundle\Annotation\Index;
+use ONGR\ElasticsearchBundle\Annotation\MetaFieldInterface;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Annotation\PropertiesAwareInterface;
@@ -29,6 +31,9 @@ use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
  */
 class DocumentParser
 {
+    CONST OBJ_CACHED_FIELDS = 'ongr.obj_fields';
+    CONST ARRAY_CACHED_FIELDS = 'ongr.array_fields';
+
     private $reader;
     private $aliases = [];
     private $properties = [];
@@ -95,8 +100,8 @@ class DocumentParser
 
     public function getDocumentNamespace(string $indexAlias): ?string
     {
-        if ($this->cache->hasItem(Configuration::ONGR_INDEXES)) {
-            $indexes = $this->cache->getItem(Configuration::ONGR_INDEXES);
+        if ($this->cache->contains(Configuration::ONGR_INDEXES)) {
+            $indexes = $this->cache->fetch(Configuration::ONGR_INDEXES);
 
             if (isset($indexes[$indexAlias])) {
                 return $indexes[$indexAlias];
@@ -117,6 +122,9 @@ class DocumentParser
     private function getClassMetadata(\ReflectionClass $reflectionClass): array
     {
         $mapping = [];
+
+        $objFields = [];
+        $arrayFields = [];
 
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
@@ -145,8 +153,24 @@ class DocumentParser
                 }
 
                 $mapping[$annotation->getName() ?? Caser::snake($name)] = array_filter($fieldMapping);
+
+//                if ($annotation instanceof Id) {
+//                    $objFields[Id::NAME] = $annotation->getName() ?? Caser::snake($name);
+//                    $arrayFields[$annotation->getName() ?? Caser::snake($name)] = Id::NAME;
+//                } else {
+                    $objFields[$name] = $annotation->getName() ?? Caser::snake($name);
+                    $arrayFields[$annotation->getName() ?? Caser::snake($name)] = $name;
+//                }
             }
         }
+
+        $cacheItem = $this->cache->fetch(self::ARRAY_CACHED_FIELDS) ?? [];
+        $cacheItem[$reflectionClass->getName()] = $arrayFields;
+        $this->cache->save(self::ARRAY_CACHED_FIELDS, $cacheItem);
+
+        $cacheItem = $this->cache->fetch(self::OBJ_CACHED_FIELDS) ?? [];
+        $cacheItem[$reflectionClass->getName()] = $objFields;
+        $this->cache->save(self::OBJ_CACHED_FIELDS, $cacheItem);
 
         return $mapping;
     }

@@ -13,7 +13,9 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerAwareTrait;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -21,8 +23,9 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class Converter
 {
+    use SerializerAwareTrait;
+
     private $documentParser;
-    private $serializer;
 
     public function __construct(DocumentParser $documentParser, Serializer $serializer)
     {
@@ -30,34 +33,13 @@ class Converter
         $this->serializer = $serializer;
     }
 
-    public function convertArrayToDocument($rawData)
+    public function convertArrayToDocument(string $namespace, array $data)
     {
-        switch (true) {
-            case isset($rawData['_source']):
-                $rawData = array_merge($rawData, $rawData['_source']);
-                break;
-            case isset($rawData['fields']):
-                $rawData = array_merge($rawData, $rawData['fields']);
-                break;
-            default:
-                // Do nothing.
-                break;
-        }
-
-        $indexName = '';
-
-        $data = [];
-
-        $class = $this->documentParser->getDocumentNamespace($indexName);
-
-        return $this->serializer->denormalize($data, $class);
-
-//        $object = $this->assignArrayToObject($rawData, new $metadata['namespace'](), $metadata['aliases']);
-//        return $object;
+        return $this->serializer->denormalize($data, $namespace);
     }
 
     public function convertDocumentToArray($document): array
     {
-        return [];
+        return $this->serializer->normalize($document, 'array');
     }
 }

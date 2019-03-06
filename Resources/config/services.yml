@@ -15,18 +15,27 @@ services:
     ONGR\ElasticsearchBundle\Service\IndexSuffixFinder: ~
 
     ongr.esb.cache:
-        class: Doctrine\Common\Cache\FilesystemCache
+        class: Doctrine\Common\Cache\PhpFileCache
         arguments: ["%kernel.cache_dir%/ongr/elasticsearch", ".ongr.data"]
 
     ongr.es.cache_reader:
         class: Doctrine\Common\Annotations\CachedReader
         arguments: ["@annotations.reader", "@ongr.esb.cache", "%kernel.debug%"]
 
+    ongr.es.object_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+        arguments: [~, '@ONGR\ElasticsearchBundle\Mapping\NameConverter']
+        tags:
+            - { name: serializer.normalizer, priority: 100}
+
+    ONGR\ElasticsearchBundle\Mapping\NameConverter:
+        arguments: ["@ongr.esb.cache"]
+
     ONGR\ElasticsearchBundle\Mapping\DocumentParser:
         arguments: ["@ongr.es.cache_reader", "@ongr.esb.cache", "%ongr.esb.analysis%"]
 
     ONGR\ElasticsearchBundle\Mapping\Converter:
-        arguments: ['@ONGR\ElasticsearchBundle\Mapping\DocumentParser', "@serializer"]
+        arguments: ['@ONGR\ElasticsearchBundle\Mapping\DocumentParser', '@serializer']
 
     ongr.es.tracer.handler:
         class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler

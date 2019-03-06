@@ -37,4 +37,21 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         $this->assertTrue($actualIndexExists);
     }
+
+    public function testDocumentInsertAndFindById()
+    {
+        $index = $this->getIndex(DummyDocument::class);
+
+        $document = new DummyDocument();
+        $document->id = 3;
+        $document->title = 'The Quick Brown Fox';
+
+        $index->persist($document);
+        $index->commit();
+
+        /** @var DummyDocument $esDocument */
+        $esDocument = $index->find(3);
+
+        $this->assertEquals($document->title, $esDocument->title);
+    }
 }

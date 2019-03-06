@@ -27,12 +27,12 @@ class DummyDocument
     /**
      * @ES\Id()
      */
-    private $id;
+    public $id;
 
     /**
      * @ES\Routing()
      */
-    private $routing;
+    public $routing;
 
     /**
      * @ES\Property(
@@ -69,29 +69,7 @@ class DummyDocument
         $this->objectCollection = new ArrayCollection();
     }
 
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): DummyDocument
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function getRouting(): string
-    {
-        return $this->routing;
-    }
-
-    public function setRouting(string $routing): DummyDocument
-    {
-        $this->routing = $routing;
-        return $this;
-    }
-
-    public function getPrivateField(): string
+    public function getPrivateField(): ?string
     {
         return $this->privateField;
     }
