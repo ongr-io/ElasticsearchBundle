@@ -19,7 +19,7 @@ class BulkEvent extends Event
     private $header;
     private $query;
 
-    public function __construct(string $operation, array $header, array $query)
+    public function __construct(string &$operation, array &$header, array &$query)
     {
         $this->header = $header;
         $this->query = $query;

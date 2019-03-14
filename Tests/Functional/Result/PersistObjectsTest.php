@@ -17,41 +17,6 @@ use ONGR\App\Document\DummyDocument;
 
 class PersistObjectsTest extends AbstractElasticsearchTestCase
 {
-//    /**
-//     * {@inheritdoc}
-//     */
-//    protected function getDataArray()
-//    {
-//        return [
-//            DummyDocument::class => [
-//                [
-//                    '_id' => 1,
-//                    'title' => 'Bar foo foo',
-//                    'nested_collection' => [
-//                        [
-//                            'foo' => 'bar',
-//                        ],
-//                        [
-//                            'acme' => 'delta',
-//                        ],
-//                    ],
-//                ],
-//                [
-//                    '_id' => 2,
-//                    'title' => 'Acme bar bar',
-//                    'nested_collection' => [
-//                        [
-//                            'foo' => 'delta',
-//                        ],
-//                        [
-//                            'acme' => 'bar',
-//                        ],
-//                    ],
-//                ],
-//            ]
-//        ];
-//    }
-
     /**
      * Test if we can add more objects into document's "multiple objects" field.
      */
@@ -59,24 +24,24 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
     {
         $index = $this->getIndex(DummyDocument::class);
 
-        $doc = new DummyDocument();
-        $doc->setId(5);
-        $doc->title = 'bar bar';
+        $document = new DummyDocument();
+        $document->id = 5;
+        $document->title = 'bar bar';
 
         $nested = new CollectionNested();
         $nested->key = 'acme';
         $nested->value = 'bar';
-        $doc->nestedCollection->add($nested);
+        $document->nestedCollection->add($nested);
 
         $nested = new CollectionNested();
         $nested->key = 'foo';
         $nested->value = 'delta';
-        $doc->nestedCollection->add($nested);
+        $document->nestedCollection->add($nested);
 
-        $index->persist($doc);
+        $index->persist($document);
         $index->commit();
 
-        $product = $index->find(5);
-        $this->assertCount(2, $product->getRelatedCategories());
+        $document = $index->find(5);
+        $this->assertEquals('bar bar', $document->title);
     }
 }

@@ -51,17 +51,17 @@ class DummyDocument
     /**
      * @ES\Property(type="keyword", name="private")
      */
-    private $privateField;
+    protected $privateField;
 
     /**
      * @ES\Embedded(class="ONGR\App\Document\CollectionNested", name="nested_collection")
      */
-    public $nestedCollection;
+    protected $nestedCollection;
 
     /**
      * @ES\Embedded(class="ONGR\App\Document\CollectionObject")
      */
-    public $objectCollection;
+    private $objectCollection;
 
     public function __construct()
     {
@@ -77,6 +77,28 @@ class DummyDocument
     public function setPrivateField(string $privateField): DummyDocument
     {
         $this->privateField = $privateField;
+        return $this;
+    }
+
+    public function getNestedCollection()
+    {
+        return $this->nestedCollection;
+    }
+
+    public function setNestedCollection($nestedCollection)
+    {
+        $this->nestedCollection = $nestedCollection;
+        return $this;
+    }
+
+    public function getObjectCollection()
+    {
+        return $this->objectCollection;
+    }
+
+    public function setObjectCollection($objectCollection)
+    {
+        $this->objectCollection = $objectCollection;
         return $this;
     }
 }

@@ -58,17 +58,12 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         return [];
     }
 
-    private function populateElasticsearchWithData(IndexService $indexService, array $data)
+    private function populateElastic(IndexService $indexService, array $documents = [])
     {
-        if (!empty($data)) {
-            foreach ($data as $type => $documents) {
-                foreach ($documents as $document) {
-                    $indexService->bulk('index', $type, $document);
-                }
-            }
-            $indexService->commit();
-            $indexService->refresh();
+        foreach ($documents as $document) {
+            $indexService->bulk('index', $document);
         }
+        $indexService->commit();
     }
 
     /**
@@ -120,7 +115,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
             // Populates elasticsearch index with the data
             $data = $this->getDataArray();
             if (!empty($data[$namespace])) {
-                $this->populateElasticsearchWithData($this->indexes[$namespace], $data[$namespace]);
+                $this->populateElastic($this->indexes[$namespace], $data[$namespace]);
             }
         }
 

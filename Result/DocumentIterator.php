@@ -13,16 +13,8 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
 
-/**
- * Class DocumentIterator.
- */
 class DocumentIterator extends AbstractResultsIterator
 {
-    /**
-     * Returns aggregations.
-     *
-     * @return array
-     */
     public function getAggregations()
     {
         $aggregations = [];
@@ -34,13 +26,6 @@ class DocumentIterator extends AbstractResultsIterator
         return $aggregations;
     }
 
-    /**
-     * Get a specific aggregation by name. It fetches from the top level only.
-     *
-     * @param string $name
-     *
-     * @return AggregationValue|null
-     */
     public function getAggregation($name)
     {
         $aggregations = parent::getAggregations();
@@ -51,11 +36,11 @@ class DocumentIterator extends AbstractResultsIterator
         return new AggregationValue($aggregations[$name]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function convertDocument(array $document)
+    protected function convertDocument(array $raw)
     {
-        return $this->getConverter()->convertToDocument($document, $this->getManager());
+        $data = $raw['_source'] ?? $raw['_fields'] ?? null;
+        $data['_id'] = $raw['_id'] ?? null;
+
+        return $this->getConverter()->convertArrayToDocument($this->getIndex()->getNamespace(), array_filter($data));
     }
 }

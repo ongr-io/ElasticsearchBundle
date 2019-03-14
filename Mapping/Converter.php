@@ -33,9 +33,10 @@ class Converter
         $this->serializer = $serializer;
     }
 
-    public function convertArrayToDocument(string $namespace, array $data)
+    public function convertArrayToDocument(string $namespace, array $raw)
     {
-        return $this->serializer->denormalize($data, $namespace);
+        $data = $raw['_id'];
+        return $this->serializer->denormalize($raw, $namespace);
     }
 
     public function convertDocumentToArray($document): array

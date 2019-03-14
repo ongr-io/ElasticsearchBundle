@@ -11,54 +11,36 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-/**
- * Class DocumentIterator.
- */
 class ArrayIterator extends AbstractResultsIterator implements \ArrayAccess
 {
-    /**
-     * {@inheritdoc}
-     */
     public function offsetExists($offset)
     {
         return $this->documentExists($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetGet($offset)
     {
         return $this->getDocument($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetSet($offset, $value)
     {
         $this->documents[$offset] = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetUnset($offset)
     {
         unset($this->documents[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function convertDocument(array $document)
+    protected function convertDocument(array $raw)
     {
-        if (array_key_exists('_source', $document)) {
-            return $document['_source'];
-        } elseif (array_key_exists('fields', $document)) {
-            return array_map('reset', $document['fields']);
+        if (array_key_exists('_source', $raw)) {
+            return $raw['_source'];
+        } elseif (array_key_exists('fields', $raw)) {
+            return array_map('reset', $raw['fields']);
         }
 
-        return $document;
+        return $raw;
     }
 }

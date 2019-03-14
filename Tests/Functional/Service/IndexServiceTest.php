@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
 use ONGR\App\Document\DummyDocument;
+use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 /**
@@ -19,12 +20,47 @@ use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
  */
 class ManagerTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function getDataArray()
     {
         return [
+            DummyDocument::class => [
+                [
+                    '_id' => 1,
+                    'title' => 'foo',
+                    'nested_collection' => [
+                        [
+                            'foo' => 'bar',
+                        ],
+                        [
+                            'acme' => 'delta',
+                        ],
+                    ],
+                ],
+                [
+                    '_id' => 2,
+                    'title' => 'foo',
+                    'nested_collection' => [
+                        [
+                            'foo' => 'delta',
+                        ],
+                        [
+                            'acme' => 'bar',
+                        ],
+                    ],
+                ],
+                [
+                    '_id' => 3,
+                    'title' => 'bar',
+                    'nested_collection' => [
+                        [
+                            'foo' => 'delta',
+                        ],
+                        [
+                            'acme' => 'bar',
+                        ],
+                    ],
+                ],
+            ]
         ];
     }
 
@@ -42,16 +78,49 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         $index = $this->getIndex(DummyDocument::class);
 
-        $document = new DummyDocument();
-        $document->id = 3;
-        $document->title = 'The Quick Brown Fox';
+        /** @var DummyDocument $document */
+        $document = $index->find(3);
 
-        $index->persist($document);
-        $index->commit();
+        $this->assertEquals('bar', $document->title);
+    }
 
-        /** @var DummyDocument $esDocument */
-        $esDocument = $index->find(3);
+    public function testFindOneBy()
+    {
+        $index = $this->getIndex(DummyDocument::class);
 
-        $this->assertEquals($document->title, $esDocument->title);
+        /** @var DummyDocument $result */
+        $result = $index->findOneBy(['title.raw' => 'bar']);
+        $this->assertInstanceOf(DummyDocument::class, $result);
+        $this->assertEquals(3, $result->id);
+    }
+
+    public function testFind()
+    {
+        $index = $this->getIndex(DummyDocument::class);
+
+        /** @var DummyDocument $result */
+        $result = $index->find(3);
+        $this->assertInstanceOf(DummyDocument::class, $result);
+        $this->assertEquals(3, $result->id);
+        $this->assertEquals('bar', $result->title);
+    }
+
+    public function testFindBy()
+    {
+        $index = $this->getIndex(DummyDocument::class);
+
+        /** @var DocumentIterator $result */
+        $result = $index->findBy(['title.raw' => 'foo']);
+        $this->assertInstanceOf(DocumentIterator::class, $result);
+        $this->assertEquals(2, $result->count());
+
+        $actualList = [];
+        /** @var DummyDocument $item */
+        foreach ($result as $item) {
+            $actualList[] = (int) $item->id;
+        }
+        sort($actualList);
+
+        $this->assertEquals([1,2], $actualList);
     }
 }

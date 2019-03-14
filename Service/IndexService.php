@@ -22,9 +22,8 @@ use ONGR\ElasticsearchBundle\Mapping\Converter;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
-use ONGR\ElasticsearchDSL\Query\FullText\QueryStringQuery;
-use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\IdsQuery;
+use ONGR\ElasticsearchDSL\Query\TermLevel\TermQuery;
 use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
@@ -205,17 +204,7 @@ class IndexService
         $search->setFrom($offset);
 
         foreach ($criteria as $field => $value) {
-            if (preg_match('/^!(.+)$/', $field)) {
-                $boolType = BoolQuery::MUST_NOT;
-                $field = preg_replace('/^!/', '', $field);
-            } else {
-                $boolType = BoolQuery::MUST;
-            }
-
-            $search->addQuery(
-                new QueryStringQuery(is_array($value) ? implode(' OR ', $value) : $value, ['default_field' => $field]),
-                $boolType
-            );
+            $search->addQuery(new TermQuery($field, $value));
         }
 
         foreach ($orderBy as $field => $direction) {
@@ -235,7 +224,7 @@ class IndexService
      */
     public function findOneBy(array $criteria, array $orderBy = [])
     {
-        return $this->findBy($criteria, $orderBy, 1, null)->current();
+        return $this->findBy($criteria, $orderBy, 1)->current();
     }
 
     public function createSearch(): Search
@@ -260,7 +249,8 @@ class IndexService
 
         return new DocumentIterator(
             $results,
-            $this->getManager(),
+            $this->converter,
+            $this,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -271,7 +261,8 @@ class IndexService
 
         return new ArrayIterator(
             $results,
-            $this->getManager(),
+            $this->converter,
+            $this,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -282,14 +273,15 @@ class IndexService
 
         return new RawIterator(
             $results,
-            $this->getManager(),
+            $this->converter,
+            $this,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
 
     private function executeSearch(Search $search): array
     {
-        return $this->search([$this->getTypeName()], $search->toArray(), $search->getUriParams());
+        return $this->search($search->toArray(), $search->getUriParams());
     }
 
     public function getIndexDocumentCount(): int
@@ -367,24 +359,33 @@ class IndexService
     /**
      * Usage example
      *
-     * $im->bulk('index', ['index' => 'foo', 'type' => '_doc', '_id' => 1], ['title' => 'foo']);
-     * $im->bulk('delete', ['index' => 'foo', 'type' => '_doc', '_id' => 2]);
-     * $im->bulk('create', ['index' => 'foo', 'type' => '_doc'], ['title' => 'foo']);
+     * $im->bulk('index', ['_id' => 1, 'title' => 'foo']);
+     * $im->bulk('delete', ['_id' => 2]);
+     * $im->bulk('create', ['title' => 'foo']);
      */
-    public function bulk(string $operation, array $header, array $query = []): array
+    public function bulk(string $operation, array $data = [], $autoCommit = true): array
     {
+        $bulkParams = [
+            '_index' => $this->getIndexName(),
+            '_type' => $this->getTypeName(),
+            '_id' => $data['_id'] ?? null,
+        ];
+
+        unset ($data['_index'], $data['_type'], $data['_id']);
+
         $this->eventDispatcher->dispatch(
             Events::BULK,
-            new BulkEvent($operation, $header, $query)
+            new BulkEvent($operation, $bulkParams, $data)
         );
 
-        $this->bulkQueries[] = [ $operation => $header ];
+        $this->bulkQueries[] = [ $operation => $bulkParams];
 
-        if (!empty($query)) $this->bulkQueries[] = $query;
+        if (!empty($data)) $this->bulkQueries[] = $data;
 
         $response = [];
-        // %2 is not very accurate, but better than use counter. This place is experimental for now.
-        if ($this->getBulkCommitSize() >= count($this->bulkQueries % ($this->getBulkCommitSize() / 2))) {
+
+        // %X is not very accurate, but better than use counter. This place is experimental for now.
+        if ($autoCommit && $this->getBulkCommitSize() <= count($this->bulkQueries) % $this->getBulkCommitSize() / 2) {
             $response = $this->commit();
         }
 
@@ -400,15 +401,7 @@ class IndexService
     {
         $documentArray = array_filter($this->converter->convertDocumentToArray($document));
 
-        $headers = array_filter([
-            '_index' => $this->getIndexName(),
-            '_type' => $this->getTypeName(),
-            '_id' => $documentArray['_id'] ?? null
-        ]);
-
-        unset($documentArray['_id']);
-
-        $this->bulk('index', $headers, $documentArray);
+        $this->bulk('index', $documentArray);
     }
 
     public function commit($commitMode = 'flush', array $params = []): array
