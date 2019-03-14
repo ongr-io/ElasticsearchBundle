@@ -13,6 +13,7 @@ namespace ONGR\App\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use ONGR\ElasticsearchBundle\Annotation as ES;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * Dummy index document for the functional testing.

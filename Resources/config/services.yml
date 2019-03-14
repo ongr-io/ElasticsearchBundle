@@ -22,9 +22,8 @@ services:
         class: Doctrine\Common\Annotations\CachedReader
         arguments: ["@annotations.reader", "@ongr.esb.cache", "%kernel.debug%"]
 
-    ongr.es.object_normalizer:
-        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
-        arguments: [~, '@ONGR\ElasticsearchBundle\Mapping\NameConverter']
+    ONGR\ElasticsearchBundle\Mapping\ObjectNormalizer:
+        arguments: ["%ongr.esb.analysis%", '@ONGR\ElasticsearchBundle\Mapping\NameConverter']
         tags:
             - { name: serializer.normalizer, priority: 100}
 

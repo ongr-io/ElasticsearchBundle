@@ -93,6 +93,16 @@ class IndexService
         return $this->eventDispatcher;
     }
 
+    public function getConverter(): Converter
+    {
+        return $this->converter;
+    }
+
+    public function getParser(): DocumentParser
+    {
+        return $this->parser;
+    }
+
     public function getBulkCommitSize(): int
     {
         return $this->bulkCommitSize;
