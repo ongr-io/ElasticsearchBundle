@@ -31,12 +31,12 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $nested = new CollectionNested();
         $nested->key = 'acme';
         $nested->value = 'bar';
-        $document->nestedCollection->add($nested);
+        $document->getNestedCollection()->add($nested);
 
         $nested = new CollectionNested();
         $nested->key = 'foo';
         $nested->value = 'delta';
-        $document->nestedCollection->add($nested);
+        $document->getNestedCollection()->add($nested);
 
         $index->persist($document);
         $index->commit();

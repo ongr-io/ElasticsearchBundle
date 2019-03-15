@@ -11,13 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use Doctrine\Common\Collections\Collection;
 use ONGR\App\Document\CollectionNested;
 use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Result\ObjectIterator;
 use ONGR\ElasticsearchBundle\Service\IndexService;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 
 class ObjectIteratorTest extends AbstractElasticsearchTestCase
 {
@@ -30,10 +28,12 @@ class ObjectIteratorTest extends AbstractElasticsearchTestCase
                     'title' => 'foo',
                     'nested_collection' => [
                         [
-                            'foo' => 'bar',
+                            'key' => 'foo',
+                            'value' => 'bar'
                         ],
                         [
-                            'acme' => 'delta',
+                            'key' => 'acme',
+                            'value' => 'delta',
                         ],
                     ],
                 ],

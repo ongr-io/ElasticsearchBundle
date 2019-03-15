@@ -26,39 +26,15 @@ class ManagerTest extends AbstractElasticsearchTestCase
             DummyDocument::class => [
                 [
                     '_id' => 1,
-                    'title' => 'foo',
-                    'nested_collection' => [
-                        [
-                            'foo' => 'bar',
-                        ],
-                        [
-                            'acme' => 'delta',
-                        ],
-                    ],
+                    'title' => 'foo'
                 ],
                 [
                     '_id' => 2,
                     'title' => 'foo',
-                    'nested_collection' => [
-                        [
-                            'foo' => 'delta',
-                        ],
-                        [
-                            'acme' => 'bar',
-                        ],
-                    ],
                 ],
                 [
                     '_id' => 3,
                     'title' => 'bar',
-                    'nested_collection' => [
-                        [
-                            'foo' => 'delta',
-                        ],
-                        [
-                            'acme' => 'bar',
-                        ],
-                    ],
                 ],
             ]
         ];

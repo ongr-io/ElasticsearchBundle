@@ -28,6 +28,7 @@ use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Serializer\Serializer;
 
 class IndexService
 {
@@ -40,18 +41,21 @@ class IndexService
     private $stopwatch;
     private $bulkCommitSize = 100;
     private $bulkQueries = [];
+    private $serializer;
 
     public function __construct(
         string $namespace,
         Converter $converter,
         DocumentParser $parser,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        Serializer $serializer
     )
     {
         $this->namespace = $namespace;
         $this->converter = $converter;
         $this->parser = $parser;
         $this->eventDispatcher = $eventDispatcher;
+        $this->serializer = $serializer;
     }
 
     public function getNamespace(): string
@@ -182,7 +186,7 @@ class IndexService
 
         $result['_source']['_id'] = $result['_id'];
 
-        return $this->converter->convertArrayToDocument($this->namespace, $result['_source']);
+        return $this->converter->convertArrayToDocument($this->namespace, $result['_source'], $this->serializer);
     }
 
     public function findByIds(array $ids): DocumentIterator
@@ -261,6 +265,7 @@ class IndexService
             $results,
             $this->converter,
             $this,
+            $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -273,6 +278,7 @@ class IndexService
             $results,
             $this->converter,
             $this,
+            $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -285,6 +291,7 @@ class IndexService
             $results,
             $this->converter,
             $this,
+            $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -409,7 +416,7 @@ class IndexService
      */
     public function persist($document): void
     {
-        $documentArray = array_filter($this->converter->convertDocumentToArray($document));
+        $documentArray = array_filter($this->converter->convertDocumentToArray($document, $this->serializer));
 
         $this->bulk('index', $documentArray);
     }

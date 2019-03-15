@@ -27,20 +27,18 @@ class Converter
 
     private $documentParser;
 
-    public function __construct(DocumentParser $documentParser, Serializer $serializer)
+    public function __construct(DocumentParser $documentParser)
     {
         $this->documentParser = $documentParser;
-        $this->serializer = $serializer;
     }
 
-    public function convertArrayToDocument(string $namespace, array $raw)
+    public function convertArrayToDocument(string $namespace, array $raw, Serializer $serializer)
     {
-        $data = $raw['_id'];
-        return $this->serializer->denormalize($raw, $namespace);
+        return $serializer->denormalize($raw, $namespace);
     }
 
-    public function convertDocumentToArray($document): array
+    public function convertDocumentToArray($document, Serializer $serializer): array
     {
-        return $this->serializer->normalize($document, 'array');
+        return $serializer->normalize($document, 'array');
     }
 }

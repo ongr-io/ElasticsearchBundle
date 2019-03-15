@@ -41,7 +41,8 @@ class MappingPass implements CompilerPassInterface
                     $namespace,
                     $container->getDefinition(Converter::class),
                     $container->getDefinition(DocumentParser::class),
-                    $container->getDefinition('event_dispatcher')
+                    $container->getDefinition('event_dispatcher'),
+                    $container->getDefinition('serializer')
                 ]);
                 $indexServiceDefinition->setPublic(true);
 

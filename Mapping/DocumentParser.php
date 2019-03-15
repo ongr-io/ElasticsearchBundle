@@ -16,10 +16,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\Cache;
 use ONGR\ElasticsearchBundle\Annotation\AbstractAnnotation;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
-use ONGR\ElasticsearchBundle\Annotation\HashMap;
-use ONGR\ElasticsearchBundle\Annotation\Id;
 use ONGR\ElasticsearchBundle\Annotation\Index;
-use ONGR\ElasticsearchBundle\Annotation\MetaFieldInterface;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
 use ONGR\ElasticsearchBundle\Annotation\PropertiesAwareInterface;
@@ -32,10 +29,10 @@ use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
 class DocumentParser
 {
     CONST OBJ_CACHED_FIELDS = 'ongr.obj_fields';
+    CONST EMBEDDED_CACHED_FIELDS = 'ongr.embedded_fields';
     CONST ARRAY_CACHED_FIELDS = 'ongr.array_fields';
 
     private $reader;
-    private $aliases = [];
     private $properties = [];
     private $analysisConfig = [];
     private $cache;
@@ -122,9 +119,9 @@ class DocumentParser
     private function getClassMetadata(\ReflectionClass $reflectionClass): array
     {
         $mapping = [];
-
-        $objFields = [];
-        $arrayFields = [];
+        $objFields = null;
+        $arrayFields = null;
+        $embeddedFields = null;
 
         /** @var \ReflectionProperty $property */
         foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
@@ -150,18 +147,20 @@ class DocumentParser
                     $embeddedClass = new \ReflectionClass($annotation->class);
                     $fieldMapping['type'] = $this->getObjectMappingType($embeddedClass);
                     $fieldMapping['properties'] = $this->getClassMetadata($embeddedClass);
+                    $embeddedFields[$name] = $annotation->class;
                 }
 
                 $mapping[$annotation->getName() ?? Caser::snake($name)] = array_filter($fieldMapping);
-
-//                if ($annotation instanceof Id) {
-//                    $objFields[Id::NAME] = $annotation->getName() ?? Caser::snake($name);
-//                    $arrayFields[$annotation->getName() ?? Caser::snake($name)] = Id::NAME;
-//                } else {
-                    $objFields[$name] = $annotation->getName() ?? Caser::snake($name);
-                    $arrayFields[$annotation->getName() ?? Caser::snake($name)] = $name;
-//                }
+                $objFields[$name] = $annotation->getName() ?? Caser::snake($name);
+                $arrayFields[$annotation->getName() ?? Caser::snake($name)] = $name;
             }
+        }
+
+        //Embeded fields are option compared to the array or object mapping.
+        if ($embeddedFields) {
+            $cacheItem = $this->cache->fetch(self::EMBEDDED_CACHED_FIELDS) ?? [];
+            $cacheItem[$reflectionClass->getName()] = $embeddedFields;
+            $t = $this->cache->save(self::EMBEDDED_CACHED_FIELDS, $cacheItem);
         }
 
         $cacheItem = $this->cache->fetch(self::ARRAY_CACHED_FIELDS) ?? [];
@@ -266,260 +265,5 @@ class DocumentParser
         $this->properties[$reflectionClass->getName()] = $properties;
 
         return $properties;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Finds aliases for every property used in document including parent classes.
-     *
-     * @param \ReflectionClass $reflectionClass
-     * @param array            $metaFields
-     *
-     * @return array
-     */
-    private function getAliases(\ReflectionClass $reflectionClass, array &$metaFields = null)
-    {
-        $reflectionName = $reflectionClass->getName();
-
-        // We skip cache in case $metaFields is given. This should not affect performance
-        // because for each document this method is called only once. For objects it might
-        // be called few times.
-        if ($metaFields === null && array_key_exists($reflectionName, $this->aliases)) {
-            return $this->aliases[$reflectionName];
-        }
-
-        $alias = [];
-
-        /** @var \ReflectionProperty[] $properties */
-        $properties = $this->getDocumentPropertiesReflection($reflectionClass);
-
-        foreach ($properties as $name => $property) {
-            $type = $this->getPropertyAnnotationData($property);
-            $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
-            $type = $type !== null ? $type : $this->getHashMapAnnotationData($property);
-
-            if ($type === null && $metaFields !== null
-                && ($metaData = $this->getMetaFieldAnnotationData($property)) !== null) {
-                $metaFields[$metaData['name']] = $metaData['settings'];
-                $type = new \stdClass();
-                $type->name = $metaData['name'];
-            }
-            if ($type !== null) {
-                $alias[$type->name] = [
-                    'propertyName' => $name,
-                ];
-
-                if ($type instanceof Property) {
-                    $alias[$type->name]['type'] = $type->type;
-                }
-
-                if ($type instanceof HashMap) {
-                    $alias[$type->name]['type'] = HashMap::NAME;
-                }
-
-                $alias[$type->name][HashMap::NAME] = $type instanceof HashMap;
-
-                switch (true) {
-                    case $property->isPublic():
-                        $propertyType = 'public';
-                        break;
-                    case $property->isProtected():
-                    case $property->isPrivate():
-                        $propertyType = 'private';
-                        $alias[$type->name]['methods'] = $this->getMutatorMethods(
-                            $reflectionClass,
-                            $name,
-                            $type instanceof Property ? $type->type : null
-                        );
-                        break;
-                    default:
-                        $message = sprintf(
-                            'Wrong property %s type of %s class types cannot '.
-                            'be static or abstract.',
-                            $name,
-                            $reflectionName
-                        );
-                        throw new \LogicException($message);
-                }
-                $alias[$type->name]['propertyType'] = $propertyType;
-
-                if ($type instanceof Embedded) {
-                    $child = new \ReflectionClass($type->class);
-                    $alias[$type->name] = array_merge(
-                        $alias[$type->name],
-                        [
-                            'type' => $this->getObjectMapping($type->class)['type'],
-                            'multiple' => $type->multiple,
-                            'aliases' => $this->getAliases($child, $metaFields),
-                            'namespace' => $child->getName(),
-                        ]
-                    );
-                }
-            }
-        }
-
-        $this->aliases[$reflectionName] = $alias;
-
-        return $this->aliases[$reflectionName];
-    }
-
-    /**
-     * Checks if class have setter and getter, and returns them in array.
-     *
-     * @param \ReflectionClass $reflectionClass
-     * @param string           $property
-     *
-     * @return array
-     */
-    private function getMutatorMethods(\ReflectionClass $reflectionClass, $property, $propertyType)
-    {
-        $camelCaseName = ucfirst(Caser::camel($property));
-        $setterName = 'set'.$camelCaseName;
-        if (!$reflectionClass->hasMethod($setterName)) {
-            $message = sprintf(
-                'Missing %s() method in %s class. Add it, or change property to public.',
-                $setterName,
-                $reflectionClass->getName()
-            );
-            throw new \LogicException($message);
-        }
-
-        if ($reflectionClass->hasMethod('get'.$camelCaseName)) {
-            return [
-                'getter' => 'get' . $camelCaseName,
-                'setter' => $setterName
-            ];
-        }
-
-        if ($propertyType === 'boolean') {
-            if ($reflectionClass->hasMethod('is' . $camelCaseName)) {
-                return [
-                    'getter' => 'is' . $camelCaseName,
-                    'setter' => $setterName
-                ];
-            }
-
-            $message = sprintf(
-                'Missing %s() or %s() method in %s class. Add it, or change property to public.',
-                'get'.$camelCaseName,
-                'is'.$camelCaseName,
-                $reflectionClass->getName()
-            );
-            throw new \LogicException($message);
-        }
-
-        $message = sprintf(
-            'Missing %s() method in %s class. Add it, or change property to public.',
-            'get'.$camelCaseName,
-            $reflectionClass->getName()
-        );
-        throw new \LogicException($message);
-    }
-
-    /**
-     * Parses analyzers list from document mapping.
-     *
-     * @param \ReflectionClass $reflectionClass
-     * @return array
-     */
-    private function getAnalyzers(\ReflectionClass $reflectionClass)
-    {
-        $analyzers = [];
-
-        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
-
-            $type = $this->getPropertyAnnotationData($property);
-            $type = $type !== null ? $type : $this->getEmbeddedAnnotationData($property);
-
-            if ($type instanceof Embedded) {
-                $analyzers = array_merge(
-                    $analyzers,
-                    $this->getAnalyzers(new \ReflectionClass($type->class))
-                );
-            }
-
-            if ($type instanceof Property) {
-                if (isset($type->options['analyzer'])) {
-                    $analyzers[] = $type->options['analyzer'];
-                }
-                if (isset($type->options['search_analyzer'])) {
-                    $analyzers[] = $type->options['search_analyzer'];
-                }
-
-                if (isset($type->options['fields'])) {
-                    foreach ($type->options['fields'] as $field) {
-                        if (isset($field['analyzer'])) {
-                            $analyzers[] = $field['analyzer'];
-                        }
-                        if (isset($field['search_analyzer'])) {
-                            $analyzers[] = $field['search_analyzer'];
-                        }
-                    }
-                }
-            }
-        }
-        return array_unique($analyzers);
-    }
-
-    /**
-     * Returns object mapping.
-     *
-     * Loads from cache if it's already loaded.
-     *
-     * @param string $className
-     *
-     * @return array
-     */
-    private function getObjectMapping($namespace)
-    {
-        if (array_key_exists($namespace, $this->objects)) {
-            return $this->objects[$namespace];
-        }
-
-        $reflectionClass = new \ReflectionClass($namespace);
-
-        $documentAnnotation = $this->reader->getClassAnnotations($reflectionClass);
-
-        switch (true) {
-            case $this->reader->getClassAnnotation($reflectionClass, self::OBJECT_ANNOTATION):
-                $type = 'object';
-                break;
-            case $this->reader->getClassAnnotation($reflectionClass, self::NESTED_ANNOTATION):
-                $type = 'nested';
-                break;
-            default:
-                throw new \LogicException(
-                    sprintf(
-                        '%s should have @ObjectType or @NestedType annotation to be used as embeddable object.',
-                        $namespace
-                    )
-                );
-        }
-
-        $this->objects[$namespace] = [
-            'type' => $type,
-            'properties' => $this->getClassProperties($reflectionClass),
-        ];
-
-        return $this->objects[$namespace];
     }
 }
