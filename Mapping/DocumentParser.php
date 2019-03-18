@@ -57,6 +57,16 @@ class DocumentParser
         return $document->alias ?? Caser::snake($class->getShortName());
     }
 
+    public function isDefaultIndex($namespace): bool
+    {
+        $class = new \ReflectionClass($namespace);
+
+        /** @var Index $document */
+        $document = $this->reader->getClassAnnotation($class, Index::class);
+
+        return $document->default;
+    }
+
     /**
      * @deprecated will be deleted in v7. Types are deleted from elasticsearch.
      */
@@ -85,14 +95,17 @@ class DocumentParser
             return [];
         }
 
-        return array_filter([
-            'settings' => $document->getSettings(),
+        $settings = $document->getSettings();
+        $settings['analysis'] = $this->getAnalysisConfig($namespace);
+
+        return array_filter(array_map('array_filter', [
+            'settings' => $settings,
             'mappings' => [
                 $this->getTypeName($namespace) => [
-                    'properties' => $this->getClassMetadata($class)
+                    'properties' => array_filter($this->getClassMetadata($class))
                 ]
             ]
-        ]);
+        ]));
     }
 
     public function getDocumentNamespace(string $indexAlias): ?string
@@ -178,6 +191,8 @@ class DocumentParser
     {
         $config = [];
         $mapping = $this->getClassMetadata(new \ReflectionClass($namespace));
+
+        //Think how to remove these array merge
         $analyzers = $this->getListFromArrayByKey('analyzer', $mapping);
         $analyzers = array_merge($analyzers, $this->getListFromArrayByKey( 'search_analyzer', $mapping));
         $analyzers = array_merge($analyzers, $this->getListFromArrayByKey('search_quote_analyzer', $mapping));

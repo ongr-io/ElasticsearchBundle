@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 /**
  * Dummy index document for the functional testing.
  *
- * @ES\Index(alias="dummy")
+ * @ES\Index(alias="dummy", default=true)
  */
 class DummyDocument
 {
@@ -52,12 +52,17 @@ class DummyDocument
     /**
      * @ES\Property(type="keyword", name="private")
      */
-    protected $privateField;
+    private $privateField;
+
+    /**
+     * @ES\Property(type="float")
+     */
+    public $number;
 
     /**
      * @ES\Embedded(class="ONGR\App\Document\CollectionNested", name="nested_collection")
      */
-    protected $nestedCollection;
+    private $nestedCollection;
 
     /**
      * @ES\Embedded(class="ONGR\App\Document\CollectionObject")

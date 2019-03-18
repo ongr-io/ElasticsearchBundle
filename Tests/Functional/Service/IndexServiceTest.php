@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
 use ONGR\App\Document\DummyDocument;
+use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
@@ -40,12 +41,23 @@ class ManagerTest extends AbstractElasticsearchTestCase
         ];
     }
 
-    public function testIndexCrate()
+    public function indexNameDataProvider()
     {
-        $index = $this->getIndex(DummyDocument::class);
+        return [
+          [ DummyDocument::class, DummyDocument::INDEX_NAME ],
+          [ DummyDocumentInTheEntityDirectory::class, DummyDocumentInTheEntityDirectory::INDEX_NAME ],
+        ];
+    }
+
+    /**
+     * @dataProvider indexNameDataProvider
+     */
+    public function testIndexCrate($class, $indexName)
+    {
+        $index = $this->getIndex($class);
 
         $client = $index->getClient();
-        $actualIndexExists = $client->indices()->exists(['index' => DummyDocument::INDEX_NAME]);
+        $actualIndexExists = $client->indices()->exists(['index' => $indexName]);
 
         $this->assertTrue($actualIndexExists);
     }

@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Command\IndexExportCommand;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use org\bovigo\vfs\vfsStream;
@@ -19,67 +20,27 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class IndexExportCommandTest extends AbstractElasticsearchTestCase
 {
-    const COMMAND_NAME = 'ongr:es:index:export';
-
-    /**
-     * {@inheritdoc}
-     */
     protected function getDataArray()
     {
         return [
-            'default' => [
-                'users' => [
-                    [
-                        '_id' => "4",
-                        'name' => 'foo',
-                    ],
-                    [
-                        '_id' => "5",
-                        'name' => 'acme',
-                    ],
+            DummyDocument::class => [
+                [
+                    '_id' => 'doc1',
+                    'title' => 'Foo Product',
+                    'number' => 5.00,
                 ],
-                'product' => [
-                    [
-                        '_id' => "1",
-                        'title' => 'foo',
-                        'price' => 10.45,
-                    ],
-                    [
-                        '_id' => "2",
-                        'title' => 'bar',
-                        'price' => 32,
-                    ],
-                    [
-                        '_id' => "3",
-                        'title' => 'acme',
-                        'price' => 20,
-                    ],
+                [
+                    '_id' => 'doc2',
+                    'title' => 'Bar Product',
+                    'number' => 8.33,
+                ],
+                [
+                    '_id' => 'doc3',
+                    'title' => 'Lao Product',
+                    'number' => 1.95,
                 ],
             ],
         ];
-    }
-
-    /**
-     * Transforms data provider data to elasticsearch expected result data structure.
-     *
-     * @param $type
-     * @return array
-     */
-    private function transformDataToResult($type)
-    {
-        $expectedResults = [];
-
-        foreach ($this->getDataArray()['default'][$type] as $document) {
-            $id = $document['_id'];
-            unset($document['_id']);
-            $expectedResults[] = [
-                '_type' => $type,
-                '_id' => $id,
-                '_source' => $document,
-            ];
-        }
-
-        return $expectedResults;
     }
 
     /**
@@ -92,59 +53,34 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $out = [];
 
         // Case 0
-        $options = ['--manager' => 'default'];
-        $expectedResults = array_merge(
-            $this->transformDataToResult('product'),
-            $this->transformDataToResult('users')
-        );
+        $options = ['--index' => DummyDocument::INDEX_NAME];
+        $expectedResults = $this->transformDataToResult(DummyDocument::class);
         $out[] = [$options, $expectedResults];
 
-        // Case 1: product type specified.
-        $options = ['--types' => ['product']];
-
-        $expectedResults = $this->transformDataToResult('product');
+        // Case 1: product type specified with chunk.
+        $options = ['--chunk' => 1, '--index' => DummyDocument::INDEX_NAME];
+        $expectedResults = $this->transformDataToResult(DummyDocument::class);
         $out[] = [$options, $expectedResults];
 
-        // Case 2: users type specified.
-        $options = ['--types' => ['users']];
-
-        $expectedResults = $this->transformDataToResult('users');
-        $out[] = [$options, $expectedResults];
-
-        // Case 3: product type specified with chunk.
-        $options = ['--chunk' => 1, '--types' => ['product']];
-
-        $expectedResults = $this->transformDataToResult('product');
-        $out[] = [$options, $expectedResults];
-
-        // Case 4: without parameters.
+        // Case 2: without parameters.
         $options = [];
-
-        $expectedResults = array_merge(
-            $this->transformDataToResult('product'),
-            $this->transformDataToResult('users')
-        );
+        $expectedResults = $this->transformDataToResult(DummyDocument::class);
         $out[] = [$options, $expectedResults];
 
         return $out;
     }
 
     /**
-     * Test for index export command.
-     *
-     * @param array $options
-     * @param array $expectedResults
-     *
      * @dataProvider getIndexExportData()
      */
-    public function testIndexExport($options, $expectedResults)
+    public function testIndexExport(array $options, array $expectedResults)
     {
+        $this->getIndex(DummyDocument::class);
         vfsStream::setup('tmp');
-
         $this->getCommandTester()->execute(
             array_merge(
                 [
-                    'command' => self::COMMAND_NAME,
+                    'command' => IndexExportCommand::NAME,
                     'filename' => vfsStream::url('tmp/test.json'),
                 ],
                 $options
@@ -153,6 +89,27 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
         $this->assertEquals($expectedResults, $results);
+    }
+
+    /**
+     * Transforms data provider data to ElasticSearch expected result data structure.
+     */
+    private function transformDataToResult(string $class): array
+    {
+        $expectedResults = [];
+        $index = $this->getIndex($class);
+
+        foreach ($this->getDataArray()[$class] as $document) {
+            $id = $document['_id'];
+            unset($document['_id']);
+            $expectedResults[] = [
+                '_type' => $index->getTypeName(),
+                '_id' => $id,
+                '_source' => $document,
+            ];
+        }
+
+        return $expectedResults;
     }
 
     /**
@@ -168,7 +125,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $app = new Application();
         $app->add($indexExportCommand);
 
-        $command = $app->find(self::COMMAND_NAME);
+        $command = $app->find(IndexExportCommand::NAME);
         $commandTester = new CommandTester($command);
 
         return $commandTester;
@@ -182,7 +139,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      *
      * @return array
      */
-    protected function parseResult($filePath, $expectedCount)
+    private function parseResult($filePath, $expectedCount)
     {
         $this->assertFileExists($filePath);
         $results = json_decode(file_get_contents($filePath), true);

@@ -34,9 +34,9 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
 
     public function __construct(
         array $rawData,
-        Converter $converter,
         IndexService $index,
-        Serializer $serializer,
+        Converter $converter = null,
+        Serializer $serializer = null,
         array $scroll = []
     ) {
         $this->raw = $rawData;
@@ -261,7 +261,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
     * Returns sort of current hit.
     */
-    public function getDocumentSort(): array
+    public function getDocumentSort()
     {
         if (!$this->valid()) {
             throw new \LogicException('Document sort is available only while iterating over results.');

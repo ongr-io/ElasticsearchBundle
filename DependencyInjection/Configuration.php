@@ -25,6 +25,7 @@ class Configuration implements ConfigurationInterface
     CONST ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
     CONST ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
     CONST ONGR_INDEXES = 'ongr.esb.indexes';
+    CONST ONGR_DEFAULT_INDEX = 'ongr.esb.default_index';
 
     public function getConfigTreeBuilder()
     {

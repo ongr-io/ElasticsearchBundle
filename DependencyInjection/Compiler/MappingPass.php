@@ -27,7 +27,7 @@ class MappingPass implements CompilerPassInterface
         $cache = $container->get('ongr.esb.cache');
 
         $indexes = [];
-
+        $defaultIndex = null;
         foreach (
             $this->getNamespaces(
                 $container->getParameter('kernel.project_dir')
@@ -42,17 +42,36 @@ class MappingPass implements CompilerPassInterface
                     $container->getDefinition(Converter::class),
                     $container->getDefinition(DocumentParser::class),
                     $container->getDefinition('event_dispatcher'),
-                    $container->getDefinition('serializer')
+                    $container->getDefinition('serializer'),
+                    $container->getParameter(Configuration::ONGR_PROFILER_CONFIG)
+                        ? $container->getDefinition('ongr.esb.tracer') : null
                 ]);
                 $indexServiceDefinition->setPublic(true);
 
                 $container->setDefinition($namespace, $indexServiceDefinition);
                 $container->setAlias($indexAlias, $namespace);
                 $indexes[$indexAlias] = $namespace;
+                $isCurrentIndexDefault = $parser->isDefaultIndex($namespace);
+                if ($defaultIndex && $isCurrentIndexDefault) {
+                    throw new \RuntimeException(
+                        sprintf(
+                            'Only one index can be set as default. We found 2 indexes as default ones `%s` and `%s`',
+                            $defaultIndex,
+                            $indexAlias
+                        )
+                    );
+                }
+
+                if ($isCurrentIndexDefault) {
+                    $defaultIndex = $indexAlias;
+                }
             }
         }
 
-        $container->setParameter('ongr.es.indexes', $indexes);
+        $container->setParameter(Configuration::ONGR_INDEXES, $indexes);
+
+        $defaultIndex = $defaultIndex ?? array_shift(array_keys($indexes));
+        $container->setParameter(Configuration::ONGR_DEFAULT_INDEX, $defaultIndex);
     }
 
     private function getNamespaces($directory): array

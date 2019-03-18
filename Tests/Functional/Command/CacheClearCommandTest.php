@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Command\CacheClearCommand;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
@@ -19,26 +20,16 @@ use Symfony\Component\Console\Tester\CommandTester;
 class CacheClearCommandTest extends AbstractElasticsearchTestCase
 {
 
-    const COMMAND_NAME = 'ongr:es:cache:clear';
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getDataArray()
-    {
-        return ['default' => []];
-    }
-
     /**
      * Tests if command is being executed.
      */
     public function testExecute()
     {
-        $this->getManager();
+        $this->getIndex(DummyDocument::class);
 
         $app = new Application();
         $app->add($this->getCommand());
-        $command = $app->find(self::COMMAND_NAME);
+        $command = $app->find(CacheClearCommand::NAME);
         $tester = new CommandTester($command);
         $tester->execute(
             [
@@ -47,7 +38,7 @@ class CacheClearCommandTest extends AbstractElasticsearchTestCase
         );
 
         $this->assertContains(
-            'Elasticsearch index cache has been cleared for manager named `default`',
+            'Elasticsearch `'.DummyDocument::INDEX_NAME.'` index cache has been cleared.',
             $tester->getDisplay()
         );
         $this->assertEquals(0, $tester->getStatusCode(), 'Status code should be zero.');
@@ -62,12 +53,12 @@ class CacheClearCommandTest extends AbstractElasticsearchTestCase
     {
         $app = new Application();
         $app->add($this->getCommand());
-        $command = $app->find('ongr:es:cache:clear');
+        $command = $app->find(CacheClearCommand::NAME);
         $tester = new CommandTester($command);
         $tester->execute(
             [
                 'command' => $command->getName(),
-                '--manager' => 'notexistingmanager',
+                '--index' => 'notexisting',
             ]
         );
     }

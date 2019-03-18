@@ -11,15 +11,17 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\DependencyInjection;
 
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Cache\PhpFileCache;
+use ONGR\App\Document\DummyDocument;
+use ONGR\App\Document\IndexWithFieldsDataDocument;
+use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\EventListener\TerminateListener;
 use ONGR\ElasticsearchBundle\Mapping\Converter;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
-use ONGR\ElasticsearchBundle\Service\ExportService;
-use ONGR\ElasticsearchBundle\Service\ImportService;
-use ONGR\ElasticsearchBundle\Service\IndexSuffixFinder;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ElasticsearchBundleExtensionTest extends KernelTestCase
 {
@@ -29,25 +31,13 @@ class ElasticsearchBundleExtensionTest extends KernelTestCase
     public function getTestContainerData()
     {
         return [
-//            [
-//                ImportService::class,
-//                ImportService::class,
-//            ],
-//            [
-//                ExportService::class,
-//                ExportService::class,
-//            ],
-//            [
-//                IndexSuffixFinder::class,
-//                IndexSuffixFinder::class,
-//            ],
             [
                 'ongr.esb.cache',
-                'Doctrine\Common\Cache\FilesystemCache',
+                PhpFileCache::class,
             ],
             [
-                'ongr.es.cache_reader',
-                'Doctrine\Common\Annotations\CachedReader',
+                'ongr.esb.cache_reader',
+                CachedReader::class,
             ],
             [
                 DocumentParser::class,
@@ -64,6 +54,20 @@ class ElasticsearchBundleExtensionTest extends KernelTestCase
             [
                 TerminateListener::class,
                 TerminateListener::class,
+            ],
+
+            //This tests if a service swap works well
+            [
+                DummyDocument::class,
+                IndexService::class,
+            ],
+            [
+                DummyDocumentInTheEntityDirectory::class,
+                IndexService::class,
+            ],
+            [
+                IndexWithFieldsDataDocument::class,
+                IndexService::class,
             ],
         ];
     }

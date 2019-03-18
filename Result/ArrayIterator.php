@@ -36,11 +36,13 @@ class ArrayIterator extends AbstractResultsIterator implements \ArrayAccess
     protected function convertDocument(array $raw)
     {
         if (array_key_exists('_source', $raw)) {
-            return $raw['_source'];
+            $doc = $raw['_source'];
         } elseif (array_key_exists('fields', $raw)) {
-            return array_map('reset', $raw['fields']);
+            $doc = array_map('reset', $raw['fields']);
         }
 
-        return $raw;
+        $doc['_id'] = $raw['_id'];
+
+        return $doc;
     }
 }

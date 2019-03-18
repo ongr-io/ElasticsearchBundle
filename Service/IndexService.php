@@ -42,13 +42,15 @@ class IndexService
     private $bulkCommitSize = 100;
     private $bulkQueries = [];
     private $serializer;
+    private $tracer;
 
     public function __construct(
         string $namespace,
         Converter $converter,
         DocumentParser $parser,
         EventDispatcherInterface $eventDispatcher,
-        Serializer $serializer
+        Serializer $serializer,
+        $tracer = null
     )
     {
         $this->namespace = $namespace;
@@ -56,6 +58,7 @@ class IndexService
         $this->parser = $parser;
         $this->eventDispatcher = $eventDispatcher;
         $this->serializer = $serializer;
+        $this->tracer = $tracer;
     }
 
     public function getNamespace(): string
@@ -77,6 +80,8 @@ class IndexService
             $document = $this->parser->getParsedDocument($this->namespace);
             $client = ClientBuilder::create();
             $client->setHosts($document->hosts);
+            $this->tracer && $client->setTracer($this->tracer);
+//            $client->setLogger()
 
             $this->eventDispatcher->dispatch(
                 Events::POST_CLIENT_CREATE,
@@ -131,22 +136,26 @@ class IndexService
 
     public function createIndex($noMapping = false, $params = []): array
     {
-        $bodySettings = $this->parser->getIndexMetadata($this->namespace);
-        $bodySettings['settings']['analysis'] = $this->parser->getAnalysisConfig($this->namespace);
-
         $params = array_merge([
             'index' => $this->getIndexName(),
-            'body' => $noMapping ? [] : $bodySettings,
+            'body' => $noMapping ? [] : $this->parser->getIndexMetadata($this->namespace),
         ], $params);
 
         #TODO Add event here.
 
-        return $this->getClient()->indices()->create($params);
+        return $this->getClient()->indices()->create(array_filter($params));
     }
 
     public function dropIndex(): array
     {
-        return $this->getClient()->indices()->delete(['index' => $this->getIndexName()]);
+        $indexName = $this->getIndexName();
+
+        if ($this->getClient()->indices()->existsAlias(['name' => $this->getIndexName()])) {
+            $aliases = $this->getClient()->indices()->getAlias(['name' => $this->getIndexName()]);
+            $indexName = array_keys($aliases);
+        }
+
+        return $this->getClient()->indices()->delete(['index' => $indexName]);
     }
 
     public function dropAndCreateIndex($noMapping = false, $params = []): array
@@ -165,6 +174,11 @@ class IndexService
     public function indexExists(): bool
     {
         return $this->getClient()->indices()->exists(['index' => $this->getIndexName()]);
+    }
+
+    public function clearCache(): array
+    {
+        return $this->getClient()->indices()->clearCache(['index' => $this->getIndexName()]);
     }
 
     /**
@@ -263,8 +277,8 @@ class IndexService
 
         return new DocumentIterator(
             $results,
-            $this->converter,
             $this,
+            $this->converter,
             $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
@@ -276,8 +290,8 @@ class IndexService
 
         return new ArrayIterator(
             $results,
-            $this->converter,
             $this,
+            $this->converter,
             $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
@@ -289,8 +303,8 @@ class IndexService
 
         return new RawIterator(
             $results,
-            $this->converter,
             $this,
+            $this->converter,
             $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
@@ -363,11 +377,11 @@ class IndexService
 
 
         if (!empty($params)) {
-            $params = array_merge($requestParams, $params);
+            $requestParams = array_merge($requestParams, $params);
         }
 
 //        $this->stopwatch('start', 'search');
-        $result = $this->client->search($requestParams);
+        $result = $this->getClient()->search($requestParams);
 //        $this->stopwatch('stop', 'search');
 
         return $result;

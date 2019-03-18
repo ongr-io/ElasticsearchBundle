@@ -14,7 +14,7 @@ services:
         class: Doctrine\Common\Cache\PhpFileCache
         arguments: ["%kernel.cache_dir%/ongr/elasticsearch", ".ongr.data"]
 
-    ongr.es.cache_reader:
+    ongr.esb.cache_reader:
         class: Doctrine\Common\Annotations\CachedReader
         arguments: ["@annotations.reader", "@ongr.esb.cache", "%kernel.debug%"]
 
@@ -31,29 +31,28 @@ services:
         arguments: ["@ongr.esb.cache"]
 
     ONGR\ElasticsearchBundle\Mapping\DocumentParser:
-        arguments: ["@ongr.es.cache_reader", "@ongr.esb.cache", "%ongr.esb.analysis%"]
+        arguments: ["@ongr.esb.cache_reader", "@ongr.esb.cache", "%ongr.esb.analysis%"]
 
     ONGR\ElasticsearchBundle\Mapping\Converter:
         arguments: ['@ONGR\ElasticsearchBundle\Mapping\DocumentParser']
 
-    ongr.es.tracer.handler:
-        class: ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler
+    ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler:
         public: false
 
-    ongr.es.tracer:
+    ongr.esb.tracer:
         class: Monolog\Logger
         arguments: ['ongr']
         calls:
-            - [pushHandler, ["@ongr.es.tracer.handler"]]
+            - [pushHandler, ['@ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler']]
 
     ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler:
         calls:
-            - [setManagers, ["%ongr.es.indexes%"]]
-            - [addLogger, ["@ongr.es.tracer"]]
+            - [setIndexes, ["%ongr.esb.indexes%"]]
+            - [addLogger, ["@ongr.esb.tracer"]]
         tags:
             - {name: data_collector, template: "@ONGRElasticsearch/Profiler/profiler.html.twig", id: ongr.profiler}
 
     ONGR\ElasticsearchBundle\EventListener\TerminateListener:
-        arguments: ["@service_container", "%ongr.es.indexes%"]
+        arguments: ["@service_container", "%ongr.esb.indexes%"]
         tags:
             - { name: kernel.event_listener, event: kernel.terminate }

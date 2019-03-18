@@ -16,10 +16,13 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 /**
  * Document to test if it works from a not default directory.
  *
- * @ES\Index()
+ * @ES\Index(alias="entity-index")
  */
 class DummyDocumentInTheEntityDirectory
 {
+
+    CONST INDEX_NAME = 'entity-index';
+
     /**
      * @ES\Id()
      */

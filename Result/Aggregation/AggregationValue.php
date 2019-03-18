@@ -32,10 +32,10 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
     /**
      * Returns aggregation value by the aggregation name.
      */
-    public function getValue(string $name): array
+    public function getValue(string $name)
     {
         if (!isset($this->rawData[$name])) {
-            return [];
+            return null;
         }
 
         return $this->rawData[$name];

@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,17 +21,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class AbstractElasticsearchTestCase extends WebTestCase
 {
+    protected static $cachedContainer;
+
     /**
      * @var IndexService[]
      */
     private $indexes = [];
 
-    /**
-     * {@inheritdoc}
-     */
+    //You may use setUp() for your personal needs.
     protected function setUp()
     {
-        #make sure test data is inserted to teh ES
     }
 
     /**
@@ -82,43 +82,44 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         }
     }
 
-    /**
-     * Returns service container.
-     *
-     * @param bool  $reinitialize  Force kernel reinitialization.
-     * @param array $kernelOptions Options used passed to kernel if it needs to be initialized.
-     *
-     * @return ContainerInterface
-     */
-    protected function getContainer($reinitialize = false, $kernelOptions = [])
+    protected function getContainer($reinitialize = false, $kernelOptions = []): ContainerInterface
     {
-        if ($reinitialize) {
+        if (!self::$cachedContainer && !$reinitialize) {
             static::bootKernel($kernelOptions);
+
+            self::$cachedContainer = static::createClient(['environment' => 'test'])->getContainer();
         }
 
-        return static::createClient(['environment' => 'test'])->getContainer();
+        return self::$cachedContainer;
     }
 
     protected function getIndex($namespace, $createIndex = true): IndexService
     {
-        if (!array_key_exists($namespace, $this->indexes) && $this->getContainer()->has($namespace)) {
-            $this->indexes[$namespace] = $this->getContainer()->get($namespace);
-        } else {
+        try {
+
+            if (!array_key_exists($namespace, $this->indexes)) {
+                $this->indexes[$namespace] = $this->getContainer()->get($namespace);
+            }
+
+            if (!$this->indexes[$namespace]->indexExists() && $createIndex) {
+                $this->indexes[$namespace]->dropAndCreateIndex();
+
+                // Populates elasticsearch index with the data
+                $data = $this->getDataArray();
+                if (!empty($data[$namespace])) {
+                    $this->populateElastic($this->indexes[$namespace], $data[$namespace]);
+                }
+                $this->indexes[$namespace]->refresh();
+            }
+
+            return $this->indexes[$namespace];
+
+        } catch (BadRequest400Exception $e) {
+            throw new \LogicException($e->getMessage());
+        } catch (\Exception $e) {
             throw new \LogicException(
                 sprintf("There is no Elastic index defined in the '%s' namespace", $namespace)
             );
         }
-
-        if ($createIndex) {
-            $this->indexes[$namespace]->dropAndCreateIndex();
-
-            // Populates elasticsearch index with the data
-            $data = $this->getDataArray();
-            if (!empty($data[$namespace])) {
-                $this->populateElastic($this->indexes[$namespace], $data[$namespace]);
-            }
-        }
-
-        return $this->indexes[$namespace];
     }
 }

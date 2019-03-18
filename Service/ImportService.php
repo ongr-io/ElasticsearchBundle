@@ -20,21 +20,13 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ImportService
 {
-    /**
-     * Imports Elasticsearch index data.
-     *
-     * @param Manager         $manager
-     * @param string          $filename
-     * @param OutputInterface $output
-     * @param array           $options
-     */
     public function importIndex(
-        Manager $manager,
+        IndexService $index,
         $filename,
         OutputInterface $output,
         $options
     ) {
-        $reader = $this->getReader($manager, $this->getFilePath($filename), $options);
+        $reader = $this->getReader($index, $this->getFilePath($filename), $options);
 
         $progress = new ProgressBar($output, $reader->count());
         $progress->setRedrawFrequency(100);
@@ -49,16 +41,16 @@ class ImportService
                 $data = array_merge($document['fields'], $data);
             }
 
-            $manager->bulk('index', $document['_type'], $data);
+            $index->bulk('index', $data);
 
             if (($key + 1) % $bulkSize == 0) {
-                $manager->commit();
+                $index->commit();
             }
 
             $progress->advance();
         }
 
-        $manager->commit();
+        $index->commit();
 
         $progress->finish();
         $output->writeln('');
@@ -80,16 +72,7 @@ class ImportService
         return realpath(getcwd() . '/' . $filename);
     }
 
-    /**
-     * Prepares JSON reader.
-     *
-     * @param Manager $manager
-     * @param string  $filename
-     * @param array   $options
-     *
-     * @return JsonReader
-     */
-    protected function getReader($manager, $filename, $options)
+    protected function getReader(IndexService $manager, $filename, $options): JsonReader
     {
         return new JsonReader($manager, $filename, $options);
     }
