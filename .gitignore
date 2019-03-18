@@ -5,4 +5,4 @@
 /var/cache/test
 /phpunit.xml
 /composer.lock
-coverage.clover
+/coverage.clover
