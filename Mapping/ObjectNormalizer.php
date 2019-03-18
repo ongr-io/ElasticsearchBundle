@@ -22,8 +22,12 @@ class ObjectNormalizer extends SymfonyObjectNormalizer
     private $cache;
     private $converter;
 
-    public function __construct(Cache $cache, Converter $converter, NameConverterInterface $nameConverter = null, PropertyAccessorInterface $propertyAccessor = null)
-    {
+    public function __construct(
+        Cache $cache,
+        Converter $converter,
+        NameConverterInterface $nameConverter = null,
+        PropertyAccessorInterface $propertyAccessor = null
+    ) {
         parent::__construct(null, $nameConverter, $propertyAccessor, null, null, null, []);
 
         $this->cache = $cache;

@@ -28,9 +28,9 @@ use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
  */
 class DocumentParser
 {
-    CONST OBJ_CACHED_FIELDS = 'ongr.obj_fields';
-    CONST EMBEDDED_CACHED_FIELDS = 'ongr.embedded_fields';
-    CONST ARRAY_CACHED_FIELDS = 'ongr.array_fields';
+    const OBJ_CACHED_FIELDS = 'ongr.obj_fields';
+    const EMBEDDED_CACHED_FIELDS = 'ongr.embedded_fields';
+    const ARRAY_CACHED_FIELDS = 'ongr.array_fields';
 
     private $reader;
     private $properties = [];
@@ -142,7 +142,6 @@ class DocumentParser
 
             /** @var AbstractAnnotation $annotation */
             foreach ($annotations as $annotation) {
-
                 if (!$annotation instanceof PropertiesAwareInterface) {
                     continue;
                 }
@@ -194,20 +193,22 @@ class DocumentParser
 
         //Think how to remove these array merge
         $analyzers = $this->getListFromArrayByKey('analyzer', $mapping);
-        $analyzers = array_merge($analyzers, $this->getListFromArrayByKey( 'search_analyzer', $mapping));
+        $analyzers = array_merge($analyzers, $this->getListFromArrayByKey('search_analyzer', $mapping));
         $analyzers = array_merge($analyzers, $this->getListFromArrayByKey('search_quote_analyzer', $mapping));
 
         foreach ($analyzers as $analyzer) {
-            if (isset($this->analysisConfig['analyzer'][$analyzer]))
-            $config['analyzer'][$analyzer] = $this->analysisConfig['analyzer'][$analyzer];
+            if (isset($this->analysisConfig['analyzer'][$analyzer])) {
+                $config['analyzer'][$analyzer] = $this->analysisConfig['analyzer'][$analyzer];
+            }
         }
 
         foreach (['tokenizer', 'filter', 'normalizer', 'char_filter'] as $type) {
             $list = $this->getListFromArrayByKey($type, $config);
 
             foreach ($list as $listItem) {
-                if (isset($this->analysisConfig[$type][$listItem]))
+                if (isset($this->analysisConfig[$type][$listItem])) {
                     $config[$type][$listItem] = $this->analysisConfig[$type][$listItem];
+                }
             }
         }
 
@@ -218,10 +219,10 @@ class DocumentParser
     {
         $list = [];
 
-        foreach (
-            new \RecursiveIteratorIterator(
-                new \RecursiveArrayIterator($array), \RecursiveIteratorIterator::SELF_FIRST
-            ) as $key => $value ){
+        foreach (new \RecursiveIteratorIterator(
+            new \RecursiveArrayIterator($array),
+            \RecursiveIteratorIterator::SELF_FIRST
+        ) as $key => $value) {
             if ($key === $searchKey) {
                 if (is_array($value)) {
                     $list = array_merge($list, $value);

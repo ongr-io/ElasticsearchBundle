@@ -23,7 +23,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexExportCommand extends AbstractManagerAwareCommand
 {
-    CONST NAME = 'ongr:es:index:export';
+    const NAME = 'ongr:es:index:export';
 
     /**
      * {@inheritdoc}

@@ -21,7 +21,7 @@ use Symfony\Component\Console\Input\InputOption;
  */
 abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
 {
-    CONST INDEX_OPTION = 'index';
+    const INDEX_OPTION = 'index';
 
     protected function configure()
     {

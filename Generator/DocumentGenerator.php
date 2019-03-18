@@ -27,7 +27,7 @@ class DocumentGenerator
      * @var string
      */
     private $getMethodTemplate =
-'
+    '
 public function get<methodName>(): string
 {
 <spaces>return $this-><fieldName>;
@@ -37,7 +37,7 @@ public function get<methodName>(): string
      * @var string
      */
     private $isMethodTemplate =
-'
+    '
 public function is<methodName>(): bool
 {
 <spaces>return $this-><fieldName>;
@@ -47,7 +47,7 @@ public function is<methodName>(): bool
      * @var string
      */
     private $setMethodTemplate =
-'
+    '
 public function set<methodName>($<fieldName>): $this
 {
 <spaces>$this-><fieldName> = $<fieldName>;
@@ -59,7 +59,7 @@ public function set<methodName>($<fieldName>): $this
      * @var string
      */
     private $constructorTemplate =
-'
+    '
 public function __construct()
 {
 <fields>

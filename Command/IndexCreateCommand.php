@@ -22,7 +22,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexCreateCommand extends AbstractManagerAwareCommand
 {
-    CONST NAME = 'ongr:es:index:create';
+    const NAME = 'ongr:es:index:create';
 
     /**
      * {@inheritdoc}
@@ -34,21 +34,36 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
         $this
             ->setName(self::NAME)
             ->setDescription('Creates the ElasticSearch index.')
-            ->addOption('time', 't', InputOption::VALUE_NONE, 'Adds date suffix to the new index name.')
+            ->addOption(
+                'time',
+                't',
+                InputOption::VALUE_NONE,
+                'Adds date suffix to the new index name.'
+            )
             ->addOption(
                 'alias',
                 'a',
                 InputOption::VALUE_NONE,
                 'Adds alias as it is defined in the Index document annotation.'
             )
-            ->addOption('no-mapping', null, InputOption::VALUE_NONE, 'Do not include mapping when the index is created.')
+            ->addOption(
+                'no-mapping',
+                null,
+                InputOption::VALUE_NONE,
+                'Do not include mapping when the index is created.'
+            )
             ->addOption(
                 'if-not-exists',
                 null,
                 InputOption::VALUE_NONE,
                 'Don\'t trigger an error, when the index already exists.'
             )
-            ->addOption('dump', null, InputOption::VALUE_NONE, 'Prints a json output of the index mapping.');
+            ->addOption(
+                'dump',
+                null,
+                InputOption::VALUE_NONE,
+                'Prints a json output of the index mapping.'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

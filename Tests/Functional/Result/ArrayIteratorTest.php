@@ -61,7 +61,8 @@ class ArrayIteratorTest extends AbstractElasticsearchTestCase
     {
         return [
           [DummyDocument::class],
-          [IndexWithFieldsDataDocument::class], //This index is with fields data true setting, the response comes back not in the _source bu _fields instead.
+          //This index is with fields data true setting, the response comes back not in the _source bu _fields instead.
+          [IndexWithFieldsDataDocument::class],
         ];
     }
 
@@ -75,7 +76,7 @@ class ArrayIteratorTest extends AbstractElasticsearchTestCase
         $match = new MatchAllQuery();
 
         $search = $index->createSearch()->addQuery($match);
-        $search->addSort( new FieldSort('_id', FieldSort::ASC));
+        $search->addSort(new FieldSort('_id', FieldSort::ASC));
 
         $iterator = $index->findArray($search);
 

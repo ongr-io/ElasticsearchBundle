@@ -51,8 +51,7 @@ class IndexService
         EventDispatcherInterface $eventDispatcher,
         Serializer $serializer,
         $tracer = null
-    )
-    {
+    ) {
         $this->namespace = $namespace;
         $this->converter = $converter;
         $this->parser = $parser;
@@ -196,7 +195,9 @@ class IndexService
 
         $result = $this->getClient()->get($requestParams);
 
-        if (!$result['found']) return null;
+        if (!$result['found']) {
+            return null;
+        }
 
         $result['_source']['_id'] = $result['_id'];
 
@@ -402,7 +403,7 @@ class IndexService
             '_id' => $data['_id'] ?? null,
         ];
 
-        unset ($data['_index'], $data['_type'], $data['_id']);
+        unset($data['_index'], $data['_type'], $data['_id']);
 
         $this->eventDispatcher->dispatch(
             Events::BULK,
@@ -411,7 +412,9 @@ class IndexService
 
         $this->bulkQueries[] = [ $operation => $bulkParams];
 
-        if (!empty($data)) $this->bulkQueries[] = $data;
+        if (!empty($data)) {
+            $this->bulkQueries[] = $data;
+        }
 
         $response = [];
 
@@ -439,7 +442,6 @@ class IndexService
     {
         $bulkResponse = [];
         if (!empty($this->bulkQueries)) {
-
             $this->eventDispatcher->dispatch(
                 Events::PRE_COMMIT,
                 new CommitEvent($commitMode, $this->bulkQueries, [])

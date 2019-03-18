@@ -19,13 +19,13 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
 
-    CONST ONGR_CACHE_CONFIG = 'ongr.esb.cache';
-    CONST ONGR_SOURCE_DIR = 'ongr.esb.source_dir';
-    CONST ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
-    CONST ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
-    CONST ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
-    CONST ONGR_INDEXES = 'ongr.esb.indexes';
-    CONST ONGR_DEFAULT_INDEX = 'ongr.esb.default_index';
+    const ONGR_CACHE_CONFIG = 'ongr.esb.cache';
+    const ONGR_SOURCE_DIR = 'ongr.esb.source_dir';
+    const ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
+    const ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
+    const ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
+    const ONGR_INDEXES = 'ongr.esb.indexes';
+    const ONGR_DEFAULT_INDEX = 'ongr.esb.default_index';
 
     public function getConfigTreeBuilder()
     {

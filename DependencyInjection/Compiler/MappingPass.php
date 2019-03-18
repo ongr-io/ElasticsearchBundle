@@ -28,12 +28,10 @@ class MappingPass implements CompilerPassInterface
 
         $indexes = [];
         $defaultIndex = null;
-        foreach (
-            $this->getNamespaces(
-                $container->getParameter('kernel.project_dir')
+        foreach ($this->getNamespaces(
+            $container->getParameter('kernel.project_dir')
                 .$container->getParameter(Configuration::ONGR_SOURCE_DIR)
-            ) as $namespace) {
-
+        ) as $namespace) {
             $indexMapping = $parser->getIndexMetadata($namespace);
             $indexAlias = $parser->getIndexAliasName($namespace);
             if (!empty($indexMapping)) {
@@ -92,7 +90,8 @@ class MappingPass implements CompilerPassInterface
         return $documents;
     }
 
-    private function getFullNamespace($filename) {
+    private function getFullNamespace($filename)
+    {
         $lines = preg_grep('/^namespace /', file($filename));
         $namespaceLine = array_shift($lines);
         $match = array();
@@ -102,7 +101,8 @@ class MappingPass implements CompilerPassInterface
         return $fullNamespace;
     }
 
-    private function getClassname($filename) {
+    private function getClassname($filename)
+    {
         $directoriesAndFilename = explode('/', $filename);
         $filename = array_pop($directoriesAndFilename);
         $nameAndExtension = explode('.', $filename);

@@ -87,6 +87,10 @@ class ElasticsearchBundleExtensionTest extends KernelTestCase
         $container = self::$kernel->getContainer();
 
         $this->assertTrue($container->has($id), sprintf('Container don\'t have %s service.', $id));
-        $this->assertInstanceOf($instance, $container->get($id), sprintf('The instance %s type is not as expected.', $id));
+        $this->assertInstanceOf(
+            $instance,
+            $container->get($id),
+            sprintf('The instance %s type is not as expected.', $id)
+        );
     }
 }

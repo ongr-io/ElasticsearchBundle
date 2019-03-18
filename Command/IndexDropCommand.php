@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class IndexDropCommand extends AbstractManagerAwareCommand
 {
-    CONST NAME = 'ongr:es:index:drop';
+    const NAME = 'ongr:es:index:drop';
 
     protected function configure()
     {

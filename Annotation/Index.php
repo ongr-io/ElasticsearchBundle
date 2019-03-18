@@ -47,8 +47,8 @@ final class Index extends AbstractAnnotation
     public $typeName = '_doc';
 
     /**
-     * You can select one of your indexes to be default. Useful for cli commands when you don't need to define an alias name.
-     * If default is not set the first index found will be set as default one.
+     * You can select one of your indexes to be default. Useful for cli commands when you don't
+     *   need to define an alias name. If default is not set the first index found will be set as default one.
      */
     public $default = false;
 }

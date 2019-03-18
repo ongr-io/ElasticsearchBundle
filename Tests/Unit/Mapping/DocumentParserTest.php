@@ -22,7 +22,8 @@ class DocumentParserTest extends \PHPUnit\Framework\TestCase
     public function testDocumentParsing()
     {
         $namespace = 'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\DummyDocumentInTheEntityDirectory';
-        $parser = new DocumentParser(new AnnotationReader());;
+        $parser = new DocumentParser(new AnnotationReader());
+        ;
 
         $indexMetadata = $parser->getIndexMetadata($namespace);
 

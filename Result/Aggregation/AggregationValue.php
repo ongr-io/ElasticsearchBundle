@@ -16,8 +16,8 @@ namespace ONGR\ElasticsearchBundle\Result\Aggregation;
  */
 class AggregationValue implements \ArrayAccess, \IteratorAggregate
 {
-    CONST BUCKETS_KEY = 'buckets';
-    CONST DOC_COUNT_KEY = 'doc_count';
+    const BUCKETS_KEY = 'buckets';
+    const DOC_COUNT_KEY = 'doc_count';
 
     /**
      * @var array

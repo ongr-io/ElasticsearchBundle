@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class DocumentGenerateCommand extends AbstractManagerAwareCommand
 {
-    CONST NAME = 'ongr:es:document:generate';
+    const NAME = 'ongr:es:document:generate';
 
     /**
      * @var QuestionHelper

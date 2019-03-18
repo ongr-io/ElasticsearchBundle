@@ -96,7 +96,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     protected function getIndex($namespace, $createIndex = true): IndexService
     {
         try {
-
             if (!array_key_exists($namespace, $this->indexes)) {
                 $this->indexes[$namespace] = $this->getContainer()->get($namespace);
             }
@@ -113,7 +112,6 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
             }
 
             return $this->indexes[$namespace];
-
         } catch (BadRequest400Exception $e) {
             throw new \LogicException($e->getMessage());
         } catch (\Exception $e) {

@@ -23,7 +23,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexImportCommand extends AbstractManagerAwareCommand
 {
-    CONST NAME = 'ongr:es:index:import';
+    const NAME = 'ongr:es:index:import';
     /**
      * {@inheritdoc}
      */

@@ -8,8 +8,8 @@ env:
   global:
     - ES_VERSION=6.2.3 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
   matrix:
-    - SYMFONY="~3.5"
-    - SYMFONY="^4.0"
+    - SYMFONY="~3.4"
+    - SYMFONY="^4.1"
 install:
   - wget ${ES_DOWNLOAD_URL}
   - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
@@ -20,7 +20,7 @@ before_script:
   - composer install --no-interaction --prefer-dist
 script:
   - wget -q --waitretry=1 --retry-connrefused -T 10 -O - http://127.0.0.1:9200
-  - vendor/bin/phpunit --coverage-clover=coverage.clover
-  - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/ ./
+  - vendor/bin/phpunit --coverage-clover=coverage.clover --testsuite=Functional
+  - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/,var/cache ./
 after_script:
   - travis_retry php vendor/bin/coveralls
