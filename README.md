@@ -4,21 +4,21 @@ Elasticsearch Bundle was created in order to serve the need for
 professional [Elasticsearch][1] integration with enterprise level Symfony
 applications. This bundle is:
 
-* Supported by [ONGR.io][2] development team.
-* Uses the official [elasticsearch-php][3] client.
-* Ensures full integration with Symfony framework.
+* Uses the official [elasticsearch-php][2] client.
+* Ensures full integration with Symfony framework and Symfony Flex.
 
 Technical goodies:
 
-* Provides interactive Document object generator via CLI (`ongr:es:document:generate`)
-* Provides DSL query builder to be executed by type repository services.
-* Uses Doctrine-like documents(entities) document-object mapping using annotations.
-* Query results iterators are provided for your convenience.
-* Console CLI commands for index and types management and data import / export.
+* Provides a DSL query builder which represent all ElasticSearch endpoints in the objective way.
+* Provides interactive Document object generator via CLI command (`ongr:es:document:generate`)
+* Creates a familiar Doctrine-like way to work with documents(entities) document-object mapping using annotations.
+* Several query results iterators are provided for your convenience to work with results.
+* Console CLI commands for the index management and data import/export/reindex.
 * Profiler that integrates in the Symfony debug bar and shows all executed queries.
 * Designed in an extensible way for all your custom needs.
+* Supports Symfony FLEX.
 
-If you need any help, [stack overflow][4]
+If you need any help, [stack overflow][3] is the preferred way to get answers.
 is the preferred and recommended way to ask questions about ONGR bundles and libraries.
 
 
@@ -31,46 +31,44 @@ is the preferred and recommended way to ask questions about ONGR bundles and lib
 
 ## Version matrix
 
-| Elasticsearch version | ElasticsearchBundle version |
-| --------------------- | --------------------------- |
-| >= 5.0                | ~5.x                        |
-| >= 2.0, < 5.0         | >=1.0, < 5.0                |
-| >= 1.0, < 2.0         | >= 0.10, < 1.0              |
-| <= 0.90.x             | < 0.10                      |
+| Elasticsearch version | ElasticsearchBundle version      |
+| --------------------- | -------------------------------- |
+| >= 6.0                | ~6.x                             |
+| >= 5.0, < 5.0         | ~5.x, ~6.x (indexes with 1 type) |
+| >= 2.0, < 5.0         | >=1.0, < 5.0                     |
+| >= 1.0, < 2.0         | >= 0.10, < 1.0                   |
+| <= 0.90.x             | < 0.10                           |
 
 ## Documentation
 
-The online documentation of the bundle can be found in [http://docs.ongr.io][5].
-Docs source is stored within the repo under `Resources/doc/`, so if you see a typo or problem, please submit a PR to fix it!
+The online documentation of the bundle can be found in [http://docs.ongr.io][4].
+Docs source is stored within the repo under `Resources/doc/`, so if you see a typo or some inaccuracy, please submit a PR or at least an issue to fix it!
 
-For contribution to the documentation you can find it in the [contribute][6] topic.
+*For contribution to the documentation you can find it in the [contribute][5] topic.*
 
 ## FAQ
-* [Mapping explained][7]
-* [Using Meta-Fields][8]
-* [Configuration][9]
-* [Console commands][10]
-* [How to do a simple CRUD actions][11]
-* [Quick find functions][12]
-* [How to search the index][13]
-* [Scan through the index][14]
-* [Parsing the results][15]
+* [Index mapping][6]
+* [Configuration][7]
+* [Console commands][8]
+* [How to do simple CRUD actions][9]
+* [Quick find functions][10]
+* [How to execute search in the index][11]
+* [Parsing the results][12]
 
 ## Setup the bundle
 
 #### Step 1: Install Elasticsearch bundle
 
-Elasticsearch bundle is installed using [Composer][16].
+Elasticsearch bundle is installed using [Composer][13].
 
 ```bash
-php composer.phar require ongr/elasticsearch-bundle "~5.0"
-
+php composer.phar require ongr/elasticsearch-bundle "~6.0"
 ```
 
 > Instructions for installing and deploying Elasticsearch can be found in
- [Elasticsearch installation page][17].
+ [Elasticsearch installation page][14].
 
-Enable Elasticsearch bundle in your AppKernel:
+Enable ElasticSearch bundle in your AppKernel:
 
 ```php
 // app/AppKernel.php
@@ -87,33 +85,35 @@ public function registerBundles()
 
 ```
 
-#### Step 2: Add configuration
+#### (OPTIONAL) Step 2: Add configuration 
 
 Add minimal configuration for Elasticsearch bundle.
 
 ```yaml
 
 # app/config/config.yml
-
 ongr_elasticsearch:
-    managers:
-        default:
-            index:
-                index_name: acme
-            mappings:
-                - AppBundle
+    analysis:
+        filter:
+            edge_ngram_filter: #-> your custom filter name to use in the analyzer below
+                type: edge_ngram 
+                min_gram: 1
+                max_gram: 20
+        analyzer:
+            eNgramAnalyzer: #-> analyzer name to use in the document field
+                type: custom
+                tokenizer: standard
+                filter:
+                    - lowercase
+                    - edge_ngram_filter #that's the filter defined earlier
 
 ```
 
 > This is the very basic example only, for more information, please take a look at the [configuration][9] chapter.
 
-In this particular example there are 2 things you should know. The index name in the index node and the mappings.
- Mappings is the place where your documents are stored (more info at [the mapping chapter][7]).
-
-
 #### Step 3: Define your Elasticsearch types as `Document` objects
 
-This bundle uses objects to represent Elasticsearch documents. Lets create a `Customer` class for customer document.
+This bundle uses objects to represent Elasticsearch documents. Lets create the `Product` class for the `products` index.
 
 ```php
 // src/AppBundle/Document/Customer.php
@@ -123,77 +123,74 @@ namespace AppBundle\Document;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Document()
+ * //alias and default parameters in the annotation are optional. 
+ * @ES\Document(alias="products", default=true)
  */
-class Customer
+class Product
 {
     /**
-     * @var string
-     *
      * @ES\Id()
      */
     public $id;
 
     /**
-     * @var string
-     *
-     * @ES\Property(type="text")
+     * @ES\Property(type="text", "analyzer"="eNgramAnalyzer")
      */
-    public $name;
+    public $title;
+
+    /**
+     * @ES\Property(type="float")
+     */
+    public $price;
 }
 
 ```
 
-> This is the basic example only, for more information about mapping, please take a look
- at the [the mapping chapter][7].
+> This is the basic example only, for more information about a mapping, please take a look
+ at the [the mapping chapter][6].
 
 
 #### Step 4: Create index and mappings
 
-Elasticsearch bundle provides several `CLI` commands. One of them is for creating index, run command in your terminal:
+Elasticsearch bundle provides several `CLI` commands. One of them is for creating an index, run the command in your terminal:
 
 ```bash
 
 bin/console ongr:es:index:create
 
 ```
+Now the `products` index should be created with fields from your document.  
 
-> More info about the rest of the commands can be found in the [commands chapter][10].
+> More info about the rest of the commands can be found in the [commands chapter][8].
 
 
 #### Step 5: Enjoy with the Elasticsearch
 
-We advise to take a look at the [mapping chapter][7] to configure the index.
-Search documentation for the Elasticsearch bundle is [available here][13].
-And finally it's up to you what amazing things you are going to create :sunglasses: .
+Full documentation for the Elasticsearch bundle is [available here][4].
+I hope you will create amazing things with it :sunglasses: .
 
 ## Troubleshooting
-* [How to upgrade from the older versions?][18]
-* [How to overwrite some parts of the bundle?][19]
+* [How to upgrade from the older versions?][15]
+* [How to overwrite some parts of the bundle?][16]
 
 ## License
 
-This bundle is licensed under the MIT license. Please, see the complete license
+This bundle is licensed under the [MIT license](LICENSE). Please, see the complete license
 in the bundle `LICENSE` file.
 
-
-
 [1]: https://www.elastic.co/products/elasticsearch
-[2]: http://ongr.io
-[3]: https://github.com/elastic/elasticsearch-php
-[4]: http://stackoverflow.com/questions/tagged/ongr
-[5]: http://docs.ongr.io/ElasticsearchBundle
-[6]: http://docs.ongr.io/common/Contributing
-[7]: http://docs.ongr.io/ElasticsearchBundle/mapping
-[8]: http://docs.ongr.io/ElasticsearchBundle/meta_fields
-[9]: http://docs.ongr.io/ElasticsearchBundle/configuration
-[10]: http://docs.ongr.io/ElasticsearchBundle/commands
-[11]: http://docs.ongr.io/ElasticsearchBundle/crud
-[12]: http://docs.ongr.io/ElasticsearchBundle/find_functions
-[13]: http://docs.ongr.io/ElasticsearchBundle/search
-[14]: http://docs.ongr.io/ElasticsearchBundle/scan
-[15]: http://docs.ongr.io/ElasticsearchBundle/results_parsing
-[16]: https://getcomposer.org
-[17]: https://www.elastic.co/downloads/elasticsearch
-[18]: http://docs.ongr.io/ElasticsearchBundle/upgrade
-[19]: http://docs.ongr.io/ElasticsearchBundle/overwriting_bundle
+[2]: https://github.com/elastic/elasticsearch-php
+[3]: http://stackoverflow.com/questions/tagged/ongr
+[4]: http://docs.ongr.io/ElasticsearchBundle
+[5]: http://docs.ongr.io/common/Contributing
+[6]: http://docs.ongr.io/ElasticsearchBundle/mapping
+[7]: http://docs.ongr.io/ElasticsearchBundle/configuration
+[8]: http://docs.ongr.io/ElasticsearchBundle/commands
+[9]: http://docs.ongr.io/ElasticsearchBundle/crud
+[10]: http://docs.ongr.io/ElasticsearchBundle/find_functions
+[11]: http://docs.ongr.io/ElasticsearchBundle/search
+[12]: http://docs.ongr.io/ElasticsearchBundle/results_parsing
+[13]: https://getcomposer.org
+[14]: https://www.elastic.co/downloads/elasticsearch
+[15]: http://docs.ongr.io/ElasticsearchBundle/upgrade
+[16]: http://docs.ongr.io/ElasticsearchBundle/overwriting_bundle
