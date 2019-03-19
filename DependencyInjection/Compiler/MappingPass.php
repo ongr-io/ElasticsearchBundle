@@ -24,7 +24,6 @@ class MappingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $parser = $container->get(DocumentParser::class);
-        $cache = $container->get('ongr.esb.cache');
 
         $indexes = [];
         $defaultIndex = null;
@@ -47,7 +46,6 @@ class MappingPass implements CompilerPassInterface
                 $indexServiceDefinition->setPublic(true);
 
                 $container->setDefinition($namespace, $indexServiceDefinition);
-                $container->setAlias($indexAlias, $namespace);
                 $indexes[$indexAlias] = $namespace;
                 $isCurrentIndexDefault = $parser->isDefaultIndex($namespace);
                 if ($defaultIndex && $isCurrentIndexDefault) {
