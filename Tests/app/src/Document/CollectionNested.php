@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the ONGR package.
  *
@@ -9,16 +8,22 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document;
+namespace ONGR\App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * Subcategory object for testing.
- *
- * @ES\ObjectType
+ * @ES\NestedType()
  */
-class SubcategoryObject extends CategoryObject
+class CollectionNested
 {
+    /**
+     * @ES\Property(type="keyword")
+     */
+    public $key;
 
+    /**
+     * @ES\Property(type="keyword")
+     */
+    public $value;
 }

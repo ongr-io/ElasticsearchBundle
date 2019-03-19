@@ -9,13 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle;
-
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * AcmeTestBundle for testing.
+ * Interface which defines if the property will be included in to the index metadata.
  */
-class TestBundle extends Bundle
+interface PropertiesAwareInterface
 {
+    public function getName(): ?string;
 }

@@ -12,33 +12,10 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * Annotation to mark a class as an object during the parsing process.
- *
- * `Object` name as class name is forbidden in PHP 7 but we never create this
- *  class as object and only use it for annotation definition.
- *
  * @Annotation
  * @Target("CLASS")
  */
-final class ObjectType
+final class ObjectType extends AbstractAnnotation
 {
-    const NAME = 'object';
-
-    /**
-     * In this field you can define options.
-     *
-     * @var array
-     */
-    public $options = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function dump(array $exclude = [])
-    {
-        return array_diff_key(
-            $this->options,
-            $exclude
-        );
-    }
+    const TYPE = 'object';
 }

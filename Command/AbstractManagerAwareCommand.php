@@ -11,7 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Command;
 
-use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -20,55 +21,33 @@ use Symfony\Component\Console\Input\InputOption;
  */
 abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    const INDEX_OPTION = 'index';
+
     protected function configure()
     {
         $this->addOption(
-            'manager',
-            'm',
+            self::INDEX_OPTION,
+            'i',
             InputOption::VALUE_REQUIRED,
-            'Manager name',
-            'default'
+            'ElasticSearch index alias name or index name if you don\'t use aliases.'
         );
     }
 
-    /**
-     * Returns elasticsearch manager by name from service container.
-     *
-     * @param string $name Manager name defined in configuration.
-     *
-     * @return Manager
-     *
-     * @throws \RuntimeException If manager was not found.
-     */
-    protected function getManager($name)
+    protected function getIndex($name): IndexService
     {
-        $id = $this->getManagerId($name);
+        $name = $name ?? $this->getContainer()->getParameter(Configuration::ONGR_DEFAULT_INDEX);
+        $indexes = $this->getContainer()->getParameter(Configuration::ONGR_INDEXES);
 
-        if ($this->getContainer()->has($id)) {
-            return $this->getContainer()->get($id);
+        if (isset($indexes[$name]) && $this->getContainer()->has($indexes[$name])) {
+            return $this->getContainer()->get($indexes[$name]);
         }
 
         throw new \RuntimeException(
             sprintf(
-                'Manager named `%s` not found. Available: `%s`.',
+                'There is no index under `%s` name found. Available options: `%s`.',
                 $name,
-                implode('`, `', array_keys($this->getContainer()->getParameter('es.managers')))
+                implode('`, `', array_keys($this->getContainer()->getParameter(Configuration::ONGR_INDEXES)))
             )
         );
-    }
-
-    /**
-     * Formats manager service id from its name.
-     *
-     * @param string $name Manager name.
-     *
-     * @return string Service id.
-     */
-    private function getManagerId($name)
-    {
-        return sprintf('es.manager.%s', $name);
     }
 }

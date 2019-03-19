@@ -27,7 +27,6 @@ class AppKernel extends Kernel
         return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
-            new ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\TestBundle(),
         ];
     }
 

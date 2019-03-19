@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the ONGR package.
  *
@@ -9,18 +8,29 @@
  * file that was distributed with this source code.
  */
 
-namespace ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity;
+namespace ONGR\App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
  * @ES\ObjectType()
  */
-class CategoryObject
+class CollectionObject
 {
     /**
      * @var string
-     * @ES\Property(type="text", options={"index"="false"})
+     * @ES\Property(type="keyword", name="title")
      */
-    public $title;
+    private $title;
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): CollectionObject
+    {
+        $this->title = $title;
+        return $this;
+    }
 }

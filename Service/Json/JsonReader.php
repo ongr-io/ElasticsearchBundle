@@ -11,65 +11,35 @@
 
 namespace ONGR\ElasticsearchBundle\Service\Json;
 
-use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Reads records one by one.
+ *
+ * Sample input:
+ * <p>
+ * [
+ * {"count":2},
+ * {"_id":"doc1","title":"Document 1"},
+ * {"_id":"doc2","title":"Document 2"}
+ * ]
+ * </p>
  */
 class JsonReader implements \Countable, \Iterator
 {
-    /**
-     * @var string
-     */
     private $filename;
-
-    /**
-     * @var resource A file system pointer resource.
-     */
     private $handle;
-
-    /**
-     * @var int
-     */
     private $key = 0;
-
-    /**
-     * @var string
-     */
     private $currentLine;
-
-    /**
-     * @var mixed
-     */
     private $metadata;
-
-    /**
-     * @var Manager
-     */
-    private $manager;
-
-    /**
-     * @var OptionsResolver
-     */
+    private $index;
     private $optionsResolver;
-
-    /**
-     * @var array
-     */
     private $options;
 
-    /**
-     * Constructor.
-     *
-     * @param Manager $manager
-     * @param string  $filename
-     * @param array   $options
-     *
-     */
-    public function __construct($manager, $filename, $options)
+    public function __construct(IndexService $index, string $filename, array $options = [])
     {
-        $this->manager = $manager;
+        $this->index = $index;
         $this->filename = $filename;
         $this->options = $options;
     }
@@ -84,23 +54,14 @@ class JsonReader implements \Countable, \Iterator
         }
     }
 
-    /**
-     * @return Manager
-     */
-    public function getManager()
+    public function getIndex(): IndexService
     {
-        return $this->manager;
+        return $this->index;
     }
 
-    /**
-     * Returns file handler.
-     *
-     * @return resource
-     *
-     * @throws \LogicException
-     */
     protected function getFileHandler()
     {
+        //Make sure the gzip option is resolved from a filename.
         if ($this->handle === null) {
             $isGzip = array_key_exists('gzip', $this->options);
 
@@ -119,11 +80,6 @@ class JsonReader implements \Countable, \Iterator
         return $this->handle;
     }
 
-    /**
-     * Reads metadata from file.
-     *
-     * @throws \InvalidArgumentException
-     */
     protected function readMetadata()
     {
         if ($this->metadata !== null) {
@@ -140,9 +96,6 @@ class JsonReader implements \Countable, \Iterator
         $this->metadata = json_decode(rtrim($line, ','), true);
     }
 
-    /**
-     * Reads single line from file.
-     */
     protected function readLine()
     {
         $buffer = '';
@@ -169,11 +122,6 @@ class JsonReader implements \Countable, \Iterator
         $this->currentLine = $this->getOptionsResolver()->resolve($data);
     }
 
-    /**
-     * Configures OptionResolver for resolving document metadata fields.
-     *
-     * @param OptionsResolver $resolver
-     */
     protected function configureResolver(OptionsResolver $resolver)
     {
         $resolver
@@ -185,11 +133,6 @@ class JsonReader implements \Countable, \Iterator
             ->addAllowedTypes('fields', 'array');
     }
 
-    /**
-     * Returns parsed current line.
-     *
-     * @return mixed
-     */
     public function current()
     {
         if ($this->currentLine === null) {
@@ -199,9 +142,6 @@ class JsonReader implements \Countable, \Iterator
         return $this->currentLine;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function next()
     {
         $this->readLine();
@@ -209,25 +149,16 @@ class JsonReader implements \Countable, \Iterator
         $this->key++;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function key()
     {
         return $this->key;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function valid()
     {
         return !feof($this->getFileHandler()) && $this->currentLine;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rewind()
     {
         rewind($this->getFileHandler());
@@ -236,9 +167,6 @@ class JsonReader implements \Countable, \Iterator
         $this->readLine();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function count()
     {
         $metadata = $this->getMetadata();
@@ -250,11 +178,6 @@ class JsonReader implements \Countable, \Iterator
         return $metadata['count'];
     }
 
-    /**
-     * Returns metadata.
-     *
-     * @return array|null
-     */
     public function getMetadata()
     {
         $this->readMetadata();
@@ -262,12 +185,7 @@ class JsonReader implements \Countable, \Iterator
         return $this->metadata;
     }
 
-    /**
-     * Returns configured options resolver instance.
-     *
-     * @return OptionsResolver
-     */
-    private function getOptionsResolver()
+    private function getOptionsResolver(): OptionsResolver
     {
         if (!$this->optionsResolver) {
             $this->optionsResolver = new OptionsResolver();

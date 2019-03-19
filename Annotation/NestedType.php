@@ -12,30 +12,10 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * Annotation to mark a class as a nested type during the parsing process.
- *
  * @Annotation
  * @Target("CLASS")
  */
-final class NestedType
+final class NestedType extends AbstractAnnotation
 {
-    const NAME = 'nested';
-
-    /**
-     * In this field you can define options.
-     *
-     * @var array
-     */
-    public $options = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function dump(array $exclude = [])
-    {
-        return array_diff_key(
-            $this->options,
-            $exclude
-        );
-    }
+    const TYPE = 'nested';
 }

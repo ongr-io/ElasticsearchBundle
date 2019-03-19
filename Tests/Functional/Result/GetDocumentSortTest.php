@@ -11,53 +11,47 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class GetDocumentSortTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function getDataArray()
     {
         return [
-            'default' => [
-                'product' => [
-                    [
-                        '_id' => 'doc1',
-                        'title' => 'Foo Product',
-                        'price' => 5.00,
-                    ],
-                    [
-                        '_id' => 'doc2',
-                        'title' => 'Bar Product',
-                        'price' => 8.33,
-                    ],
-                    [
-                        '_id' => 'doc3',
-                        'title' => 'Lao Product',
-                        'price' => 1.95,
-                    ],
+            DummyDocument::class => [
+                [
+                    '_id' => 'doc1',
+                    'title' => 'Foo Product',
+                    'number' => 5.00,
+                ],
+                [
+                    '_id' => 'doc2',
+                    'title' => 'Bar Product',
+                    'number' => 8.33,
+                ],
+                [
+                    '_id' => 'doc3',
+                    'title' => 'Lao Product',
+                    'number' => 1.95,
                 ],
             ],
         ];
     }
 
-    /**
-     * GetDocumentSort test.
-     */
     public function testGetDocumentSort()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('TestBundle:Product');
+        $index = $this->getIndex(DummyDocument::class);
+
         $match = new MatchAllQuery();
-        $sort = new FieldSort('price', 'asc');
-        $search = $repo->createSearch()->addQuery($match);
+        $sort = new FieldSort('number', 'asc');
+        $search = $index->createSearch()->addQuery($match);
         $search->addSort($sort);
-        $results = $repo->findDocuments($search);
+
+        $results = $index->findDocuments($search);
+
         $sort_result = [];
         $expected = [1.95, 5, 8.33];
 

@@ -17,23 +17,12 @@ namespace ONGR\ElasticsearchBundle\Annotation;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Id implements MetaField
+final class Id extends AbstractAnnotation implements MetaFieldInterface, PropertiesAwareInterface
 {
     const NAME = '_id';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return self::NAME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSettings()
-    {
-        return [];
     }
 }

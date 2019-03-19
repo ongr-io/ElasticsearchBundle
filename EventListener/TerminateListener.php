@@ -11,48 +11,31 @@
 
 namespace ONGR\ElasticsearchBundle\EventListener;
 
-use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Component\DependencyInjection\Container;
 
 class TerminateListener
 {
-    /**
-     * @var Container
-     */
     private $container;
+    private $indexes;
 
     /**
-     * @var array
-     */
-    private $managers;
-
-    /**
-     * Constructor
-     *
      * @param Container $container
-     * @param array     $managers
+     * @param IndexService[]     $managers
      */
-    public function __construct(Container $container, array $managers)
+    public function __construct(Container $container, array $indexes)
     {
         $this->container = $container;
-        $this->managers = $managers;
+        $this->indexes = $indexes;
     }
 
     /**
-     * Forces commit to elasticsearch on kernel terminate
+     * Forces commit to the elasticsearch on kernel terminate event
      */
     public function onKernelTerminate()
     {
-        foreach ($this->managers as $key => $value) {
-            if ($value['force_commit']) {
-                try {
-                    /** @var Manager $manager */
-                    $manager = $this->container->get(sprintf('es.manager.%s', $key));
-                } catch (\Exception $e) {
-                    continue;
-                }
-                $manager->commit();
-            }
-        }
+//        foreach ($this->indexes as $key => $index) {
+//            $index->commit();
+//        }
     }
 }

@@ -11,43 +11,29 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
-use Doctrine\Common\Collections\Collection;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
-use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\Service\Repository;
+use ONGR\App\Document\CollectionNested;
+use ONGR\App\Document\DummyDocument;
+use ONGR\ElasticsearchBundle\Result\ObjectIterator;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class ObjectIteratorTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function getDataArray()
     {
         return [
-            'default' => [
-                'product' => [
-                    [
-                        '_id' => 'doc1',
-                        'title' => 'Foo Product',
-                        'related_categories' => [
-                            [
-                                'title' => 'Acme',
-                            ],
+            DummyDocument::class => [
+                [
+                    '_id' => 1,
+                    'title' => 'foo',
+                    'nested_collection' => [
+                        [
+                            'key' => 'foo',
+                            'value' => 'bar'
                         ],
-                    ],
-                    [
-                        '_id' => 'doc2',
-                        'title' => 'Bar Product',
-                        'related_categories' => [
-                            [
-                                'title' => 'Acme',
-                                'color' => 'blue',
-                            ],
-                            [
-                                'title' => 'Bar',
-                            ],
+                        [
+                            'key' => 'acme',
+                            'value' => 'delta',
                         ],
                     ],
                 ],
@@ -56,130 +42,20 @@ class ObjectIteratorTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * @param string $id
-     *
-     * @return Collection
-     */
-    protected function getCategoriesForProduct($id)
-    {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('TestBundle:Product');
-
-        /** @var Product $document */
-        $document = $repo->find($id);
-
-        return $document->getRelatedCategories();
-    }
-
-    /**
      * Iteration test.
      */
     public function testIteration()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('TestBundle:Product');
-        $match = new MatchAllQuery();
-        $search = $repo->createSearch()->addQuery($match);
-        $iterator = $repo->findDocuments($search);
+        /** @var IndexService $index */
+        $index = $this->getIndex(DummyDocument::class);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
+        /** @var DummyDocument $document */
+        $document = $index->find(1);
 
-        foreach ($iterator as $document) {
-            $categories = $document->getRelatedCategories();
+        $this->assertInstanceOf(ObjectIterator::class, $document->getNestedCollection());
 
-            $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
-                $document
-            );
-
-            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $categories);
-            $this->assertNotNull($categories[0]);
-        }
-    }
-
-    public function testGetItem()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $this->assertNotNull($categories->get(1));
-    }
-
-    public function testGetFirstItem()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $this->assertNotNull($categories->first());
-    }
-
-    public function testGetLastItem()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $this->assertNotNull($categories->last());
-    }
-
-    public function testGetNextItem()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $this->assertNotNull($categories->next());
-    }
-
-    public function testGetCurrentItem()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $this->assertNotNull($categories->current());
-    }
-
-    public function testCollectionGetValues()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $values = $categories->getValues();
-
-        foreach ($values as $value) {
-            $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject',
-                $value
-            );
-        }
-    }
-
-    public function testCollectionMap()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $mapped = $categories->map(function (CategoryObject $category) {
-            $category->setTitle($category->getTitle() . '!');
-            return $category;
-        });
-
-        $this->assertEquals('Acme!', $mapped[0]->getTitle());
-    }
-
-    public function testCollectionFilter()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $filtered = $categories->filter(function (CategoryObject $category) {
-            return $category->getTitle() === 'Acme';
-        });
-
-        $this->assertCount(1, $filtered);
-    }
-
-    public function testCollectionToArray()
-    {
-        $categories = $this->getCategoriesForProduct('doc2');
-
-        $values = $categories->toArray();
-
-        foreach ($values as $value) {
-            $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject',
-                $value
-            );
+        foreach ($document->getNestedCollection() as $obj) {
+            $this->assertInstanceOf(CollectionNested::class, $obj);
         }
     }
 }

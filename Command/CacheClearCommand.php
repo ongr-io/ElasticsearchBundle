@@ -20,6 +20,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class CacheClearCommand extends AbstractManagerAwareCommand
 {
+    const NAME = 'ongr:es:cache:clear';
+
     /**
      * {@inheritdoc}
      */
@@ -28,8 +30,8 @@ class CacheClearCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:cache:clear')
-            ->setDescription('Clears elasticsearch client cache.');
+            ->setName(self::NAME)
+            ->setDescription('Clears ElasticSearch client\'s cache.');
     }
 
     /**
@@ -38,13 +40,13 @@ class CacheClearCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $this
-            ->getManager($input->getOption('manager'))
-            ->clearCache();
+        $index = $this->getIndex($input->getOption('index'));
+        $index->clearCache();
+
         $io->success(
             sprintf(
-                'Elasticsearch index cache has been cleared for manager named `%s`',
-                $input->getOption('manager')
+                'Elasticsearch `%s` index cache has been cleared.',
+                $index->getIndexName()
             )
         );
     }

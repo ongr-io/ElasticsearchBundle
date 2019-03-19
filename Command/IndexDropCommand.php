@@ -16,48 +16,45 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Command for dropping Elasticsearch index.
- */
 class IndexDropCommand extends AbstractManagerAwareCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    const NAME = 'ongr:es:index:drop';
+
     protected function configure()
     {
         parent::configure();
 
         $this
-            ->setName('ongr:es:index:drop')
-            ->setDescription('Drops elasticsearch index.')
+            ->setName(self::NAME)
+            ->setDescription('Drops ElasticSearch index.')
             ->addOption(
                 'force',
                 'f',
                 InputOption::VALUE_NONE,
-                'Set this parameter to execute this command'
+                'Force option is mandatory to drop the index.'
             );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
         if ($input->getOption('force')) {
-            $this->getManager($input->getOption('manager'))->dropIndex();
+            $index = $this->getIndex($input->getOption(parent::INDEX_OPTION));
+
+            $client =
+
+            $result = $index->dropIndex();
 
             $io->text(
                 sprintf(
-                    'Dropped index for the <comment>`%s`</comment> manager',
-                    $input->getOption('manager')
+                    'The index <comment>`%s`</comment> was successfully dropped.',
+                    $index->getIndexName()
                 )
             );
         } else {
-            $io->error('ATTENTION:');
+            $io->error('WARNING:');
             $io->text('This action should not be used in the production environment.');
-            $io->error('Option --force is mandatory to drop type(s).');
+            $io->error('Option --force is mandatory to drop the index.');
         }
     }
 }

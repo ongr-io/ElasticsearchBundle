@@ -11,83 +11,37 @@
 
 namespace ONGR\ElasticsearchBundle\Result;
 
-use ONGR\ElasticsearchBundle\Service\Manager;
+use ONGR\ElasticsearchBundle\Mapping\Converter;
+use ONGR\ElasticsearchBundle\Service\IndexService;
+use Symfony\Component\Serializer\Serializer;
 
-/**
- * Class AbstractResultsIterator.
- */
 abstract class AbstractResultsIterator implements \Countable, \Iterator
 {
-    /**
-     * Raw data returned from elasticsearch.
-     *
-     * @var array
-     */
-    private $raw;
-
-    /**
-     * @var array Documents.
-     */
-    protected $documents = [];
-
-    /**
-     * @var int
-     */
     private $count = 0;
-
-    /**
-     * @var array
-     */
-    private $aggregations = [];
-
-    /**
-     * @var Converter
-     */
-    private $converter;
-
-    /**
-     * @var Manager
-     */
-    private $manager;
-
-    /**
-     * Elasticsearch manager configuration.
-     *
-     * @var array
-     */
-    private $managerConfig = [];
-
-    /**
-     * @var string If value is not null then results are scrollable.
-     */
+    private $raw;
     private $scrollId;
-
-    /**
-     * @var string Scroll duration.
-     */
     private $scrollDuration;
 
-    /**
-     * Used to count iteration.
-     *
-     * @var int
-     */
-    private $key = 0;
+    protected $documents = [];
+    private $aggregations = [];
 
-    /**
-     * @param array   $rawData
-     * @param Manager $manager
-     * @param array   $scroll
-     */
+    private $converter;
+    private $index;
+
+    //Used to count scroll iteration.
+    private $key = 0;
+    protected $serializer;
+
     public function __construct(
         array $rawData,
-        Manager $manager,
+        IndexService $index,
+        Converter $converter = null,
+        Serializer $serializer = null,
         array $scroll = []
     ) {
         $this->raw = $rawData;
-        $this->manager = $manager;
-        $this->converter = $manager->getConverter();
-        $this->managerConfig = $manager->getConfig();
+        $this->converter = $converter;
+        $this->index = $index;
 
         if (isset($scroll['_scroll_id']) && isset($scroll['duration'])) {
             $this->scrollId = $scroll['_scroll_id'];
@@ -104,16 +58,14 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
         if (isset($rawData['hits']['total'])) {
             $this->count = $rawData['hits']['total'];
         }
+        $this->serializer = $serializer;
     }
 
-    /**
-     * Destructor.
-     */
     public function __destruct()
     {
         // Clear scroll if initialized
         if ($this->isScrollable()) {
-            $this->manager->clearScroll($this->scrollId);
+            $this->index->clearScroll($this->scrollId);
         }
     }
 
@@ -149,14 +101,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
-     * @return Manager
-     */
-    protected function getManager()
-    {
-        return $this->manager;
-    }
-
-    /**
      * Returns total count of documents.
      *
      * @return int
@@ -168,8 +112,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
 
     /**
      * Return the current element.
-     *
-     * @return mixed
      */
     public function current()
     {
@@ -177,29 +119,25 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
-     * Move forward to next element.
+     * Move forward to the next element.
      */
-    public function next()
+    public function next(): self
     {
-        $this->advanceKey();
+        return $this->advanceKey();
     }
 
     /**
      * Return the key of the current element.
-     *
-     * @return mixed
      */
-    public function key()
+    public function key(): int
     {
         return $this->key;
     }
 
     /**
      * Checks if current position is valid.
-     *
-     * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         if (!isset($this->documents)) {
             return false;
@@ -218,43 +156,30 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
      * Rewind the Iterator to the first element.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->key = 0;
     }
 
-    /**
-     * @return bool
-     */
-    public function isScrollable()
+    public function isScrollable(): bool
     {
         return !empty($this->scrollId);
     }
 
-    /**
-     * @return array
-     */
-    protected function getManagerConfig()
-    {
-        return $this->managerConfig;
-    }
-
-    /**
-     * @return Converter
-     */
-    protected function getConverter()
+    protected function getConverter(): Converter
     {
         return $this->converter;
     }
 
+    public function getIndex(): IndexService
+    {
+        return $this->index;
+    }
+
     /**
      * Gets document array from the container.
-     *
-     * @param mixed $key
-     *
-     * @return mixed
      */
-    protected function getDocument($key)
+    protected function getDocument(int $key)
     {
         if (!$this->documentExists($key)) {
             return null;
@@ -264,13 +189,9 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
-     * Checks whether document exists in the container.
-     *
-     * @param mixed $key
-     *
-     * @return bool
+     * Checks if a document exists in the local cache container.
      */
-    protected function documentExists($key)
+    protected function documentExists(int $key): bool
     {
         return array_key_exists($key, $this->documents);
     }
@@ -280,7 +201,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      *
      * @return $this
      */
-    protected function advanceKey()
+    protected function advanceKey(): self
     {
         if ($this->isScrollable() && ($this->documents[$this->key()] == end($this->documents))) {
             $this->page();
@@ -293,8 +214,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
 
     /**
      * Rewind's the iteration and returns first result.
-     *
-     * @return mixed|null
      */
     public function first()
     {
@@ -303,25 +222,20 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
         return $this->getDocument($this->key());
     }
 
-    /**
-     * Advances scan page.
-     *
-     * @return $this
-     */
-    protected function page()
+    protected function page(): self
     {
         if ($this->key() == $this->count() || !$this->isScrollable()) {
             return $this;
         }
 
-//        $raw = $this->manager->scroll($this->scrollId, $this->scrollDuration, Result::RESULTS_RAW);
-        $raw = $this->manager->getClient()->scroll(
+        $raw = $this->index->getClient()->scroll(
             [
                 'scroll' => $this->scrollDuration,
                 'scroll_id' => $this->scrollId,
             ]
         );
         $this->rewind();
+
         $this->scrollId = $raw['_scroll_id'];
         $this->documents = $raw['hits']['hits'];
 
@@ -330,10 +244,8 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
 
     /**
      * Returns score of current hit.
-     *
-     * @return int
      */
-    public function getDocumentScore()
+    public function getDocumentScore(): int
     {
         if (!$this->valid()) {
             throw new \LogicException('Document score is available only while iterating over results.');
@@ -343,13 +255,11 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
             return null;
         }
 
-        return $this->documents[$this->key]['_score'];
+        return (int) $this->documents[$this->key]['_score'];
     }
 
     /**
     * Returns sort of current hit.
-    *
-    * @return mixed
     */
     public function getDocumentSort()
     {
@@ -365,11 +275,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     }
 
     /**
-     * Converts raw array to document object or array, depends on iterator type.
-     *
-     * @param array $document
-     *
-     * @return object|array
+     * Convert`s raw array to a document object or a normalized array, depends on the iterator type.
      */
-    abstract protected function convertDocument(array $document);
+    abstract protected function convertDocument(array $raw);
 }

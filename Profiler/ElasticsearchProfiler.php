@@ -24,44 +24,22 @@ class ElasticsearchProfiler implements DataCollectorInterface
 {
     const UNDEFINED_ROUTE = 'undefined_route';
 
-    /**
-     * @var Logger[] Watched loggers.
-     */
     private $loggers = [];
-
-    /**
-     * @var array Queries array.
-     */
     private $queries = [];
-
-    /**
-     * @var int Query count.
-     */
     private $count = 0;
-
-    /**
-     * @var float Time all queries took.
-     */
     private $time = .0;
+    private $indexes = [];
 
-    /**
-     * @var array Registered managers.
-     */
-    private $managers = [];
-
-    /**
-     * Adds logger to look for collector handler.
-     *
-     * @param Logger $logger
-     */
     public function addLogger(Logger $logger)
     {
         $this->loggers[] = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    public function setIndexes(array $indexes): void
+    {
+        $this->indexes = $indexes;
+    }
+
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         /** @var Logger $logger */
@@ -75,9 +53,6 @@ class ElasticsearchProfiler implements DataCollectorInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function reset()
     {
         $this->queries = [];
@@ -85,22 +60,12 @@ class ElasticsearchProfiler implements DataCollectorInterface
         $this->time = 0;
     }
 
-    /**
-     * Returns total time queries took.
-     *
-     * @return string
-     */
-    public function getTime()
+    public function getTime(): float
     {
         return round($this->time * 1000, 2);
     }
 
-    /**
-     * Returns number of queries executed.
-     *
-     * @return int
-     */
-    public function getQueryCount()
+    public function getQueryCount(): int
     {
         return $this->count;
     }
@@ -116,47 +81,21 @@ class ElasticsearchProfiler implements DataCollectorInterface
      *
      * @return array
      */
-    public function getQueries()
+    public function getQueries(): array
     {
         return $this->queries;
     }
 
-    /**
-     * @return array
-     */
-    public function getManagers()
+    public function getIndexes(): array
     {
-        if (is_array(reset($this->managers))) {
-            foreach ($this->managers as $name => &$manager) {
-                $manager = $name === 'default' ? 'es.manager' : sprintf('es.manager.%s', $name);
-            }
-        }
-
-        return $this->managers;
+        return $this->indexes;
     }
 
-    /**
-     * @param array $managers
-     */
-    public function setManagers($managers)
-    {
-        $this->managers = $managers;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getName()
     {
         return 'ongr.profiler';
     }
 
-    /**
-     * Handles passed records.
-     *
-     * @param string $route
-     * @param array  $records
-     */
     private function handleRecords($route, $records)
     {
         $this->count += count($records) / 2;
@@ -173,13 +112,6 @@ class ElasticsearchProfiler implements DataCollectorInterface
         }
     }
 
-    /**
-     * Adds query to collected data array.
-     *
-     * @param string $route
-     * @param array  $record
-     * @param string $queryBody
-     */
     private function addQuery($route, $record, $queryBody)
     {
         parse_str(parse_url($record['context']['uri'], PHP_URL_QUERY), $httpParameters);
@@ -195,13 +127,6 @@ class ElasticsearchProfiler implements DataCollectorInterface
         );
     }
 
-    /**
-     * Returns route name from request.
-     *
-     * @param Request $request
-     *
-     * @return string
-     */
     private function getRoute(Request $request)
     {
         $route = $request->attributes->get('_route');

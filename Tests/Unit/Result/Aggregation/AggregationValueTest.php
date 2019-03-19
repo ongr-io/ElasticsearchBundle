@@ -91,7 +91,7 @@ class AggregationValueTest extends \PHPUnit\Framework\TestCase
     public function testGetBucketsNotSet()
     {
         $agg = new AggregationValue([]);
-        $this->assertNull($agg->getBuckets());
+        $this->assertEmpty($agg->getBuckets());
     }
 
     /**
@@ -196,19 +196,5 @@ class AggregationValueTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->assertCount(2, $buckets);
-    }
-
-    /**
-     * Test for getIterator() in case no buckets set.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Can not iterate over aggregation without buckets
-     */
-    public function testGetIteratorException()
-    {
-        $agg = new AggregationValue([]);
-        foreach ($agg as $bucket) {
-            // Just try to iterate
-        }
     }
 }

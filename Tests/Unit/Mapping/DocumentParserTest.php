@@ -11,39 +11,30 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Mapping;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use ONGR\ElasticsearchBundle\Annotation\Id;
+use ONGR\ElasticsearchBundle\Annotation\Index;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\LongDescriptionTrait;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 
 class DocumentParserTest extends \PHPUnit\Framework\TestCase
 {
-    /*
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    private $reader;
-
-    /*
-     * @var \ONGR\ElasticsearchBundle\Mapping\DocumentFinder
-     */
-    private $finder;
-
-    public function setUp()
+    public function testDocumentParsing()
     {
-        $this->reader = $this->getMockBuilder('Doctrine\Common\Annotations\Reader')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $namespace = 'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\DummyDocumentInTheEntityDirectory';
+        $parser = new DocumentParser(new AnnotationReader());
+        ;
 
-        $this->finder = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\DocumentFinder')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
+        $indexMetadata = $parser->getIndexMetadata($namespace);
 
-    public function testReturnFalseOnTrait()
-    {
-        $traitReflection = new \ReflectionClass(
-            '\\ONGR\\ElasticsearchBundle\\Tests\\app\\fixture\\TestBundle\\Document\\LongDescriptionTrait'
-        );
-
-        $parser = new DocumentParser($this->reader, $this->finder);
-        $this->assertFalse($parser->parse($traitReflection));
+        $expected = [
+            'settings' => [],
+            'mapping' => [
+                'keyword_field' => [
+                    'type' => 'keyword',
+                ]
+            ]
+        ];
+        $this->assertEquals($expected, $indexMetadata);
     }
 }

@@ -11,39 +11,68 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
+use ONGR\App\Document\CollectionNested;
+use ONGR\App\Document\CollectionObject;
+use ONGR\App\Document\DummyDocument;
+use ONGR\ElasticsearchBundle\Result\DocumentIterator;
+use ONGR\ElasticsearchBundle\Result\ObjectIterator;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class DocumentIteratorTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function getDataArray()
     {
         return [
-            'default' => [
-                'product' => [
-                    [
-                        '_id' => 'doc1',
-                        'title' => 'Foo Product',
-                        'related_categories' => [
-                            [
-                                'title' => 'Acme',
-                            ],
+            DummyDocument::class => [
+                [
+                    '_id' => 1,
+                    'title' => 'foo',
+                    'nested_collection' => [
+                        [
+                            'key' => 'foo',
+                            'value' => 'bar'
+                        ],
+                        [
+                            'key' => 'acme',
+                            'value' => 'delta',
                         ],
                     ],
-                    [
-                        '_id' => 'doc2',
-                        'title' => 'Bar Product',
-                        'related_categories' => [
-                            [
-                                'title' => 'Acme',
-                            ],
-                            [
-                                'title' => 'Bar',
-                            ],
+                    'object_collection' => [
+                        [
+                            'title' => 'acme',
+                        ],
+                        [
+                            'title' => 'foo',
+                        ],
+                        [
+                            'title' => 'bar',
+                        ],
+                    ],
+                ],
+                [
+                    '_id' => 2,
+                    'title' => 'foo',
+                    'nested_collection' => [
+                        [
+                            'key' => 'foo',
+                            'value' => 'bar'
+                        ],
+                        [
+                            'key' => 'acme',
+                            'value' => 'delta',
+                        ],
+                    ],
+                    'object_collection' => [
+                        [
+                            'title' => 'acme',
+                        ],
+                        [
+                            'title' => 'foo',
+                        ],
+                        [
+                            'title' => 'bar',
                         ],
                     ],
                 ],
@@ -51,62 +80,33 @@ class DocumentIteratorTest extends AbstractElasticsearchTestCase
         ];
     }
 
-    /**
-     * Iteration test.
-     */
     public function testIteration()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('TestBundle:Product');
+        /** @var IndexService $index */
+        $index = $this->getIndex(DummyDocument::class);
         $match = new MatchAllQuery();
-        $search = $repo->createSearch()->addQuery($match);
-        $iterator = $repo->findDocuments($search);
+        $search = $index->createSearch()->addQuery($match);
+        $iterator = $index->findDocuments($search);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\DocumentIterator', $iterator);
+        $this->assertInstanceOf(DocumentIterator::class, $iterator);
 
+        /** @var DummyDocument $document */
         foreach ($iterator as $document) {
-            $categories = $document->getRelatedCategories();
+            $this->assertInstanceOf(DummyDocument::class, $document);
 
-            $this->assertInstanceOf(
-                'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product',
-                $document
-            );
-            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ObjectIterator', $categories);
+            $collection = $document->getNestedCollection();
+            $this->assertInstanceOf(ObjectIterator::class, $collection);
 
-            foreach ($categories as $category) {
-                $this->assertInstanceOf(
-                    'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject',
-                    $category
-                );
+            foreach ($collection as $obj) {
+                $this->assertInstanceOf(CollectionNested::class, $obj);
+            }
+
+            $collection = $document->getObjectCollection();
+            $this->assertInstanceOf(ObjectIterator::class, $collection);
+
+            foreach ($collection as $obj) {
+                $this->assertInstanceOf(CollectionObject::class, $obj);
             }
         }
-    }
-
-    /**
-     * Tests if current() returns null when data doesn't exist.
-     */
-    public function testCurrentWithEmptyIterator()
-    {
-        $repo = $this->getManager()->getRepository('TestBundle:User');
-        $search = $repo
-            ->createSearch()
-            ->addQuery(new MatchAllQuery());
-        $result = $repo->findDocuments($search);
-
-        $this->assertNull($result->current());
-    }
-
-    /**
-     * Tests AbstractResultsIterator#first method.
-     */
-    public function testIteratorFirst()
-    {
-        $repo = $this->getManager()->getRepository('TestBundle:Product');
-        $search = $repo
-            ->createSearch()
-            ->addQuery(new MatchAllQuery());
-        $document = $repo->findDocuments($search)->first();
-
-        $this->assertEquals('Foo Product', $document->getTitle());
     }
 }

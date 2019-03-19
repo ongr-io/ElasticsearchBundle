@@ -11,7 +11,6 @@
 
 namespace ONGR\ElasticsearchBundle\Command;
 
-use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +21,8 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class DocumentGenerateCommand extends AbstractManagerAwareCommand
 {
+    const NAME = 'ongr:es:document:generate';
+
     /**
      * @var QuestionHelper
      */
@@ -45,7 +46,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:document:generate')
+            ->setName(self::NAME)
             ->setDescription('Generates a new Elasticsearch document inside a bundle');
     }
 
@@ -75,7 +76,7 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                 '',
                 'This command helps you generate ONGRElasticsearchBundle documents.',
                 '',
-                'First, you need to give the document name you want to generate.',
+                'First, you need to give the document class name you want to generate.',
                 'You must use the shortcut notation like <comment>AcmeDemoBundle:Post</comment>.',
                 '',
             ]
@@ -368,18 +369,18 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
      */
     private function getDocumentClasses()
     {
-        /** @var MetadataCollector $metadataCollector */
-        $metadataCollector = $this->getContainer()->get('es.metadata_collector');
-        $classes = [];
-
-        foreach ($this->getContainer()->getParameter('es.managers') as $manager) {
-            $documents = $metadataCollector->getMappings($manager['mappings']);
-            foreach ($documents as $document) {
-                $classes[] = sprintf('%s:%s', $document['bundle'], $document['class']);
-            }
-        }
-
-        return $classes;
+//        /** @var MetadataCollector $metadataCollector */
+//        $metadataCollector = $this->getContainer()->get('es.metadata_collector');
+//        $classes = [];
+//
+//        foreach ($this->getContainer()->getParameter('es.managers') as $manager) {
+//            $documents = $metadataCollector->getMappings($manager['mappings']);
+//            foreach ($documents as $document) {
+//                $classes[] = sprintf('%s:%s', $document['bundle'], $document['class']);
+//            }
+//        }
+//        return $classes;
+        return [];
     }
 
     /**

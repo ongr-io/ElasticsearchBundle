@@ -11,42 +11,26 @@
 
 namespace ONGR\ElasticsearchBundle\Service;
 
-/**
- * Constructs index name with date's suffix.
- */
 class IndexSuffixFinder
 {
-    /**
-     * Constructs index name with date suffix. Sets name in the connection.
-     *
-     * E.g. 2022.03.22-5 (if 4 indexes exists already for given date)
-     *
-     * @param Manager        $manager Connection to act upon.
-     * @param null|\DateTime $time    Date for which the suffix will be based on.
-     *                                Current date if null.
-     *
-     * @return string
-     */
-    public function setNextFreeIndex(Manager $manager, \DateTime $time = null)
+    public function getNextFreeIndex(IndexService $index, \DateTime $time = null): string
     {
         if ($time === null) {
             $time = new \DateTime();
         }
 
         $date = $time->format('Y.m.d');
-        $indexName = $manager->getIndexName();
-
-        $nameBase = $indexName . '-' . $date;
-        $name = $nameBase;
+        $alias = $index->getIndexName();
+        $indexName = $alias . '-' . $date;
         $i = 0;
-        $manager->setIndexName($name);
 
-        while ($manager->indexExists()) {
+        $client = $index->getClient();
+
+        while ($client->indices()->exists(['index' => $indexName])) {
             $i++;
-            $name = "{$nameBase}-{$i}";
-            $manager->setIndexName($name);
+            $indexName = "{$indexName}-{$i}";
         }
 
-        return $name;
+        return $indexName;
     }
 }

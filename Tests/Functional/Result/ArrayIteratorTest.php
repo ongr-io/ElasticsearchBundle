@@ -11,83 +11,80 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
+use ONGR\App\Document\DummyDocument;
+use ONGR\App\Document\IndexWithFieldsDataDocument;
+use ONGR\ElasticsearchBundle\Result\ArrayIterator;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
-use ONGR\ElasticsearchBundle\Service\Repository;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Sort\FieldSort;
 
 class ArrayIteratorTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function getDataArray()
     {
         return [
-            'default' => [
-                'product' => [
-                    [
-                        '_id' => 'doc1',
-                        'title' => 'Foo Product',
-                        'related_categories' => [
-                            [
-                                'title' => 'Acme',
-                            ],
+            DummyDocument::class => [
+                [
+                    '_id' => 1,
+                    'title' => 'foo',
+                    'nested_collection' => [
+                        [
+                            'key' => 'foo',
+                            'value' => 'bar'
+                        ],
+                        [
+                            'key' => 'acme',
+                            'value' => 'delta',
                         ],
                     ],
-                    [
-                        '_id' => 'doc2',
-                        'title' => 'Bar Product',
-                        'related_categories' => [
-                            [
-                                'title' => 'Acme',
-                            ],
-                            [
-                                'title' => 'Bar',
-                            ],
-                        ],
-                    ],
+                ],
+                [
+                    '_id' => 2,
+                    'title' => 'foo',
+                ],
+            ],
+            IndexWithFieldsDataDocument::class => [
+                [
+                    '_id' => 1,
+                    'title' => 'foo',
+                ],
+                [
+                    '_id' => 2,
+                    'title' => 'bar',
                 ],
             ],
         ];
     }
 
-    /**
-     * Iteration test.
-     */
-    public function testIteration()
+    public function indexDataProvider()
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('TestBundle:Product');
-        $match = new MatchAllQuery();
-        $search = $repo->createSearch()->addQuery($match);
-        $iterator = $repo->findArray($search);
-
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ArrayIterator', $iterator);
-
-        $assertResults = $this->getDataArray();
-        foreach ($iterator as $key => $document) {
-            $assertDocument = $assertResults['default']['product'][$key];
-            unset($assertDocument['_id']);
-            $this->assertEquals($assertDocument, $document);
-        }
+        return [
+          [DummyDocument::class],
+          //This index is with fields data true setting, the response comes back not in the _source bu _fields instead.
+          [IndexWithFieldsDataDocument::class],
+        ];
     }
 
     /**
-     * Test array results iteration with fields set.
+     * @dataProvider indexDataProvider
      */
-    public function testIterationWhenFieldsAreSet()
+    public function testIteration($indexClass)
     {
-        /** @var Repository $repo */
-        $repo = $this->getManager()->getRepository('TestBundle:Product');
+        /** @var IndexService $index */
+        $index = $this->getIndex($indexClass);
         $match = new MatchAllQuery();
-        $search = $repo->createSearch()->addQuery($match);
-        $iterator = $repo->findArray($search);
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\ArrayIterator', $iterator);
+        $search = $index->createSearch()->addQuery($match);
+        $search->addSort(new FieldSort('_id', FieldSort::ASC));
 
-        $assertResults = $this->getDataArray();
+        $iterator = $index->findArray($search);
+
+        $this->assertInstanceOf(ArrayIterator::class, $iterator);
+
+        $expected = $this->getDataArray()[$indexClass];
         foreach ($iterator as $key => $document) {
-            $this->assertEquals($assertResults['default']['product'][$key]['title'], $document['title']);
+            $this->assertEquals($expected[$key], $document);
         }
     }
 }

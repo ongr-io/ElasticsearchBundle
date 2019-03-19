@@ -13,51 +13,36 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
+use ONGR\ElasticsearchBundle\Mapping\Converter;
+use Symfony\Component\Serializer\Serializer;
 
 /**
- * ObjectIterator class.
+ * This is for embedded ObjectType's or NestedType's iterator implemented with a lazy loading.
  */
 class ObjectIterator extends AbstractLazyCollection
 {
-    /**
-     * @var Converter
-     */
     private $converter;
+    protected $collection;
+    private $namespace;
+    private $serializer;
 
-    /**
-     * @var array Aliases information.
-     */
-    private $alias;
-
-    /**
-     * Converts raw document data to objects when requested.
-     *
-     * @param Converter $converter
-     * @param array     $objects
-     * @param array     $alias
-     */
-    public function __construct($converter, $objects, $alias)
+    public function __construct(string $namespace, array $array, Converter $converter, Serializer $serializer)
     {
         $this->converter = $converter;
-        $this->alias = $alias;
-        $this->collection = new ArrayCollection($objects);
+        $this->collection = new ArrayCollection($array);
+        $this->namespace = $namespace;
+        $this->serializer = $serializer;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function convertDocument(array $document)
+    protected function convertDocument(array $data)
     {
-        return $this->converter->assignArrayToObject(
-            $document,
-            new $this->alias['namespace'](),
-            $this->alias['aliases']
+        return $this->converter->convertArrayToDocument(
+            $this->namespace,
+            $data,
+            $this->serializer
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function doInitialize()
     {
         $this->collection = $this->collection->map(function ($rawObject) {

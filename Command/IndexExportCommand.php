@@ -23,6 +23,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IndexExportCommand extends AbstractManagerAwareCommand
 {
+    const NAME = 'ongr:es:index:export';
+
     /**
      * {@inheritdoc}
      */
@@ -31,28 +33,23 @@ class IndexExportCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName('ongr:es:index:export')
-            ->setDescription('Exports data from elasticsearch index.')
+            ->setName(self::NAME)
+            ->setDescription('Exports a data from the ElasticSearch index.')
             ->addArgument(
                 'filename',
                 InputArgument::REQUIRED,
-                'Select file to store output'
-            )->addOption(
-                'types',
-                null,
-                InputOption::VALUE_REQUIRED + InputOption::VALUE_IS_ARRAY,
-                'Export specific types only'
+                'Define a filename to store the output'
             )->addOption(
                 'chunk',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Chunk size to use in scan api',
+                'Chunk size to use in the scan api',
                 500
             )->addOption(
                 'split',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Split file in a separate parts if line number exceeds provided value',
+                'Split a file content in a separate parts if a line number exceeds provided value',
                 300000
             );
     }
@@ -63,14 +60,13 @@ class IndexExportCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $manager = $this->getManager($input->getOption('manager'));
+        $index = $this->getIndex($input->getOption(parent::INDEX_OPTION));
 
         /** @var ExportService $exportService */
-        $exportService = $this->getContainer()->get('es.export');
+        $exportService = $this->getContainer()->get(ExportService::class);
         $exportService->exportIndex(
-            $manager,
+            $index,
             $input->getArgument('filename'),
-            $input->getOption('types'),
             $input->getOption('chunk'),
             $output,
             $input->getOption('split')

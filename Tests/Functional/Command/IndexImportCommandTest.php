@@ -11,8 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Command\IndexImportCommand;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
@@ -20,12 +20,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class IndexImportCommandTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * Data provider for testIndexImport.
-     *
-     * @return array
-     */
-    public function bulkSizeProvider()
+    public function bulkSizeProvider(): array
     {
         return [
             [10, 9, 'command_import_9.json'],
@@ -36,8 +31,6 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Compressed Data provider for testIndexImport.
-     *
      * @return array
      */
     public function compressedDataProvider()
@@ -50,17 +43,12 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
     }
 
     /**
-     * Test for index import command.
-     *
-     * @param int    $bulkSize
-     * @param int    $realSize
-     * @param string $filename
-     *
      * @dataProvider bulkSizeProvider
      */
-    public function testIndexImport($bulkSize, $realSize, $filename)
+    public function testIndexImport(int $bulkSize, int $realSize, string $filename)
     {
-        $manager = $this->getManager();
+        $index = $this->getIndex(DummyDocument::class);
+
         $app = new Application();
         $app->add($this->getImportCommand());
 
@@ -69,22 +57,19 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                'filename' => __DIR__ . '/../../app/fixture/data/' . $filename,
+                'filename' => __DIR__ . '/../../app/data_seed/' . $filename,
                 '--bulk-size' => $bulkSize,
             ]
         );
 
-        $repo = $manager->getRepository('TestBundle:Product');
-        $search = $repo
-            ->createSearch()
-            ->addQuery(new MatchAllQuery())
-            ->setSize($realSize);
-        $results = $repo->findDocuments($search);
+
+        $search = $index->createSearch()->addQuery(new MatchAllQuery())->setSize($realSize);
+        $results = $index->findDocuments($search);
 
         $ids = [];
-        /** @var Product $doc */
+        /** @var DummyDocument $doc */
         foreach ($results as $doc) {
-            $ids[] = substr($doc->getId(), 3);
+            $ids[] = substr($doc->id, 3);
         }
         sort($ids);
         $data = range(1, $realSize);
@@ -102,7 +87,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
      */
     public function testIndexImportWithGzipOption($bulkSize, $realSize, $filename)
     {
-        $manager = $this->getManager();
+        $index = $this->getIndex(DummyDocument::class);
 
         $app = new Application();
         $app->add($this->getImportCommand());
@@ -112,23 +97,20 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                'filename' => __DIR__ . '/../../app/fixture/data/' . $filename,
+                'filename' => __DIR__ . '/../../app/data_seed/' . $filename,
                 '--bulk-size' => $bulkSize,
                 '--gzip' => null,
             ]
         );
 
-        $repo = $manager->getRepository('TestBundle:Product');
-        $search = $repo
-            ->createSearch()
-            ->addQuery(new MatchAllQuery())
-            ->setSize($realSize);
-        $results = $repo->findDocuments($search);
+
+        $search = $index->createSearch()->addQuery(new MatchAllQuery())->setSize($realSize);
+        $results = $index->findDocuments($search);
 
         $ids = [];
-        /** @var Product $doc */
+        /** @var DummyDocument $doc */
         foreach ($results as $doc) {
-            $ids[] = substr($doc->getId(), 3);
+            $ids[] = substr($doc->id, 3);
         }
         sort($ids);
         $data = range(1, $realSize);

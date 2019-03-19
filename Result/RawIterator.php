@@ -12,15 +12,12 @@
 namespace ONGR\ElasticsearchBundle\Result;
 
 /**
- * Raw documents iterator.
+ * A simple iterator which returns the raw result it got from the elasticsearch.
  */
 class RawIterator extends AbstractResultsIterator
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function convertDocument(array $document)
+    protected function convertDocument(array $raw)
     {
-        return $document;
+        return $raw;
     }
 }
