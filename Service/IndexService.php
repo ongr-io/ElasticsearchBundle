@@ -35,28 +35,28 @@ class IndexService
     private $client;
     private $namespace;
     private $converter;
-    private $parser;
     private $eventDispatcher;
 
     private $stopwatch;
     private $bulkCommitSize = 100;
     private $bulkQueries = [];
+    private $indexSettings = [];
     private $serializer;
     private $tracer;
 
     public function __construct(
         string $namespace,
         Converter $converter,
-        DocumentParser $parser,
         EventDispatcherInterface $eventDispatcher,
         Serializer $serializer,
+        array $indexSettings = [],
         $tracer = null
     ) {
         $this->namespace = $namespace;
         $this->converter = $converter;
-        $this->parser = $parser;
         $this->eventDispatcher = $eventDispatcher;
         $this->serializer = $serializer;
+        $this->indexSettings = $indexSettings;
         $this->tracer = $tracer;
     }
 

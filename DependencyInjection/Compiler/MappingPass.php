@@ -11,9 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
+use ONGR\ElasticsearchBundle\Annotation\Index;
 use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
 use ONGR\ElasticsearchBundle\Mapping\Converter;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
+use ONGR\ElasticsearchBundle\Mapping\IndexSettings;
 use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,21 +25,43 @@ class MappingPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
+        /** @var DocumentParser $parser */
         $parser = $container->get(DocumentParser::class);
-
         $indexes = [];
         $defaultIndex = null;
+        $indexesOverride = $container->getParameter(Configuration::ONGR_INDEXES_OVERRIDE);
+
         foreach ($this->getNamespaces(
             $container->getParameter('kernel.project_dir')
                 .$container->getParameter(Configuration::ONGR_SOURCE_DIR)
         ) as $namespace) {
-            $indexMapping = $parser->getIndexMetadata($namespace);
-            $indexAlias = $parser->getIndexAliasName($namespace);
+            $class = new \ReflectionClass($namespace);
+
+            $indexMapping = $parser->getIndexMetadata($class);
+            $indexAlias = $parser->getIndexAliasName($class);
+            $indexMetadata = $parser->getIndexMetadata($class);
+            /** @var Index $document */
+            $document = $parser->getIndexAnnotation($class);
+
+            $indexSettings = new IndexSettings();
+            $indexSettings->setHosts($indexesOverride[$namespace]['hosts'] ?? $document->hosts);
+            $indexSettings->setAlias($indexesOverride[$namespace]['alias'] ?? $document->alias);
+            $indexSettings->setDefaultIndex((bool) $indexesOverride[$namespace]['default'] ?? $document->default);
+            $indexSettings->setAlias($indexesOverride[$namespace]['alias'] ?? $document->alias);
+            $indexSettings->setIndexParams(array_filter(array_merge_recursive(
+                [
+                    '' =>$document->numberOfReplicas,
+                    '' =>$document->numberOfShards,
+                    '' =>$document->refreshInterval,
+                ],
+                $indexesOverride[$namespace]['settings'] ?? []
+            )));
+
+
             if (!empty($indexMapping)) {
                 $indexServiceDefinition = new Definition(IndexService::class, [
                     $namespace,
                     $container->getDefinition(Converter::class),
-                    $container->getDefinition(DocumentParser::class),
                     $container->getDefinition('event_dispatcher'),
                     $container->getDefinition('serializer'),
                     $container->getParameter(Configuration::ONGR_PROFILER_CONFIG)
