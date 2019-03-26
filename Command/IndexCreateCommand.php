@@ -76,7 +76,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             $io->note("Index mappings:");
             $io->text(
                 json_encode(
-                    $index->getParser()->getIndexMetadata($index->getNamespace()),
+                    $index->getIndexSettings()->getIndexMetadata(),
                     JSON_PRETTY_PRINT
                 )
             );

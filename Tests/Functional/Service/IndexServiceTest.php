@@ -111,4 +111,12 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
         $this->assertEquals([1,2], $actualList);
     }
+
+    public function testIndexConfigOverride()
+    {
+        $index = $this->getIndex(DummyDocumentInTheEntityDirectory::class);
+        $hosts = $index->getIndexSettings()->getHosts();
+
+        $this->assertEquals(['localhost:9200'], $hosts);
+    }
 }

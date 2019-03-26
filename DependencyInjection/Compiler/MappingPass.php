@@ -36,34 +36,41 @@ class MappingPass implements CompilerPassInterface
                 .$container->getParameter(Configuration::ONGR_SOURCE_DIR)
         ) as $namespace) {
             $class = new \ReflectionClass($namespace);
-
+            /** @var Index $document */
+            $document = $parser->getIndexAnnotation($class);
             $indexMapping = $parser->getIndexMetadata($class);
             $indexAlias = $parser->getIndexAliasName($class);
             $indexMetadata = $parser->getIndexMetadata($class);
-            /** @var Index $document */
-            $document = $parser->getIndexAnnotation($class);
-
-            $indexSettings = new IndexSettings();
-            $indexSettings->setHosts($indexesOverride[$namespace]['hosts'] ?? $document->hosts);
-            $indexSettings->setAlias($indexesOverride[$namespace]['alias'] ?? $document->alias);
-            $indexSettings->setDefaultIndex((bool) $indexesOverride[$namespace]['default'] ?? $document->default);
-            $indexSettings->setAlias($indexesOverride[$namespace]['alias'] ?? $document->alias);
-            $indexSettings->setIndexParams(array_filter(array_merge_recursive(
-                [
-                    '' =>$document->numberOfReplicas,
-                    '' =>$document->numberOfShards,
-                    '' =>$document->refreshInterval,
-                ],
-                $indexesOverride[$namespace]['settings'] ?? []
-            )));
-
 
             if (!empty($indexMapping)) {
+
+                $indexMetadata['settings'] = array_filter(array_merge_recursive(
+                    $indexMetadata['settings'] ?? [],
+                    [
+                        'number_of_replicas' =>$document->numberOfReplicas,
+                        'number_of_shards' =>$document->numberOfShards,
+                    ],
+                    $indexesOverride[$namespace]['settings'] ?? []
+                ));
+
+                $indexSettings = new Definition(IndexSettings::class,
+                    [
+                        $namespace,
+                        $indexAlias,
+                        $indexAlias,
+                        $indexMetadata,
+                        $indexesOverride[$namespace]['hosts'] ?? $document->hosts,
+                        $indexesOverride[$namespace]['default'] ?? $document->default,
+                        $indexesOverride[$namespace]['type'] ?? $document->typeName
+                    ]
+                );
+
                 $indexServiceDefinition = new Definition(IndexService::class, [
                     $namespace,
                     $container->getDefinition(Converter::class),
                     $container->getDefinition('event_dispatcher'),
                     $container->getDefinition('serializer'),
+                    $indexSettings,
                     $container->getParameter(Configuration::ONGR_PROFILER_CONFIG)
                         ? $container->getDefinition('ongr.esb.tracer') : null
                 ]);
@@ -71,7 +78,7 @@ class MappingPass implements CompilerPassInterface
 
                 $container->setDefinition($namespace, $indexServiceDefinition);
                 $indexes[$indexAlias] = $namespace;
-                $isCurrentIndexDefault = $parser->isDefaultIndex($namespace);
+                $isCurrentIndexDefault = $parser->isDefaultIndex($class);
                 if ($defaultIndex && $isCurrentIndexDefault) {
                     throw new \RuntimeException(
                         sprintf(

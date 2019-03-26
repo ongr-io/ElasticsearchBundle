@@ -16,19 +16,33 @@ class IndexSettings
     private $indexName;
     private $alias;
     private $indexMetadata;
-    private $indexParams;
-
-    //Index annotation settings
     private $hosts;
-//    private $numberOfShards;
-//    private $numberOfReplicas;
-//    private $refreshInterval;
     private $defaultIndex = false;
+
+
 
     /**
      * @deprecated will be removed in the v7
      */
     private $type;
+
+    public function __construct(
+        string $namespace,
+        string $indexName,
+        string $alias,
+        array $indexMetadata = [],
+        array $hosts = [],
+        bool $defaultIndex = false,
+        $type = null)
+    {
+        $this->namespace = $namespace;
+        $this->indexName = $indexName;
+        $this->alias = $alias;
+        $this->indexMetadata = $indexMetadata;
+        $this->hosts = $hosts;
+        $this->defaultIndex = $defaultIndex;
+        $this->type = $type;
+    }
 
     public function getNamespace()
     {
@@ -71,17 +85,6 @@ class IndexSettings
     public function setIndexMetadata($indexMetadata): self
     {
         $this->indexMetadata = $indexMetadata;
-        return $this;
-    }
-
-    public function getIndexParams()
-    {
-        return $this->indexParams;
-    }
-
-    public function setIndexParams($indexParams): self
-    {
-        $this->indexParams = $indexParams;
         return $this;
     }
 

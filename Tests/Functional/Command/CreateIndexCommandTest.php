@@ -155,7 +155,7 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
 
         $this->assertContains(
             json_encode(
-                $index->getParser()->getIndexMetadata($index->getNamespace()),
+                $index->getIndexSettings()->getIndexMetadata(),
                 JSON_PRETTY_PRINT
             ),
             $commandTester->getDisplay()
