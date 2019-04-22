@@ -11,21 +11,65 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
+use ONGR\App\Document\DummyDocument;
+use ONGR\ElasticsearchBundle\Mapping\Converter;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
+use ONGR\ElasticsearchBundle\Service\IndexService;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Serializer;
 
-class DocumentIteratorTest extends \PHPUnit\Framework\TestCase
+class DocumentIteratorTest extends TestCase
 {
     /**
      * Test for getAggregation() in case requested aggregation is not set.
      */
-    public function testGetAggregationNull()
+    public function testGetAggregationOnNull()
     {
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $index = $this->getMockBuilder(IndexService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $iterator = new DocumentIterator([], $manager);
+        $iterator = new DocumentIterator([], $index);
 
         $this->assertNull($iterator->getAggregation('foo'));
+    }
+
+    public function testResultConvert()
+    {
+        $rawData = [
+            'hits' => [
+                'total' => 1,
+                'hits' => [
+                    [
+                        '_index' => 'test',
+                        '_type' => '_doc',
+                        '_id' => 'foo',
+                        '_score' => 1,
+                        '_source' => [
+                            'title' => 'Foo',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $converter = $this->getMockBuilder(Converter::class)
+            ->setMethods(['convertArrayToDocument'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $document = new DummyDocument();
+        $document->title = 'Foo';
+        $converter->expects($this->any())->method('convertArrayToDocument')->willReturn($document);
+
+        $index = $this->getMockBuilder(IndexService::class)
+            ->setMethods(['getNamespace'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $index->expects($this->any())->method('getNamespace')->willReturn(DummyDocument::class);
+
+        $iterator = new DocumentIterator($rawData, $index, $converter, $this->createMock(Serializer::class));
+        $this->assertEquals($document, $iterator->first());
     }
 }

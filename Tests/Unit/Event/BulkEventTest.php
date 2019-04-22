@@ -12,15 +12,36 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Event;
 
 use ONGR\ElasticsearchBundle\Event\BulkEvent;
+use PHPUnit\Framework\TestCase;
 
-class BulkEventTest extends \PHPUnit\Framework\TestCase
+class BulkEventTest extends TestCase
 {
     public function testGetters()
     {
-        $event = new BulkEvent('index', 'test_type', []);
+        $operation = 'create';
+        $header = [
+            '_index' => 'index',
+            '_type' => '_doc',
+            '_id' => 15,
+        ];
 
-        $this->assertEquals('test_type', $event->getType());
-        $this->assertEquals('test_type', $event->getType());
-        $this->assertEquals([], $event->getQuery());
+        $expectedHeader = [
+            '_index' => 'index',
+            '_type' => '_doc',
+            '_id' => 10,
+        ];
+
+        $data = [];
+
+        $event = new BulkEvent($operation, $header, $data);
+        $this->assertEquals('create', $event->getOperation());
+        $event->setOperation('update');
+        $this->assertEquals('update', $event->getOperation());
+
+        $event->setHeader($expectedHeader);
+        $this->assertEquals($expectedHeader, $event->getHeader());
+        $this->assertEquals([], $event->getData());
+        $event->setData($expectedHeader);
+        $this->assertEquals($expectedHeader, $event->getData());
     }
 }

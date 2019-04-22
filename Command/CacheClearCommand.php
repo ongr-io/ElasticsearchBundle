@@ -15,10 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Symfony command for clearing elasticsearch cache.
- */
-class CacheClearCommand extends AbstractManagerAwareCommand
+class CacheClearCommand extends AbstractIndexServiceAwareCommand
 {
     const NAME = 'ongr:es:cache:clear';
 

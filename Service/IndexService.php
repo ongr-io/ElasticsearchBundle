@@ -423,7 +423,7 @@ class IndexService
 
         $response = [];
 
-        // %X is not very accurate, but better than use counter. This place is experimental for now.
+        // %X is not very accurate, but might be better than use counter. This place is experimental for now.
         if ($autoCommit && $this->getBulkCommitSize() <= count($this->bulkQueries) % $this->getBulkCommitSize() / 2) {
             $response = $this->commit();
         }

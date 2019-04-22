@@ -17,13 +17,13 @@ class BulkEvent extends Event
 {
     private $operation;
     private $header;
-    private $query;
+    private $data;
 
-    public function __construct(string &$operation, array &$header, array &$query)
+    public function __construct(string $operation, array $header, array $data = [])
     {
-        $this->header = $header;
-        $this->query = $query;
         $this->operation = $operation;
+        $this->header = $header;
+        $this->data = $data;
     }
 
     public function getHeader(): array
@@ -37,14 +37,14 @@ class BulkEvent extends Event
         return $this;
     }
 
-    public function getQuery(): array
+    public function getData(): array
     {
-        return $this->query;
+        return $this->data;
     }
 
-    public function setQuery(array $query): BulkEvent
+    public function setData(array $data): BulkEvent
     {
-        $this->query = $query;
+        $this->data = $data;
         return $this;
     }
 

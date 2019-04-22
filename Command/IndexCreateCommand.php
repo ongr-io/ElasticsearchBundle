@@ -17,10 +17,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Command for creating elasticsearch index.
- */
-class IndexCreateCommand extends AbstractManagerAwareCommand
+class IndexCreateCommand extends AbstractIndexServiceAwareCommand
 {
     const NAME = 'ongr:es:index:create';
 
