@@ -13,6 +13,4 @@ namespace ONGR\ElasticsearchBundle\Request;
 class BulkRequest
 {
     private $index;
-
-
 }

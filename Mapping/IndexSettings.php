@@ -33,8 +33,8 @@ class IndexSettings
         array $indexMetadata = [],
         array $hosts = [],
         bool $defaultIndex = false,
-        $type = null)
-    {
+        $type = null
+    ) {
         $this->namespace = $namespace;
         $this->indexName = $indexName;
         $this->alias = $alias;
@@ -120,5 +120,4 @@ class IndexSettings
         $this->type = $type;
         return $this;
     }
-
 }

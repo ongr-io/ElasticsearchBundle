@@ -33,7 +33,7 @@ class DocumentParserTest extends TestCase
                     'properties' => [
                             'keyword_field' => [
                             'type' => 'keyword',
-                        ]
+                            ]
                     ]
                 ]
             ]
