@@ -46,8 +46,15 @@ class TerminateListener
         foreach ($this->managers as $key => $value) {
             if ($value['force_commit']) {
                 try {
+                    $managerName = sprintf('es.manager.%s', $key);
+
+                    // Ignore managers who have not been initialized.
+                    if(!$this->container->initialized($managerName)) {
+                        continue;
+                    }
+
                     /** @var Manager $manager */
-                    $manager = $this->container->get(sprintf('es.manager.%s', $key));
+                    $manager = $this->container->get($managerName);
                 } catch (\Exception $e) {
                     continue;
                 }
