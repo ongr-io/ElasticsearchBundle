@@ -17,10 +17,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Command for creating elasticsearch index.
- */
-class IndexCreateCommand extends AbstractManagerAwareCommand
+class IndexCreateCommand extends AbstractIndexServiceAwareCommand
 {
     const NAME = 'ongr:es:index:create';
 
@@ -76,7 +73,7 @@ class IndexCreateCommand extends AbstractManagerAwareCommand
             $io->note("Index mappings:");
             $io->text(
                 json_encode(
-                    $index->getParser()->getIndexMetadata($index->getNamespace()),
+                    $index->getIndexSettings()->getIndexMetadata(),
                     JSON_PRETTY_PRINT
                 )
             );

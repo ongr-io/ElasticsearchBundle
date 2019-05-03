@@ -18,10 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * IndexImportCommand class.
- */
-class IndexImportCommand extends AbstractManagerAwareCommand
+class IndexImportCommand extends AbstractIndexServiceAwareCommand
 {
     const NAME = 'ongr:es:index:import';
     /**

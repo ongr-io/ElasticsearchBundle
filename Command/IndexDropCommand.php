@@ -16,7 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class IndexDropCommand extends AbstractManagerAwareCommand
+class IndexDropCommand extends AbstractIndexServiceAwareCommand
 {
     const NAME = 'ongr:es:index:drop';
 

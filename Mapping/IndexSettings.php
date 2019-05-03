@@ -13,57 +13,111 @@ namespace ONGR\ElasticsearchBundle\Mapping;
 class IndexSettings
 {
     private $namespace;
-
+    private $indexName;
     private $alias;
+    private $indexMetadata;
+    private $hosts;
+    private $defaultIndex = false;
+
+
 
     /**
      * @deprecated will be removed in the v7
      */
     private $type;
 
-    private $hosts = [];
+    public function __construct(
+        string $namespace,
+        string $indexName,
+        string $alias,
+        array $indexMetadata = [],
+        array $hosts = [],
+        bool $defaultIndex = false,
+        $type = null
+    ) {
+        $this->namespace = $namespace;
+        $this->indexName = $indexName;
+        $this->alias = $alias;
+        $this->indexMetadata = $indexMetadata;
+        $this->hosts = $hosts;
+        $this->defaultIndex = $defaultIndex;
+        $this->type = $type;
+    }
 
-    public function getNamespace(): string
+    public function getNamespace()
     {
         return $this->namespace;
     }
 
-    public function setNamespace(string $namespace): IndexSettings
+    public function setNamespace($namespace): self
     {
         $this->namespace = $namespace;
         return $this;
     }
 
-    public function getType(): string
+    public function getIndexName()
     {
-        return $this->type;
+        return $this->indexName;
     }
 
-    public function setType(string $type): IndexSettings
+    public function setIndexName($indexName): self
     {
-        $this->type = $type;
+        $this->indexName = $indexName;
         return $this;
     }
 
-    public function getAlias(): string
+    public function getAlias()
     {
         return $this->alias;
     }
 
-    public function setAlias(string $alias): IndexSettings
+    public function setAlias($alias): self
     {
         $this->alias = $alias;
         return $this;
     }
 
-    public function getHosts(): array
+    public function getIndexMetadata()
+    {
+        return $this->indexMetadata;
+    }
+
+    public function setIndexMetadata($indexMetadata): self
+    {
+        $this->indexMetadata = $indexMetadata;
+        return $this;
+    }
+
+    public function getHosts()
     {
         return $this->hosts;
     }
 
-    public function setHosts(array $hosts): IndexSettings
+    public function setHosts($hosts): self
     {
         $this->hosts = $hosts;
+        return $this;
+    }
+
+    public function isDefaultIndex(): bool
+    {
+        return $this->defaultIndex;
+    }
+
+    public function setDefaultIndex(bool $defaultIndex): self
+    {
+        $this->defaultIndex = $defaultIndex;
+        return $this;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function setType($type): self
+    {
+        $this->type = $type;
         return $this;
     }
 }

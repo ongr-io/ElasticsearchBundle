@@ -21,7 +21,7 @@ class PropertyTest extends AbstractElasticsearchTestCase
     {
         /** @var IndexService $index */
         $index = $this->getIndex(DummyDocument::class, false);
-        $meta = $index->getParser()->getIndexMetadata($index->getNamespace());
+        $meta = $index->getIndexSettings()->getIndexMetadata();
 
         $this->assertEquals(
             [

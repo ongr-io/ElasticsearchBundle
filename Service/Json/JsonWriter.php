@@ -83,7 +83,7 @@ class JsonWriter
         $this->initialize();
         $this->currentPosition++;
 
-        if (isset($this->metadata['count']) && $this->currentPosition > $this->count) {
+        if (isset($this->count) && $this->currentPosition > $this->count) {
             throw new \OverflowException(
                 sprintf('This writer was set up to write %d documents, got more.', $this->count)
             );

@@ -12,29 +12,33 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use ONGR\ElasticsearchBundle\Annotation\Id;
-use ONGR\ElasticsearchBundle\Annotation\Index;
+use Doctrine\Common\Cache\Cache;
+use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
-use ONGR\ElasticsearchBundle\Service\IndexService;
+use PHPUnit\Framework\TestCase;
 
-class DocumentParserTest extends \PHPUnit\Framework\TestCase
+class DocumentParserTest extends TestCase
 {
     public function testDocumentParsing()
     {
-        $namespace = 'ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Entity\DummyDocumentInTheEntityDirectory';
-        $parser = new DocumentParser(new AnnotationReader());
+
+        $parser = new DocumentParser(new AnnotationReader(), $this->createMock(Cache::class));
         ;
 
-        $indexMetadata = $parser->getIndexMetadata($namespace);
+        $indexMetadata = $parser->getIndexMetadata(new \ReflectionClass(DummyDocumentInTheEntityDirectory::class));
 
         $expected = [
-            'settings' => [],
-            'mapping' => [
-                'keyword_field' => [
-                    'type' => 'keyword',
+            'mappings' => [
+                '_doc' => [
+                    'properties' => [
+                            'keyword_field' => [
+                            'type' => 'keyword',
+                            ]
+                    ]
                 ]
             ]
         ];
+
         $this->assertEquals($expected, $indexMetadata);
     }
 }

@@ -19,7 +19,7 @@ use ONGR\ElasticsearchBundle\Event\Events;
 use ONGR\ElasticsearchBundle\Event\PostCreateClientEvent;
 use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
 use ONGR\ElasticsearchBundle\Mapping\Converter;
-use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
+use ONGR\ElasticsearchBundle\Mapping\IndexSettings;
 use ONGR\ElasticsearchBundle\Result\ArrayIterator;
 use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchDSL\Query\TermLevel\IdsQuery;
@@ -35,28 +35,28 @@ class IndexService
     private $client;
     private $namespace;
     private $converter;
-    private $parser;
     private $eventDispatcher;
 
     private $stopwatch;
     private $bulkCommitSize = 100;
     private $bulkQueries = [];
+    private $indexSettings = [];
     private $serializer;
     private $tracer;
 
     public function __construct(
         string $namespace,
         Converter $converter,
-        DocumentParser $parser,
         EventDispatcherInterface $eventDispatcher,
         Serializer $serializer,
+        IndexSettings $indexSettings,
         $tracer = null
     ) {
         $this->namespace = $namespace;
         $this->converter = $converter;
-        $this->parser = $parser;
         $this->eventDispatcher = $eventDispatcher;
         $this->serializer = $serializer;
+        $this->indexSettings = $indexSettings;
         $this->tracer = $tracer;
     }
 
@@ -70,15 +70,25 @@ class IndexService
      */
     public function getTypeName(): string
     {
-        return $this->parser->getTypeName($this->namespace);
+        return $this->indexSettings->getType();
+    }
+
+    public function getIndexSettings()
+    {
+        return $this->indexSettings;
+    }
+
+    public function setIndexSettings($indexSettings): self
+    {
+        $this->indexSettings = $indexSettings;
+        return $this;
     }
 
     public function getClient(): Client
     {
         if (!$this->client) {
-            $document = $this->parser->getParsedDocument($this->namespace);
             $client = ClientBuilder::create();
-            $client->setHosts($document->hosts);
+            $client->setHosts($this->indexSettings->getHosts());
             $this->tracer && $client->setTracer($this->tracer);
 //            $client->setLogger()
 
@@ -93,7 +103,7 @@ class IndexService
 
     public function getIndexName(): string
     {
-        return $this->parser->getIndexAliasName($this->namespace);
+        return $this->indexSettings->getIndexName();
     }
 
     public function getEventDispatcher(): EventDispatcherInterface
@@ -104,11 +114,6 @@ class IndexService
     public function getConverter(): Converter
     {
         return $this->converter;
-    }
-
-    public function getParser(): DocumentParser
-    {
-        return $this->parser;
     }
 
     public function getBulkCommitSize(): int
@@ -137,7 +142,7 @@ class IndexService
     {
         $params = array_merge([
             'index' => $this->getIndexName(),
-            'body' => $noMapping ? [] : $this->parser->getIndexMetadata($this->namespace),
+            'body' => $noMapping ? [] : $this->indexSettings->getIndexMetadata(),
         ], $params);
 
         #TODO Add event here.
@@ -418,7 +423,7 @@ class IndexService
 
         $response = [];
 
-        // %X is not very accurate, but better than use counter. This place is experimental for now.
+        // %X is not very accurate, but might be better than use counter. This place is experimental for now.
         if ($autoCommit && $this->getBulkCommitSize() <= count($this->bulkQueries) % $this->getBulkCommitSize() / 2) {
             $response = $this->commit();
         }

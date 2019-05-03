@@ -26,6 +26,7 @@ class Configuration implements ConfigurationInterface
     const ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
     const ONGR_INDEXES = 'ongr.esb.indexes';
     const ONGR_DEFAULT_INDEX = 'ongr.esb.default_index';
+    const ONGR_INDEXES_OVERRIDE = 'ongr.esb.indexes_override';
 
     public function getConfigTreeBuilder()
     {
@@ -62,6 +63,15 @@ class Configuration implements ConfigurationInterface
                     'If your project has different than `/src` source directory, you can specify it here '.
                     'to look automatically for ES documents.'
                 )
+            ->end()
+
+            ->arrayNode('indexes')
+                ->defaultValue([])
+                ->info(
+                    'In case you want to override index settings defined in the annotation.' .
+                    ' e.g. use env variables instead.'
+                )
+                ->prototype('variable')->end()
             ->end()
 
             ->append($this->getAnalysisNode())

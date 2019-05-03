@@ -12,8 +12,10 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
 use ONGR\ElasticsearchBundle\Result\RawIterator;
+use ONGR\ElasticsearchBundle\Service\IndexService;
+use PHPUnit\Framework\TestCase;
 
-class RawIteratorTest extends \PHPUnit\Framework\TestCase
+class RawIteratorTest extends TestCase
 {
     /**
      * Test for getAggregations().
@@ -28,11 +30,11 @@ class RawIteratorTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $index = $this->getMockBuilder(IndexService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $iterator = new RawIterator($rawData, $manager);
+        $iterator = new RawIterator($rawData, $index);
 
         $this->assertEquals($rawData['aggregations'], $iterator->getAggregations());
     }
@@ -48,7 +50,7 @@ class RawIteratorTest extends \PHPUnit\Framework\TestCase
                 'hits' => [
                     [
                         '_index' => 'test',
-                        '_type' => 'product',
+                        '_type' => '_doc',
                         '_id' => 'foo',
                         '_score' => 1,
                         '_source' => [
@@ -59,11 +61,11 @@ class RawIteratorTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $index = $this->getMockBuilder(IndexService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $iterator = new RawIterator($rawData, $manager);
+        $iterator = new RawIterator($rawData, $index);
 
         $this->assertEquals($rawData['hits']['hits'][0], $iterator->current());
     }

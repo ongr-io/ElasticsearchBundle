@@ -18,10 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * IndexExportCommand class.
- */
-class IndexExportCommand extends AbstractManagerAwareCommand
+class IndexExportCommand extends AbstractIndexServiceAwareCommand
 {
     const NAME = 'ongr:es:index:export';
 

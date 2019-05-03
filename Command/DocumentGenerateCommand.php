@@ -19,7 +19,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\HttpKernel\Kernel;
 
-class DocumentGenerateCommand extends AbstractManagerAwareCommand
+class DocumentGenerateCommand extends AbstractIndexServiceAwareCommand
 {
     const NAME = 'ongr:es:document:generate';
 
@@ -74,10 +74,10 @@ class DocumentGenerateCommand extends AbstractManagerAwareCommand
                 '',
                 $formatter->formatBlock('Welcome to the Elasticsearch Bundle document generator', 'bg=blue', true),
                 '',
-                'This command helps you generate ONGRElasticsearchBundle documents.',
+                'This command helps you generate Elasticsearch documents.',
                 '',
-                'First, you need to give the document class name you want to generate.',
-                'You must use the shortcut notation like <comment>AcmeDemoBundle:Post</comment>.',
+                'First, you need to give the document class namespace you want to generate.',
+                'You must use the shortcut notation like <comment>App\YourProjectPath\PostDocument</comment>.',
                 '',
             ]
         );

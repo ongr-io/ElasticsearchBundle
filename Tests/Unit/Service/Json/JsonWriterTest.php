@@ -36,7 +36,6 @@ class JsonWriterTest extends \PHPUnit\Framework\TestCase
         $cases = [];
 
         // Case #0 Standard case.
-        $metadata = ['count' => 2];
         $documents = [
             [
                 '_id' => 'doc1',
@@ -56,13 +55,11 @@ class JsonWriterTest extends \PHPUnit\Framework\TestCase
 OUT;
 
         $cases[] = [
-            $metadata,
             $documents,
             $expectedOutput,
         ];
 
         // Case #1 In case no "count" is provided.
-        $metadata = [];
         $documents = [
             [
                 '_id' => 'doc1',
@@ -72,26 +69,35 @@ OUT;
                 '_id' => 'doc2',
                 'title' => 'Document 2',
             ],
+            [
+                '_id' => 'doc3',
+                'title' => 'Document 3',
+            ],
         ];
         $expectedOutput = <<<OUT
 [
-[],
+{"count":3},
 {"_id":"doc1","title":"Document 1"},
-{"_id":"doc2","title":"Document 2"}
+{"_id":"doc2","title":"Document 2"},
+{"_id":"doc3","title":"Document 3"}
 ]
 OUT;
 
         $cases[] = [
-            $metadata,
             $documents,
             $expectedOutput,
         ];
 
+        $expectedOutput = <<<OUT
+[
+{"count":0}
+]
+OUT;
+
         // Case #2 In case no "count" or documents provided.
         $cases[] = [
             [],
-            [],
-            "[\n[]\n]",
+            $expectedOutput,
         ];
 
         return $cases;
@@ -100,17 +106,16 @@ OUT;
     /**
      * Test for push().
      *
-     * @param array  $metadata
      * @param array  $documents
      * @param string $expectedOutput
      *
      * @dataProvider getTestPushData()
      */
-    public function testPush($metadata, $documents, $expectedOutput)
+    public function testPush($documents, $expectedOutput)
     {
         $filename = vfsStream::url('tmp/test.json');
 
-        $writer = new JsonWriter($filename, $metadata);
+        $writer = new JsonWriter($filename, count($documents));
 
         foreach ($documents as $document) {
             $writer->push($document);
@@ -130,7 +135,7 @@ OUT;
     {
         $filename = vfsStream::url('tmp/test.json');
 
-        $writer = new JsonWriter($filename, ['count' => 0]);
+        $writer = new JsonWriter($filename, 0);
         $writer->push(null);
     }
 }

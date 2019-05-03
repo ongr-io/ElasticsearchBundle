@@ -18,3 +18,8 @@ ongr_elasticsearch:
                 filter:
                     - lowercase
                     - edge_ngram_filter
+    indexes:
+        ONGR\App\Entity\DummyDocumentInTheEntityDirectory:
+            alias: field-data-index
+            hosts:
+                - localhost:9200

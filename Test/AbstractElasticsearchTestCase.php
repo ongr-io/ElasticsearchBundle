@@ -112,12 +112,8 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
             }
 
             return $this->indexes[$namespace];
-        } catch (BadRequest400Exception $e) {
-            throw new \LogicException($e->getMessage());
         } catch (\Exception $e) {
-            throw new \LogicException(
-                sprintf("There is no Elastic index defined in the '%s' namespace", $namespace)
-            );
+            throw new \LogicException($e->getMessage());
         }
     }
 }

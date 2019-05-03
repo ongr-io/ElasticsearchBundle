@@ -36,7 +36,6 @@ final class Index extends AbstractAnnotation
     public $numberOfShards = 5;
 
     public $numberOfReplicas = 1;
-    public $refreshInterval = 1;
 
     /**
      * We strongly recommend to not use this parameter in the index annotation. By default it will be set as `_doc`

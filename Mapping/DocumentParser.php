@@ -47,43 +47,43 @@ class DocumentParser
         AnnotationRegistry::registerLoader('class_exists');
     }
 
-    public function getIndexAliasName($namespace): string
+    public function getIndexAliasName(\ReflectionClass $class): string
     {
-        $class = new \ReflectionClass($namespace);
-
         /** @var Index $document */
         $document = $this->reader->getClassAnnotation($class, Index::class);
 
         return $document->alias ?? Caser::snake($class->getShortName());
     }
 
-    public function isDefaultIndex($namespace): bool
+    public function isDefaultIndex(\ReflectionClass $class): bool
     {
-        $class = new \ReflectionClass($namespace);
-
         /** @var Index $document */
         $document = $this->reader->getClassAnnotation($class, Index::class);
 
         return $document->default;
     }
 
+    public function getIndexAnnotation(\ReflectionClass $class)
+    {
+        /** @var Index $document */
+        $document = $this->reader->getClassAnnotation($class, Index::class);
+
+        return $document;
+    }
+
     /**
      * @deprecated will be deleted in v7. Types are deleted from elasticsearch.
      */
-    public function getTypeName($namespace): string
+    public function getTypeName(\ReflectionClass $class): string
     {
-        $class = new \ReflectionClass($namespace);
-
         /** @var Index $document */
         $document = $this->reader->getClassAnnotation($class, Index::class);
 
         return $document->typeName ?? '_doc';
     }
 
-    public function getIndexMetadata($namespace): array
+    public function getIndexMetadata(\ReflectionClass $class): array
     {
-        $class = new \ReflectionClass($namespace);
-
         if ($class->isTrait()) {
             return [];
         }
@@ -96,12 +96,12 @@ class DocumentParser
         }
 
         $settings = $document->getSettings();
-        $settings['analysis'] = $this->getAnalysisConfig($namespace);
+        $settings['analysis'] = $this->getAnalysisConfig($class);
 
         return array_filter(array_map('array_filter', [
             'settings' => $settings,
             'mappings' => [
-                $this->getTypeName($namespace) => [
+                $this->getTypeName($class) => [
                     'properties' => array_filter($this->getClassMetadata($class))
                 ]
             ]
@@ -121,15 +121,15 @@ class DocumentParser
         return null;
     }
 
-    public function getParsedDocument(string $namespace): Index
+    public function getParsedDocument(\ReflectionClass $class): Index
     {
         /** @var Index $document */
-        $document = $this->reader->getClassAnnotation(new \ReflectionClass($namespace), Index::class);
+        $document = $this->reader->getClassAnnotation($class, Index::class);
 
         return $document;
     }
 
-    private function getClassMetadata(\ReflectionClass $reflectionClass): array
+    private function getClassMetadata(\ReflectionClass $class): array
     {
         $mapping = [];
         $objFields = null;
@@ -137,7 +137,7 @@ class DocumentParser
         $embeddedFields = null;
 
         /** @var \ReflectionProperty $property */
-        foreach ($this->getDocumentPropertiesReflection($reflectionClass) as $name => $property) {
+        foreach ($this->getDocumentPropertiesReflection($class) as $name => $property) {
             $annotations = $this->reader->getPropertyAnnotations($property);
 
             /** @var AbstractAnnotation $annotation */
@@ -171,25 +171,25 @@ class DocumentParser
         //Embeded fields are option compared to the array or object mapping.
         if ($embeddedFields) {
             $cacheItem = $this->cache->fetch(self::EMBEDDED_CACHED_FIELDS) ?? [];
-            $cacheItem[$reflectionClass->getName()] = $embeddedFields;
+            $cacheItem[$class->getName()] = $embeddedFields;
             $t = $this->cache->save(self::EMBEDDED_CACHED_FIELDS, $cacheItem);
         }
 
         $cacheItem = $this->cache->fetch(self::ARRAY_CACHED_FIELDS) ?? [];
-        $cacheItem[$reflectionClass->getName()] = $arrayFields;
+        $cacheItem[$class->getName()] = $arrayFields;
         $this->cache->save(self::ARRAY_CACHED_FIELDS, $cacheItem);
 
         $cacheItem = $this->cache->fetch(self::OBJ_CACHED_FIELDS) ?? [];
-        $cacheItem[$reflectionClass->getName()] = $objFields;
+        $cacheItem[$class->getName()] = $objFields;
         $this->cache->save(self::OBJ_CACHED_FIELDS, $cacheItem);
 
         return $mapping;
     }
 
-    public function getAnalysisConfig($namespace): array
+    public function getAnalysisConfig(\ReflectionClass $class): array
     {
         $config = [];
-        $mapping = $this->getClassMetadata(new \ReflectionClass($namespace));
+        $mapping = $this->getClassMetadata($class);
 
         //Think how to remove these array merge
         $analyzers = $this->getListFromArrayByKey('analyzer', $mapping);
@@ -235,20 +235,20 @@ class DocumentParser
         return array_unique($list);
     }
 
-    private function getObjectMappingType(\ReflectionClass $reflectionClass): string
+    private function getObjectMappingType(\ReflectionClass $class): string
     {
         switch (true) {
-            case $this->reader->getClassAnnotation($reflectionClass, ObjectType::class):
+            case $this->reader->getClassAnnotation($class, ObjectType::class):
                 $type = ObjectType::TYPE;
                 break;
-            case $this->reader->getClassAnnotation($reflectionClass, NestedType::class):
+            case $this->reader->getClassAnnotation($class, NestedType::class):
                 $type = NestedType::TYPE;
                 break;
             default:
                 throw new \LogicException(
                     sprintf(
-                        '%s should have @ObjectType or @NestedType annotation to be used as embeddable object.',
-                        $reflectionClass->getName()
+                        '%s must be used @ObjectType or @NestedType as embeddable object.',
+                        $class->getName()
                     )
                 );
         }
@@ -256,21 +256,21 @@ class DocumentParser
         return $type;
     }
 
-    private function getDocumentPropertiesReflection(\ReflectionClass $reflectionClass): array
+    private function getDocumentPropertiesReflection(\ReflectionClass $class): array
     {
-        if (in_array($reflectionClass->getName(), $this->properties)) {
-            return $this->properties[$reflectionClass->getName()];
+        if (in_array($class->getName(), $this->properties)) {
+            return $this->properties[$class->getName()];
         }
 
         $properties = [];
 
-        foreach ($reflectionClass->getProperties() as $property) {
+        foreach ($class->getProperties() as $property) {
             if (!in_array($property->getName(), $properties)) {
                 $properties[$property->getName()] = $property;
             }
         }
 
-        $parentReflection = $reflectionClass->getParentClass();
+        $parentReflection = $class->getParentClass();
         if ($parentReflection !== false) {
             $properties = array_merge(
                 $properties,
@@ -278,7 +278,7 @@ class DocumentParser
             );
         }
 
-        $this->properties[$reflectionClass->getName()] = $properties;
+        $this->properties[$class->getName()] = $properties;
 
         return $properties;
     }

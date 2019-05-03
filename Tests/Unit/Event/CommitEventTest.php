@@ -12,14 +12,30 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Event;
 
 use ONGR\ElasticsearchBundle\Event\CommitEvent;
+use PHPUnit\Framework\TestCase;
 
-class CommitEventTest extends \PHPUnit\Framework\TestCase
+class CommitEventTest extends TestCase
 {
     public function testGetters()
     {
-        $event = new CommitEvent('flush', []);
+        $query = [
+            [
+            '_index' => 'index',
+            '_type' => '_doc',
+            '_id' => 10,
+            ],
+            [
+                'title' => 'bar'
+            ]
+        ];
+
+        $response = ['status' => 'ok'];
+
+        $event = new CommitEvent('flush', $query, $response);
 
         $this->assertEquals('flush', $event->getCommitMode());
-        $this->assertEquals([], $event->getBulkParams());
+        $this->assertEquals($query, $event->getBulkQuery());
+        $this->assertEquals('flush', $event->getCommitMode());
+        $this->assertEquals($response, $event->getBulkResponse());
     }
 }

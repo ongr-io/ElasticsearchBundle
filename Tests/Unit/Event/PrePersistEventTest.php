@@ -11,16 +11,17 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Event;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Event\PrePersistEvent;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use PHPUnit\Framework\TestCase;
 
-class PrePersistEventTest extends \PHPUnit_Framework_TestCase
+class PrePersistEventTest extends TestCase
 {
     public function testGetters()
     {
-        $entity = new Product();
-        $event = new PrePersistEvent($entity);
+        $document = new DummyDocument();
+        $event = new PrePersistEvent($document);
 
-        $this->assertInstanceOf(Product::class, $event->getDocument());
+        $this->assertInstanceOf(DummyDocument::class, $event->getDocument());
     }
 }

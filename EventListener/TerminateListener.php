@@ -20,8 +20,8 @@ class TerminateListener
     private $indexes;
 
     /**
-     * @param Container $container
-     * @param IndexService[]     $managers
+     * @param Container      $container
+     * @param IndexService[] $indexes
      */
     public function __construct(Container $container, array $indexes)
     {
@@ -34,8 +34,10 @@ class TerminateListener
      */
     public function onKernelTerminate()
     {
-//        foreach ($this->indexes as $key => $index) {
-//            $index->commit();
-//        }
+        foreach ($this->indexes as $key => $index) {
+            /** @var IndexService $index */
+            $index = $this->container->get($index);
+            $index->commit();
+        }
     }
 }

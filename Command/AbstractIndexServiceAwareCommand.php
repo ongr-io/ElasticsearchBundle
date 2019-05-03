@@ -16,10 +16,7 @@ use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- * AbstractElasticsearchCommand class.
- */
-abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
+abstract class AbstractIndexServiceAwareCommand extends ContainerAwareCommand
 {
     const INDEX_OPTION = 'index';
 
