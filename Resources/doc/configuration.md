@@ -22,7 +22,7 @@ ongr_elasticsearch:
               max_gram: 20
     managers:
         default:
-            index: 
+            index:
                 hosts:
                     - 127.0.0.1:9200
                 index_name: ongr-default
@@ -33,8 +33,13 @@ ongr_elasticsearch:
             logger: true #default %kernel.debug%
             mappings:
                 - AcmeBarBundle #Scans all bundle documents
+            client_options: # http://docs.guzzlephp.org/en/stable/request-options.html
+                allow_redirects: false
+                connect_timeout: 5
+                timeout: 20
+
         custom:
-            index: 
+            index:
                 hosts:
                     - 10.0.0.1:9200 #default 127.0.0.1:9200
                 index_name: ongr-custom
