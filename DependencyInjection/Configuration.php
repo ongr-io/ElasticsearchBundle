@@ -117,6 +117,11 @@ class Configuration implements ConfigurationInterface
                                 ->prototype('scalar')
                                 ->end()
                             ->end()
+                            ->arrayNode('client_options')
+                                ->defaultValue([])
+                                ->info('Sets client params for connection.')
+                                ->prototype('variable')->end()
+                            ->end()
                             ->arrayNode('settings')
                                 ->defaultValue(
                                     [
