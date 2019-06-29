@@ -66,7 +66,8 @@ class MappingPass implements CompilerPassInterface
 
         $container->setParameter(Configuration::ONGR_INDEXES, $indexes);
 
-        $defaultIndex = $defaultIndex ?? array_shift(array_keys($indexes));
+        $keys = array_keys($indexes);
+        $defaultIndex = $defaultIndex ?? array_shift($keys);
         $container->setParameter(Configuration::ONGR_DEFAULT_INDEX, $defaultIndex);
     }
 
