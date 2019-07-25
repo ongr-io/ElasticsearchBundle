@@ -46,9 +46,15 @@ class ONGRElasticsearchExtension extends Extension
         $config['profiler'] = isset($config['profiler']) ?
             $config['profiler'] : $container->getParameter('kernel.debug');
 
+        
+        $managers = $config['managers'];
+        foreach ($managers as &$manager) {
+            $manager['mappings'] = array_unique($manager['mappings']);
+        }
+        
         $container->setParameter('es.cache', $config['cache']);
         $container->setParameter('es.analysis', $config['analysis']);
-        $container->setParameter('es.managers', $config['managers']);
+        $container->setParameter('es.managers', $managers);
         $definition = new Definition(
             'ONGR\ElasticsearchBundle\Service\ManagerFactory',
             [
