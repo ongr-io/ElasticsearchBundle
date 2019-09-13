@@ -12,13 +12,13 @@
 namespace ONGR\ElasticsearchBundle\Command;
 
 use ONGR\ElasticsearchBundle\Service\Manager;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
  * AbstractElasticsearchCommand class.
  */
-abstract class AbstractManagerAwareCommand extends ContainerAwareCommand
+abstract class AbstractManagerAwareCommand extends Command
 {
     /**
      * {@inheritdoc}
