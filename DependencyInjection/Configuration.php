@@ -25,8 +25,13 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('ongr_elasticsearch');
+        $treeBuilder = new TreeBuilder('ongr_elasticsearch');
+        if (\method_exists($treeBuilder, 'getRootNode')) {
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            // backward compatibility for symfony/config <= 4.1
+            $rootNode = $treeBuilder->root('ongr_elasticsearch');
+        }
 
         $rootNode
             ->children()
@@ -56,8 +61,13 @@ class Configuration implements ConfigurationInterface
      */
     private function getAnalysisNode()
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('analysis');
+        $builder = new TreeBuilder('analysis');
+        if (\method_exists($builder, 'getRootNode')) {
+            $node = $builder->getRootNode();
+        } else {
+            // backward compatibility for symfony/config <= 4.1
+            $node = $builder->root('analysis');
+        }
 
         $node
             ->info('Defines analyzers, normalizers, tokenizers and filters')
@@ -95,8 +105,13 @@ class Configuration implements ConfigurationInterface
      */
     private function getManagersNode()
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('managers');
+        $builder = new TreeBuilder('managers');
+        if (\method_exists($builder, 'getRootNode')) {
+            $node = $builder->getRootNode();
+        } else {
+            // backward compatibility for symfony/config <= 4.1
+            $node = $builder->root('managers');
+        }
 
         $node
             ->isRequired()
