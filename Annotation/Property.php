@@ -21,6 +21,7 @@ final class Property extends AbstractAnnotation implements PropertiesAwareInterf
     use PropertyTypeAwareTrait;
 
     public $analyzer;
+    public $fields;
     public $searchAnalyzer;
     public $searchQuoteAnalyzer;
 }
