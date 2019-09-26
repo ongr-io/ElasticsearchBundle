@@ -117,7 +117,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
         $this->assertEquals(
             [
                 'body' => json_encode($search->toArray()),
-                'method' => 'GET',
+                'method' => 'POST',
                 'httpParameters' => [],
                 'scheme' => 'http',
                 'port' => 9200,
