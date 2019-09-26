@@ -58,6 +58,7 @@ class IndexService
         $this->serializer = $serializer;
         $this->indexSettings = $indexSettings;
         $this->tracer = $tracer;
+        $this->getClient();
     }
 
     public function getNamespace(): string
