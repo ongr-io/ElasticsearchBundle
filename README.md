@@ -71,17 +71,13 @@ php composer.phar require ongr/elasticsearch-bundle "~6.0"
 Enable ElasticSearch bundle in your AppKernel:
 
 ```php
-// app/AppKernel.php
+<?php
+// config/bundles.php
 
-public function registerBundles()
-{
-    $bundles = [
-        // ...
-        new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
-    ];
-    
+return [
     // ...
-}
+    ONGR\ElasticsearchBundle\ONGRElasticsearchBundle::class => ['all' => true],
+];
 
 ```
 
@@ -91,7 +87,7 @@ Add minimal configuration for Elasticsearch bundle.
 
 ```yaml
 
-# app/config/config.yml
+# config/packages/ongr_elasticsearch.yaml
 ongr_elasticsearch:
     analysis:
         filter:
@@ -106,6 +102,9 @@ ongr_elasticsearch:
                 filter:
                     - lowercase
                     - edge_ngram_filter #that's the filter defined earlier
+    indexes:
+        App\Document\Product:
+            hosts: [elasticsearch:9200] # optional, the default is 127.0.0.1:9200
 
 ```
 
@@ -116,15 +115,15 @@ ongr_elasticsearch:
 This bundle uses objects to represent Elasticsearch documents. Lets create the `Product` class for the `products` index.
 
 ```php
-// src/AppBundle/Document/Customer.php
+// src/Document/Product.php
 
-namespace AppBundle\Document;
+namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
  * //alias and default parameters in the annotation are optional. 
- * @ES\Document(alias="products", default=true)
+ * @ES\Index(alias="products", default=true)
  */
 class Product
 {
@@ -169,6 +168,11 @@ Now the `products` index should be created with fields from your document.
 Full documentation for the Elasticsearch bundle is [available here][4].
 I hope you will create amazing things with it :sunglasses: .
 
+> Please note that the updating process of the documentation of the bundle to 6.0
+>is still under way. Read the [configuration][7] and [crud][9] sections that are 
+>already updated and will allow you to have the basic functions of the bundle. We
+>will update the rest of the documentation as soon as possible
+
 ## Troubleshooting
 * [How to upgrade from the older versions?][15]
 * [How to overwrite some parts of the bundle?][16]
@@ -194,3 +198,4 @@ in the bundle `LICENSE` file.
 [14]: https://www.elastic.co/downloads/elasticsearch
 [15]: http://docs.ongr.io/ElasticsearchBundle/upgrade
 [16]: http://docs.ongr.io/ElasticsearchBundle/overwriting_bundle
+
