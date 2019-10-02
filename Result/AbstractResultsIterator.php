@@ -138,7 +138,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      *
      * @param string $name
      *
-     * @return array
+     * @return array|null
      */
     public function getAggregation($name)
     {
@@ -252,7 +252,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      *
      * @param mixed $key
      *
-     * @return mixed
+     * @return mixed|null
      */
     protected function getDocument($key)
     {
@@ -331,7 +331,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
      * Returns score of current hit.
      *
-     * @return int
+     * @return int|null
      */
     public function getDocumentScore()
     {
@@ -349,7 +349,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
     * Returns sort of current hit.
     *
-    * @return mixed
+    * @return mixed|null
     */
     public function getDocumentSort()
     {
