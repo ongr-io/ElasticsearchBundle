@@ -20,7 +20,8 @@ ongr_elasticsearch:
                 type: edge_ngram
                 min_gram: 1
                 max_gram: 20
-    source_directory: /src/AppBundle
+    source_directories: 
+        - /src/AppBundle
     logger: false 
     profiler: true
     cache: true

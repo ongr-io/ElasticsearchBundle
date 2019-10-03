@@ -23,18 +23,44 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class MappingPass implements CompilerPassInterface
 {
+    /**
+     * @var array
+     */
+    private $indexes = [];
+
+    /**
+     * @var string
+     */
+    private $defaultIndex = null;
+
     public function process(ContainerBuilder $container)
+    {
+        $kernelDir = $container->getParameter('kernel.project_dir');
+
+        foreach ($container->getParameter(Configuration::ONGR_SOURCE_DIR) as $dir) {
+            $this->handleDirectoryMapping($container, $kernelDir . $dir);
+        }
+
+        $container->setParameter(Configuration::ONGR_INDEXES, $this->indexes);
+        $container->setParameter(
+            Configuration::ONGR_DEFAULT_INDEX,
+            $this->defaultIndex ?? current(array_keys($this->indexes))
+        );
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param string $dir
+     *
+     * @throws \ReflectionException
+     */
+    private function handleDirectoryMapping(ContainerBuilder $container, string $dir): void
     {
         /** @var DocumentParser $parser */
         $parser = $container->get(DocumentParser::class);
-        $indexes = [];
-        $defaultIndex = null;
         $indexesOverride = $container->getParameter(Configuration::ONGR_INDEXES_OVERRIDE);
 
-        foreach ($this->getNamespaces(
-            $container->getParameter('kernel.project_dir')
-                .$container->getParameter(Configuration::ONGR_SOURCE_DIR)
-        ) as $namespace) {
+        foreach ($this->getNamespaces($dir) as $namespace) {
             $class = new \ReflectionClass($namespace);
             /** @var Index $document */
             $document = $parser->getIndexAnnotation($class);
@@ -46,8 +72,8 @@ class MappingPass implements CompilerPassInterface
                 $indexMetadata['settings'] = array_filter(array_merge_recursive(
                     $indexMetadata['settings'] ?? [],
                     [
-                        'number_of_replicas' =>$document->numberOfReplicas,
-                        'number_of_shards' =>$document->numberOfShards,
+                        'number_of_replicas' => $document->numberOfReplicas,
+                        'number_of_shards' => $document->numberOfShards,
                     ],
                     $indexesOverride[$namespace]['settings'] ?? []
                 ));
@@ -77,28 +103,23 @@ class MappingPass implements CompilerPassInterface
                 $indexServiceDefinition->setPublic(true);
 
                 $container->setDefinition($namespace, $indexServiceDefinition);
-                $indexes[$indexAlias] = $namespace;
+                $this->indexes[$indexAlias] = $namespace;
                 $isCurrentIndexDefault = $parser->isDefaultIndex($class);
-                if ($defaultIndex && $isCurrentIndexDefault) {
+                if ($this->defaultIndex && $isCurrentIndexDefault) {
                     throw new \RuntimeException(
                         sprintf(
                             'Only one index can be set as default. We found 2 indexes as default ones `%s` and `%s`',
-                            $defaultIndex,
+                            $this->defaultIndex,
                             $indexAlias
                         )
                     );
                 }
 
                 if ($isCurrentIndexDefault) {
-                    $defaultIndex = $indexAlias;
+                    $this->defaultIndex = $indexAlias;
                 }
             }
         }
-
-        $container->setParameter(Configuration::ONGR_INDEXES, $indexes);
-
-        $defaultIndex = $defaultIndex ?? current(array_keys($indexes));
-        $container->setParameter(Configuration::ONGR_DEFAULT_INDEX, $defaultIndex);
     }
 
     private function getNamespaces($directory): array

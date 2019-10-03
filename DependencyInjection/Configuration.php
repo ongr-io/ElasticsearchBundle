@@ -57,11 +57,12 @@ class Configuration implements ConfigurationInterface
                 )
             ->end()
 
-            ->scalarNode('source_directory')
-                ->defaultValue('/src')
+            ->arrayNode('source_directories')
+                ->prototype('scalar')->end()
+                ->defaultValue(['/src'])
                 ->info(
-                    'If your project has different than `/src` source directory, you can specify it here '.
-                    'to look automatically for ES documents.'
+                    'If your project has different than `/src` source directory, or several of them,' .
+                    'you can specify them here to look automatically for ES documents.'
                 )
             ->end()
 

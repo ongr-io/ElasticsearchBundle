@@ -4,7 +4,8 @@ framework:
     test: ~
 
 ongr_elasticsearch:
-    source_directory: /Tests/app/src #This parameters is when you have custom project source root, in this case tests has their own kernel and source directory.
+    source_directories: 
+        - /Tests/app/src #This parameters is when you have custom project source root, in this case tests has their own kernel and source directory.
     analysis:
         filter:
             edge_ngram_filter: #-> analyzer name
@@ -21,5 +22,5 @@ ongr_elasticsearch:
     indexes:
         ONGR\App\Entity\DummyDocumentInTheEntityDirectory:
             alias: field-data-index
-            hosts:
+            hosts:	
                 - localhost:9200
