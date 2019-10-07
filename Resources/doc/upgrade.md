@@ -1,3 +1,10 @@
+UPGRADE FROM 5.x to 6.x
+===
+
+#### Breaking changes
+* Type support were removed. From now on 1 document class represents 1 index.
+* `Manager` and `Repository` services were removed in a favor of `IndexService`.
+
 UPGRADE FROM 1.x to 5.0
 ===
 
@@ -64,3 +71,4 @@ UPGRADE FROM 0.x to 1.0
 * `findBy` in the Repository now uses `query_string` query instead of terms query.
 
 > If we miss forgot something here in the list, please open an issue or a PR with a suggestion. 
+

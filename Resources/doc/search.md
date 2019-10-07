@@ -23,8 +23,8 @@ In this example we will search for cities in Lithuania with more than 10K popula
 
 ```php
 
-$repo = $this->get('es.manager.default.city');
-$search = $repo->createSearch();
+$index = $this->get('MyIndexClass::class');
+$search = $index->createSearch();
 
 $termQuery = new TermQuery('country', 'Lithuania');
 $search->addQuery($termQuery);
@@ -32,7 +32,7 @@ $search->addQuery($termQuery);
 $rangeQuery = new RangeQuery('population', ['from' => 10000]);
 $search->addQuery($rangeQuery);
 
-$results = $repo->findDocuments($search);
+$results = $index->findDocuments($search);
 
 ```
 
@@ -78,35 +78,8 @@ $search->setSize(100);
 
 Similarly other properties like Scroll, Timeout, MinScore and more can be defined.
 
-For more query and filter examples take a look at the [Elasticsearch DSL library docs](https://github.com/ongr-io/ElasticsearchDSL/blob/master/docs/index.md). We covered all examples that we found in [Elasticsearch Query DSL documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) how to cover in object oriented way.
-
-## Searching in Multiple Types
-
-Previous example illustrated the usual case scenario of performing a search in a single type.
-However if you should ever find yourself in a rear situation where a search needs to be performed
-on several types at once, you can use a specific `search` method in manager, that accepts an 
-array with the names of types on which the search needs to be performed. 
- 
-However, unlike some of the `find` functions in repository this method returns only the raw results,
-therefore the use of this method should be minimal and only when needed.
-
-### Example of searching in multiple types
-
-Lets say you have `City` and `State` documents with `title` field. Search all
-cities and states with title "Indiana":
-
-```php
-$search = new Search();
-$search->addQuery(new TermQuery('title', 'Indiana'));
-
-$results = $manager->search(
-    // Array of documents representing different types
-    ['AppBundle:City', 'AppBundle:State'], 
-    $search->toArray()
-);
-```
-
-> Notice, that the second argument needs to be an array, not a `Search` instance.
+For more query and filter examples take a look at the [Elasticsearch DSL library docs](https://github.com/ongr-io/ElasticsearchDSL/blob/master/docs/index.md).
+ We covered all examples that we found in [Elasticsearch Query DSL documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) how to cover it in the object oriented way.
 
 ## Results count
 
@@ -114,12 +87,20 @@ Elasticsearch bundle provides support for [Count API](https://www.elastic.co/gui
 
 ```php
 
-$repo = $this->get('es.manager.default.cars');
-$search = $repo->createSearch();
+$index = $this->get('MyIndexClass::class');
+$search = $index->createSearch();
 
 $termQuery = new TermQuery('color', 'red');
 $search->addQuery($termQuery);
 
-$count = $repo->count($search);
+$count = $index->count($search);
 
 ```
+
+## Searching in Multiple indexes
+
+The only way how we think it would be possible is to use same alias according several indexes. 
+ 
+Moreover, the structure of the documents should be the same; otherwise, it won't create document objects.
+
+> Notice, that the second argument needs to be an array, not a `Search` instance.
