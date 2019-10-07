@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Command\IndexCreateCommand;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
@@ -18,18 +19,14 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class CreateIndexCommandTest extends AbstractElasticsearchTestCase
 {
-    const COMMAND_NAME = 'ongr:es:index:create';
-
-    /**
-     * Tests creating index in case of existing this index. Configuration from tests yaml.
-     */
     public function testExecuteWhenIndexExists()
     {
-        $manager = $this->getManager();
+        $index = $this->getIndex(DummyDocument::class);
+        $index->dropAndCreateIndex();
 
         $commandTester = $this->getCommandTester();
         $options = [];
-        $arguments['command'] = self::COMMAND_NAME;
+        $arguments['command'] = IndexCreateCommand::NAME;
         $arguments['--if-not-exists'] = null;
 
         // Test if the command returns 0 or not
@@ -39,69 +36,53 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
         );
 
         $expectedOutput = sprintf(
-            '/Index `%s` already exists in `%s` manager./',
-            $manager->getIndexName(),
-            $manager->getName()
+            '/Index `%s` already exists./',
+            $index->getIndexName()
         );
 
         $this->assertRegExp($expectedOutput, $commandTester->getDisplay());
     }
 
-    /**
-     * Tests creating index. Configuration from tests yaml.
-     */
     public function testIndexCreateWhenThereIsNoIndex()
     {
-        $manager = $this->getManager();
-        $manager->dropIndex();
+        $index = $this->getIndex(DummyDocument::class);
+        $index->dropIndex();
 
-        $this->assertFalse($manager->indexExists(), 'Index should not exist.');
+        $this->assertFalse($index->indexExists(), 'Index should not exist.');
 
         $this->assertSame(
             0,
             $this->getCommandTester()->execute(
                 [
-                    'command' => self::COMMAND_NAME
+                    'command' => IndexCreateCommand::NAME
                 ]
             )
         );
 
-        $this->assertTrue($manager->indexExists(), 'Index should exist.');
+        $this->assertTrue($index->indexExists(), 'Index should exist.');
     }
 
-    /**
-     * Testing if creating index with alias option will switch alias correctly to the new index.
-     */
     public function testAliasIsCreatedCorrectly()
     {
         $commandTester = $this->getCommandTester();
-        $manager = $this->getManager();
-        $manager->dropIndex();
 
-        $aliasName = $manager->getIndexName();
+        $index = $this->getIndex(DummyDocument::class);
+        $index->dropIndex();
 
-        $this->assertFalse($manager->indexExists());
-        $this->assertFalse($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
+        $aliasName = $index->getIndexName();
+
+        $this->assertFalse($index->indexExists());
+        $this->assertFalse($index->getClient()->indices()->existsAlias(['name' => $aliasName]));
 
         $commandTester->execute(
             [
-                'command' => self::COMMAND_NAME,
+                'command' => IndexCreateCommand::NAME,
                 '-t' => null,
                 '-a' => null,
             ]
         );
 
-        $indexName = $manager->getIndexName();
-        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $indexName]));
-        $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
-        $aliases = $manager->getClient()->indices()->getAlias(['name' => $aliasName]);
-        $indexNamesFromAlias = array_keys($aliases);
-        $this->assertCount(1, $indexNamesFromAlias);
-        $this->assertEquals($indexName, $indexNamesFromAlias[0]);
-        $this->assertNotEquals($manager->getIndexName(), $aliasName);
-
-        //Drop index manually.
-        $manager->dropIndex();
+        $this->assertTrue($index->getClient()->indices()->existsAlias(['name' => $aliasName]));
     }
 
     /**
@@ -110,45 +91,49 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
     public function testAliasIsChangedCorrectly()
     {
         $commandTester = $this->getCommandTester();
-        $manager = $this->getManager();
-        $manager->dropIndex();
 
-        $aliasName = $manager->getIndexName();
+        $index = $this->getIndex(DummyDocument::class);
+        $index->dropIndex();
 
-        $this->assertFalse($manager->indexExists());
-        $this->assertFalse($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
+        $aliasName = $index->getIndexName();
+
+        $this->assertFalse($index->indexExists());
+        $this->assertFalse($index->getClient()->indices()->existsAlias(['name' => $aliasName]));
 
         $commandTester->execute(
             [
-                'command' => self::COMMAND_NAME,
+                'command' => IndexCreateCommand::NAME,
                 '-t' => null,
                 '-a' => null,
             ]
         );
 
-        $indexName = $manager->getIndexName();
-        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $indexName]));
-        $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
-        $this->assertNotEquals($manager->getIndexName(), $aliasName);
+        $aliasIndex = array_keys($index->getClient()->indices()->getAlias(['name' => $aliasName]));
+        $createdIndexName = array_shift($aliasIndex);
 
-        $manager->setIndexName($aliasName);
+        $this->assertTrue($index->getClient()->indices()->exists(['index' => $createdIndexName]));
+        $this->assertTrue($index->getClient()->indices()->existsAlias(['name' => $aliasName]));
+
+        $this->assertNotEquals($aliasName, $createdIndexName);
+
         $commandTester->execute(
             [
-                'command' => self::COMMAND_NAME,
+                'command' => IndexCreateCommand::NAME,
                 '-t' => null,
                 '-a' => null,
             ]
         );
 
-        $indexName2 = $manager->getIndexName();
-        $this->assertTrue($manager->getClient()->indices()->exists(['index' => $indexName2]));
-        $this->assertTrue($manager->getClient()->indices()->existsAlias(['name' => $aliasName]));
+        $aliasIndex = array_keys($index->getClient()->indices()->getAlias(['name' => $aliasName]));
+        $createdIndexName2 = array_shift($aliasIndex);
+
+        $this->assertTrue($index->getClient()->indices()->exists(['index' => $createdIndexName]));
+        $this->assertTrue($index->getClient()->indices()->exists(['index' => $createdIndexName2]));
+
+        $this->assertTrue($index->getClient()->indices()->existsAlias(['name' => $aliasName]));
 
         //Drop index manually.
-        $manager->setIndexName($indexName);
-        $manager->dropIndex();
-        $manager->setIndexName($indexName2);
-        $manager->dropIndex();
+        $index->getClient()->indices()->delete(['index' => $createdIndexName.",".$createdIndexName2]);
     }
 
     /**
@@ -157,25 +142,25 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
     public function testIndexMappingDump()
     {
         $commandTester = $this->getCommandTester();
-        $manager = $this->getManager();
-        $manager->dropIndex();
+        $index = $this->getIndex(DummyDocument::class);
+        $index->dropIndex();
 
-        $this->assertFalse($manager->indexExists());
+        $this->assertFalse($index->indexExists());
         $commandTester->execute(
             [
-                'command' => self::COMMAND_NAME,
+                'command' => IndexCreateCommand::NAME,
                 '--dump' => null,
             ]
         );
 
         $this->assertContains(
             json_encode(
-                $manager->getIndexMappings(),
+                $index->getIndexSettings()->getIndexMetadata(),
                 JSON_PRETTY_PRINT
             ),
             $commandTester->getDisplay()
         );
-        $this->assertFalse($manager->indexExists());
+        $this->assertFalse($index->indexExists());
     }
 
     /**
@@ -191,7 +176,7 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
         $app = new Application();
         $app->add($indexCreateCommand);
 
-        $command = $app->find(self::COMMAND_NAME);
+        $command = $app->find(IndexCreateCommand::NAME);
         $commandTester = new CommandTester($command);
 
         return $commandTester;

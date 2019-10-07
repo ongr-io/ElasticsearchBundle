@@ -12,28 +12,10 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * Associates document property with _version meta-field.
- *
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Version implements MetaField
+final class Version extends AbstractAnnotation implements MetaFieldInterface
 {
     const NAME = '_version';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return self::NAME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSettings()
-    {
-        return [];
-    }
 }

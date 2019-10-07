@@ -11,43 +11,47 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\EventListener;
 
+use ONGR\App\Document\DummyDocument;
+use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\EventListener\TerminateListener;
+use ONGR\ElasticsearchBundle\Service\IndexService;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Container;
 
 /**
  * Tests TerminateListener class
  */
-class TerminateListenerTest extends \PHPUnit_Framework_TestCase
+class TerminateListenerTest extends TestCase
 {
     /**
      * Tests kernel terminate event
      */
     public function testKernelTerminate()
     {
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $indexService = $this->getMockBuilder(IndexService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $manager->expects($this->once())
+        $indexService->expects($this->exactly(2))
             ->method('commit');
 
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\Container')
+        $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $container->expects($this->any())
             ->method('get')
-            ->with('es.manager.test_available')
-            ->willReturn($manager);
+            ->with($this->logicalOr(
+                DummyDocument::class,
+                DummyDocumentInTheEntityDirectory::class
+            ))
+            ->willReturn($indexService);
 
         $listener = new TerminateListener(
             $container,
             [
-                'test_available' => [
-                    'force_commit' => true,
-                ],
-                'test_unavailable' => [
-                    'force_commit' => true,
-                ],
+                DummyDocument::class,
+                DummyDocumentInTheEntityDirectory::class,
             ]
         );
 

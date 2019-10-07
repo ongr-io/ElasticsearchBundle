@@ -1,10 +1,15 @@
-## Elasticsearch Bundle
+---
+title: Introduction
+type: elasticsearch-bundle
+order: 1
+---
+
+> This documentation is for **`6.x`** version. If you look for **`5.x`** or earlier take a look at the [Github Resources folder](https://github.com/ongr-io/ElasticsearchBundle/tree/5.2/Resources/doc).
+
+## Reference links
 
 Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsearch database](https://www.elastic.co/products/elasticsearch) in the [Symfony](https://github.com/symfony/symfony-standard) applications. We created this bundle with love :heart: and we think you will love it too.
 
-> Bundle set up guide you can find in the `README.md` file. 
-
-#### Usage
 * [Mapping explained](mapping.md)
 * [Using Meta-Fields](meta_fields.md)
 * [Configuration](configuration.md)
@@ -15,15 +20,100 @@ Welcome to the ElasticsearchBundle, the modern solution to work with [Elasticsea
 * [Scan through the index](scan.md)
 * [Parsing the results](results_parsing.md)
 
-#### Troubleshooting
-* [How to upgrade from the older versions?](upgrade.md)
-* [How to overwrite some parts of the bundle?](overwriting_bundle.md)
+## How to install
 
-#### Some news for upcoming versions
+#### Step 1: Install Elasticsearch bundle
 
-We already have a new milestone set for v1.1.0 version (see active milestones [here](https://github.com/ongr-io/ElasticsearchBundle/milestones)). For the new milestone we are planning to support new endpoints:
-* Highlight
-* Autocomplete
-* Suggestions
+Elasticsearch bundle is installed using [Composer](https://getcomposer.org).
 
-We are hoping that those features will help our community to create better projects. **If you think that we are missing something very important which would help you, please do not hesitate to create an issue and ask about it.** We are very open and looking forward to see a projects running on this awesome bundle :smirk:.
+```bash
+composer require ongr/elasticsearch-bundle "~6.0"
+```
+
+> Instructions for installing and deploying Elasticsearch can be found in
+ [Elasticsearch installation page][17].
+
+Enable Elasticsearch bundle in your AppKernel:
+
+```php
+// app/AppKernel.php
+
+public function registerBundles()
+{
+    $bundles = [
+        // ...
+        new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
+    ];
+    
+    // ...
+}
+
+```
+
+#### Step 2: (OPTIONAL) Add configuration
+
+> Since bundle v6 the configuration is not necessary. Everything can be set through annotation. 
+
+```yaml
+# app/config/config.yml
+ongr_elasticsearch:
+    indexes:
+        App\Document\Product:
+            alias: product
+            hosts:
+                - 127.0.0.1:9200
+```
+
+The configuration might be handy if you want to set an index alias name or other parameter from `.env` or ENV. 
+
+
+#### Step 3: Define your Elasticsearch types as `Document` objects
+
+This bundle uses objects to represent Elasticsearch documents. Lets create a `Product` class to represent products.
+
+```php
+// src/Document/Product.php
+
+namespace App\Document;
+
+use ONGR\ElasticsearchBundle\Annotation as ES;
+
+/**
+ * @ES\Index(alias="my_product")
+ */
+class Product
+{
+    /**
+     * @ES\Id()
+     */
+    public $id;
+
+    /**
+     * @ES\Property(type="text")
+     */
+    public $title;
+
+    /**
+     * @ES\Property(type="float")
+     */
+    public $price;
+}
+
+```
+
+#### Step 4: Create index and mappings
+
+Elasticsearch bundle provides several `CLI` commands. One of them is for creating index, run command in your terminal:
+
+```bash
+
+bin/console ongr:es:index:create
+
+```
+
+> More info about the rest of the commands can be found in the [commands chapter][10].
+
+
+#### Step 5: Enjoy the ElasticsearchBundle
+
+Enjoy :rocket:

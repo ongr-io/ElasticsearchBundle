@@ -11,39 +11,34 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Mapping;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Cache\Cache;
+use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
-use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\LongDescriptionTrait;
+use PHPUnit\Framework\TestCase;
 
-class DocumentParserTest extends \PHPUnit_Framework_TestCase
+class DocumentParserTest extends TestCase
 {
-    /*
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    private $reader;
-
-    /*
-     * @var \ONGR\ElasticsearchBundle\Mapping\DocumentFinder
-     */
-    private $finder;
-
-    public function setUp()
+    public function testDocumentParsing()
     {
-        $this->reader = $this->getMockBuilder('Doctrine\Common\Annotations\Reader')
-            ->disableOriginalConstructor()
-            ->getMock();
 
-        $this->finder = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\DocumentFinder')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
+        $parser = new DocumentParser(new AnnotationReader(), $this->createMock(Cache::class));
+        ;
 
-    public function testReturnFalseOnTrait()
-    {
-        $traitReflection = new \ReflectionClass(
-            '\\ONGR\\ElasticsearchBundle\\Tests\\app\\fixture\\TestBundle\\Document\\LongDescriptionTrait'
-        );
+        $indexMetadata = $parser->getIndexMetadata(new \ReflectionClass(DummyDocumentInTheEntityDirectory::class));
 
-        $parser = new DocumentParser($this->reader, $this->finder);
-        $this->assertFalse($parser->parse($traitReflection));
+        $expected = [
+            'mappings' => [
+                '_doc' => [
+                    'properties' => [
+                            'keyword_field' => [
+                            'type' => 'keyword',
+                            ]
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expected, $indexMetadata);
     }
 }

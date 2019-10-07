@@ -5,7 +5,7 @@ like insert and update documents, do a full-text search, etc.
 
 ### Mapping configuration
 
-Here's an example of configuration containing the definitions of filter and analyzer:
+Here's an example of configuration containing the definitions of a filter and analyzer:
 
 ```yaml
 ongr_elasticsearch:
@@ -22,48 +22,16 @@ ongr_elasticsearch:
                 filter:
                     - lowercase
                     - incremental_filter
-    managers:
-        default:
-            index:
-                index_name: your_index_name
-                hosts:
-                    - 127.0.0.1:9200
-            mappings:
-                - AppBundle
+    indexes:
+        App\Document\MyDocument:
+            alias: my_index
 ```
 
-From 5.0 version mapping was enchased, and now you can change documents directory. See the example below:
-
-```yml
-#...
-    managers:
-        custom_dir:
-            index:
-                index_name: your_index_name
-                hosts:
-                    - 127.0.0.1:9200
-            mappings:
-                AppBundle: ~ #Document dir will be Document.
-                CustomBundle:
-                    document_dir: Entity #For this bundle will search documents in the Entity.
-                    
-        default:
-            index:
-                index_name: your_index_name
-                hosts:
-                    - 127.0.0.1:9200
-            mappings:
-                - AppBundle
-```
-
-> Both mappings are valid. In the above example, you can change the directory for the particular
- bundles where to find documents. Default dir remains `Document`.
-
-At the very top, you can see `analysis` node. It represents [Elasticsearch analysis][1]. 
-You can define here analyzers, tokenizers, token filters and character filters.
+At the very top, you can see `analysis` node. It represents [Elasticsearch analysis](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html). 
+Here you can define analyzers, tokenizers, token filters and character filters.
 Once you define any analysis, then it can be used in any document mapping.
 
-e.g. let's say you want to use incremental analyzer and custom lowercase filter analyzer in your index.
+e.g. let's take a look how to use incremental analyzer and custom lowercase filter analyzer in your index.
 The elasticsearch settings mapping would like this:
 
 ```json
@@ -125,152 +93,148 @@ ongr_elasticsearch:
                 type: edge_ngram
                 min_gram: 1
                 max_gram: 100
-    managers:
-        default:
-            index:
-                index_name: your_index_name
-                hosts:
-                    - 127.0.0.1:9200
-            mappings:
-                - AppBundle
 ```
+
+> there is two ways to define index, you can pass all configuration through annotations or yml config. 
+You can find more information about analysis at [the elasticsearch docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html). 
 
 ### Document class annotations
 
 Lets start with a document class example.
 
 ```php
-// src/AppBundle/Document/Content.php
+// src/Document/Content.php
 
-namespace AppBundle\Document;
+namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Document(type="product")
+ * @ES\Index(alias="my_index", default=true)
  */
-class Product
+class MyIndex
 {
     /**
-     * @ES\Property(type="text", name="title_in_es")
+     * @ES\Property(type="text", analyzer="keywordAnalyzer")
      */
     private $title;
-
+    
     /**
-     * Sets title
-     *
-     * @param string $title
+     * @ES\Property(type="text", analyzer="incrementalAnalyzer")
      */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * Returns title
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
+    private $description;
+    
+    //...
 }
 ```
 
-> It is not mandatory to have private properties, and public will work as well.
+> It is not mandatory to have private properties, public will work as well.
  However, we firmly recommend using private according to OOP best practices.  
 
-#### Document annotation configuration
+#### Document/Class annotation configuration
 
-- `@ES\Document(type="product")` Annotation defines that this class will represent elasticsearch type with name `content`.
-- You can append any valid elasticsearch type options to the `options` variable.
- E.g. if you want to add `enable:false` it will look like this: `@ES\Document(type="product", options={"enable":"false"})`
-- `type` parameter is for type name. This parameter is optional, if there will be no parameter set,
-ElasticsearchBundle will create a type with lower cased class name.
+`@ES\Index` Annotation has these parameters:
+
+- `alias` - which represent what alias will be created for a newly created index via cli command using `-a` parameter.
+- `hosts` - here you can define elasticsearch hosts array, default is `127.0.0.1:9200`.
+- `default` - makes this index default for cli commands, in that case it is not necessary to define document namespace.
+    If you have only one index int the whole app that one will be default even if you not set default to true.
+- `numberOfShards` - number of shard for the index.
+- `numberOfReplicas` - number of replicas for the index.
 
 
-### Properties annotations
+### Property annotation configuration
 
 For defining type properties, there is a `@ES\Property` annotation. The only required
 attribute is `type` - Elasticsearch field type to specify what kind of information
 will be indexed. By default, the field name is generated from property name by converting
 it to "snake case" string. You can specify a custom name by setting the `name` attribute.
 
-> Read more about elasticsearch supported types [in the official documentation][2].
+Here's the list of all available parameters:
+- `name` - elasticsearch field name which maps to this variable name.
+- `analyzer` - analyzer name to use from the list of analyzers configuration of built it analyzer from elastic.
+- `searchAnalyzer` - the same as analyzer but dedicated for search.
+- `searchQuoteAnalyzer` - the same as analyzer but dedicated for search quote.
+- `fields` - allow to define additional fields with different analyzers within the same field.
 
-To add a custom setting for the property like analyzer include it in the `options` variable.
-Analyzers names must be defined in `config.yml` under the `analysis` node (read more in the topic above).
-Here's an example how to add it:
+> Read more about elasticsearch supported types [in the official documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
+
 
 ```php
-// src/AppBundle/Document/Product.php
-namespace AppBundle\Document;
+// src/Document/Product.php
+namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Document()
+ * @ES\Index(alias="my_index")
  */
-class Product
+class MyIndex
 {
     // ...
 
     /**
      * @ES\Property(
         type="text",
-        options={"analyzer":"incrementalAnalyzer"}
-      )
+        analyzer="incrementalAnalyzer"
+     })
      */
     private $title;
     
     //....
 ```
 
->  `options` container accepts any parameters in annotation array format. We leave mapping validation
- to elasticsearch and elasticsearch-php client. If there will be invalid format annotations reader will throw exception,
- otherwise elasticsearch-php or elasticsearch database will throw an exception if something is wrong.
-
-
 #### Object and Nested types
 
 To define a nested or object type you have to use `@ES\Embedded` annotation and create a separate
-class for this annotation. Here's an example, lets assume we have a `Product` type with `Variant` object field.
+class for this annotation. Here's an example, lets assume we have a `Product` type with `CategoryObject` as object field.
 
 ```php
 // src/AppBundle/Document/Product.php
 
-namespace AppBundle\Document;
+namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Document()
+ * @ES\Index(alias="product")
  */
 class Product
 {
     /**
-     * @ES\Property(type="string")
+     * @ES\Property(type="text")
      */
     private $title;
 
     /**
      * @var ContentMetaObject
      *
-     * @ES\Embedded(class="AppBundle:CategoryObject")
+     * @ES\Embedded(class="App\Document\CategoryObject")
      */
     private $category;
+
+    //...
+    
+    public function __construct()
+    {
+        $this->category = new ArrayCollection();
+    }
+    
+    public funtion addCategory($category)
+    {
+        $this->category->add($category)
+    }
 
     //...
 }
 ```
 
-And the `Category` object will look like:
+And the `Category` object will look like (it's a separate class):
 
 ```php
-// src/AppBundle/Document/CategoryObject.php
+// src/Document/CategoryObject.php
 
-namespace AppBundle\Document;
+namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -289,7 +253,7 @@ class CategoryObject
 
 ```
 
-> Class name can be anything, we called it `CategoryObject` to make it more readable. Notice that it is an object, not a document.
+> Class name can be anything, we called it `CategoryObject` to make it more readable. Notice that it is an `ObjectType`, not an `Index`.
 
 For this particular example the mapping in elasticsearch will look like this:
 
@@ -304,7 +268,7 @@ For this particular example the mapping in elasticsearch will look like this:
                 "type": "object",
                 "properties": {
                     "title": {
-                        "type": "string"
+                        "type": "text"
                     }
                 }
             }
@@ -324,45 +288,42 @@ To insert a document with mapping from example above you have to create 2 object
   
   $product = new Product();
   $product->setTitle('Orange Jeans');
-  $product->setCategoryObject($category);
+  $product->addCategory($category);
   
   //manager to work with elasticsearch index
-  $manager->persist($product);
-  $manager->commit();
+  $index->persist($product);
+  $index->commit();
  
 ```
 
+> Please notice that objects always are collections, no matter if you have one or multiple. 
+  Previously we tried to separate it by introducing parameter, but it causes so much confusion and complexity, so from v6 it is unified.
 ##### Multiple objects
-
-As shown in the example above, by ElasticsearchBundle default, only a single object will be saved in the document.
-Meanwhile, Elasticsearch database doesn't care if in an object is stored as a single value or as an array. 
-If it is necessary to store multiple objects (array), you have to add `multiple=true` to the annotation. While
-initiating a document with multiple items you need to initialize property with the new instance of `ArrayCollection()`.
 
 Here's an example:
 
 ```php
-// src/AppBundle/Document/Product.php
+// src/Document/Product.php
 
-namespace AppBundle\Document;
+namespace App\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Document()
+ * @ES\Index()
  */
 class Product
 {
     /**
-     * @ES\Property(type="string")
+     * @ES\Property(type="text")
      */
     private $title;
 
     /**
      * @var ContentMetaObject
      *
-     * @ES\Embedded(class="AppBundle:VariantObject", multiple=true)
+     * @ES\Embedded(class="App\Document\VariantObject")
      */
     private $variants;
     
@@ -392,9 +353,9 @@ And the object:
 
 
 ```php
-// src/AppBundle/Document/VariantObject.php
+// src/Document/VariantObject.php
 
-namespace AppBundle\Document;
+namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
@@ -404,7 +365,7 @@ use ONGR\ElasticsearchBundle\Annotation as ES;
 class VariantObject
 {
     /**
-     * @ES\Property(type="string")
+     * @ES\Property(type="text")
      */
     private $color;
 
@@ -434,16 +395,18 @@ Insert action will look like this:
 
 > There is no bounds to define other objects within objects.
 
-> Nested types can be defined the same way as objects, except `@ES\Nested` annotation must be used.
+> Nested types can be defined the same way as objects, except `@ES\NestedType` annotation must be used.
 
-The difference between `@ES\Embedded` and `@ES\Nested` is in the way that the Elasticsearch indexes them.
+The difference between `@ES\ObjectType` and `@ES\NestedType` is in the way that the Elasticsearch indexes them.
 While the values of the fields in embedded objects are extracted and put into the same array with all the other
 values of other embedded objects in the same field, during the indexation process, the values of the fields of
 nested objects stored separately. This introduces differences when querying and filtering the index.
 
+More information about nested documents if [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html)
+
 ### Multi field annotations and usage
 
-Within the properties annotation, you can specify the `field` attribute. It enables you to map several core
+Within the properties annotation, you can specify the `fields` attribute. It enables you to map several core
 types of the same value. This can come very handy, e.g. when you want to map a text type with analyzed and
 not analyzed values.
 
@@ -454,17 +417,18 @@ Lets take a look at example below:
      * @ES\Property(
      *  type="text",
      *  name="title",
-     *  options={
-     *    "analyzer"="keywordAnalyzer",
-     *    "fields"={
-     *        "raw"={"type"="keyword"},
-     *        "standard"={"type"="text", "analyzer"="standard"}
-     *    }
+     *  analyzer="incrementalAnalyzer",
+     *  fields={
+     *    "keyword"={"type"="keyword"},
+     *    "text"={"type"="text", "analyzer"="standard"}
+     *    "anything_else"={"type"="text", "analyzer"="custom"}
      *  }
      * )
      */
     public $title;
 ```
+
+> More information can be found [in the elasticsearch docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-fields.html). 
 
 The mapping in elasticsearch would look like this:
 
@@ -474,14 +438,18 @@ The mapping in elasticsearch would look like this:
         "properties": {
             "title": {
                 "type": "text",
-                "analyzer": "keywordAnalyzer",
+                "analyzer": "incrementalAnalyzer",
                 "fields": {
-                    "raw": {
+                    "keyword": {
                         "type": "keyword"
                     },
-                    "standard": {
+                    "text": {
                         "type": "text",
                         "analyzer": "standard"
+                    },
+                    "anything_else": {
+                        "type": "text",
+                        "analyzer": "custom"
                     }
                 }
             }
@@ -494,20 +462,21 @@ You will notice that now title value is mapped both with and without the analyze
 look like this:
 
 ```php
+        //..
         $query = new TermQuery('title', 'Bar');
         $search->addQuery($query);
 
         $result1 = $repo->execute($search);
 
-        $query = new MatchQuery('title.raw', 'Bar');
+        $query = new MatchQuery('title.keyword', 'Bar');
         $search->addQuery($query);
 
         $result2 = $repo->execute($search);
 
-        $query = new MatchQuery('title.standard', 'Bar');
+        $query = new MatchQuery('title.text', 'Bar');
         $search->addQuery($query);
 
-        $result3 = $repo->execute($search);
+        $result3 = $index->execute($search);
 ```
 
 ### Meta-Fields Annotations
@@ -515,8 +484,4 @@ look like this:
 There are specialized meta fields that introduce different behaviours of elasticsearch.
 Read the dedicated page about meta-field annotations [here](http://docs.ongr.io/ElasticsearchBundle/meta_fields).
 
-> More information about mapping can be found in the [Elasticsearch mapping documentation][3].
-
-[1]: https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html
-[2]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html
-[3]: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
+> More information about mapping can be found in the [Elasticsearch mapping documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html).

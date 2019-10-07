@@ -18,13 +18,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * IndexImportCommand class.
- */
-class IndexImportCommand extends AbstractManagerAwareCommand
+class IndexImportCommand extends AbstractIndexServiceAwareCommand
 {
-    public static $defaultName = 'ongr:es:index:import';
-
+    const NAME = 'ongr:es:index:import';
     /**
      * {@inheritdoc}
      */
@@ -33,7 +29,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName(static::$defaultName)
+            ->setName(self::NAME)
             ->setDescription('Imports data to elasticsearch index.')
             ->addArgument(
                 'filename',
@@ -61,7 +57,7 @@ class IndexImportCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $manager = $this->getManager($input->getOption('manager'));
+        $index = $this->getIndex($input->getOption(parent::INDEX_OPTION));
 
         // Initialize options array
         $options = [];
@@ -71,9 +67,9 @@ class IndexImportCommand extends AbstractManagerAwareCommand
         $options['bulk-size'] = $input->getOption('bulk-size');
 
         /** @var ImportService $importService */
-        $importService = $this->getContainer()->get('es.import');
+        $importService = $this->getContainer()->get(ImportService::class);
         $importService->importIndex(
-            $manager,
+            $index,
             $input->getArgument('filename'),
             $output,
             $options

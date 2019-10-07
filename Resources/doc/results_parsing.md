@@ -31,10 +31,10 @@ Lets assume you search the index with:
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
-$search = $repo->createSearch();
+$index = $this->get('MyIndexClass::class');
+$search = $index->createSearch();
 $termQuery = new MatchAllQuery();
-$results = $repo->findDocuments($search);
+$results = $index->findDocuments($search);
 
 ```
 
@@ -68,7 +68,7 @@ cannot be associated with document. You can get document's score from results it
 while iterating:
 
 ```php
-$results = $repository->findDocuments($search);
+$results = $index->findDocuments($search);
 
 foreach ($results as $document) {
     echo $document->title, $results->getDocumentScore();
@@ -84,7 +84,7 @@ added a sort to your search, you can retrieve your sort value while iterating th
 results:
 
 ```php
-$results = $repository->execute($search);
+$results = $index->execute($search);
 
 foreach ($results as $document) {
     echo $document->title, $results->getDocumentSort();
@@ -118,7 +118,7 @@ $brandTermAggregation->addAggregation($avgPriceAggregation);
 $query = new Search();
 $query->addAggregation($brandTermAggregation);
 
-$result = $this->get('es.manager.default.content')->findDocuments($query);
+$result = $this->get('MyIndexClass::class')->findDocuments($query);
 
 // Build a list of available choices
 $choices = [];

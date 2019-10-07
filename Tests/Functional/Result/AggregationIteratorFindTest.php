@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
+use ONGR\App\Document\DummyDocument;
+use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use ONGR\ElasticsearchDSL\Aggregation\Bucketing\RangeAggregation;
 
@@ -22,26 +24,21 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
     protected function getDataArray()
     {
         return [
-            'default' => [
-                'product' => [
-                    [
-                        '_id' => 1,
-                        'title' => 'Onion',
-                        'description' => 'solid',
-                        'price' => 10.45,
-                    ],
-                    [
-                        '_id' => 2,
-                        'title' => 'Tomato',
-                        'description' => 'weak',
-                        'price' => 32,
-                    ],
-                    [
-                        '_id' => 3,
-                        'title' => 'Pizza',
-                        'description' => 'weak',
-                        'price' => 15.1,
-                    ],
+            DummyDocument::class => [
+                [
+                    '_id' => 1,
+                    'title' => 'Foo',
+                    'number' => 10.45,
+                ],
+                [
+                    '_id' => 2,
+                    'title' => 'Bar',
+                    'number' => 32,
+                ],
+                [
+                    '_id' => 3,
+                    'title' => 'Acme',
+                    'number' => 15.1,
                 ],
             ],
         ];
@@ -63,25 +60,23 @@ class AggregationIteratorFindTest extends AbstractElasticsearchTestCase
             ],
         ];
 
-        $repository = $this
-            ->getManager()
-            ->getRepository('TestBundle:Product');
+        $index = $this->getIndex(DummyDocument::class);
 
-        $rangeAggregation = new RangeAggregation('range', 'price');
+        $rangeAggregation = new RangeAggregation('range', 'number');
         $rangeAggregation->addRange(null, 20);
         $rangeAggregation->addRange(20, null);
 
-        $search = $repository
+        $search = $index
             ->createSearch()
             ->addAggregation($rangeAggregation);
 
-        $results = $repository->findDocuments($search);
+        $results = $index->findDocuments($search);
         $rangeResult = $results->getAggregation('range');
 
-        $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue', $rangeResult);
+        $this->assertInstanceOf(AggregationValue::class, $rangeResult);
 
         foreach ($rangeResult->getBuckets() as $aggKey => $subAgg) {
-            $this->assertInstanceOf('ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue', $subAgg);
+            $this->assertInstanceOf(AggregationValue::class, $subAgg);
             $this->assertEquals($expected[$aggKey]['key'], $subAgg->getValue('key'));
             $this->assertEquals($expected[$aggKey]['doc_count'], $subAgg->getValue('doc_count'));
         }

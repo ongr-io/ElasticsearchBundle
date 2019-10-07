@@ -11,26 +11,33 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Annotation;
 
+use ONGR\App\Document\DummyDocument;
+use ONGR\ElasticsearchBundle\Service\IndexService;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class PropertyTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * Test if field names are correctly generated from property names.
-     */
-    public function testIfNamesFormedCorrectly()
+    public function testPropertyTypeName()
     {
-        $mappings = $this->getManager()->getMetadataCollector()->getMapping('TestBundle:User');
+        /** @var IndexService $index */
+        $index = $this->getIndex(DummyDocument::class, false);
+        $meta = $index->getIndexSettings()->getIndexMetadata();
 
-        $expected = [
-            'first_name' => [
+        $this->assertEquals(
+            [
+                'fields' =>
+                    [
+                        'raw' => [
+                            'type' => 'keyword',
+                        ],
+                        'increment' => [
+                            'type' => 'text',
+                            'analyzer' => 'incrementalAnalyzer',
+                        ],
+                    ],
                 'type' => 'text',
             ],
-            'last_name' => [
-                'type' => 'text',
-            ],
-        ];
-
-        $this->assertEquals($expected, $mappings['properties']);
+            $meta['mappings']['_doc']['properties']['title']
+        );
     }
 }

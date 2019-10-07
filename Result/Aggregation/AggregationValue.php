@@ -12,33 +12,27 @@
 namespace ONGR\ElasticsearchBundle\Result\Aggregation;
 
 /**
- * This is the class for plain aggregation result with nested aggregations support.
+ * This class represent`s aggregation buckets in the objective way.
  */
 class AggregationValue implements \ArrayAccess, \IteratorAggregate
 {
+    const BUCKETS_KEY = 'buckets';
+    const DOC_COUNT_KEY = 'doc_count';
+
     /**
      * @var array
      */
     private $rawData;
 
-    /**
-     * Constructor.
-     *
-     * @param array $rawData
-     */
-    public function __construct($rawData)
+    public function __construct(array $rawData)
     {
         $this->rawData = $rawData;
     }
 
     /**
-     * Returns aggregation value by name.
-     *
-     * @param string $name
-     *
-     * @return array
+     * Returns aggregation value by the aggregation name.
      */
-    public function getValue($name = 'key')
+    public function getValue(string $name)
     {
         if (!isset($this->rawData[$name])) {
             return null;
@@ -47,30 +41,25 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
         return $this->rawData[$name];
     }
 
-    /**
-     * Returns the document count of the aggregation
-     *
-     * @return integer
-     */
-    public function getCount()
+    public function getCount(): int
     {
-        return $this->getValue('doc_count');
+        return (int) $this->getValue(self::DOC_COUNT_KEY);
     }
 
     /**
      * Returns array of bucket values.
      *
-     * @return AggregationValue[]|null
+     * @return AggregationValue[]
      */
-    public function getBuckets()
+    public function getBuckets(): array
     {
-        if (!isset($this->rawData['buckets'])) {
-            return null;
+        if (!isset($this->rawData[self::BUCKETS_KEY])) {
+            return [];
         }
 
         $buckets = [];
 
-        foreach ($this->rawData['buckets'] as $bucket) {
+        foreach ($this->rawData[self::BUCKETS_KEY] as $bucket) {
             $buckets[] = new self($bucket);
         }
 
@@ -79,12 +68,8 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
 
     /**
      * Returns sub-aggregation.
-     *
-     * @param string $name
-     *
-     * @return AggregationValue|null
      */
-    public function getAggregation($name)
+    public function getAggregation(string $name): ?self
     {
         if (!isset($this->rawData[$name])) {
             return null;
@@ -94,13 +79,9 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
     }
 
     /**
-     * Applies path method to aggregations.
-     *
-     * @param string $path
-     *
-     * @return AggregationValue|null
+     * Search'es the aggregation by defined path.
      */
-    public function find($path)
+    public function find(string $path): ?self
     {
         $name = explode('.', $path, 2);
         $aggregation = $this->getAggregation($name[0]);
@@ -112,17 +93,11 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
         return $aggregation->find($name[1]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->rawData);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetGet($offset)
     {
         if (!isset($this->rawData[$offset])) {
@@ -132,26 +107,17 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
         return $this->rawData[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetSet($offset, $value)
     {
         throw new \LogicException('Aggregation result can not be changed on runtime.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function offsetUnset($offset)
     {
         throw new \LogicException('Aggregation result can not be changed on runtime.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         $buckets = $this->getBuckets();
 

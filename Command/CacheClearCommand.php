@@ -15,12 +15,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * Symfony command for clearing elasticsearch cache.
- */
-class CacheClearCommand extends AbstractManagerAwareCommand
+class CacheClearCommand extends AbstractIndexServiceAwareCommand
 {
-    public static $defaultName = 'ongr:es:cache:clear';
+    const NAME = 'ongr:es:cache:clear';
 
     /**
      * {@inheritdoc}
@@ -30,8 +27,8 @@ class CacheClearCommand extends AbstractManagerAwareCommand
         parent::configure();
 
         $this
-            ->setName(static::$defaultName)
-            ->setDescription('Clears elasticsearch client cache.');
+            ->setName(self::NAME)
+            ->setDescription('Clears ElasticSearch client\'s cache.');
     }
 
     /**
@@ -40,13 +37,13 @@ class CacheClearCommand extends AbstractManagerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $this
-            ->getManager($input->getOption('manager'))
-            ->clearCache();
+        $index = $this->getIndex($input->getOption('index'));
+        $index->clearCache();
+
         $io->success(
             sprintf(
-                'Elasticsearch index cache has been cleared for manager named `%s`',
-                $input->getOption('manager')
+                'Elasticsearch `%s` index cache has been cleared.',
+                $index->getIndexName()
             )
         );
     }

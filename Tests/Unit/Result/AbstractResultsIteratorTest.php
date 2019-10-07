@@ -11,7 +11,11 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
-class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
+use ONGR\ElasticsearchBundle\Result\RawIterator;
+use ONGR\ElasticsearchBundle\Service\IndexService;
+use PHPUnit\Framework\TestCase;
+
+class AbstractResultsIteratorTest extends TestCase
 {
     /**
      * Test if scroll is cleared on destructor.
@@ -22,15 +26,15 @@ class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
             '_scroll_id' => 'foo',
         ];
 
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $index = $this->getMockBuilder(IndexService::class)
             ->setMethods(['getConfig', 'clearScroll'])
             ->disableOriginalConstructor()
             ->getMock();
-        $manager->expects($this->any())->method('getConfig')->willReturn([]);
-        $manager->expects($this->once())->method('clearScroll')->with('foo');
+        $index->expects($this->any())->method('getConfig')->willReturn([]);
+        $index->expects($this->once())->method('clearScroll')->with('foo');
 
         $scroll = ['_scroll_id' => 'foo', 'duration' => '5m'];
-        $iterator = new DummyIterator($rawData, $manager, $scroll);
+        $iterator = new RawIterator($rawData, $index, null, null, $scroll);
 
         // Trigger destructor call
         unset($iterator);
@@ -47,7 +51,7 @@ class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
                 'hits' => [
                     [
                         '_index' => 'test',
-                        '_type' => 'product',
+                        '_type' => '_doc',
                         '_id' => 'foo',
                         '_score' => 1,
                         '_source' => [
@@ -76,17 +80,20 @@ class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $index = $this->getMockBuilder(IndexService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $results = new DummyIterator($rawData, $manager);
+        $results = new RawIterator($rawData, $index);
 
         $expectedScores = [1, 2, null];
         $actualScores = [];
 
+        $this->assertEquals($rawData['hits']['total'], $results->count());
+        $this->assertEquals($rawData, $results->getRaw());
+
         foreach ($results as $item) {
-            $actualScores[] = $results->getDocumentScore();
+            $actualScores[] = $item['_score'];
         }
 
         $this->assertEquals($expectedScores, $actualScores);
@@ -100,11 +107,11 @@ class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetScoreException()
     {
-        $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
+        $index = $this->getMockBuilder(IndexService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $results = new DummyIterator([], $manager);
+        $results = new RawIterator([], $index);
         $results->getDocumentScore();
     }
 }

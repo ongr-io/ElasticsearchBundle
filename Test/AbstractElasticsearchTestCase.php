@@ -11,8 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Test;
 
-use ONGR\ElasticsearchBundle\Service\Manager;
-use ONGR\ElasticsearchBundle\Tests\WebTestCase;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
+use ONGR\ElasticsearchBundle\Service\IndexService;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,35 +21,25 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class AbstractElasticsearchTestCase extends WebTestCase
 {
-    /**
-     * @var Manager[] Holds used managers.
-     */
-    private $managers = [];
+    protected static $cachedContainer;
 
     /**
-     * @var ContainerInterface
+     * @var IndexService[]
      */
-    private static $container;
+    private $indexes = [];
 
-    /**
-     * {@inheritdoc}
-     */
+    //You may use setUp() for your personal needs.
     protected function setUp()
     {
-        self::$container = null;
-        foreach ($this->getDataArray() as $manager => $data) {
-            // Create index and populate data
-            $this->getManager($manager);
-        }
     }
 
     /**
      * Can be overwritten in child class to populate elasticsearch index with the data.
      *
      * Example:
-     *      "manager_name" =>
+     *      "/This/Should/Be/Index/Document/Namespace" =>
      *      [
-     *          'type_name' => [
+     *          '_doc' => [
      *              [
      *                  '_id' => 1,
      *                  'title' => 'foo',
@@ -67,83 +58,12 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         return [];
     }
 
-    /**
-     * Ignores versions specified.
-     *
-     * Returns two dimensional array, first item in sub array is version to ignore, second is comparator,
-     * last test name. If no test name is provided it will be used on all test class.
-     *
-     * Comparator types can be found in `version_compare` documentation.
-     *
-     * Example: [
-     *   ['1.2.7', '<='],
-     *   ['1.2.9', '==', 'testSmth']
-     * ]
-     *
-     * @return array
-     */
-    protected function getIgnoredVersions()
+    private function populateElastic(IndexService $indexService, array $documents = [])
     {
-        return [];
-    }
-
-    /**
-     * Ignores version specified.
-     *
-     * @param Manager $manager
-     */
-    private function ignoreVersions(Manager $manager)
-    {
-        $currentVersion = $manager->getVersionNumber();
-        $ignore = null;
-
-        foreach ($this->getIgnoredVersions() as $ignoredVersion) {
-            if (version_compare($currentVersion, $ignoredVersion[0], $ignoredVersion[1]) === true) {
-                $ignore = true;
-                if (isset($ignoredVersion[2])) {
-                    if ($ignoredVersion[2] === $this->getName()) {
-                        break;
-                    }
-                    $ignore = false;
-                }
-            }
+        foreach ($documents as $document) {
+            $indexService->bulk('index', $document);
         }
-
-        if ($ignore === true) {
-            $this->markTestSkipped("Elasticsearch version {$currentVersion} not supported by this test.");
-        }
-    }
-
-    /**
-     * Removes manager from local cache and drops its index.
-     *
-     * @param string $name
-     */
-    protected function removeManager($name)
-    {
-        if (isset($this->managers[$name])) {
-            $this->managers[$name]->dropIndex();
-            unset($this->managers[$name]);
-        }
-    }
-
-    /**
-     * Populates elasticsearch with data.
-     *
-     * @param Manager $manager
-     * @param array   $data
-     */
-    private function populateElasticsearchWithData($manager, array $data)
-    {
-        if (!empty($data)) {
-            foreach ($data as $type => $documents) {
-                foreach ($documents as $document) {
-                    $manager->bulk('index', $type, $document);
-                }
-            }
-            $manager->commit();
-            $manager->refresh();
-        }
+        $indexService->commit();
     }
 
     /**
@@ -153,67 +73,47 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     {
         parent::tearDown();
 
-        foreach ($this->managers as $name => $manager) {
+        foreach ($this->indexes as $name => $index) {
             try {
-                $manager->dropIndex();
+                $index->dropIndex();
             } catch (\Exception $e) {
                 // Do nothing.
             }
         }
     }
 
-    /**
-     * Returns service container.
-     *
-     * @param array $kernelOptions Options used passed to kernel if it needs to be initialized.
-     *
-     * @return ContainerInterface
-     */
-    protected function getContainer($kernelOptions = [])
+    protected function getContainer($reinitialize = false, $kernelOptions = []): ContainerInterface
     {
-        if (null === self::$container) {
-            self::bootKernel($kernelOptions);
-            self::$container = static::$kernel->getContainer();
+        if (!self::$cachedContainer && !$reinitialize) {
+            static::bootKernel($kernelOptions);
+
+            self::$cachedContainer = static::createClient(['environment' => 'test'])->getContainer();
         }
 
-        return self::$container;
+        return self::$cachedContainer;
     }
 
-    /**
-     * Returns manager instance with injected connection if does not exist creates new one.
-     *
-     * @param string $name Manager name
-     *
-     * @return Manager
-     *
-     * @throws \LogicException
-     */
-    protected function getManager($name = 'default')
+    protected function getIndex($namespace, $createIndex = true): IndexService
     {
-        $serviceName = sprintf('es.manager.%s', $name);
+        try {
+            if (!array_key_exists($namespace, $this->indexes)) {
+                $this->indexes[$namespace] = $this->getContainer()->get($namespace);
+            }
 
-        // Looks for cached manager.
-        if (array_key_exists($name, $this->managers)) {
-            $this->ignoreVersions($this->managers[$name]);
+            if (!$this->indexes[$namespace]->indexExists() && $createIndex) {
+                $this->indexes[$namespace]->dropAndCreateIndex();
 
-            return $this->managers[$name];
-        } elseif ($this->getContainer()->has($serviceName)) {
-            /** @var Manager $manager */
-            $manager = $this->getContainer()->get($serviceName);
-            $this->managers[$name] = $manager;
-        } else {
-            throw new \LogicException(sprintf("Manager '%s' does not exist", $name));
+                // Populates elasticsearch index with the data
+                $data = $this->getDataArray();
+                if (!empty($data[$namespace])) {
+                    $this->populateElastic($this->indexes[$namespace], $data[$namespace]);
+                }
+                $this->indexes[$namespace]->refresh();
+            }
+
+            return $this->indexes[$namespace];
+        } catch (\Exception $e) {
+            throw new \LogicException($e->getMessage());
         }
-
-        $this->ignoreVersions($manager);
-        $manager->dropAndCreateIndex();
-
-        // Populates elasticsearch index with data
-        $data = $this->getDataArray();
-        if (!empty($data[$name])) {
-            $this->populateElasticsearchWithData($manager, $data[$name]);
-        }
-
-        return $manager;
     }
 }

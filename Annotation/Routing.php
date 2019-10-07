@@ -12,35 +12,10 @@
 namespace ONGR\ElasticsearchBundle\Annotation;
 
 /**
- * Annotation used to enable ROUTING and associate document property with _routing meta-field.
- *
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Routing implements MetaField
+final class Routing extends AbstractAnnotation implements MetaFieldInterface
 {
     const NAME = '_routing';
-
-    /**
-     * @var bool
-     */
-    public $required = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return self::NAME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSettings()
-    {
-        return [
-            'required' => $this->required
-        ];
-    }
 }

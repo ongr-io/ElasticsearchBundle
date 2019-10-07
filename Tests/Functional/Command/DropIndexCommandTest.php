@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Command;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Command\IndexDropCommand;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 use Symfony\Component\Console\Application;
@@ -18,12 +19,10 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class DropIndexCommandTest extends AbstractElasticsearchTestCase
 {
-    /**
-     * Tests dropping index. Configuration from tests yaml.
-     */
     public function testExecute()
     {
-        $manager = $this->getManager();
+        $index = $this->getIndex(DummyDocument::class);
+        $index->dropAndCreateIndex();
 
         $command = new IndexDropCommand();
         $command->setContainer($this->getContainer());
@@ -32,20 +31,20 @@ class DropIndexCommandTest extends AbstractElasticsearchTestCase
         $app->add($command);
 
         // Does not drop index.
-        $command = $app->find('ongr:es:index:drop');
+        $command = $app->find(IndexDropCommand::NAME);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
                 'command' => $command->getName(),
             ]
         );
+
         $this->assertTrue(
-            $manager
+            $index
                 ->indexExists(),
             'Index should still exist.'
         );
 
-        // Does drop index.
         $commandTester->execute(
             [
                 'command' => $command->getName(),
@@ -54,7 +53,7 @@ class DropIndexCommandTest extends AbstractElasticsearchTestCase
         );
 
         $this->assertFalse(
-            $manager
+            $index
                 ->indexExists(),
             'Index should be dropped.'
         );

@@ -27,14 +27,11 @@ class AppKernel extends Kernel
         return [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new ONGR\ElasticsearchBundle\ONGRElasticsearchBundle(),
-            new ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\TestBundle(),
         ];
     }
 
     /**
-     * Register container configuration.
-     *
-     * @param LoaderInterface $loader
+     * @inheritdoc
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {

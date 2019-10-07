@@ -5,75 +5,52 @@
 For all steps below we assume that there is an `AppBundle` with the `Content` document.
 
 ```php
-// src/AppBundle/Document/Content.php
+// src/Document/Product.php
 
-namespace AppBundle\Document;
+namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
 
 /**
- * @ES\Document(type="content")
+ * //alias and default parameters in the annotation are optional. 
+ * @ES\Index(alias="content", default=true)
  */
 class Content
 {
     /**
-     * @var string
-     *
      * @ES\Id()
      */
     public $id;
 
     /**
-     * @ES\Property(type="keyword")
+     * @ES\Property(type="text")
      */
     public $title;
 }
 ```
 
+> Important notice: you don't need your properties to be public, but they will
+>need to have getters and setters otherwise.
+
 ## Manager
 
-Elasticsearch bundle provides managers able to handle several indexes to communicate with elasticsearch.
+Elasticsearch bundle provides managers called indexes to able to handle several ES indexes 
+for communication with elasticsearch.
 
-Once you define managers in your `config.yml` file, you can use them in controllers and grab them from DI container via `es.manager` (alias for `es.manager.default`). If you define more than one manager, for example called `foo`, then it will be accessible via `es.manager.foo`.
-
-```php
-
-$manager = $this->get('es.manager');
-
-```
-
-## Repositories
-
-In addition manager provides repository access, which enables direct access to the elasticsearch type.  
-Repository represents a document. Whenever you need to do any action with a repository, you can access 
-it like this:
+Each index will have its dedicated manager that can be reached via service container by the 
+name of the namespace of the Document class that represents the index in question. So in our
+case: 
 
 ```php
 
-$manager = $this->get('es.manager');
-$repo = $manager->getRepository('AppBundle:Content');
+$index = $container->get(Content::class);
 
 ```
 
-Alternatively:
+> Important: The old implementation was to have manager and repositories dedicated
+>for each document type. In 6.0 the functionalities of these services were merged
+>into the index service for each document.
 
-```php
-
-$repo = $this->get('es.manager.default.content');
-
-```
-
-`default` - represents a manager name and `content` an elasticsearch type name.
-
-> Important: Document with the certain type name has to be mapped in the manager.
-
-You can also get a manager from the repo instance:
-
-```php
-
-$manager = $repo->getManager();
-
-```
 
 ## Create a document
 
@@ -82,8 +59,8 @@ $manager = $repo->getManager();
 $content = new Content();
 $content->id = 5; // Optional, if not set, elasticsearch will set a random.
 $content->title = 'Acme title';
-$manager->persist($content);
-$manager->commit();
+$index->persist($content);
+$index->commit();
 
 ```
 
@@ -91,10 +68,10 @@ $manager->commit();
 
 ```php
 
-$content = $manager->find('AppBundle:Content', 5);
+$content = $index->find(5); // Alternatively $index->findBy(['title' => 'acme title']);
 $content->title = 'changed Acme title';
-$manager->persist($content);
-$manager->commit();
+$index->persist($content);
+$index->commit();
 
 ```
 
@@ -106,8 +83,8 @@ To update a field you need to know the document `ID` and fields to update. Here'
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
-$repo->update(1, ['title' => 'new title']);
+$index = $this->get(Content::class);
+$index->update(1, ['title' => 'new title']);
 
 ```
 
@@ -116,8 +93,8 @@ You can also update fields with script operation, lets say, you want to do some 
 
 ```php
 
-$repo = $this->get('es.manager.default.product');
-$repo->update(1, [], 'ctx._source.stock+=1');
+$index = $this->get(Content::class);
+$index->update(1, [], 'ctx._source.stock+=1');
 
 ```
 > Important: when using script update fields cannot be updated, leave empty array, otherwise you will get 400 exception.
@@ -125,13 +102,14 @@ $repo->update(1, [], 'ctx._source.stock+=1');
 `ctx._source` comes from groovy scripting and you have to enable it in elasticsearch config with: `script.groovy.sandbox.enabled: false`
 
 
-In addition you also can get other document fields with the response of update, lets say we also want a content field and a new title, so just add them separated by a comma:
+In addition you also can get other document fields with the response of update, 
+lets say we also want a content field and a new title, so just add them separated by a comma:
 
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
-$response = $repo->update(1, ['title' => 'new title'], null, ['fields' => 'title,content']);
+$index = $this->get(Content::class);
+$index = $repo->update(1, ['title' => 'new title'], null, ['fields' => 'title,content']);
 
 ```
 
@@ -141,15 +119,7 @@ $response = $repo->update(1, ['title' => 'new title'], null, ['fields' => 'title
 Document removal can be performed similarly to create or update action:
 
 ```php
-$manager->remove($content);
-$manager->commit();
-```
-
-Alternatively you can remove document by ID (requires to have repository service):
-
-```php
-
 $repo = $this->get('es.manager.default.content');
 $content = $repo->remove(5);
-
 ```
+

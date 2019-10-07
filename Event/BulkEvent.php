@@ -15,78 +15,47 @@ use Symfony\Component\EventDispatcher\Event;
 
 class BulkEvent extends Event
 {
-    /**
-     * @var string
-     */
     private $operation;
+    private $header;
+    private $data;
 
-    /**
-     * @var string|array
-     */
-    private $type;
-
-    /**
-     * @var array
-     */
-    private $query;
-
-    /**
-     * @param string       $operation
-     * @param string|array $type
-     * @param array        $query
-     */
-    public function __construct($operation, $type, array $query)
+    public function __construct(string $operation, array $header, array $data = [])
     {
-        $this->type = $type;
-        $this->query = $query;
         $this->operation = $operation;
+        $this->header = $header;
+        $this->data = $data;
     }
 
-    /**
-     * @return array|string
-     */
-    public function getType()
+    public function getHeader(): array
     {
-        return $this->type;
+        return $this->header;
     }
 
-    /**
-     * @param array|string $type
-     */
-    public function setType($type)
+    public function setHeader(array $header): BulkEvent
     {
-        $this->type = $type;
+        $this->header = $header;
+        return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getQuery()
+    public function getData(): array
     {
-        return $this->query;
+        return $this->data;
     }
 
-    /**
-     * @param array $query
-     */
-    public function setQuery($query)
+    public function setData(array $data): BulkEvent
     {
-        $this->query = $query;
+        $this->data = $data;
+        return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getOperation()
+    public function getOperation(): string
     {
         return $this->operation;
     }
 
-    /**
-     * @param string $operation
-     */
-    public function setOperation($operation)
+    public function setOperation(string $operation): BulkEvent
     {
         $this->operation = $operation;
+        return $this;
     }
 }

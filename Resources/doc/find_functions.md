@@ -10,10 +10,10 @@ Find by id will execute [elasticsearch get query](https://www.elastic.co/guide/e
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
+$index = $this->get('Content::class');
 
 /** @var $content Content **/
-$content = $repo->find(1); // 5 is the document _uid in the elasticsearch.
+$content = $index->find(1); // 5 is the document _uid in the elasticsearch.
 
 ```
 
@@ -26,12 +26,9 @@ and returns `DocumentIterator` with found documents:
 
 ```php
 
-$documents = $repo->findByIds(['26', '8', '11']);
+$documents = $index->findByIds(['26', '8', '11']);
 
 ```
-
-For this functionality the `Repository` uses
-[elasticsearch multi get API](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html).
 
 ## Find by field
 
@@ -42,10 +39,10 @@ Find by field uses [query_string query](https://www.elastic.co/guide/en/elastics
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
+$index = $this->get('Content::class');
 
 /** @var $content Content **/
-$content = $repo->findBy(['title' => 'Acme']);
+$content = $index->findBy(['title' => 'Acme']);
 
 ```
 
@@ -65,7 +62,7 @@ Also with `findBy` you can define the way the results are ordered, limit the amo
 
 ```php
 
-$content = $repo->findBy(['title' => 'Acme'], ['price' => 'asc'], 20, 10);
+$content = $index->findBy(['title' => 'Acme'], ['price' => 'asc'], 20, 10);
 
 ```
 
@@ -77,10 +74,10 @@ Completely the same as `findBy()` function, except it will return the first docu
 
 ```php
 
-$repo = $this->get('es.manager.default.content');
+$index = $this->get('Content::class');
 
 /** @var $content Content **/
-$content = $repo->findOneBy(['title' => 'Acme']);
+$content = $index->findOneBy(['title' => 'Acme']);
 
 ```
 

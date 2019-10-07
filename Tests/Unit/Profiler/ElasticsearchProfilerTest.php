@@ -11,9 +11,10 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Profiler;
 
+use ONGR\App\Document\DummyDocument;
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
 
-class ElasticsearchProfilerTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchProfilerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tests if correct name is being returned.
@@ -29,12 +30,15 @@ class ElasticsearchProfilerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetManagers()
     {
+        $indexes = [
+            DummyDocument::INDEX_NAME => DummyDocument::class
+        ];
         $collector = new ElasticsearchProfiler();
-        $collector->setManagers([ 'default' => [], 'acme' => [] ]);
+        $collector->setIndexes($indexes);
 
-        $result = $collector->getManagers();
+        $result = $collector->getIndexes();
         $this->assertEquals(
-            [ 'default' => 'es.manager', 'acme' => 'es.manager.acme' ],
+            $indexes,
             $result
         );
     }

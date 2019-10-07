@@ -4,36 +4,23 @@ framework:
     test: ~
 
 ongr_elasticsearch:
+    source_directories: 
+        - /Tests/app/src #This parameters is when you have custom project source root, in this case tests has their own kernel and source directory.
     analysis:
         filter:
-            incremental_filter:
-                type: edge_ngram
+            edge_ngram_filter: #-> analyzer name
+                type: edge_ngram #-> all options are not strict, it will be passed as an array
                 min_gram: 1
                 max_gram: 20
         analyzer:
-            incrementalAnalyzer:  #-> analyzer name
+            incrementalAnalyzer: #-> analyzer name
                 type: custom
                 tokenizer: standard
                 filter:
                     - lowercase
-                    - incremental_filter
-    managers:
-        custom_dir:
-            index:
-                hosts:
-                    - 127.0.0.1:9200
-                index_name: ongr-custom-document-dir-test
-            mappings:
-                TestBundle:
-                    document_dir: Entity
-        default:
-            index:
-                hosts:
-                    - 127.0.0.1:9200
-                index_name: ongr-esb-test
-                settings:
-                    refresh_interval: -1
-                    number_of_replicas: 0
-                    number_of_shards: 5
-            mappings:
-                - TestBundle
+                    - edge_ngram_filter
+    indexes:
+        ONGR\App\Entity\DummyDocumentInTheEntityDirectory:
+            alias: field-data-index
+            hosts:	
+                - localhost:9200

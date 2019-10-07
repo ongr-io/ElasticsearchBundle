@@ -25,40 +25,15 @@ namespace ONGR\ElasticsearchBundle\Service\Json;
  */
 class JsonWriter
 {
-    /**
-     * @var string
-     */
     private $filename;
-
-    /**
-     * @var resource A file system pointer resource.
-     */
     private $handle;
-
-    /**
-     * @var array
-     */
-    private $metadata;
-
-    /**
-     * @var int Current record number.
-     */
+    private $count;
     private $currentPosition = 0;
 
-    /**
-     * Constructor.
-     *
-     * Metadata can contain any fields but only the field "count"
-     * is recognized and used while writing to file. If written lines count
-     * reaches "count", writer will automatically finalize file.
-     *
-     * @param string $filename A file in which data will be saved.
-     * @param array  $metadata Additional metadata to be stored.
-     */
-    public function __construct($filename, $metadata = [])
+    public function __construct(string $filename, int $count)
     {
         $this->filename = $filename;
-        $this->metadata = $metadata;
+        $this->count = $count;
     }
 
     /**
@@ -80,7 +55,7 @@ class JsonWriter
 
         $this->handle = fopen($this->filename, 'w');
         fwrite($this->handle, "[\n");
-        fwrite($this->handle, json_encode($this->metadata));
+        fwrite($this->handle, json_encode(['count' => $this->count]));
     }
 
     /**
@@ -108,16 +83,16 @@ class JsonWriter
         $this->initialize();
         $this->currentPosition++;
 
-        if (isset($this->metadata['count']) && $this->currentPosition > $this->metadata['count']) {
+        if (isset($this->count) && $this->currentPosition > $this->count) {
             throw new \OverflowException(
-                sprintf('This writer was set up to write %d documents, got more.', $this->metadata['count'])
+                sprintf('This writer was set up to write %d documents, got more.', $this->count)
             );
         }
 
         fwrite($this->handle, ",\n");
         fwrite($this->handle, json_encode($document));
 
-        if (isset($this->metadata['count']) && $this->currentPosition == $this->metadata['count']) {
+        if (isset($this->count) && $this->currentPosition == $this->count) {
             $this->finalize();
         }
     }

@@ -11,61 +11,17 @@
 
 namespace ONGR\ElasticsearchBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Enum;
-
 /**
- * Annotation used to check mapping type during the parsing process.
- *
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Property
+final class Property extends AbstractAnnotation implements PropertiesAwareInterface
 {
-    /**
-     * Field type.
-     *
-     * @var string
-     *
-     * @Doctrine\Common\Annotations\Annotation\Required
-     * @Enum({
-     *     "text", "keyword",
-     *     "long", "integer", "short", "byte", "double", "float",
-     *     "date",
-     *     "boolean",
-     *     "binary",
-     *     "geo_point", "geo_shape",
-     *     "ip", "completion", "token_count", "murmur3", "attachments", "percolator"
-     * })
-     */
-    public $type;
+    use NameAwareTrait;
+    use PropertyTypeAwareTrait;
 
-    /**
-     * Name of the type field. Defaults to normalized property name.
-     *
-     * @var string
-     */
-    public $name;
-
-    /**
-     * In this field you can define options (like analyzers and etc) for specific field types.
-     *
-     * @var array
-     */
-    public $options = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function dump(array $exclude = [])
-    {
-        return array_diff_key(
-            array_merge(
-                [
-                    'type' => $this->type
-                ],
-                $this->options
-            ),
-            $exclude
-        );
-    }
+    public $analyzer;
+    public $fields;
+    public $searchAnalyzer;
+    public $searchQuoteAnalyzer;
 }

@@ -17,7 +17,6 @@ use ONGR\ElasticsearchBundle\Result\RawIterator;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Search;
-use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -26,42 +25,27 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ExportService
 {
-    /**
-     * Exports es index to provided file.
-     *
-     * @param Manager         $manager
-     * @param string          $filename
-     * @param array           $types
-     * @param int             $chunkSize
-     * @param int             $maxLinesInFile
-     * @param OutputInterface $output
-     */
     public function exportIndex(
-        Manager $manager,
+        IndexService $index,
         $filename,
-        $types,
         $chunkSize,
         OutputInterface $output,
         $maxLinesInFile = 300000
     ) {
-
         $search = new Search();
         $search->addQuery(new MatchAllQuery());
         $search->setSize($chunkSize);
-        $search->addSort(new FieldSort('_doc'));
+        $search->setScroll('2m');
 
-        $queryParameters = [
-                '_source' => true,
-                'scroll' => '10m',
-            ];
-
-        $searchResults = $manager->search($types, $search->toArray(), $queryParameters);
+        $searchResults = $index->search($search->toArray(), $search->getUriParams());
 
         $results = new RawIterator(
             $searchResults,
-            $manager,
+            $index,
+            null,
+            null,
             [
-                'duration' => $queryParameters['scroll'],
+                'duration' => '2m',
                 '_scroll_id' => $searchResults['_scroll_id'],
             ]
         );
@@ -80,7 +64,7 @@ class ExportService
         ];
 
         $filename = str_replace('.json', '', $filename);
-        $writer = $this->getWriter($this->getFilePath($filename.'.json'), $metadata);
+        $writer = $this->getWriter($this->getFilePath($filename.'.json'), $metadata['count']);
 
         $file = [];
         foreach ($results as $data) {
@@ -93,7 +77,7 @@ class ExportService
                     'count' => $count,
                     'date' => $date,
                 ];
-                $writer = $this->getWriter($this->getFilePath($filename."_".$fileCounter.".json"), $metadata);
+                $writer = $this->getWriter($this->getFilePath($filename."_".$fileCounter.".json"), $metadata['count']);
                 $counter = 0;
             }
 
@@ -116,7 +100,7 @@ class ExportService
      *
      * @return string
      */
-    protected function getFilePath($filename)
+    protected function getFilePath($filename): string
     {
         if ($filename{0} == '/' || strstr($filename, ':') !== false) {
             return $filename;
@@ -125,17 +109,9 @@ class ExportService
         return getcwd() . '/' . $filename;
     }
 
-    /**
-     * Prepares JSON writer.
-     *
-     * @param string $filename
-     * @param array  $metadata
-     *
-     * @return JsonWriter
-     */
-    protected function getWriter($filename, $metadata)
+    protected function getWriter(string $filename, int $count): JsonWriter
     {
-        return new JsonWriter($filename, $metadata);
+        return new JsonWriter($filename, $count);
     }
 
     /**
@@ -145,7 +121,7 @@ class ExportService
      *
      * @return int
      */
-    protected function getFileCount($resultsCount, $maxLinesInFile, $fileCounter)
+    protected function getFileCount($resultsCount, $maxLinesInFile, $fileCounter): int
     {
         $leftToInsert = $resultsCount - ($fileCounter * $maxLinesInFile);
         if ($leftToInsert <= $maxLinesInFile) {
@@ -154,6 +130,6 @@ class ExportService
             $count = $maxLinesInFile;
         }
 
-        return $count;
+        return (int) $count;
     }
 }
