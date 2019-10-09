@@ -65,7 +65,7 @@ class MappingPass implements CompilerPassInterface
             /** @var Index $document */
             $document = $parser->getIndexAnnotation($class);
             $indexMapping = $parser->getIndexMetadata($class);
-            $indexAlias = $parser->getIndexAliasName($class);
+            $indexAlias = $indexesOverride[$namespace]['alias'] ?? $parser->getIndexAliasName($class);
             $indexMetadata = $parser->getIndexMetadata($class);
 
             if (!empty($indexMapping)) {
