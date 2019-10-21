@@ -45,7 +45,8 @@ class ManagerTest extends AbstractElasticsearchTestCase
     {
         return [
           [ DummyDocument::class, DummyDocument::INDEX_NAME ],
-          [ DummyDocumentInTheEntityDirectory::class, DummyDocumentInTheEntityDirectory::INDEX_NAME ],
+          // this alias is overriden in configuration
+          [ DummyDocumentInTheEntityDirectory::class, 'field-data-index' ],
         ];
     }
 

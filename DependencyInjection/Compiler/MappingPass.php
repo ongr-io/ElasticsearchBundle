@@ -62,10 +62,16 @@ class MappingPass implements CompilerPassInterface
 
         foreach ($this->getNamespaces($dir) as $namespace) {
             $class = new \ReflectionClass($namespace);
+
+            if (isset($indexesOverride[$namespace]['alias']) && $indexesOverride[$namespace]['alias']) {
+                $indexAlias = $indexesOverride[$namespace]['alias'];
+            } else {
+                $indexAlias = $parser->getIndexAliasName($class);
+            }
+
             /** @var Index $document */
             $document = $parser->getIndexAnnotation($class);
             $indexMapping = $parser->getIndexMetadata($class);
-            $indexAlias = $parser->getIndexAliasName($class);
             $indexMetadata = $parser->getIndexMetadata($class);
 
             if (!empty($indexMapping)) {
