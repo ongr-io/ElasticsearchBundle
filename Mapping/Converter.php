@@ -28,9 +28,7 @@ class Converter
     public function convertArrayToDocument(string $namespace, array $raw)
     {
         if (!isset($this->propertyMetadata[$namespace])) {
-            echo json_encode($raw, JSON_PRETTY_PRINT);
-
-            return [];
+            throw new \Exception("Cannot convert array to object of class `$class`.");
         }
 
         return $this->denormalize($raw, $namespace);
