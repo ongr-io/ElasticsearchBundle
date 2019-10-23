@@ -34,7 +34,7 @@ class AbstractResultsIteratorTest extends TestCase
         $index->expects($this->once())->method('clearScroll')->with('foo');
 
         $scroll = ['_scroll_id' => 'foo', 'duration' => '5m'];
-        $iterator = new RawIterator($rawData, $index, null, null, $scroll);
+        $iterator = new RawIterator($rawData, $index, null, $scroll);
 
         // Trigger destructor call
         unset($iterator);

@@ -69,7 +69,7 @@ class DocumentIteratorTest extends TestCase
 
         $index->expects($this->any())->method('getNamespace')->willReturn(DummyDocument::class);
 
-        $iterator = new DocumentIterator($rawData, $index, $converter, $this->createMock(Serializer::class));
+        $iterator = new DocumentIterator($rawData, $index, $converter);
         $this->assertEquals($document, $iterator->first());
     }
 }

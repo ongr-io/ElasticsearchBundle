@@ -43,7 +43,6 @@ class ExportService
             $searchResults,
             $index,
             null,
-            null,
             [
                 'duration' => '2m',
                 '_scroll_id' => $searchResults['_scroll_id'],

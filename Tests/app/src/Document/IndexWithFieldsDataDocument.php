@@ -26,10 +26,18 @@ class IndexWithFieldsDataDocument
     /**
      * @ES\Id()
      */
-    public $id;
+    private $id;
 
     /**
      * @ES\Property(type="text", name="private", settings={"fielddata"=true})
      */
     public $title;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

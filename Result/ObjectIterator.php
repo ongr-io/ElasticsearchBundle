@@ -14,7 +14,6 @@ namespace ONGR\ElasticsearchBundle\Result;
 use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use ONGR\ElasticsearchBundle\Mapping\Converter;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * This is for embedded ObjectType's or NestedType's iterator implemented with a lazy loading.
@@ -24,23 +23,17 @@ class ObjectIterator extends AbstractLazyCollection
     private $converter;
     protected $collection;
     private $namespace;
-    private $serializer;
 
-    public function __construct(string $namespace, array $array, Converter $converter, Serializer $serializer)
+    public function __construct(string $namespace, array $array, Converter $converter)
     {
         $this->converter = $converter;
         $this->collection = new ArrayCollection($array);
         $this->namespace = $namespace;
-        $this->serializer = $serializer;
     }
 
     protected function convertDocument(array $data)
     {
-        return $this->converter->convertArrayToDocument(
-            $this->namespace,
-            $data,
-            $this->serializer
-        );
+        return $this->converter->convertArrayToDocument($this->namespace, $data);
     }
 
     protected function doInitialize()

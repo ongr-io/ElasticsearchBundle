@@ -12,9 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Mapping;
 
 use Doctrine\Common\Cache\Cache;
-use Symfony\Component\Serializer\NameConverter\AdvancedNameConverterInterface;
+use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
-class NameConverter implements AdvancedNameConverterInterface
+class NameConverter implements NameConverterInterface
 {
     private $cache;
 

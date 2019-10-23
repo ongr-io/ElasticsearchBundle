@@ -34,7 +34,6 @@ services:
         arguments: ["@ongr.esb.cache_reader", "@ongr.esb.cache", "%ongr.esb.analysis%"]
 
     ONGR\ElasticsearchBundle\Mapping\Converter:
-        arguments: ['@ONGR\ElasticsearchBundle\Mapping\DocumentParser']
 
     ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler:
         public: false

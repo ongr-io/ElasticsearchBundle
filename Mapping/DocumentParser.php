@@ -16,6 +16,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\Cache;
 use ONGR\ElasticsearchBundle\Annotation\AbstractAnnotation;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
+use ONGR\ElasticsearchBundle\Annotation\Id;
 use ONGR\ElasticsearchBundle\Annotation\Index;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
@@ -186,6 +187,66 @@ class DocumentParser
         return $mapping;
     }
 
+    public function getPropertyMetadata(\ReflectionClass $class, bool $subClass = false): array
+    {
+        if ($class->isTrait() || (!$this->reader->getClassAnnotation($class, Index::class) && !$subClass)) {
+            return [];
+        }
+
+        $metadata = [];
+
+        /** @var \ReflectionProperty $property */
+        foreach ($this->getDocumentPropertiesReflection($class) as $name => $property) {
+            /** @var AbstractAnnotation $annotation */
+            foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
+                if (!$annotation instanceof PropertiesAwareInterface) {
+                    continue;
+                }
+
+                $propertyMetadata = [
+                    'identifier' => false,
+                    'class' => null,
+                    'embeded' => false,
+                    'public' => $property->isPublic(),
+                    'getter' => null,
+                    'setter' => null,
+                    'sub_properties' => []
+                ];
+
+                $name = $property->getName();
+                $propertyMetadata['name'] = $name;
+
+                if (!$propertyMetadata['public']) {
+                    $propertyMetadata['getter'] = $this->guessGetter($class, $name);
+                }
+
+                $fieldMapping = $annotation->getSettings();
+
+                if ($annotation instanceof Id) {
+                    $propertyMetadata['identifier'] = true;
+                    $propertyMetadata['setter'] = null;
+                } else {
+                    if (!$propertyMetadata['public']) {
+                        $propertyMetadata['setter'] = $this->guessSetter($class, $name);
+                    }
+                }
+
+                if ($annotation instanceof Embedded) {
+                    $propertyMetadata['embeded'] = true;
+                    $propertyMetadata['class'] = $annotation->class;
+                    $propertyMetadata['sub_properties'] = $this->getPropertyMetadata(
+                        new \ReflectionClass($annotation->class),
+                        true
+                    );
+                }
+
+                $metadata[$annotation->getName() ?? Caser::snake($name)] = $propertyMetadata;
+            }
+        }
+
+        return $metadata;
+    }
+
     public function getAnalysisConfig(\ReflectionClass $class): array
     {
         $config = [];
@@ -213,6 +274,32 @@ class DocumentParser
         }
 
         return $config;
+    }
+
+    private function guessGetter(\ReflectionClass $class, $name): string
+    {
+        if ($class->hasMethod($name)) {
+            return $name;
+        }
+
+        if ($class->hasMethod('get' . ucfirst($name))) {
+            return 'get' . ucfirst($name);
+        }
+
+        if ($class->hasMethod('is' . ucfirst($name))) {
+            return 'get' . ucfirst($name);
+        }
+
+        throw new \Exception("Could not determine a getter for `$name` of class `{$class->getNamespaceName()}`");
+    }
+
+    private function guessSetter(\ReflectionClass $class, $name): string
+    {
+        if ($class->hasMethod('set' . ucfirst($name))) {
+            return 'set' . ucfirst($name);
+        }
+
+        throw new \Exception("Could not determine a setter for `$name` of class `{$class->getNamespaceName()}`");
     }
 
     private function getListFromArrayByKey(string $searchKey, array $array): array

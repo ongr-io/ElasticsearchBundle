@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\App\Document\IndexWithFieldsDataDocument;
 use ONGR\App\Document\CollectionNested;
 use ONGR\App\Document\DummyDocument;
 
@@ -43,5 +44,19 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
         $document = $index->find(5);
         $this->assertEquals('bar bar', $document->title);
+    }
+
+    public function testAddingValuesToPrivateIdsWithoutSetters()
+    {
+        $index = $this->getIndex(IndexWithFieldsDataDocument::class);
+
+        $document = new IndexWithFieldsDataDocument();
+        $document->title = 'acme';
+
+        $index->persist($document);
+        $index->commit();
+
+        $document = $index->findOneBy(['private' => 'acme']);
+        $this->assertNotNull($document->getId());
     }
 }
