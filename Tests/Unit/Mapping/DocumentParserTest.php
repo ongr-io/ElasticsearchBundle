@@ -31,9 +31,9 @@ class DocumentParserTest extends TestCase
             'mappings' => [
                 '_doc' => [
                     'properties' => [
-                            'keyword_field' => [
+                        'keyword_field' => [
                             'type' => 'keyword',
-                            ]
+                        ]
                     ]
                 ]
             ]

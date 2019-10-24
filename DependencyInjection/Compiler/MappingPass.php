@@ -59,6 +59,7 @@ class MappingPass implements CompilerPassInterface
         /** @var DocumentParser $parser */
         $parser = $container->get(DocumentParser::class);
         $indexesOverride = $container->getParameter(Configuration::ONGR_INDEXES_OVERRIDE);
+        $converterDefinition = $container->getDefinition(Converter::class);
 
         foreach ($this->getNamespaces($dir) as $namespace) {
             $class = new \ReflectionClass($namespace);
@@ -71,10 +72,9 @@ class MappingPass implements CompilerPassInterface
 
             /** @var Index $document */
             $document = $parser->getIndexAnnotation($class);
-            $indexMapping = $parser->getIndexMetadata($class);
             $indexMetadata = $parser->getIndexMetadata($class);
 
-            if (!empty($indexMapping)) {
+            if (!empty($indexMetadata)) {
                 $indexMetadata['settings'] = array_filter(array_merge_recursive(
                     $indexMetadata['settings'] ?? [],
                     [
@@ -99,14 +99,20 @@ class MappingPass implements CompilerPassInterface
 
                 $indexServiceDefinition = new Definition(IndexService::class, [
                     $namespace,
-                    $container->getDefinition(Converter::class),
+                    $converterDefinition,
                     $container->getDefinition('event_dispatcher'),
-                    $container->getDefinition('serializer'),
                     $indexSettings,
                     $container->getParameter(Configuration::ONGR_PROFILER_CONFIG)
                         ? $container->getDefinition('ongr.esb.tracer') : null
                 ]);
                 $indexServiceDefinition->setPublic(true);
+                $converterDefinition->addMethodCall(
+                    'addClassMetadata',
+                    [
+                        $namespace,
+                        $parser->getPropertyMetadata($class)
+                    ]
+                );
 
                 $container->setDefinition($namespace, $indexServiceDefinition);
                 $this->indexes[$indexAlias] = $namespace;
