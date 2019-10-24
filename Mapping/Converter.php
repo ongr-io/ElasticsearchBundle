@@ -81,7 +81,13 @@ class Converter
 
             if ($fieldMeta['embeded']) {
                 $this->addClassMetadata($fieldMeta['class'], $fieldMeta['sub_properties']);
-                $object->$setter(new ObjectIterator($fieldMeta['class'], $value, $this));
+                $iterator = new ObjectIterator($fieldMeta['class'], $value, $this);
+
+                if ($fieldMeta['public']) {
+                    $object->{$fieldMeta['name']} = $iterator;
+                } else {
+                    $object->$setter($iterator);
+                }
             } else {
                 if ($fieldMeta['public']) {
                     $object->{$fieldMeta['name']} = $value;

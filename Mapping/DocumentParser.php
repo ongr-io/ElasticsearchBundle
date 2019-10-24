@@ -224,7 +224,6 @@ class DocumentParser
 
                 if ($annotation instanceof Id) {
                     $propertyMetadata['identifier'] = true;
-                    $propertyMetadata['setter'] = null;
                 } else {
                     if (!$propertyMetadata['public']) {
                         $propertyMetadata['setter'] = $this->guessSetter($class, $name);
@@ -276,7 +275,7 @@ class DocumentParser
         return $config;
     }
 
-    private function guessGetter(\ReflectionClass $class, $name): string
+    protected function guessGetter(\ReflectionClass $class, $name): string
     {
         if ($class->hasMethod($name)) {
             return $name;
@@ -293,7 +292,7 @@ class DocumentParser
         throw new \Exception("Could not determine a getter for `$name` of class `{$class->getNamespaceName()}`");
     }
 
-    private function guessSetter(\ReflectionClass $class, $name): string
+    protected function guessSetter(\ReflectionClass $class, $name): string
     {
         if ($class->hasMethod('set' . ucfirst($name))) {
             return 'set' . ucfirst($name);
