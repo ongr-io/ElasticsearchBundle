@@ -265,7 +265,14 @@ class DocumentParser
             }
         }
 
-        foreach (['tokenizer', 'filter', 'normalizer', 'char_filter'] as $type) {
+        $normalizers = $this->getListFromArrayByKey('normalizer', $mapping);
+        foreach ($normalizers as $normalizer) {
+            if (isset($this->analysisConfig['normalizer'][$normalizer])) {
+                $config['normalizer'][$normalizer] = $this->analysisConfig['normalizer'][$normalizer];
+            }
+        }
+
+        foreach (['tokenizer', 'filter', 'char_filter'] as $type) {
             $list = $this->getListFromArrayByKey($type, $config);
 
             foreach ($list as $listItem) {
