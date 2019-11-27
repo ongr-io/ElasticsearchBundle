@@ -151,6 +151,9 @@ class DocumentParser
 
                 if ($annotation instanceof Property) {
                     $fieldMapping['type'] = $annotation->type;
+                    if ($annotation->fields) {
+                        $fieldMapping['fields'] = $annotation->fields;
+                    }
                     $fieldMapping['analyzer'] = $annotation->analyzer;
                     $fieldMapping['search_analyzer'] = $annotation->searchAnalyzer;
                     $fieldMapping['search_quote_analyzer'] = $annotation->searchQuoteAnalyzer;
