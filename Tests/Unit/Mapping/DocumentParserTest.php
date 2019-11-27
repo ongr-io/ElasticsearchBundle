@@ -14,6 +14,7 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Mapping;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use ONGR\App\Document\DummyDocument;
+use ONGR\App\Document\TestDocument;
 use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use PHPUnit\Framework\TestCase;
@@ -43,11 +44,11 @@ class DocumentParserTest extends TestCase
         $this->assertEquals($expected, $indexMetadata);
     }
 
-    public function testMultiFieldsMapping()
+    public function testParsingWithMultiFieldsMapping()
     {
         $parser = new DocumentParser(new AnnotationReader(), $this->createMock(Cache::class));
 
-        $indexMetadata = $parser->getIndexMetadata(new \ReflectionClass(DummyDocument::class));
+        $indexMetadata = $parser->getIndexMetadata(new \ReflectionClass(TestDocument::class));
 
         // Mapping definition for field "title" should be there
         $this->assertNotEmpty($indexMetadata['mappings']['_doc']['properties']['title']);
@@ -59,7 +60,8 @@ class DocumentParserTest extends TestCase
         // `fields` should look like so:
         $expected = [
             'raw' => ['type' => 'keyword'],
-            'increment' => ['type' => 'text', 'analyzer' => 'incrementalAnalyzer']
+            'increment' => ['type' => 'text', 'analyzer' => 'incrementalAnalyzer'],
+            'sorting' => ['type' => 'keyword', 'normalizer' => 'lowercase_normalizer']
         ];
 
         $this->assertEquals($expected, $title_field_def['fields']);
@@ -67,11 +69,43 @@ class DocumentParserTest extends TestCase
 
     public function testGetAnalysisConfig()
     {
-        $config = Yaml::parseFile(__DIR__ . '/../../app/config/config_test.yml');
-        $config_analysis = $config['ongr_elasticsearch']['analysis'];
+        // Global analysis settings used for this test, usually set in the bundle configuration
+        // sets custom analyzer, filter, and normalizer
+        $config_analysis = [
+            'analyzer' => [
+                'incrementalAnalyzer' => [
+                    'type' => 'custom',
+                    'tokenizer' => 'standard',
+                    'filter' => [
+                        0 => 'lowercase',
+                        1 => 'edge_ngram_filter',
+                    ],
+                ],
+                'unusedAnalyzer' => [
+                    'type' => 'custom',
+                    'tokenizer' => 'standard'
+                ]
+            ],
+            'filter' => [
+                'edge_ngram_filter' => [
+                    'type' => 'edge_ngram',
+                    'min_gram' => 1,
+                    'max_gram' => 20,
+                ],
+            ],
+            'normalizer' => [
+                'lowercase_normalizer' => [
+                    'type' => 'custom',
+                    'filter' => ['lowercase']
+                ],
+                'unused_normalizer' => [
+                    'type' => 'custom'
+                ]
+            ]
+        ];
 
         $parser = new DocumentParser(new AnnotationReader(), $this->createMock(Cache::class), $config_analysis);
-        $analysis = $parser->getAnalysisConfig(new \ReflectionClass(DummyDocument::class));
+        $analysis = $parser->getAnalysisConfig(new \ReflectionClass(TestDocument::class));
 
         $expected = [
             'analyzer' => [
@@ -84,6 +118,7 @@ class DocumentParserTest extends TestCase
                         ],
                     ],
                 ],
+                // 'unusedAnalyzer' must not be there because it is not used
             'filter' => [
                 'edge_ngram_filter' => [
                     'type' => 'edge_ngram',
@@ -91,6 +126,13 @@ class DocumentParserTest extends TestCase
                     'max_gram' => 20,
                 ],
             ],
+            'normalizer' => [
+                'lowercase_normalizer' => [
+                    'type' => 'custom',
+                    'filter' => ['lowercase']
+                ]
+                // 'unused_normalizer' must not be there
+            ]
         ];
 
         $this->assertEquals($expected, $analysis);
