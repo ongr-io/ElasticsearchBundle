@@ -64,7 +64,7 @@ class Converter
                 }
             } else {
                 if ($value instanceof \DateTime) {
-                    $value = $value->format(\DateTimeInterface::ISO8601);
+                    $value = $value->format(\DateTime::ISO8601);
                 }
                 $result[$field] = $value;
             }
@@ -93,7 +93,7 @@ class Converter
                 }
             } else {
                 if ($fieldMeta['type'] == 'date') {
-                    $value = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $value);
+                    $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
                 }
                 if ($fieldMeta['public']) {
                     $object->{$fieldMeta['name']} = $value;
