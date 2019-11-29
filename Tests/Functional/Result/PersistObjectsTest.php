@@ -39,11 +39,14 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $nested->value = 'delta';
         $document->getNestedCollection()->add($nested);
 
+        $document->setDatetimefield(new \DateTime('2010-01-01 10:10:56'));
         $index->persist($document);
         $index->commit();
 
         $document = $index->find(5);
         $this->assertEquals('bar bar', $document->title);
+        $this->assertInstanceOf(\DateTimeInterface::class, $document->getDatetimefield());
+        $this->assertEquals('2010-01-01', $document->getDatetimefield()->format('Y-m-d'));
     }
 
     public function testAddingValuesToPrivateIdsWithoutSetters()

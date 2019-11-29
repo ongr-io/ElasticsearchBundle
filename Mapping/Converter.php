@@ -60,9 +60,12 @@ class Converter
                         $result[$field][] = $this->normalize($item, $fieldMeta['sub_properties']);
                     }
                 } else {
-                    $result[$field] = $this->normalize($item, $fieldMeta['sub_properties']);
+                    $result[$field] = $this->normalize($value, $fieldMeta['sub_properties']);
                 }
             } else {
+                if ($value instanceof \DateTime) {
+                    $value = $value->format(\DateTimeInterface::ISO8601);
+                }
                 $result[$field] = $value;
             }
         }
@@ -89,6 +92,9 @@ class Converter
                     $object->$setter($iterator);
                 }
             } else {
+                if ($fieldMeta['type'] == 'date') {
+                    $value = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $value);
+                }
                 if ($fieldMeta['public']) {
                     $object->{$fieldMeta['name']} = $value;
                 } else {
