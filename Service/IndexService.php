@@ -432,7 +432,10 @@ class IndexService
      */
     public function persist($document): void
     {
-        $documentArray = array_filter($this->converter->convertDocumentToArray($document));
+        $documentArray = array_filter($this->converter->convertDocumentToArray($document), function($val) {
+            // remove unset properties but keep other falsy values
+            return !($val === null);
+        });
 
         $this->bulk('index', $documentArray);
     }
