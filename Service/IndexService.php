@@ -397,7 +397,6 @@ class IndexService
     public function bulk(string $operation, array $data = [], $autoCommit = true): array
     {
         $bulkParams = [
-            '_index' => $this->getIndexName(),
             '_type' => $this->getTypeName(),
             '_id' => $data['_id'] ?? null,
         ];
