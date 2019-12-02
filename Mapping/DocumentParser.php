@@ -207,6 +207,7 @@ class DocumentParser
                     'identifier' => false,
                     'class' => null,
                     'embeded' => false,
+                    'type' => null,
                     'public' => $property->isPublic(),
                     'getter' => null,
                     'setter' => null,
@@ -220,14 +221,18 @@ class DocumentParser
                     $propertyMetadata['getter'] = $this->guessGetter($class, $name);
                 }
 
-                $fieldMapping = $annotation->getSettings();
-
                 if ($annotation instanceof Id) {
                     $propertyMetadata['identifier'] = true;
                 } else {
                     if (!$propertyMetadata['public']) {
                         $propertyMetadata['setter'] = $this->guessSetter($class, $name);
                     }
+                }
+
+                if ($annotation instanceof Property) {
+                    // we need the type (and possibly settings?) in Converter::denormalize()
+                    $propertyMetadata['type'] = $annotation->type;
+                    $propertyMetadata['settings'] = $annotation->settings;
                 }
 
                 if ($annotation instanceof Embedded) {
