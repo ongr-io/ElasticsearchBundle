@@ -50,4 +50,15 @@ class ObjectNormalizer extends SymfonyObjectNormalizer
             // Properties not found are ignored
         }
     }
+
+    protected function isAllowedAttribute($classOrObject, $attribute, $format = null, array $context = [])
+    {
+        $objFields = $this->cache->fetch(DocumentParser::OBJ_CACHED_FIELDS);
+
+        if (!isset($objFields[is_object($classOrObject) ? get_class($classOrObject) : $classOrObject][$attribute])) {
+            return false;
+        }
+
+        return parent::isAllowedAttribute($classOrObject, $attribute, $format, $context);
+    }
 }

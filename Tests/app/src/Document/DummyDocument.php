@@ -107,4 +107,9 @@ class DummyDocument
         $this->objectCollection = $objectCollection;
         return $this;
     }
+
+    public function getNotMappedValue()
+    {
+        return 'anything';
+    }
 }
