@@ -16,6 +16,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\Cache;
 use ONGR\ElasticsearchBundle\Annotation\AbstractAnnotation;
 use ONGR\ElasticsearchBundle\Annotation\Embedded;
+use ONGR\ElasticsearchBundle\Annotation\Id;
 use ONGR\ElasticsearchBundle\Annotation\Index;
 use ONGR\ElasticsearchBundle\Annotation\NestedType;
 use ONGR\ElasticsearchBundle\Annotation\ObjectType;
@@ -150,6 +151,9 @@ class DocumentParser
 
                 if ($annotation instanceof Property) {
                     $fieldMapping['type'] = $annotation->type;
+                    if ($annotation->fields) {
+                        $fieldMapping['fields'] = $annotation->fields;
+                    }
                     $fieldMapping['analyzer'] = $annotation->analyzer;
                     $fieldMapping['search_analyzer'] = $annotation->searchAnalyzer;
                     $fieldMapping['search_quote_analyzer'] = $annotation->searchQuoteAnalyzer;
@@ -186,6 +190,70 @@ class DocumentParser
         return $mapping;
     }
 
+    public function getPropertyMetadata(\ReflectionClass $class, bool $subClass = false): array
+    {
+        if ($class->isTrait() || (!$this->reader->getClassAnnotation($class, Index::class) && !$subClass)) {
+            return [];
+        }
+
+        $metadata = [];
+
+        /** @var \ReflectionProperty $property */
+        foreach ($this->getDocumentPropertiesReflection($class) as $name => $property) {
+            /** @var AbstractAnnotation $annotation */
+            foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
+                if (!$annotation instanceof PropertiesAwareInterface) {
+                    continue;
+                }
+
+                $propertyMetadata = [
+                    'identifier' => false,
+                    'class' => null,
+                    'embeded' => false,
+                    'type' => null,
+                    'public' => $property->isPublic(),
+                    'getter' => null,
+                    'setter' => null,
+                    'sub_properties' => []
+                ];
+
+                $name = $property->getName();
+                $propertyMetadata['name'] = $name;
+
+                if (!$propertyMetadata['public']) {
+                    $propertyMetadata['getter'] = $this->guessGetter($class, $name);
+                }
+
+                if ($annotation instanceof Id) {
+                    $propertyMetadata['identifier'] = true;
+                } else {
+                    if (!$propertyMetadata['public']) {
+                        $propertyMetadata['setter'] = $this->guessSetter($class, $name);
+                    }
+                }
+
+                if ($annotation instanceof Property) {
+                    // we need the type (and possibly settings?) in Converter::denormalize()
+                    $propertyMetadata['type'] = $annotation->type;
+                    $propertyMetadata['settings'] = $annotation->settings;
+                }
+
+                if ($annotation instanceof Embedded) {
+                    $propertyMetadata['embeded'] = true;
+                    $propertyMetadata['class'] = $annotation->class;
+                    $propertyMetadata['sub_properties'] = $this->getPropertyMetadata(
+                        new \ReflectionClass($annotation->class),
+                        true
+                    );
+                }
+
+                $metadata[$annotation->getName() ?? Caser::snake($name)] = $propertyMetadata;
+            }
+        }
+
+        return $metadata;
+    }
+
     public function getAnalysisConfig(\ReflectionClass $class): array
     {
         $config = [];
@@ -202,7 +270,14 @@ class DocumentParser
             }
         }
 
-        foreach (['tokenizer', 'filter', 'normalizer', 'char_filter'] as $type) {
+        $normalizers = $this->getListFromArrayByKey('normalizer', $mapping);
+        foreach ($normalizers as $normalizer) {
+            if (isset($this->analysisConfig['normalizer'][$normalizer])) {
+                $config['normalizer'][$normalizer] = $this->analysisConfig['normalizer'][$normalizer];
+            }
+        }
+
+        foreach (['tokenizer', 'filter', 'char_filter'] as $type) {
             $list = $this->getListFromArrayByKey($type, $config);
 
             foreach ($list as $listItem) {
@@ -213,6 +288,51 @@ class DocumentParser
         }
 
         return $config;
+    }
+
+    protected function guessGetter(\ReflectionClass $class, $name): string
+    {
+        if ($class->hasMethod($name)) {
+            return $name;
+        }
+
+        if ($class->hasMethod('get' . ucfirst($name))) {
+            return 'get' . ucfirst($name);
+        }
+
+        if ($class->hasMethod('is' . ucfirst($name))) {
+            return 'is' . ucfirst($name);
+        }
+
+        // if there are underscores in the name convert them to CamelCase
+        if (strpos($name, '_')) {
+            $name = Caser::camel($name);
+            if ($class->hasMethod('get' . ucfirst($name))) {
+                return 'get' . $name;
+            }
+            if ($class->hasMethod('is' . ucfirst($name))) {
+                return 'is' . $name;
+            }
+        }
+
+        throw new \Exception("Could not determine a getter for `$name` of class `{$class->getNamespaceName()}`");
+    }
+
+    protected function guessSetter(\ReflectionClass $class, $name): string
+    {
+        if ($class->hasMethod('set' . ucfirst($name))) {
+            return 'set' . ucfirst($name);
+        }
+
+        // if there are underscores in the name convert them to CamelCase
+        if (strpos($name, '_')) {
+            $name = Caser::camel($name);
+            if ($class->hasMethod('set' . ucfirst($name))) {
+                return 'set' . $name;
+            }
+        }
+
+        throw new \Exception("Could not determine a setter for `$name` of class `{$class->getNamespaceName()}`");
     }
 
     private function getListFromArrayByKey(string $searchKey, array $array): array

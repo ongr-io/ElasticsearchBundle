@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Result;
 
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\App\Document\IndexWithFieldsDataDocument;
 use ONGR\App\Document\CollectionNested;
 use ONGR\App\Document\DummyDocument;
 
@@ -38,10 +39,27 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
         $nested->value = 'delta';
         $document->getNestedCollection()->add($nested);
 
+        $document->setDatetimefield(new \DateTime('2010-01-01 10:10:56'));
         $index->persist($document);
         $index->commit();
 
         $document = $index->find(5);
         $this->assertEquals('bar bar', $document->title);
+        $this->assertInstanceOf(\DateTimeInterface::class, $document->getDatetimefield());
+        $this->assertEquals('2010-01-01', $document->getDatetimefield()->format('Y-m-d'));
+    }
+
+    public function testAddingValuesToPrivateIdsWithoutSetters()
+    {
+        $index = $this->getIndex(IndexWithFieldsDataDocument::class);
+
+        $document = new IndexWithFieldsDataDocument();
+        $document->title = 'acme';
+
+        $index->persist($document);
+        $index->commit();
+
+        $document = $index->findOneBy(['private' => 'acme']);
+        $this->assertNotNull($document->getId());
     }
 }

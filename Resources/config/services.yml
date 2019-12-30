@@ -21,20 +21,10 @@ services:
     ONGR\ElasticsearchBundle\Service\ExportService: ~
     ONGR\ElasticsearchBundle\Service\ImportService: ~
     ONGR\ElasticsearchBundle\Service\IndexSuffixFinder: ~
-
-    ONGR\ElasticsearchBundle\Mapping\ObjectNormalizer:
-        arguments: ["@ongr.esb.cache", '@ONGR\ElasticsearchBundle\Mapping\Converter',  '@ONGR\ElasticsearchBundle\Mapping\NameConverter']
-        tags:
-            - { name: serializer.normalizer, priority: 100}
-
-    ONGR\ElasticsearchBundle\Mapping\NameConverter:
-        arguments: ["@ongr.esb.cache"]
+    ONGR\ElasticsearchBundle\Mapping\Converter: ~
 
     ONGR\ElasticsearchBundle\Mapping\DocumentParser:
         arguments: ["@ongr.esb.cache_reader", "@ongr.esb.cache", "%ongr.esb.analysis%"]
-
-    ONGR\ElasticsearchBundle\Mapping\Converter:
-        arguments: ['@ONGR\ElasticsearchBundle\Mapping\DocumentParser']
 
     ONGR\ElasticsearchBundle\Profiler\Handler\CollectionHandler:
         public: false

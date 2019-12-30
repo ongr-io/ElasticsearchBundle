@@ -39,11 +39,9 @@ class DummyDocument
      * @ES\Property(
      *  type="text",
      *  name="title",
-     *  settings={
-     *    "fields"={
-     *        "raw"={"type"="keyword"},
-     *        "increment"={"type"="text", "analyzer"="incrementalAnalyzer"}
-     *    }
+     *  fields={
+     *    "raw"={"type"="keyword"},
+     *    "increment"={"type"="text", "analyzer"="incrementalAnalyzer"}
      *  }
      * )
      */
@@ -68,6 +66,12 @@ class DummyDocument
      * @ES\Embedded(class="ONGR\App\Document\CollectionObject")
      */
     private $objectCollection;
+
+    /**
+     * @var \DateTimeInterface
+     * @ES\Property(type="date")
+     */
+    private $datetimefield;
 
     public function __construct()
     {
@@ -107,4 +111,15 @@ class DummyDocument
         $this->objectCollection = $objectCollection;
         return $this;
     }
+
+    public function getDatetimefield(): ?\DateTimeInterface
+    {
+        return $this->datetimefield;
+    }
+
+    public function setDatetimefield(\DateTimeInterface $datetimefield): void
+    {
+        $this->datetimefield = $datetimefield;
+    }
+
 }

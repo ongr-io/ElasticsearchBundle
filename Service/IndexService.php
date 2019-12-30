@@ -28,7 +28,6 @@ use ONGR\ElasticsearchDSL\Search;
 use ONGR\ElasticsearchDSL\Sort\FieldSort;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Serializer\Serializer;
 
 class IndexService
 {
@@ -41,21 +40,18 @@ class IndexService
     private $bulkCommitSize = 100;
     private $bulkQueries = [];
     private $indexSettings = [];
-    private $serializer;
     private $tracer;
 
     public function __construct(
         string $namespace,
         Converter $converter,
         EventDispatcherInterface $eventDispatcher,
-        Serializer $serializer,
         IndexSettings $indexSettings,
         $tracer = null
     ) {
         $this->namespace = $namespace;
         $this->converter = $converter;
         $this->eventDispatcher = $eventDispatcher;
-        $this->serializer = $serializer;
         $this->indexSettings = $indexSettings;
         $this->tracer = $tracer;
         $this->getClient();
@@ -207,7 +203,7 @@ class IndexService
 
         $result['_source']['_id'] = $result['_id'];
 
-        return $this->converter->convertArrayToDocument($this->namespace, $result['_source'], $this->serializer);
+        return $this->converter->convertArrayToDocument($this->namespace, $result['_source']);
     }
 
     public function findByIds(array $ids): DocumentIterator
@@ -286,7 +282,6 @@ class IndexService
             $results,
             $this,
             $this->converter,
-            $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -299,7 +294,6 @@ class IndexService
             $results,
             $this,
             $this->converter,
-            $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -312,7 +306,6 @@ class IndexService
             $results,
             $this,
             $this->converter,
-            $this->serializer,
             $this->getScrollConfiguration($results, $search->getScroll())
         );
     }
@@ -404,7 +397,6 @@ class IndexService
     public function bulk(string $operation, array $data = [], $autoCommit = true): array
     {
         $bulkParams = [
-            '_index' => $this->getIndexName(),
             '_type' => $this->getTypeName(),
             '_id' => $data['_id'] ?? null,
         ];
@@ -439,7 +431,10 @@ class IndexService
      */
     public function persist($document): void
     {
-        $documentArray = array_filter($this->converter->convertDocumentToArray($document, $this->serializer));
+        $documentArray = array_filter($this->converter->convertDocumentToArray($document), function ($val) {
+            // remove unset properties but keep other falsy values
+            return !($val === null);
+        });
 
         $this->bulk('index', $documentArray);
     }

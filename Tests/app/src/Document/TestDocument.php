@@ -13,31 +13,32 @@ namespace ONGR\App\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use ONGR\ElasticsearchBundle\Annotation as ES;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
- * @ES\Index(alias="field-data-index")
+ * test document for unit testing of DocumentParser class
+ *
+ * @ES\Index(alias="testdocument")
  */
-class IndexWithFieldsDataDocument
+class TestDocument
 {
     // This con't is only as a helper.
-    CONST INDEX_NAME = 'field-data-index';
+    CONST INDEX_NAME = 'testdocument';
 
     /**
      * @ES\Id()
      */
-    private $id;
+    public $id;
 
     /**
-     * @ES\Property(type="text", name="private", settings={"fielddata"=true})
+     * @ES\Property(
+     *  type="text",
+     *  name="title",
+     *  fields={
+     *    "raw"={"type"="keyword"},
+     *    "increment"={"type"="text", "analyzer"="incrementalAnalyzer"},
+     *    "sorting"={"type"="keyword", "normalizer"="lowercase_normalizer"}
+     *  }
+     * )
      */
     public $title;
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 }

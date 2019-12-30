@@ -13,7 +13,6 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 use ONGR\ElasticsearchBundle\Mapping\Converter;
 use ONGR\ElasticsearchBundle\Service\IndexService;
-use Symfony\Component\Serializer\Serializer;
 
 abstract class AbstractResultsIterator implements \Countable, \Iterator
 {
@@ -30,13 +29,11 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
 
     //Used to count scroll iteration.
     private $key = 0;
-    protected $serializer;
 
     public function __construct(
         array $rawData,
         IndexService $index,
         Converter $converter = null,
-        Serializer $serializer = null,
         array $scroll = []
     ) {
         $this->raw = $rawData;
@@ -58,7 +55,6 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
         if (isset($rawData['hits']['total'])) {
             $this->count = $rawData['hits']['total'];
         }
-        $this->serializer = $serializer;
     }
 
     public function __destruct()
