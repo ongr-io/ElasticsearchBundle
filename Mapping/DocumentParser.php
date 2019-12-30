@@ -151,6 +151,9 @@ class DocumentParser
 
                 if ($annotation instanceof Property) {
                     $fieldMapping['type'] = $annotation->type;
+                    if ($annotation->fields) {
+                        $fieldMapping['fields'] = $annotation->fields;
+                    }
                     $fieldMapping['analyzer'] = $annotation->analyzer;
                     $fieldMapping['search_analyzer'] = $annotation->searchAnalyzer;
                     $fieldMapping['search_quote_analyzer'] = $annotation->searchQuoteAnalyzer;
@@ -267,7 +270,14 @@ class DocumentParser
             }
         }
 
-        foreach (['tokenizer', 'filter', 'normalizer', 'char_filter'] as $type) {
+        $normalizers = $this->getListFromArrayByKey('normalizer', $mapping);
+        foreach ($normalizers as $normalizer) {
+            if (isset($this->analysisConfig['normalizer'][$normalizer])) {
+                $config['normalizer'][$normalizer] = $this->analysisConfig['normalizer'][$normalizer];
+            }
+        }
+
+        foreach (['tokenizer', 'filter', 'char_filter'] as $type) {
             $list = $this->getListFromArrayByKey($type, $config);
 
             foreach ($list as $listItem) {

@@ -39,11 +39,9 @@ class DummyDocument
      * @ES\Property(
      *  type="text",
      *  name="title",
-     *  settings={
-     *    "fields"={
-     *        "raw"={"type"="keyword"},
-     *        "increment"={"type"="text", "analyzer"="incrementalAnalyzer"}
-     *    }
+     *  fields={
+     *    "raw"={"type"="keyword"},
+     *    "increment"={"type"="text", "analyzer"="incrementalAnalyzer"}
      *  }
      * )
      */
