@@ -68,6 +68,7 @@ class Configuration implements ConfigurationInterface
 
             ->arrayNode('indexes')
                 ->defaultValue([])
+                ->useAttributeAsKey('namespace')
                 ->info(
                     'In case you want to override index settings defined in the annotation.' .
                     ' e.g. use env variables instead.'
