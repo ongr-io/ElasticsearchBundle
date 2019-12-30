@@ -93,7 +93,7 @@ class Converter
                 }
             } else {
                 if ($fieldMeta['type'] == 'date') {
-                    $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+                    $value = \DateTime::createFromFormat(\DateTime::ISO8601, $value) ?: null;
                 }
                 if ($fieldMeta['public']) {
                     $object->{$fieldMeta['name']} = $value;
