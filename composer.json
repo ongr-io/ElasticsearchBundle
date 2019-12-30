@@ -16,7 +16,6 @@
         "symfony/dependency-injection": "^3.4|^4.1",
         "symfony/console": "^3.4|^4.1",
         "symfony/stopwatch": "^3.4|^4.1",
-        "symfony/templating": "^3.4|^4.1",
         "symfony/finder": "^3.4|^4.1",
         "symfony/serializer": "^3.4|^4.1",
         "symfony/cache": "^3.4|^4.1",
