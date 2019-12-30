@@ -65,7 +65,6 @@ class ExportService
         $filename = str_replace('.json', '', $filename);
         $writer = $this->getWriter($this->getFilePath($filename.'.json'), $metadata['count']);
 
-        $file = [];
         foreach ($results as $data) {
             if ($counter >= $maxLinesInFile) {
                 $writer->finalize();
@@ -82,7 +81,6 @@ class ExportService
 
             $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source']));
             $writer->push($doc);
-            $file[] = $doc;
             $progress->advance();
             $counter++;
         }
