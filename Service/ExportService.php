@@ -116,7 +116,7 @@ class ExportService
      */
     protected function getFilePath($filename)
     {
-        if ($filename{0} == '/' || strstr($filename, ':') !== false) {
+        if ($filename[0] == '/' || strstr($filename, ':') !== false) {
             return $filename;
         }
 
