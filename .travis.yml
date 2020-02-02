@@ -1,11 +1,37 @@
 sudo: false
 language: php
-php:
-  - 5.6
-  - 7.0
-  - 7.1
-  - 7.2
-  - 7.3
+
+matrix:
+  include:
+    - language: php
+      php: 5.6
+      env:
+        - SYMFONY=^3.4
+
+    - language: php
+      php: 7.0
+      env:
+        - OCRAMIUS_PACKAGE_VERSION=true
+        - SYMFONY=^3.4
+
+    - language: php
+      php: 7.2
+      env:
+        - OCRAMIUS_PACKAGE_VERSION=true
+        - SYMFONY=^3.4
+
+    - language: php
+      php: 7.3
+      env:
+        - OCRAMIUS_PACKAGE_VERSION=true
+        - SYMFONY=^4.4
+
+    - language: php
+      php: 7.4
+      env:
+        - OCRAMIUS_PACKAGE_VERSION=true
+        - SYMFONY=^4.4
+
 env:
   global:
     - ES_VERSION=5.6.8 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
@@ -16,7 +42,8 @@ install:
 before_script:
   - echo 'memory_limit=-1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - composer require --no-update symfony/symfony:${SYMFONY}
-  - composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH
+  - if [[ $OCRAMIUS_PACKAGE_VERSION = "true" ]]; then composer require ocramius/package-versions:^1.0 --no-update ;fi
+  - if [[ $TRAVIS_SECURE_ENV_VARS = "true" ]]; then composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH; fi
   - composer install --no-interaction --prefer-dist
 
 script:
