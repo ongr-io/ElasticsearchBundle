@@ -38,14 +38,6 @@ final class Index extends AbstractAnnotation
     public $numberOfReplicas = 1;
 
     /**
-     * We strongly recommend to not use this parameter in the index annotation. By default it will be set as `_doc`
-     * type name. Eventually it will be removed.
-     *
-     * @deprecated will be removed in v7 since there will be no more types in the indexes.
-     */
-    public $typeName = '_doc';
-
-    /**
      * You can select one of your indexes to be default. Useful for cli commands when you don't
      *   need to define an alias name. If default is not set the first index found will be set as default one.
      */

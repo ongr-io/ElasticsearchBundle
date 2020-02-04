@@ -53,8 +53,8 @@ So here's a simple example how the data looks like:
 
 [
     {"count":2,"date":"2015-10-25T14:46:21+0200"},
-    {"_type":"content","_id":"15","_source":{"id":"15","title":"About","content":"Sample ONGR about page..","urls":[{"url":"about\/","key":""}]}},
-    {"_type":"content","_id":"37","_source":{"id":"37","title":"Home Page","content":"<div class=\"jumbotron\">\r\n  <h1>Welcome to ONGR demo site!<\/h1>\r\n  <p>Enterprise E-commerce Accelerator.<\/p><\/div>","urls":[{"url":"home-page\/","key":""}]}}
+    {"_id":"15","_source":{"id":"15","title":"About","content":"Sample ONGR about page..","urls":[{"url":"about\/","key":""}]}},
+    {"_id":"37","_source":{"id":"37","title":"Home Page","content":"<div class=\"jumbotron\">\r\n  <h1>Welcome to ONGR demo site!<\/h1>\r\n  <p>Enterprise E-commerce Accelerator.<\/p><\/div>","urls":[{"url":"home-page\/","key":""}]}}
 ]
 
 ```
@@ -62,7 +62,6 @@ So here's a simple example how the data looks like:
 Every line of file is `JSON` object. First line must specify `count`, how many lines are in the files except first and the file timestamp in `date`.
 
 There is one document per line. There could be different types defined in a single file, basically with a single file you can import the whole index. There are 3 required keys:
-* `_type` which specifies elasticsearch type name (not an ElasticsearchBundle class document)
 * `_id` is optional, if not specified (provided `null`) elasticsearch will create a random id for that document.
 * `_source`: document array encoded to json object, where all fields are equal to the elasticsearch type field names.
 
@@ -78,7 +77,6 @@ Exports data from Elasticsearch index in a json format.
 |:-----------:|:----------------------------:|:--------------------------------------------------------------------------------------:|
 | `--manager` | *Manager name. e.g.* `default` | Used to select manager to create index for. If not specified, default manager is used. |
 | `--chunk`   | *Chunk size, default 500*      | Specifies the size of each chunk to be received from Elasticsearch. This can be changed for performance reasons.
-| `--types`   | *Elasticsearch index type names* | Selected types to export, if no specified will export all index.
 | `--split`   | *Lines number* | This option indicates how many lines can be in single exported file.
 
 > Index export generates the same `JSON` format as specified in the import chapter.

@@ -42,7 +42,6 @@ class DocumentIteratorTest extends TestCase
                 'hits' => [
                     [
                         '_index' => 'test',
-                        '_type' => '_doc',
                         '_id' => 'foo',
                         '_score' => 1,
                         '_source' => [

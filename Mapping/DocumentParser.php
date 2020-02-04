@@ -72,17 +72,6 @@ class DocumentParser
         return $document;
     }
 
-    /**
-     * @deprecated will be deleted in v7. Types are deleted from elasticsearch.
-     */
-    public function getTypeName(\ReflectionClass $class): string
-    {
-        /** @var Index $document */
-        $document = $this->reader->getClassAnnotation($class, Index::class);
-
-        return $document->typeName ?? '_doc';
-    }
-
     public function getIndexMetadata(\ReflectionClass $class): array
     {
         if ($class->isTrait()) {
@@ -102,32 +91,9 @@ class DocumentParser
         return array_filter(array_map('array_filter', [
             'settings' => $settings,
             'mappings' => [
-                $this->getTypeName($class) => [
-                    'properties' => array_filter($this->getClassMetadata($class))
-                ]
+                'properties' => array_filter($this->getClassMetadata($class))
             ]
         ]));
-    }
-
-    public function getDocumentNamespace(string $indexAlias): ?string
-    {
-        if ($this->cache->contains(Configuration::ONGR_INDEXES)) {
-            $indexes = $this->cache->fetch(Configuration::ONGR_INDEXES);
-
-            if (isset($indexes[$indexAlias])) {
-                return $indexes[$indexAlias];
-            }
-        }
-
-        return null;
-    }
-
-    public function getParsedDocument(\ReflectionClass $class): Index
-    {
-        /** @var Index $document */
-        $document = $this->reader->getClassAnnotation($class, Index::class);
-
-        return $document;
     }
 
     private function getClassMetadata(\ReflectionClass $class): array

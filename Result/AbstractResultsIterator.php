@@ -52,8 +52,8 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
         if (isset($rawData['hits']['hits'])) {
             $this->documents = $rawData['hits']['hits'];
         }
-        if (isset($rawData['hits']['total'])) {
-            $this->count = $rawData['hits']['total'];
+        if (isset($rawData['hits']['total']['value'])) {
+            $this->count = $rawData['hits']['total']['value'];
         }
     }
 

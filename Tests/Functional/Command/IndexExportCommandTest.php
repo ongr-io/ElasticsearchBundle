@@ -103,7 +103,6 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
             $id = $document['_id'];
             unset($document['_id']);
             $expectedResults[] = [
-                '_type' => $index->getTypeName(),
                 '_id' => $id,
                 '_source' => $document,
             ];
@@ -147,21 +146,6 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $metadata = array_shift($results);
 
         $this->assertEquals($expectedCount, $metadata['count']);
-
-        usort(
-            $results,
-            function ($a, $b) {
-                if ($a['_type'] == $b['_type']) {
-                    if ($a['_id'] == $b['_id']) {
-                        return 0;
-                    }
-
-                    return $a['_id'] < $b['_id'] ? -1 : 1;
-                }
-
-                return $a['_type'] < $b['_type'] ? -1 : 1;
-            }
-        );
 
         return $results;
     }

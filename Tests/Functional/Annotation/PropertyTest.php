@@ -37,7 +37,7 @@ class PropertyTest extends AbstractElasticsearchTestCase
                     ],
                 'type' => 'text',
             ],
-            $meta['mappings']['_doc']['properties']['title']
+            $meta['mappings']['properties']['title']
         );
     }
 }

@@ -90,7 +90,6 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
                 'method' => 'GET',
                 'httpParameters' => [],
                 'scheme' => 'http',
-                'port' => 9200,
             ],
             $lastQuery,
             'Logged data did not match expected data.'
@@ -120,7 +119,6 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
                 'method' => 'POST',
                 'httpParameters' => [],
                 'scheme' => 'http',
-                'port' => 9200,
             ],
             $lastQuery,
             'Logged data did not match expected data.'

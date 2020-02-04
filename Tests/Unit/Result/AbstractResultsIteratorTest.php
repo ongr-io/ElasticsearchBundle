@@ -51,7 +51,6 @@ class AbstractResultsIteratorTest extends TestCase
                 'hits' => [
                     [
                         '_index' => 'test',
-                        '_type' => '_doc',
                         '_id' => 'foo',
                         '_score' => 1,
                         '_source' => [
@@ -60,7 +59,6 @@ class AbstractResultsIteratorTest extends TestCase
                     ],
                     [
                         '_index' => 'test',
-                        '_type' => 'product',
                         '_id' => 'bar',
                         '_score' => 2,
                         '_source' => [
@@ -69,7 +67,6 @@ class AbstractResultsIteratorTest extends TestCase
                     ],
                     [
                         '_index' => 'test',
-                        '_type' => 'product',
                         '_id' => 'baz',
                         '_score' => null,
                         '_source' => [
