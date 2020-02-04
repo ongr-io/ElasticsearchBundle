@@ -22,10 +22,10 @@
         "doctrine/cache": "~1.4",
         "doctrine/collections": "~1.4",
         "monolog/monolog": "~1.10",
+        "elasticsearch/elasticsearch": "~5.0|~6.0",
         "ongr/elasticsearch-dsl": "~5.0|~6.0"
     },
     "require-dev": {
-        "elasticsearch/elasticsearch": "~5.0|~6.0",
         "mikey179/vfsstream": "~1.4",
         "phpunit/phpunit": "~5.6",
         "squizlabs/php_codesniffer": "~2.0",
