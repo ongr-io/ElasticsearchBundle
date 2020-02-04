@@ -6,7 +6,7 @@ php:
   - 7.3
 env:
   global:
-    - ES_VERSION=7.5.2 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
+    - ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.5.2-linux-x86_64.tar.gz
   matrix:
     - SYMFONY="~3.4"
     - SYMFONY="^4.4"
