@@ -425,7 +425,7 @@ class IndexService
         $this->bulk('index', $documentArray);
     }
 
-    public function commit($commitMode = 'flush', array $params = []): array
+    public function commit($commitMode = 'refresh', array $params = []): array
     {
         $bulkResponse = [];
         if (!empty($this->bulkQueries)) {

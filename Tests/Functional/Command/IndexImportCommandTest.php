@@ -62,6 +62,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
+//        $index->refresh();
         $search = $index->createSearch()->addQuery(new MatchAllQuery())->setSize($realSize);
         $results = $index->findDocuments($search);
 

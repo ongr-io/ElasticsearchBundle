@@ -55,11 +55,13 @@ class PersistObjectsTest extends AbstractElasticsearchTestCase
 
         $document = new IndexWithFieldsDataDocument();
         $document->title = 'acme';
-
         $index->persist($document);
         $index->commit();
 
+        $index->refresh();
+
         $document = $index->findOneBy(['private' => 'acme']);
+
         $this->assertNotNull($document->getId());
     }
 }

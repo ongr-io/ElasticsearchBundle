@@ -47,7 +47,9 @@ class AbstractResultsIteratorTest extends TestCase
     {
         $rawData = [
             'hits' => [
-                'total' => 3,
+                'total' => [
+                    'value' => 3
+                ],
                 'hits' => [
                     [
                         '_index' => 'test',
@@ -86,7 +88,7 @@ class AbstractResultsIteratorTest extends TestCase
         $expectedScores = [1, 2, null];
         $actualScores = [];
 
-        $this->assertEquals($rawData['hits']['total'], $results->count());
+        $this->assertEquals($rawData['hits']['total']['value'], $results->count());
         $this->assertEquals($rawData, $results->getRaw());
 
         foreach ($results as $item) {

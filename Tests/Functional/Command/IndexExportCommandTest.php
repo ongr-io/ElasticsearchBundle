@@ -25,17 +25,17 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         return [
             DummyDocument::class => [
                 [
-                    '_id' => 'doc1',
+                    '_id' => 1,
                     'title' => 'Foo Product',
                     'number' => 5.00,
                 ],
                 [
-                    '_id' => 'doc2',
+                    '_id' => 2,
                     'title' => 'Bar Product',
                     'number' => 8.33,
                 ],
                 [
-                    '_id' => 'doc3',
+                    '_id' => 3,
                     'title' => 'Lao Product',
                     'number' => 1.95,
                 ],
@@ -88,6 +88,9 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         );
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
+        usort($results, function ($a, $b){
+            return (int)$a['_id'] <=> (int)$b['_id'];
+        });
         $this->assertEquals($expectedResults, $results);
     }
 
@@ -97,7 +100,6 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     private function transformDataToResult(string $class): array
     {
         $expectedResults = [];
-        $index = $this->getIndex($class);
 
         foreach ($this->getDataArray()[$class] as $document) {
             $id = $document['_id'];
