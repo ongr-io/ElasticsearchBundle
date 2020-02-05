@@ -124,9 +124,6 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
      */
     private function getImportCommand()
     {
-        $command = new IndexImportCommand();
-        $command->setContainer($this->getContainer());
-
-        return $command;
+        return new IndexImportCommand($this->getContainer());
     }
 }

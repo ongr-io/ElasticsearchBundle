@@ -46,5 +46,7 @@ class CacheClearCommand extends AbstractIndexServiceAwareCommand
                 $index->getIndexName()
             )
         );
+
+        return 0;
     }
 }
