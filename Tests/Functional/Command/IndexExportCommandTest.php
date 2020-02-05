@@ -88,7 +88,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         );
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
-        usort($results, function ($a, $b){
+        usort($results, function ($a, $b) {
             return (int)$a['_id'] <=> (int)$b['_id'];
         });
         $this->assertEquals($expectedResults, $results);
