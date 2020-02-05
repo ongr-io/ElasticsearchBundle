@@ -11,7 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class CommitEvent extends Event
 {

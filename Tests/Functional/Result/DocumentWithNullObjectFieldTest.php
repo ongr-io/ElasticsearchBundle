@@ -15,7 +15,7 @@ use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class DocumentNullObjectFieldTest extends AbstractElasticsearchTestCase
 {
-    protected function getDataArray()
+    protected function getDataArray(): array
     {
         return [
             DummyDocument::class => [

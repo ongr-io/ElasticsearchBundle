@@ -20,7 +20,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class IndexExportCommandTest extends AbstractElasticsearchTestCase
 {
-    protected function getDataArray()
+    protected function getDataArray(): array
     {
         return [
             DummyDocument::class => [
@@ -120,8 +120,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     private function getCommandTester()
     {
-        $indexExportCommand = new IndexExportCommand();
-        $indexExportCommand->setContainer($this->getContainer());
+        $indexExportCommand = new IndexExportCommand($this->getContainer());
 
         $app = new Application();
         $app->add($indexExportCommand);

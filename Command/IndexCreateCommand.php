@@ -146,5 +146,7 @@ class IndexCreateCommand extends AbstractIndexServiceAwareCommand
                 )
             );
         }
+
+        return 0;
     }
 }

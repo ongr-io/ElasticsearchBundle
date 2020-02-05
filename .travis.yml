@@ -4,12 +4,17 @@ php:
   - 7.1
   - 7.2
   - 7.3
+  - 7.4
 env:
   global:
     - ES_VERSION=7.5.2 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}-linux-x86_64.tar.gz
   matrix:
-    - SYMFONY="~3.4"
     - SYMFONY="^4.4"
+    - SYMFONY="^5.0"
+jobs:
+  exclude:
+    - php: 7.1
+      env: SYMFONY="^5.0"
 install:
   - wget ${ES_DOWNLOAD_URL}
   - tar -xzf elasticsearch-${ES_VERSION}-linux-x86_64.tar.gz

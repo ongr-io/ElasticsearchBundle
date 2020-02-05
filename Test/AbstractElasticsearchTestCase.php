@@ -53,7 +53,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
      *
      * @return array
      */
-    protected function getDataArray()
+    protected function getDataArray(): array
     {
         return [];
     }
@@ -69,7 +69,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -85,7 +85,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     protected function getContainer($reinitialize = false, $kernelOptions = []): ContainerInterface
     {
         if (!self::$cachedContainer && !$reinitialize) {
-            static::bootKernel($kernelOptions);
+//            static::bootKernel($kernelOptions);
 
             self::$cachedContainer = static::createClient(['environment' => 'test'])->getContainer();
         }
