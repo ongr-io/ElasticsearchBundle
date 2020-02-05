@@ -103,7 +103,10 @@ class ManagerFactory
 
         $client = ClientBuilder::create();
         $client->setHosts($connection['hosts']);
-        $client->setTracer($this->tracer);
+
+        if ($this->tracer) {
+            $client->setTracer($this->tracer);
+        }
 
         if ($this->logger && $managerConfig['logger']['enabled']) {
             $client->setLogger($this->logger);
