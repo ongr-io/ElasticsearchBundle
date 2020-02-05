@@ -21,7 +21,6 @@ class CommitEventTest extends TestCase
         $query = [
             [
             '_index' => 'index',
-            '_type' => '_doc',
             '_id' => 10,
             ],
             [

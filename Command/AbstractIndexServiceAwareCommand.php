@@ -14,11 +14,21 @@ namespace ONGR\ElasticsearchBundle\Command;
 use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
 use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\DependencyInjection\Container;
 
-abstract class AbstractIndexServiceAwareCommand extends ContainerAwareCommand
+abstract class AbstractIndexServiceAwareCommand extends Command
 {
+    private $container;
+
     const INDEX_OPTION = 'index';
+
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+        parent::__construct();
+    }
 
     protected function configure()
     {
@@ -32,19 +42,24 @@ abstract class AbstractIndexServiceAwareCommand extends ContainerAwareCommand
 
     protected function getIndex($name): IndexService
     {
-        $name = $name ?? $this->getContainer()->getParameter(Configuration::ONGR_DEFAULT_INDEX);
-        $indexes = $this->getContainer()->getParameter(Configuration::ONGR_INDEXES);
+        $name = $name ?? $this->container->getParameter(Configuration::ONGR_DEFAULT_INDEX);
+        $indexes = $this->container->getParameter(Configuration::ONGR_INDEXES);
 
-        if (isset($indexes[$name]) && $this->getContainer()->has($indexes[$name])) {
-            return $this->getContainer()->get($indexes[$name]);
+        if (isset($indexes[$name]) && $this->container->has($indexes[$name])) {
+            return $this->container->get($indexes[$name]);
         }
 
         throw new \RuntimeException(
             sprintf(
                 'There is no index under `%s` name found. Available options: `%s`.',
                 $name,
-                implode('`, `', array_keys($this->getContainer()->getParameter(Configuration::ONGR_INDEXES)))
+                implode('`, `', array_keys($this->container->getParameter(Configuration::ONGR_INDEXES)))
             )
         );
+    }
+
+    public function getContainer(): Container
+    {
+        return $this->container;
     }
 }

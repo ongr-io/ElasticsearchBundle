@@ -56,5 +56,7 @@ class IndexDropCommand extends AbstractIndexServiceAwareCommand
             $io->text('This action should not be used in the production environment.');
             $io->error('Option --force is mandatory to drop the index.');
         }
+
+        return 0;
     }
 }

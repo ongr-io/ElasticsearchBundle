@@ -79,7 +79,7 @@ class ExportService
                 $counter = 0;
             }
 
-            $doc = array_intersect_key($data, array_flip(['_id', '_type', '_source']));
+            $doc = array_intersect_key($data, array_flip(['_id', '_source']));
             $writer->push($doc);
             $progress->advance();
             $counter++;
@@ -99,7 +99,7 @@ class ExportService
      */
     protected function getFilePath($filename): string
     {
-        if ($filename{0} == '/' || strstr($filename, ':') !== false) {
+        if ($filename[0] == '/' || strstr($filename, ':') !== false) {
             return $filename;
         }
 

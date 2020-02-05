@@ -76,5 +76,7 @@ class IndexImportCommand extends AbstractIndexServiceAwareCommand
         );
 
         $io->success('Data import completed!');
+
+        return 0;
     }
 }

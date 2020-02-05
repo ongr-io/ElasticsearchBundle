@@ -93,7 +93,6 @@ class MappingPass implements CompilerPassInterface
                         $indexMetadata,
                         $indexesOverride[$namespace]['hosts'] ?? $document->hosts,
                         $indexesOverride[$namespace]['default'] ?? $document->default,
-                        $indexesOverride[$namespace]['type'] ?? $document->typeName
                     ]
                 );
 

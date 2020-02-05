@@ -70,5 +70,7 @@ class IndexExportCommand extends AbstractIndexServiceAwareCommand
         );
 
         $io->success('Data export completed!');
+
+        return 0;
     }
 }

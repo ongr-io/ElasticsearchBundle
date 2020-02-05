@@ -31,11 +31,9 @@ class DocumentParserTest extends TestCase
 
         $expected = [
             'mappings' => [
-                '_doc' => [
-                    'properties' => [
-                        'keyword_field' => [
-                            'type' => 'keyword',
-                        ]
+                'properties' => [
+                    'keyword_field' => [
+                        'type' => 'keyword',
                     ]
                 ]
             ]
@@ -51,8 +49,8 @@ class DocumentParserTest extends TestCase
         $indexMetadata = $parser->getIndexMetadata(new \ReflectionClass(TestDocument::class));
 
         // Mapping definition for field "title" should be there
-        $this->assertNotEmpty($indexMetadata['mappings']['_doc']['properties']['title']);
-        $title_field_def = $indexMetadata['mappings']['_doc']['properties']['title'];
+        $this->assertNotEmpty($indexMetadata['mappings']['properties']['title']);
+        $title_field_def = $indexMetadata['mappings']['properties']['title'];
 
         // title should have `fields` sub-array
         $this->assertArrayHasKey('fields', $title_field_def);

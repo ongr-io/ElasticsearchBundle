@@ -20,22 +20,22 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class IndexExportCommandTest extends AbstractElasticsearchTestCase
 {
-    protected function getDataArray()
+    protected function getDataArray(): array
     {
         return [
             DummyDocument::class => [
                 [
-                    '_id' => 'doc1',
+                    '_id' => 1,
                     'title' => 'Foo Product',
                     'number' => 5.00,
                 ],
                 [
-                    '_id' => 'doc2',
+                    '_id' => 2,
                     'title' => 'Bar Product',
                     'number' => 8.33,
                 ],
                 [
-                    '_id' => 'doc3',
+                    '_id' => 3,
                     'title' => 'Lao Product',
                     'number' => 1.95,
                 ],
@@ -88,6 +88,9 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         );
 
         $results = $this->parseResult(vfsStream::url('tmp/test.json'), count($expectedResults));
+        usort($results, function ($a, $b) {
+            return (int)$a['_id'] <=> (int)$b['_id'];
+        });
         $this->assertEquals($expectedResults, $results);
     }
 
@@ -97,13 +100,11 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
     private function transformDataToResult(string $class): array
     {
         $expectedResults = [];
-        $index = $this->getIndex($class);
 
         foreach ($this->getDataArray()[$class] as $document) {
             $id = $document['_id'];
             unset($document['_id']);
             $expectedResults[] = [
-                '_type' => $index->getTypeName(),
                 '_id' => $id,
                 '_source' => $document,
             ];
@@ -119,8 +120,7 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
      */
     private function getCommandTester()
     {
-        $indexExportCommand = new IndexExportCommand();
-        $indexExportCommand->setContainer($this->getContainer());
+        $indexExportCommand = new IndexExportCommand($this->getContainer());
 
         $app = new Application();
         $app->add($indexExportCommand);
@@ -147,21 +147,6 @@ class IndexExportCommandTest extends AbstractElasticsearchTestCase
         $metadata = array_shift($results);
 
         $this->assertEquals($expectedCount, $metadata['count']);
-
-        usort(
-            $results,
-            function ($a, $b) {
-                if ($a['_type'] == $b['_type']) {
-                    if ($a['_id'] == $b['_id']) {
-                        return 0;
-                    }
-
-                    return $a['_id'] < $b['_id'] ? -1 : 1;
-                }
-
-                return $a['_type'] < $b['_type'] ? -1 : 1;
-            }
-        );
 
         return $results;
     }

@@ -62,14 +62,14 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-
+//        $index->refresh();
         $search = $index->createSearch()->addQuery(new MatchAllQuery())->setSize($realSize);
         $results = $index->findDocuments($search);
 
         $ids = [];
         /** @var DummyDocument $doc */
         foreach ($results as $doc) {
-            $ids[] = substr($doc->id, 3);
+            $ids[] = (int)$doc->id;
         }
         sort($ids);
         $data = range(1, $realSize);
@@ -110,7 +110,7 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
         $ids = [];
         /** @var DummyDocument $doc */
         foreach ($results as $doc) {
-            $ids[] = substr($doc->id, 3);
+            $ids[] = (int)$doc->id;
         }
         sort($ids);
         $data = range(1, $realSize);
@@ -124,9 +124,6 @@ class IndexImportCommandTest extends AbstractElasticsearchTestCase
      */
     private function getImportCommand()
     {
-        $command = new IndexImportCommand();
-        $command->setContainer($this->getContainer());
-
-        return $command;
+        return new IndexImportCommand($this->getContainer());
     }
 }

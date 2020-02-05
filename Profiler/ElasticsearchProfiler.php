@@ -40,7 +40,7 @@ class ElasticsearchProfiler implements DataCollectorInterface
         $this->indexes = $indexes;
     }
 
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
         /** @var Logger $logger */
         foreach ($this->loggers as $logger) {

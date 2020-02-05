@@ -17,12 +17,6 @@ use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
 
 class DocumentTest extends AbstractElasticsearchTestCase
 {
-    public function testDocumentTypeName()
-    {
-        $index = $this->getIndex(DummyDocumentInTheEntityDirectory::class, false);
-        $this->assertEquals('_doc', $index->getTypeName());
-    }
-
     public function testDocumentIndexName()
     {
         $index = $this->getIndex(DummyDocument::class, false);

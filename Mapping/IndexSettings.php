@@ -19,21 +19,13 @@ class IndexSettings
     private $hosts;
     private $defaultIndex = false;
 
-
-
-    /**
-     * @deprecated will be removed in the v7
-     */
-    private $type;
-
     public function __construct(
         string $namespace,
         string $indexName,
         string $alias,
         array $indexMetadata = [],
         array $hosts = [],
-        bool $defaultIndex = false,
-        $type = null
+        bool $defaultIndex = false
     ) {
         $this->namespace = $namespace;
         $this->indexName = $indexName;
@@ -41,7 +33,6 @@ class IndexSettings
         $this->indexMetadata = $indexMetadata;
         $this->hosts = $hosts;
         $this->defaultIndex = $defaultIndex;
-        $this->type = $type;
     }
 
     public function getNamespace()
@@ -107,17 +98,6 @@ class IndexSettings
     public function setDefaultIndex(bool $defaultIndex): self
     {
         $this->defaultIndex = $defaultIndex;
-        return $this;
-    }
-
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    public function setType($type): self
-    {
-        $this->type = $type;
         return $this;
     }
 }

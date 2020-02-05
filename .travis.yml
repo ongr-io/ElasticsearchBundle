@@ -4,15 +4,20 @@ php:
   - 7.1
   - 7.2
   - 7.3
+  - 7.4
 env:
   global:
-    - ES_VERSION=6.2.3 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
+    - ES_VERSION=7.5.2 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}-linux-x86_64.tar.gz
   matrix:
-    - SYMFONY="~3.4"
-    - SYMFONY="^4.1"
+    - SYMFONY="^4.4"
+    - SYMFONY="^5.0"
+jobs:
+  exclude:
+    - php: 7.1
+      env: SYMFONY="^5.0"
 install:
   - wget ${ES_DOWNLOAD_URL}
-  - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
+  - tar -xzf elasticsearch-${ES_VERSION}-linux-x86_64.tar.gz
   - ./elasticsearch-${ES_VERSION}/bin/elasticsearch -d
 before_script:
   - composer require --no-update symfony/framework-bundle:${SYMFONY}
@@ -23,4 +28,4 @@ script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/,var/cache ./
 after_script:
-  - travis_retry php vendor/bin/coveralls
+  - travis_retry bash <(curl -s https://codecov.io/bash)

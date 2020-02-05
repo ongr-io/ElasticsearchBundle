@@ -21,7 +21,7 @@ use ONGR\ElasticsearchDSL\Sort\FieldSort;
 
 class ArrayIteratorTest extends AbstractElasticsearchTestCase
 {
-    protected function getDataArray()
+    protected function getDataArray(): array
     {
         return [
             DummyDocument::class => [

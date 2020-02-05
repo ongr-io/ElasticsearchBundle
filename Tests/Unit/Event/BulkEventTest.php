@@ -21,13 +21,11 @@ class BulkEventTest extends TestCase
         $operation = 'create';
         $header = [
             '_index' => 'index',
-            '_type' => '_doc',
             '_id' => 15,
         ];
 
         $expectedHeader = [
             '_index' => 'index',
-            '_type' => '_doc',
             '_id' => 10,
         ];
 

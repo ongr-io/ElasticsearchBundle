@@ -62,14 +62,6 @@ class IndexService
         return $this->namespace;
     }
 
-    /**
-     * @deprecated will be removed in v7 since there will be no more types in the indexes.
-     */
-    public function getTypeName(): string
-    {
-        return $this->indexSettings->getType();
-    }
-
     public function getIndexSettings()
     {
         return $this->indexSettings;
@@ -90,8 +82,8 @@ class IndexService
 //            $client->setLogger()
 
             $this->eventDispatcher->dispatch(
-                Events::POST_CLIENT_CREATE,
-                new PostCreateClientEvent($this->namespace, $client)
+                new PostCreateClientEvent($this->namespace, $client),
+                Events::POST_CLIENT_CREATE
             );
             $this->client = $client->build();
         }
@@ -189,7 +181,6 @@ class IndexService
     {
         $requestParams = [
             'index' => $this->getIndexName(),
-            'type' => $this->getTypeName(),
             'id' => $id,
         ];
 
@@ -319,7 +310,6 @@ class IndexService
     {
         $body = [
             'index' => $this->getIndexName(),
-            'type' => $this->getTypeName(),
             'body' => [],
         ];
 
@@ -332,7 +322,6 @@ class IndexService
     {
         $params = [
             'index' => $this->getIndexName(),
-            'type' => $this->getTypeName(),
             'id' => $id,
         ];
 
@@ -358,7 +347,6 @@ class IndexService
             [
                 'id' => $id,
                 'index' => $this->getIndexName(),
-                'type' => $this->getTypeName(),
                 'body' => $body,
             ],
             $params
@@ -371,7 +359,6 @@ class IndexService
     {
         $requestParams = [
             'index' => $this->getIndexName(),
-            'type' => $this->getTypeName(),
             'body' => $query,
         ];
 
@@ -397,15 +384,14 @@ class IndexService
     public function bulk(string $operation, array $data = [], $autoCommit = true): array
     {
         $bulkParams = [
-            '_type' => $this->getTypeName(),
             '_id' => $data['_id'] ?? null,
         ];
 
-        unset($data['_index'], $data['_type'], $data['_id']);
+        unset($data['_index'], $data['_id']);
 
         $this->eventDispatcher->dispatch(
-            Events::BULK,
-            new BulkEvent($operation, $bulkParams, $data)
+            new BulkEvent($operation, $bulkParams, $data),
+            Events::BULK
         );
 
         $this->bulkQueries[] = [ $operation => $bulkParams];
@@ -439,13 +425,13 @@ class IndexService
         $this->bulk('index', $documentArray);
     }
 
-    public function commit($commitMode = 'flush', array $params = []): array
+    public function commit($commitMode = 'refresh', array $params = []): array
     {
         $bulkResponse = [];
         if (!empty($this->bulkQueries)) {
             $this->eventDispatcher->dispatch(
-                Events::PRE_COMMIT,
-                new CommitEvent($commitMode, $this->bulkQueries, [])
+                new CommitEvent($commitMode, $this->bulkQueries, []),
+                Events::PRE_COMMIT
             );
 
 //            $this->stopwatch('start', 'bulk');
@@ -483,8 +469,8 @@ class IndexService
             }
 
             $this->eventDispatcher->dispatch(
-                Events::POST_COMMIT,
-                new CommitEvent($commitMode, $this->bulkQueries, $bulkResponse)
+                new CommitEvent($commitMode, $this->bulkQueries, $bulkResponse),
+                Events::POST_COMMIT
             );
 
             $this->bulkQueries = [];

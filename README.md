@@ -1,5 +1,12 @@
 # ONGR Elasticsearch Bundle
 
+[![Build Status](https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master)](https://travis-ci.org/ongr-io/ElasticsearchBundle)
+[![Latest Stable Version](https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable)](https://packagist.org/packages/ongr/elasticsearch-bundle)
+[![codecov](https://codecov.io/gh/ongr-io/ElasticsearchBundle/branch/master/graph/badge.svg)](https://codecov.io/gh/ongr-io/ElasticsearchBundle)
+[![Total Downloads](https://poser.pugx.org/ongr/elasticsearch-bundle/downloads)](https://packagist.org/packages/ongr/elasticsearch-bundle)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master)
+
+
 Elasticsearch Bundle was created in order to serve the need for
 professional [Elasticsearch][1] integration with enterprise level Symfony
 applications. This bundle is:
@@ -21,18 +28,17 @@ Technical goodies:
 If you need any help, [stack overflow][3] is the preferred way to get answers.
 is the preferred and recommended way to ask questions about ONGR bundles and libraries.
 
+If you like this library, help me to develop it by buying a cup of coffee
 
-[![Build Status](https://travis-ci.org/ongr-io/ElasticsearchBundle.svg?branch=master)](https://travis-ci.org/ongr-io/ElasticsearchBundle)
-[![Latest Stable Version](https://poser.pugx.org/ongr/elasticsearch-bundle/v/stable)](https://packagist.org/packages/ongr/elasticsearch-bundle)
-[![Total Downloads](https://poser.pugx.org/ongr/elasticsearch-bundle/downloads)](https://packagist.org/packages/ongr/elasticsearch-bundle)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ongr-io/ElasticsearchBundle/?branch=master)
+<a href="https://www.buymeacoffee.com/zIKBXRc" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 
 ## Version matrix
 
 | Elasticsearch version | ElasticsearchBundle version      |
 | --------------------- | -------------------------------- |
-| >= 6.0                | ~6.x                             |
+| >= 7.0                | ~7.x                             |
+| >= 6.0, < 7.0         | ~6.x                             |
 | >= 5.0, < 5.0         | ~5.x, ~6.x (indexes with 1 type) |
 | >= 2.0, < 5.0         | >=1.0, < 5.0                     |
 | >= 1.0, < 2.0         | >= 0.10, < 1.0                   |
