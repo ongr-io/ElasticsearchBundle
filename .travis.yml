@@ -23,4 +23,4 @@ script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/,var/cache ./
 after_script:
-  - travis_retry php vendor/bin/coveralls
+  - travis_retry bash <(curl -s https://codecov.io/bash)
