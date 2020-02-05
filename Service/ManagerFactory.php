@@ -17,6 +17,7 @@ use ONGR\ElasticsearchBundle\Event\PostCreateManagerEvent;
 use ONGR\ElasticsearchBundle\Event\PreCreateManagerEvent;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
+use PackageVersions\Versions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -123,6 +124,16 @@ class ManagerFactory
                 ]
             ),
         ];
+
+        if (class_exists(Versions::class)) {
+            $elasticSearchVersion = explode('@', Versions::getVersion('ongr/elasticsearch-dsl'))[0];
+            if (0 === strpos($elasticSearchVersion, 'v')) {
+                $elasticSearchVersion = substr($elasticSearchVersion, 1);
+            }
+            if (version_compare($elasticSearchVersion, '7.0.0', '>=')) {
+                $indexSettings['include_type_name'] = true;
+            }
+        }
 
         $this->eventDispatcher &&
             $this->eventDispatcher->dispatch(
