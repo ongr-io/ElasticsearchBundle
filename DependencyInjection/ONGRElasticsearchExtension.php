@@ -55,6 +55,7 @@ class ONGRElasticsearchExtension extends Extension
                 new Reference('es.metadata_collector'),
                 new Reference('es.result_converter'),
                 $config['profiler'] ? new Reference('es.tracer') : null,
+                new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE),
             ]
         );
         $definition->addMethodCall('setEventDispatcher', [new Reference('event_dispatcher')]);
