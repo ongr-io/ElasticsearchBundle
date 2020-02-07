@@ -3,7 +3,9 @@ parameters:
 
 services:
 
-    _defaults: { public: true }
+    _defaults:
+        public: true
+        autowire: true
 
     ONGR\ElasticsearchBundle\Command\:
         resource: '../../Command'
