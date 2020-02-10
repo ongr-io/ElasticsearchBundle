@@ -132,7 +132,7 @@ class Product
     public $id;
 
     /**
-     * @ES\Property(type="text", "analyzer"="eNgramAnalyzer")
+     * @ES\Property(type="text", analyzer="eNgramAnalyzer")
      */
     public $title;
 
