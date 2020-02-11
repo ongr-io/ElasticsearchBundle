@@ -58,7 +58,7 @@ class MappingPass implements CompilerPassInterface
                 throw new \RuntimeException(
                     sprintf(
                         'Document `%s` defined in ongr_elasticsearch.indexes config could not been found',
-                        $class,
+                        $class
                     )
                 );
             }
