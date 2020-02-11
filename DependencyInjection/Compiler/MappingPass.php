@@ -13,11 +13,13 @@ namespace ONGR\ElasticsearchBundle\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\Annotation\Index;
 use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
+use ONGR\ElasticsearchBundle\Exception\DocumentIndexParserException;
 use ONGR\ElasticsearchBundle\Mapping\Converter;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use ONGR\ElasticsearchBundle\Mapping\IndexSettings;
 use ONGR\ElasticsearchBundle\Service\IndexService;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
@@ -36,9 +38,66 @@ class MappingPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $kernelDir = $container->getParameter('kernel.project_dir');
+        $parser = $container->get(DocumentParser::class);
 
+        $indexClasses = [];
+        $indexSettingsArray = [];
         foreach ($container->getParameter(Configuration::ONGR_SOURCE_DIR) as $dir) {
-            $this->handleDirectoryMapping($container, $kernelDir . $dir);
+            foreach ($this->getNamespaces($kernelDir . $dir) as $namespace) {
+                $indexClasses[$namespace] = $namespace;
+            }
+        }
+
+        $overwrittenClasses = [];
+        $indexOverrides = $container->getParameter(Configuration::ONGR_INDEXES_OVERRIDE);
+
+        foreach ($indexOverrides as $name => $indexOverride) {
+            $class = isset($indexOverride['class']) ? $indexOverride['class'] : $name;
+
+            if (!isset($indexClasses[$class])) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'Document `%s` defined in ongr_elasticsearch.indexes config could not been found',
+                        $class
+                    )
+                );
+            }
+
+            $indexSettings = $this->parseIndexSettingsFromClass($parser, $class);
+
+            if ($class !== $name) {
+                $indexSettings->setIndexName('ongr.es.index.'.$name);
+            }
+
+            if (isset($indexOverride['alias'])) {
+                $indexSettings->setAlias($indexOverride['alias']);
+            }
+
+            if (isset($indexOverride['settings'])) {
+                $indexSettings->setIndexMetadata($indexOverride['settings']);
+            }
+
+            if (isset($indexOverride['hosts'])) {
+                $indexSettings->setHosts($indexOverride['hosts']);
+            }
+
+            if (isset($indexOverride['default'])) {
+                $indexSettings->setDefaultIndex($indexOverride['default']);
+            }
+
+            $indexSettingsArray[$name] = $indexSettings;
+            $overwrittenClasses[$class] = $class;
+        }
+
+        foreach (array_diff($indexClasses, $overwrittenClasses) as $indexClass) {
+            try {
+                $indexSettingsArray[$indexClass] = $this->parseIndexSettingsFromClass($parser, $indexClass);
+            } catch (DocumentIndexParserException $e) {
+            }
+        }
+
+        foreach ($indexSettingsArray as $indexSettings) {
+            $this->createIndex($container, $indexSettings);
         }
 
         $container->setParameter(Configuration::ONGR_INDEXES, $this->indexes);
@@ -48,88 +107,85 @@ class MappingPass implements CompilerPassInterface
         );
     }
 
-    /**
-     * @param ContainerBuilder $container
-     * @param string $dir
-     *
-     * @throws \ReflectionException
-     */
-    private function handleDirectoryMapping(ContainerBuilder $container, string $dir): void
+    private function parseIndexSettingsFromClass(DocumentParser $parser, string $className) : IndexSettings
     {
-        /** @var DocumentParser $parser */
-        $parser = $container->get(DocumentParser::class);
-        $indexesOverride = $container->getParameter(Configuration::ONGR_INDEXES_OVERRIDE);
+        $class = new \ReflectionClass($className);
+
+        /** @var Index $document */
+        $document = $parser->getIndexAnnotation($class);
+
+        if ($document === null) {
+            throw new DocumentIndexParserException();
+        }
+
+        $indexSettings = new IndexSettings(
+            $className,
+            $className,
+            $parser->getIndexAliasName($class),
+            $parser->getIndexMetadata($class),
+            $parser->getPropertyMetadata($class),
+            $document->hosts,
+            $parser->isDefaultIndex($class)
+        );
+
+        $indexSettings->setIndexMetadata(['settings' => [
+            'number_of_replicas' => $document->numberOfReplicas,
+            'number_of_shards' => $document->numberOfShards,
+        ]]);
+
+        return $indexSettings;
+    }
+
+    private function createIndex(Container $container, IndexSettings $indexSettings)
+    {
         $converterDefinition = $container->getDefinition(Converter::class);
 
-        foreach ($this->getNamespaces($dir) as $namespace) {
-            $class = new \ReflectionClass($namespace);
+        $indexSettingsDefinition = new Definition(
+            IndexSettings::class,
+            [
+                $indexSettings->getNamespace(),
+                $indexSettings->getAlias(),
+                $indexSettings->getAlias(),
+                $indexSettings->getIndexMetadata(),
+                $indexSettings->getPropertyMetadata(),
+                $indexSettings->getHosts(),
+                $indexSettings->isDefaultIndex(),
+            ]
+        );
 
-            if (isset($indexesOverride[$namespace]['alias']) && $indexesOverride[$namespace]['alias']) {
-                $indexAlias = $indexesOverride[$namespace]['alias'];
-            } else {
-                $indexAlias = $parser->getIndexAliasName($class);
-            }
+        $indexServiceDefinition = new Definition(IndexService::class, [
+            $indexSettings->getNamespace(),
+            $converterDefinition,
+            $container->getDefinition('event_dispatcher'),
+            $indexSettingsDefinition,
+            $container->getParameter(Configuration::ONGR_PROFILER_CONFIG)
+                ? $container->getDefinition('ongr.esb.tracer') : null
+        ]);
 
-            /** @var Index $document */
-            $document = $parser->getIndexAnnotation($class);
-            $indexMetadata = $parser->getIndexMetadata($class);
+        $indexServiceDefinition->setPublic(true);
+        $converterDefinition->addMethodCall(
+            'addClassMetadata',
+            [
+                $indexSettings->getNamespace(),
+                $indexSettings->getPropertyMetadata()
+            ]
+        );
 
-            if (!empty($indexMetadata)) {
-                $indexMetadata['settings'] = array_filter(array_merge_recursive(
-                    $indexMetadata['settings'] ?? [],
-                    [
-                        'number_of_replicas' => $document->numberOfReplicas,
-                        'number_of_shards' => $document->numberOfShards,
-                    ],
-                    $indexesOverride[$namespace]['settings'] ?? []
-                ));
+        $container->setDefinition($indexSettings->getIndexName(), $indexServiceDefinition);
+        $this->indexes[$indexSettings->getAlias()] = $indexSettings->getIndexName();
+        $isCurrentIndexDefault = $indexSettings->isDefaultIndex();
+        if ($this->defaultIndex && $isCurrentIndexDefault) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Only one index can be set as default. We found 2 indexes as default ones `%s` and `%s`',
+                    $this->defaultIndex,
+                    $indexSettings->getAlias()
+                )
+            );
+        }
 
-                $indexSettings = new Definition(
-                    IndexSettings::class,
-                    [
-                        $namespace,
-                        $indexAlias,
-                        $indexAlias,
-                        $indexMetadata,
-                        $indexesOverride[$namespace]['hosts'] ?? $document->hosts,
-                        $indexesOverride[$namespace]['default'] ?? $document->default,
-                    ]
-                );
-
-                $indexServiceDefinition = new Definition(IndexService::class, [
-                    $namespace,
-                    $converterDefinition,
-                    $container->getDefinition('event_dispatcher'),
-                    $indexSettings,
-                    $container->getParameter(Configuration::ONGR_PROFILER_CONFIG)
-                        ? $container->getDefinition('ongr.esb.tracer') : null
-                ]);
-                $indexServiceDefinition->setPublic(true);
-                $converterDefinition->addMethodCall(
-                    'addClassMetadata',
-                    [
-                        $namespace,
-                        $parser->getPropertyMetadata($class)
-                    ]
-                );
-
-                $container->setDefinition($namespace, $indexServiceDefinition);
-                $this->indexes[$indexAlias] = $namespace;
-                $isCurrentIndexDefault = $parser->isDefaultIndex($class);
-                if ($this->defaultIndex && $isCurrentIndexDefault) {
-                    throw new \RuntimeException(
-                        sprintf(
-                            'Only one index can be set as default. We found 2 indexes as default ones `%s` and `%s`',
-                            $this->defaultIndex,
-                            $indexAlias
-                        )
-                    );
-                }
-
-                if ($isCurrentIndexDefault) {
-                    $this->defaultIndex = $indexAlias;
-                }
-            }
+        if ($isCurrentIndexDefault) {
+            $this->defaultIndex = $indexSettings->getAlias();
         }
     }
 

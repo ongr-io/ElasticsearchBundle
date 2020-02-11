@@ -16,6 +16,7 @@ class IndexSettings
     private $indexName;
     private $alias;
     private $indexMetadata;
+    private $propertyMetadata;
     private $hosts;
     private $defaultIndex = false;
 
@@ -24,6 +25,7 @@ class IndexSettings
         string $indexName,
         string $alias,
         array $indexMetadata = [],
+        array $propertyMetadata = [],
         array $hosts = [],
         bool $defaultIndex = false
     ) {
@@ -31,6 +33,7 @@ class IndexSettings
         $this->indexName = $indexName;
         $this->alias = $alias;
         $this->indexMetadata = $indexMetadata;
+        $this->propertyMetadata = $propertyMetadata;
         $this->hosts = $hosts;
         $this->defaultIndex = $defaultIndex;
     }
@@ -40,10 +43,9 @@ class IndexSettings
         return $this->namespace;
     }
 
-    public function setNamespace($namespace): self
+    public function setNamespace($namespace): void
     {
         $this->namespace = $namespace;
-        return $this;
     }
 
     public function getIndexName()
@@ -51,10 +53,9 @@ class IndexSettings
         return $this->indexName;
     }
 
-    public function setIndexName($indexName): self
+    public function setIndexName($indexName): void
     {
         $this->indexName = $indexName;
-        return $this;
     }
 
     public function getAlias()
@@ -62,10 +63,9 @@ class IndexSettings
         return $this->alias;
     }
 
-    public function setAlias($alias): self
+    public function setAlias($alias): void
     {
         $this->alias = $alias;
-        return $this;
     }
 
     public function getIndexMetadata()
@@ -73,10 +73,22 @@ class IndexSettings
         return $this->indexMetadata;
     }
 
-    public function setIndexMetadata($indexMetadata): self
+    public function setIndexMetadata($indexMetadata): void
     {
-        $this->indexMetadata = $indexMetadata;
-        return $this;
+        $this->indexMetadata = array_filter(array_merge_recursive(
+            $this->indexMetadata,
+            $indexMetadata
+        ));
+    }
+
+    public function getPropertyMetadata(): array
+    {
+        return $this->propertyMetadata;
+    }
+
+    public function setPropertyMetadata(array $propertyMetadata): void
+    {
+        $this->propertyMetadata = $propertyMetadata;
     }
 
     public function getHosts()
@@ -84,10 +96,9 @@ class IndexSettings
         return $this->hosts;
     }
 
-    public function setHosts($hosts): self
+    public function setHosts($hosts): void
     {
         $this->hosts = $hosts;
-        return $this;
     }
 
     public function isDefaultIndex(): bool
@@ -95,9 +106,8 @@ class IndexSettings
         return $this->defaultIndex;
     }
 
-    public function setDefaultIndex(bool $defaultIndex): self
+    public function setDefaultIndex(bool $defaultIndex): void
     {
         $this->defaultIndex = $defaultIndex;
-        return $this;
     }
 }
