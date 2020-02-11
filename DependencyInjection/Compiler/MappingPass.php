@@ -92,10 +92,11 @@ class MappingPass implements CompilerPassInterface
         foreach (array_diff($indexClasses, $overwrittenClasses) as $indexClass) {
             try {
                 $indexSettingsArray[$indexClass] = $this->parseIndexSettingsFromClass($parser, $indexClass);
-            } catch (DocumentIndexParserException $e) {}
+            } catch (DocumentIndexParserException $e) {
+            }
         }
 
-        foreach($indexSettingsArray as $indexSettings) {
+        foreach ($indexSettingsArray as $indexSettings) {
             $this->createIndex($container, $indexSettings);
         }
 
@@ -135,7 +136,8 @@ class MappingPass implements CompilerPassInterface
         return $indexSettings;
     }
 
-    private function createIndex(Container $container, IndexSettings $indexSettings) {
+    private function createIndex(Container $container, IndexSettings $indexSettings)
+    {
         $converterDefinition = $container->getDefinition(Converter::class);
 
         $indexSettingsDefinition = new Definition(
