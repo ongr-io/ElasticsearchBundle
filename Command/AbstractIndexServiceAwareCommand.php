@@ -13,10 +13,10 @@ namespace ONGR\ElasticsearchBundle\Command;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\Configuration;
 use ONGR\ElasticsearchBundle\Service\IndexService;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class AbstractIndexServiceAwareCommand extends Command
 {
@@ -24,7 +24,7 @@ abstract class AbstractIndexServiceAwareCommand extends Command
 
     const INDEX_OPTION = 'index';
 
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         parent::__construct();
@@ -58,7 +58,7 @@ abstract class AbstractIndexServiceAwareCommand extends Command
         );
     }
 
-    public function getContainer(): Container
+    public function getContainer(): ContainerInterface
     {
         return $this->container;
     }

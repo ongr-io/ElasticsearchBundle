@@ -41,6 +41,6 @@ class DocumentIterator extends AbstractResultsIterator
         $data = $raw['_source'] ?? $raw['_fields'] ?? null;
         $data['_id'] = $raw['_id'] ?? null;
 
-        return $this->getConverter()->convertArrayToDocument($this->getIndex()->getNamespace(), array_filter($data));
+        return $this->getConverter()->convertArrayToDocument($this->getIndex()->getNamespace(), $data);
     }
 }
