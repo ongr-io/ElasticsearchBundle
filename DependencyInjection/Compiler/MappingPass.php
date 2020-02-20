@@ -75,14 +75,23 @@ class MappingPass implements CompilerPassInterface
             $indexMetadata = $parser->getIndexMetadata($class);
 
             if (!empty($indexMetadata)) {
-                $indexMetadata['settings'] = array_filter(array_merge_recursive(
-                    $indexMetadata['settings'] ?? [],
-                    [
-                        'number_of_replicas' => $document->numberOfReplicas,
-                        'number_of_shards' => $document->numberOfShards,
-                    ],
-                    $indexesOverride[$namespace]['settings'] ?? []
-                ));
+                $indexMetadata['settings'] = array_filter(
+                    array_replace_recursive(
+                        $indexMetadata['settings'] ?? [],
+                        [
+                            'number_of_replicas' => $document->numberOfReplicas,
+                            'number_of_shards' => $document->numberOfShards,
+                        ],
+                        $indexesOverride[$namespace]['settings'] ?? []
+                    ),
+                    function ($value) {
+                        if (0 === $value) {
+                            return true;
+                        }
+
+                        return (bool)$value;
+                    }
+                );
 
                 $indexSettings = new Definition(
                     IndexSettings::class,
