@@ -5,7 +5,7 @@
 For all steps below we assume that there is an `AppBundle` with the `Content` document.
 
 ```php
-// src/Document/Product.php
+// src/Document/Content.php
 
 namespace App\Document;
 
