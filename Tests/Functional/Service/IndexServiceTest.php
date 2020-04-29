@@ -15,6 +15,7 @@ use ONGR\App\Document\DummyDocument;
 use ONGR\App\Entity\DummyDocumentInTheEntityDirectory;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Test\AbstractElasticsearchTestCase;
+use ONGR\ElasticsearchDSL\Query\FullText\SimpleQueryStringQuery;
 
 /**
  * Functional tests for orm manager.
@@ -119,5 +120,38 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $hosts = $index->getIndexSettings()->getHosts();
 
         $this->assertEquals(['localhost:9200'], $hosts);
+    }
+
+    public function testCount()
+    {
+        $index = $this->getIndex(DummyDocument::class);
+
+        $search = $index->createSearch();
+        $search->addQuery(new SimpleQueryStringQuery('foo'));
+
+        $count = $index->count($search);
+
+        $this->assertEquals(2, $count);
+    }
+
+    public function testRawCount()
+    {
+        $index = $this->getIndex(DummyDocument::class);
+
+        $search = $index->createSearch();
+        $search->addQuery(new SimpleQueryStringQuery('bar'));
+
+        $result = $index->count($search, [], true);
+
+        $this->assertEquals(1, $result['count']);
+    }
+
+    public function testIndexDocumentCount()
+    {
+        $index = $this->getIndex(DummyDocument::class);
+
+        $count = $index->getIndexDocumentCount();
+
+        $this->assertEquals(3, $count);
     }
 }
