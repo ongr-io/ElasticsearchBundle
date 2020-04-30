@@ -87,12 +87,22 @@
                                             </span>
                                     </div>
                                     {% if query.body is not empty %}
-                                        <div onclick="return expandQuery(this);" title="Expand query" data-target-id="code-{{ i ~q }}" style="cursor: pointer;">
-                                        <span id="smallcode-{{ i ~ q }}">
-                                            <strong>Body:</strong> <small>{{ query.body|slice(0, 100) }}</small>
-                                        </span>
-                                            <img alt="+" src="{{ asset('bundles/ongrelasticsearch/images/blue_picto_more.gif') }}" style="display: inline;" />
-                                            <img alt="-" src="{{ asset('bundles/ongrelasticsearch/images/blue_picto_less.gif') }}" style="display: none;" />
+                                        <div>
+                                            <span id="smallcode-{{ i ~ q }}">
+                                                <strong>Body:</strong> <small>{{ query.body|slice(0, 100) }}</small>
+                                            </span>
+                                            <div>
+                                                <small>
+                                                    <a
+                                                        onclick="return expandQuery(this);"
+                                                        style="cursor: pointer;"
+                                                        title="Expand query"
+                                                        data-target-id="code-{{ i ~q }}"
+                                                    >
+                                                        Expand [+]
+                                                    </a>
+                                                </small>
+                                            </div>
                                         </div>
                                         <code id="code-{{ i ~ q }}" class="hide">
                                             <pre class="code">{{ query.body }}</pre>
@@ -128,20 +138,17 @@
     {% endif %}
 
     <script type="text/javascript">//<![CDATA[
-        function expandQuery(link) {
-            var sections = link.children,
-                    target = link.getAttribute('data-target-id'),
-                    targetId = target.replace('code-', '');
-            if (document.getElementById('code-' + targetId).className != 'hide') {
-                document.getElementById(target).style.display = 'none';
+        function expandQuery (link) {
+            var target   = link.getAttribute('data-target-id'),
+                targetId = target.replace('code-', '');
+            if (document.getElementById('code-' + targetId).className !== 'hide') {
+                document.getElementById(target).style.display         = 'none';
                 document.getElementById('code-' + targetId).className = 'hide';
-                sections[1].style.display = 'inline';
-                sections[2].style.display = 'none';
+                link.innerText                                        = 'Expand [+]'
             } else {
                 document.getElementById('code-' + targetId).className = 'show';
-                document.getElementById(target).style.display = 'inline';
-                sections[1].style.display = 'none';
-                sections[2].style.display = 'inline';
+                document.getElementById(target).style.display         = 'inline';
+                link.innerText                                        = 'Shrink [-]'
             }
             return false;
         }
@@ -152,7 +159,7 @@
         }
         code pre {
             padding: 5px;
-            background-color: #DCDCDC;
+            background-color: var(--base-1);
         }
 
         ul.queries li h3 {
@@ -169,11 +176,11 @@
         ul h3 i {
             font-style: normal;
             font-weight: 400;
-            color: #313131
+            color: var(--highlight-string);
         }
 
         ul.queries li ul li {
-            background-color: #f6f6f6;
+            background-color: var(--table-background);
             padding: 10px;
             margin: 0px 0px 5px 10px;
         }
