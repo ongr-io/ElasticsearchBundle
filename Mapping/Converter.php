@@ -36,18 +36,32 @@ class Converter
 
     public function convertDocumentToArray($document): array
     {
-        $class = get_class($document);
+        $documentClass = get_class($document);
+        $class = $this->getConvertableClass($documentClass);
 
-        if (!isset($this->propertyMetadata[$class])) {
-            throw new \Exception("Cannot convert object of class `$class` to array.");
+        if ($class !== null) {
+            return $this->normalize($document, null, $class);
         }
 
-        return $this->normalize($document);
+        throw new \Exception("Cannot convert object of class `$documentClass` to array.");
     }
 
-    protected function normalize($document, $metadata = null)
+    public function getConvertableClass($class) {
+        while ($class) {
+            if (isset($this->propertyMetadata[$class])) {
+                return $class;
+            }
+
+            $class = get_parent_class($class);
+        }
+
+        return null;
+    }
+
+    protected function normalize($document, $metadata = null, $class = null)
     {
-        $metadata = $metadata ?? $this->propertyMetadata[get_class($document)];
+        $class = $class ?? get_class($document);
+        $metadata = $metadata ?? $this->propertyMetadata[$class];
         $result = [];
 
         foreach ($metadata as $field => $fieldMeta) {
