@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Mapping;
 
+use Doctrine\Instantiator\Instantiator;
 use ONGR\ElasticsearchBundle\Result\ObjectIterator;
 
 /**
@@ -18,6 +19,11 @@ use ONGR\ElasticsearchBundle\Result\ObjectIterator;
  */
 class Converter
 {
+    /**
+     * @var Instantiator
+     */
+    private $instantiator;
+
     private $propertyMetadata = [];
 
     public function addClassMetadata(string $class, array $metadata): void
@@ -75,8 +81,12 @@ class Converter
 
     protected function denormalize(array $raw, string $namespace)
     {
+        if ($this->instantiator === null) {
+            $this->instantiator = new Instantiator();
+        }
+
         $metadata = $this->propertyMetadata[$namespace];
-        $object = new $namespace();
+        $object = $this->instantiator->instantiate($namespace);
 
         foreach ($raw as $field => $value) {
             $fieldMeta = $metadata[$field];
