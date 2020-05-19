@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
     const ONGR_PROFILER_CONFIG = 'ongr.esb.profiler';
     const ONGR_LOGGER_CONFIG = 'ongr.esb.logger';
     const ONGR_ANALYSIS_CONFIG = 'ongr.esb.analysis';
+    const ONGR_DEFAULT_HOSTS = 'ongr.esb.default_hosts';
     const ONGR_INDEXES = 'ongr.esb.indexes';
     const ONGR_DEFAULT_INDEX = 'ongr.esb.default_index';
     const ONGR_INDEXES_OVERRIDE = 'ongr.esb.indexes_override';
@@ -52,7 +53,7 @@ class Configuration implements ConfigurationInterface
 
             ->booleanNode('profiler')
                 ->info(
-                    'Enables Symfony profiler for the elasticsearch queries debug.'.
+                    'Enables Symfony profiler for the elasticsearch queries debug. '.
                     'Default value is kernel.debug parameter. '
                 )
             ->end()
@@ -61,6 +62,15 @@ class Configuration implements ConfigurationInterface
                 ->defaultTrue()
                 ->info(
                     'Enables executed queries logging. Log file names are the same as index.'
+                )
+            ->end()
+
+            ->arrayNode('hosts')
+                ->prototype('scalar')->end()
+                ->defaultValue(['127.0.0.1:9200'])
+                ->info(
+                    'Allows to define default hosts for indexes, when not explicitly set in the index. ' .
+                    'Default is `127.0.0.1:9200`.'
                 )
             ->end()
 

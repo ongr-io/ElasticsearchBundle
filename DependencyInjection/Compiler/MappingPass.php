@@ -58,6 +58,7 @@ class MappingPass implements CompilerPassInterface
     {
         /** @var DocumentParser $parser */
         $parser = $container->get(DocumentParser::class);
+        $defaultHosts = $container->getParameter(Configuration::ONGR_DEFAULT_HOSTS);
         $indexesOverride = $container->getParameter(Configuration::ONGR_INDEXES_OVERRIDE);
         $converterDefinition = $container->getDefinition(Converter::class);
 
@@ -100,7 +101,7 @@ class MappingPass implements CompilerPassInterface
                         $indexAlias,
                         $indexAlias,
                         $indexMetadata,
-                        $indexesOverride[$namespace]['hosts'] ?? $document->hosts,
+                        $indexesOverride[$namespace]['hosts'] ?? $document->hosts ?? $defaultHosts,
                         $indexesOverride[$namespace]['default'] ?? $document->default,
                         $indexesOverride[$namespace]['type'] ?? $document->typeName
                     ]

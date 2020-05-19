@@ -26,12 +26,7 @@ final class Index extends AbstractAnnotation
      */
     public $alias;
 
-    /**
-     * Index alias name. By default the index name will be created with the timestamp appended to the alias.
-     */
-    public $hosts = [
-        '127.0.0.1:9200'
-    ];
+    public $hosts;
 
     public $numberOfShards = 5;
 
