@@ -102,7 +102,11 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
             $this->documents = $rawData['hits']['hits'];
         }
         if (isset($rawData['hits']['total'])) {
-            $this->count = $rawData['hits']['total'];
+            if (isset($rawData['hits']['total']['value'])) {
+                $this->count = $rawData['hits']['total']['value'];
+            } else {
+                $this->count = $rawData['hits']['total'];
+            }
         }
     }
 
