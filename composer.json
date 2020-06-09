@@ -1,5 +1,5 @@
 {
-    "name": "ongr/elasticsearch-bundle",
+    "name": "handcraftedinthealps/elasticsearch-bundle",
     "description": "Elasticsearch bundle for Symfony.",
     "type": "symfony-bundle",
     "homepage": "http://ongr.io",
@@ -8,6 +8,10 @@
         {
             "name": "ONGR team",
             "homepage": "http://www.ongr.io"
+        },
+        {
+            "name": "Handcrafted in the Alps Team",
+            "homepage": "https://github.com/handcraftedinthealps/ElasticsearchBundle/graphs/contributors"
         }
     ],
     "require": {
@@ -43,6 +47,9 @@
     "autoload": {
         "psr-4": { "ONGR\\ElasticsearchBundle\\": "" },
         "exclude-from-classmap": ["/Tests/", "/Test/"]
+    },
+    "replace": {
+        "ongr/elasticsearch-bundle": "self.version"
     },
     "minimum-stability": "dev",
     "extra": {
