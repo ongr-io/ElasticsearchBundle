@@ -11,9 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
-
-class BulkEvent extends Event
+class BulkEvent extends BaseEvent
 {
     /**
      * @var string

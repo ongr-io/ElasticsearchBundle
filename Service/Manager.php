@@ -21,6 +21,7 @@ use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
@@ -331,7 +332,7 @@ class Manager
      */
     public function persist($document)
     {
-        $this->eventDispatcher->dispatch(
+        $this->dispatch(
             Events::PRE_PERSIST,
             new PrePersistEvent($document)
         );
@@ -400,7 +401,7 @@ class Manager
         if (!empty($this->bulkQueries)) {
             $bulkQueries = array_merge($this->bulkQueries, $this->bulkParams);
             $bulkQueries['index']['_index'] = $this->getIndexName();
-            $this->eventDispatcher->dispatch(
+            $this->dispatch(
                 Events::PRE_COMMIT,
                 new CommitEvent($this->getCommitMode(), $bulkQueries)
             );
@@ -432,7 +433,7 @@ class Manager
                     break;
             }
 
-            $this->eventDispatcher->dispatch(
+            $this->dispatch(
                 Events::POST_COMMIT,
                 new CommitEvent($this->getCommitMode(), $bulkResponse)
             );
@@ -462,7 +463,7 @@ class Manager
             throw new \InvalidArgumentException('Wrong bulk operation selected');
         }
 
-        $this->eventDispatcher->dispatch(
+        $this->dispatch(
             Events::BULK,
             new BulkEvent($operation, $type, $query)
         );
@@ -728,6 +729,15 @@ class Manager
     {
         if (isset($this->stopwatch)) {
             $this->stopwatch->$action('ongr_es: '.$name, 'ongr_es');
+        }
+    }
+
+    private function dispatch($eventName, $event)
+    {
+        if (class_exists(LegacyEventDispatcherProxy::class)) {
+            return $this->eventDispatcher->dispatch($event, $eventName);
+        } else {
+            return $this->eventDispatcher->dispatch($eventName, $event);
         }
     }
 }

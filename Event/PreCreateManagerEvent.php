@@ -12,9 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Event;
 
 use Elasticsearch\ClientBuilder;
-use Symfony\Component\EventDispatcher\Event;
 
-class PreCreateManagerEvent extends Event
+class PreCreateManagerEvent extends BaseEvent
 {
     /**
      * @var ClientBuilder

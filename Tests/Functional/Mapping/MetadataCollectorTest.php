@@ -14,9 +14,12 @@ namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
 use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Tests\WebTestCase;
+use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 
 class MetadataCollectorTest extends WebTestCase
 {
+    use SetUpTearDownTrait;
+
     /**
      * @var MetadataCollector
      */
@@ -25,7 +28,7 @@ class MetadataCollectorTest extends WebTestCase
     /**
      * Initialize MetadataCollector.
      */
-    public function setUp()
+    public function doSetUp()
     {
         $container = $this->createClient()->getContainer();
         $this->metadataCollector = $container->get('es.metadata_collector');

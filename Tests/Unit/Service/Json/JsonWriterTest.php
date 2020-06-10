@@ -14,13 +14,16 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service\Json;
 use ONGR\ElasticsearchBundle\Service\Json\JsonWriter;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 
 class JsonWriterTest extends TestCase
 {
+    use SetUpTearDownTrait;
+
     /**
      * {@inheritdoc}
      */
-    public static function setUpBeforeClass()
+    public static function doSetUpBeforeClass()
     {
         parent::setUpBeforeClass();
 

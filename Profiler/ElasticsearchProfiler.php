@@ -52,7 +52,7 @@ class ElasticsearchProfiler extends DataCollector
     /**
      * {@inheritdoc}
      */
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, $exception = null)
     {
         /** @var Logger $logger */
         foreach ($this->loggers as $logger) {

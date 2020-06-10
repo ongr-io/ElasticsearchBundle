@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Test;
 
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchBundle\Tests\WebTestCase;
+use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,6 +21,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class AbstractElasticsearchTestCase extends WebTestCase
 {
+    use SetUpTearDownTrait;
+
     /**
      * @var Manager[] Holds used managers.
      */
@@ -33,7 +36,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function doSetUp()
     {
         self::$container = null;
         foreach ($this->getDataArray() as $manager => $data) {
@@ -149,7 +152,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function doTearDown()
     {
         parent::tearDown();
 

@@ -12,9 +12,8 @@
 namespace ONGR\ElasticsearchBundle\Event;
 
 use ONGR\ElasticsearchBundle\Service\Manager;
-use Symfony\Component\EventDispatcher\Event;
 
-class PostCreateManagerEvent extends Event
+class PostCreateManagerEvent extends BaseEvent
 {
     /**
      * @var Manager

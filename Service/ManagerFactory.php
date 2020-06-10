@@ -20,6 +20,7 @@ use ONGR\ElasticsearchBundle\Result\Converter;
 use PackageVersions\Versions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
@@ -139,7 +140,7 @@ class ManagerFactory
         }
 
         $this->eventDispatcher &&
-            $this->eventDispatcher->dispatch(
+            $this->dispatch(
                 Events::PRE_MANAGER_CREATE,
                 $preCreateEvent = new PreCreateManagerEvent($client, $indexSettings)
             );
@@ -163,8 +164,17 @@ class ManagerFactory
         $manager->setBulkCommitSize($managerConfig['bulk_size']);
 
         $this->eventDispatcher &&
-            $this->eventDispatcher->dispatch(Events::POST_MANAGER_CREATE, new PostCreateManagerEvent($manager));
+            $this->dispatch(Events::POST_MANAGER_CREATE, new PostCreateManagerEvent($manager));
 
         return $manager;
+    }
+
+    private function dispatch($eventName, $event)
+    {
+        if (class_exists(LegacyEventDispatcherProxy::class)) {
+            return $this->eventDispatcher->dispatch($event, $eventName);
+        } else {
+            return $this->eventDispatcher->dispatch($eventName, $event);
+        }
     }
 }

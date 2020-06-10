@@ -16,9 +16,12 @@ use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
 use ONGR\ElasticsearchBundle\Mapping\DocumentParser;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 
 class MetadataCollectorTest extends TestCase
 {
+    use SetUpTearDownTrait;
+
     /**
      * @var MetadataCollector
      */
@@ -42,7 +45,7 @@ class MetadataCollectorTest extends TestCase
     /**
      * Initialize MetadataCollector.
      */
-    public function setUp()
+    public function doSetUp()
     {
         $this->docFinder = $this->getMockBuilder('ONGR\ElasticsearchBundle\Mapping\DocumentFinder')
             ->disableOriginalConstructor()

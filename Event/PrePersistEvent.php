@@ -11,9 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
-
-class PrePersistEvent extends Event
+class PrePersistEvent extends BaseEvent
 {
     /**
      * @var object

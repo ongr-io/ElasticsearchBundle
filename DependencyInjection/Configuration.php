@@ -25,8 +25,13 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('ongr_elasticsearch');
+        $treeBuilder = new TreeBuilder('ongr_elasticsearch');
+
+        if (method_exists($treeBuilder, 'getRootNode')) {
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            $rootNode = $treeBuilder->root('fos_rest');
+        }
 
         $rootNode
             ->children()
@@ -56,8 +61,13 @@ class Configuration implements ConfigurationInterface
      */
     private function getAnalysisNode()
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('analysis');
+        $treeBuilder = new TreeBuilder('analysis');
+
+        if (method_exists($treeBuilder, 'getRootNode')) {
+            $node = $treeBuilder->getRootNode();
+        } else {
+            $node = $treeBuilder->root('analysis');
+        }
 
         $node
             ->info('Defines analyzers, normalizers, tokenizers and filters')
@@ -95,8 +105,13 @@ class Configuration implements ConfigurationInterface
      */
     private function getManagersNode()
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('managers');
+        $treeBuilder = new TreeBuilder('managers');
+
+        if (method_exists($treeBuilder, 'getRootNode')) {
+            $node = $treeBuilder->getRootNode();
+        } else {
+            $node = $treeBuilder->root('managers');
+        }
 
         $node
             ->isRequired()
