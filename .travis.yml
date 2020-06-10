@@ -8,48 +8,72 @@ matrix:
       php: 5.6
       env:
         - SYMFONY=^3.4
+        - ES_VERSION=^5.0
+        - ES_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.14.zip"
+        - ENABLE_SWAP=true
 
     - language: php
       php: 7.0
       env:
         - OCRAMIUS_PACKAGE_VERSION=true
         - SYMFONY=^3.4
+        - ES_VERSION=^5.0
+        - ES_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.14.zip"
 
     - language: php
       php: 7.2
       env:
         - OCRAMIUS_PACKAGE_VERSION=true
         - SYMFONY=^3.4
+        - ES_VERSION=^5.0
+        - ES_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.14.zip"
 
     - language: php
       php: 7.3
       env:
         - OCRAMIUS_PACKAGE_VERSION=true
         - SYMFONY=^4.4
+        - ES_VERSION=^5.0
+        - ES_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.14.zip"
 
     - language: php
       php: 7.4
       env:
         - OCRAMIUS_PACKAGE_VERSION=true
         - SYMFONY=^4.4
+        - ES_VERSION=^5.0
+        - ES_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.14.zip"
 
-env:
-  global:
-    - ES_VERSION=5.6.8 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
+before_install:
+  - | # enable swap
+    if [[ $ENABLE_SWAP == 'true' ]]; then
+        sudo fallocate -l 4G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        sudo sysctl vm.swappiness=10
+    fi
+
 install:
+  # install elasticsearch
   - wget ${ES_DOWNLOAD_URL}
-  - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
-  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch -d
+  - unzip elasticsearch-*.zip
+  - cd ./elasticsearch-*
+  - bin/elasticsearch -d
+  - cd ..
+
 before_script:
   - echo 'memory_limit=-1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - composer require --no-update symfony/symfony:${SYMFONY}
+  - composer require --no-update elasticsearch/elasticsearch:${ES_VERSION}
   - if [[ $OCRAMIUS_PACKAGE_VERSION = "true" ]]; then composer require ocramius/package-versions:^1.0 --no-update ;fi
   - if [[ $TRAVIS_SECURE_ENV_VARS = "true" ]]; then composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH; fi
   - composer install --no-interaction --prefer-dist
 
 script:
   - wget -q --waitretry=1 --retry-connrefused -T 10 -O - http://127.0.0.1:9200
-  - vendor/bin/phpunit --coverage-clover=coverage.clover
+  - vendor/bin/simple-phpunit --coverage-clover=coverage.clover
   - vendor/bin/phpcs -p --standard=PSR2 --ignore=vendor/,Tests/app/,var/ ./
+
 after_script:
   - travis_retry php vendor/bin/coveralls

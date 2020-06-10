@@ -12,8 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Event;
 
 use ONGR\ElasticsearchBundle\Event\CommitEvent;
+use PHPUnit\Framework\TestCase;
 
-class CommitEventTest extends \PHPUnit_Framework_TestCase
+class CommitEventTest extends TestCase
 {
     public function testGetters()
     {

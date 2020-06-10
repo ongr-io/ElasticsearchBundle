@@ -15,8 +15,9 @@ use ONGR\ElasticsearchBundle\Mapping\Caser;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Result\Converter;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use PHPUnit\Framework\TestCase;
 
-class ConverterTest extends \PHPUnit_Framework_TestCase
+class ConverterTest extends TestCase
 {
     /**
      * @var MetadataCollector

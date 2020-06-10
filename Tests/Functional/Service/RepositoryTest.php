@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional;
 
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Result\DocumentIterator;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
 use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
@@ -329,11 +330,11 @@ class RepositoryTest extends AbstractElasticsearchTestCase
 
     /**
      * Tests remove method 404 exception.
-     *
-     * @expectedException \Elasticsearch\Common\Exceptions\Missing404Exception
      */
     public function testRemoveException()
     {
+        $this->expectException(Missing404Exception::class);
+
         $manager = $this->getManager();
 
         $repo = $manager->getRepository('TestBundle:Product');

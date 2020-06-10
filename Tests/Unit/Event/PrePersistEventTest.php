@@ -13,8 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Event;
 
 use ONGR\ElasticsearchBundle\Event\PrePersistEvent;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
+use PHPUnit\Framework\TestCase;
 
-class PrePersistEventTest extends \PHPUnit_Framework_TestCase
+class PrePersistEventTest extends TestCase
 {
     public function testGetters()
     {

@@ -11,11 +11,11 @@ class GenerateDocumentCommandTest extends WebTestCase
 {
     /**
      * Tests if exception is thrown when no interaction is set
-     *
-     * @expectedException \InvalidArgumentException
      */
     public function testExecuteException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $app = new Application();
         $app->add($this->getCommand());
 

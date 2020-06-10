@@ -12,8 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Profiler;
 
 use ONGR\ElasticsearchBundle\Profiler\ElasticsearchProfiler;
+use PHPUnit\Framework\TestCase;
 
-class ElasticsearchProfilerTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchProfilerTest extends TestCase
 {
     /**
      * Tests if correct name is being returned.

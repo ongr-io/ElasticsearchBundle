@@ -11,6 +11,8 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Service;
 
+use ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException;
+use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\SubcategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\CategoryObject;
 use ONGR\ElasticsearchBundle\Tests\app\fixture\TestBundle\Document\Product;
@@ -180,7 +182,7 @@ class ManagerTest extends AbstractElasticsearchTestCase
         $exceptionMessage,
         $exception = 'InvalidArgumentException'
     ) {
-        $this->setExpectedException($exception, $exceptionMessage);
+        $this->expectException($exception, $exceptionMessage);
 
         /** @var Manager $manager */
         $manager = $this->getManager();
@@ -260,12 +262,12 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
     /**
      * Test for getRepository() in case invalid class name given.
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage must be a string
      */
     public function testGetRepositoryException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('must be a string');
+
         $manager = $this->getManager();
         $manager->getRepository(12345);
     }
@@ -302,12 +304,14 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
     /**
      * Test for remove() in case document has no annotation for ID field.
-     *
-     * @expectedException \ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException
-     * @expectedExceptionMessage "stdClass" class cannot be parsed as document because @Document annotation is missing.
      */
     public function testRemoveException()
     {
+        $this->expectException(MissingDocumentAnnotationException::class);
+        $this->expectExceptionMessage(
+            '"stdClass" class cannot be parsed as document because @Document annotation is missing.'
+        );
+
         $this->getManager()->remove(new \stdClass());
     }
 
@@ -333,11 +337,11 @@ class ManagerTest extends AbstractElasticsearchTestCase
 
     /**
      * Tests the exception thrown by the commit method
-     *
-     * @expectedException \ONGR\ElasticsearchBundle\Exception\BulkWithErrorsException
      */
     public function testCommitException()
     {
+        $this->expectException(BulkWithErrorsException::class);
+
         $manager = $this->getManager();
         $product = new Product();
         $nestedProduct = new Product();

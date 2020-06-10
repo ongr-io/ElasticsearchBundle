@@ -29,12 +29,12 @@ class DocumentFinderTest extends WebTestCase
 
     /**
      * Tests if exception is thrown for unregistered bundle.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Bundle 'NotExistingBundle' does not exist.
      */
     public function testGetBundleClassException()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Bundle \'NotExistingBundle\' does not exist.');
+
         $finder = new DocumentFinder($this->getContainer()->getParameter('kernel.bundles'));
         $finder->getBundleClass('NotExistingBundle');
     }

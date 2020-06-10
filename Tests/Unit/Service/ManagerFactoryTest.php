@@ -13,8 +13,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 
 use ONGR\ElasticsearchBundle\Service\ManagerFactory;
 use ONGR\ElasticsearchBundle\Service\Manager;
+use PHPUnit\Framework\TestCase;
 
-class ManagerFactoryTest extends \PHPUnit_Framework_TestCase
+class ManagerFactoryTest extends TestCase
 {
     /**
      * Tests createManager with logger

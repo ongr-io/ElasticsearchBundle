@@ -12,6 +12,7 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit;
 
 use ONGR\ElasticsearchBundle\ONGRElasticsearchBundle;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Finder\Finder;
@@ -20,7 +21,7 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * Unit test for ONGR\ElasticsearchBundle.
  */
-class ElasticsearchBundleTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchBundleTest extends TestCase
 {
     /**
      * @var array List of passes, which should not be added to compiler.

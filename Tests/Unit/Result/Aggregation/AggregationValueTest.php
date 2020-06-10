@@ -12,8 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result\Aggregation;
 
 use ONGR\ElasticsearchBundle\Result\Aggregation\AggregationValue;
+use PHPUnit\Framework\TestCase;
 
-class AggregationValueTest extends \PHPUnit_Framework_TestCase
+class AggregationValueTest extends TestCase
 {
     /**
      * Returns sample aggregations response.
@@ -160,24 +161,24 @@ class AggregationValueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test if exception is thrown when trying to set value using array syntax.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage can not be changed on runtime
      */
     public function testOffsetSetException()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('can not be changed on runtime');
+
         $agg = new AggregationValue([]);
         $agg['foo'] = 'bar';
     }
 
     /**
      * Test if exception is thrown when trying to unset value using array syntax.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage can not be changed on runtime
      */
     public function testOffsetUnsetException()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('can not be changed on runtime');
+
         $agg = new AggregationValue([]);
         unset($agg['foo']);
     }
@@ -200,12 +201,12 @@ class AggregationValueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test for getIterator() in case no buckets set.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Can not iterate over aggregation without buckets
      */
     public function testGetIteratorException()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Can not iterate over aggregation without buckets');
+
         $agg = new AggregationValue([]);
         foreach ($agg as $bucket) {
             // Just try to iterate

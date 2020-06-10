@@ -4,9 +4,10 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Generator;
 
 use ONGR\ElasticsearchBundle\Generator\DocumentGenerator;
 use ONGR\ElasticsearchBundle\Service\GenerateService;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
-class GenerateServiceTest extends \PHPUnit_Framework_TestCase
+class GenerateServiceTest extends TestCase
 {
     /**
      * @var string

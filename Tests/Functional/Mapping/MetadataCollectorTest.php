@@ -11,6 +11,7 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Functional\Mapping;
 
+use ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException;
 use ONGR\ElasticsearchBundle\Mapping\MetadataCollector;
 use ONGR\ElasticsearchBundle\Tests\WebTestCase;
 
@@ -32,22 +33,22 @@ class MetadataCollectorTest extends WebTestCase
 
     /**
      * Test if function throws exception if ES type names are not unique.
-     *
-     * @expectedException \LogicException
      */
     public function testGetBundleMappingWithTwoSameESTypes()
     {
+        $this->expectException(\LogicException::class);
+
         $this->metadataCollector->getMappings(['TestBundle', 'TestBundle']);
     }
 
     /**
      * Test mapping getter when there are no bundles loaded from parser.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Bundle 'acme' does not exist.
      */
     public function testGetBundleMappingWithNoBundlesLoaded()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Bundle \'acme\' does not exist.');
+
         $this->metadataCollector->getBundleMapping('acme');
     }
 
@@ -70,12 +71,12 @@ class MetadataCollectorTest extends WebTestCase
 
     /**
      * Test for getDocumentType() in case invalid class given.
-     *
-     * @expectedException \ONGR\ElasticsearchBundle\Exception\MissingDocumentAnnotationException
-     * @expectedExceptionMessage cannot be parsed as document because @Document annotation is missing
      */
     public function testGetDocumentTypeException()
     {
+        $this->expectException(MissingDocumentAnnotationException::class);
+        $this->expectExceptionMessage('cannot be parsed as document because @Document annotation is missing');
+
         $this->metadataCollector->getDocumentType('\StdClass');
     }
 }

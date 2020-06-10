@@ -12,12 +12,13 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection\Compiler;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\Compiler\MappingPass;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Alias;
 
 /**
  * Unit tests for MappingPass.
  */
-class MappingPassTest extends \PHPUnit_Framework_TestCase
+class MappingPassTest extends TestCase
 {
 
     public function getConfigurationData()

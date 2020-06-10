@@ -14,8 +14,9 @@ namespace ONGR\ElasticsearchBundle\Tests\Unit\Service;
 use ONGR\ElasticsearchBundle\Service\Manager;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Search;
+use PHPUnit\Framework\TestCase;
 
-class ManagerTest extends \PHPUnit_Framework_TestCase
+class ManagerTest extends TestCase
 {
     /**
      * Data provider for testBulk()
@@ -237,7 +238,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcher')
             ->disableOriginalConstructor()
             ->getMock();
-        
+
         $manager = new Manager('test', [], $esClient, ['index' => 'test'], $metadataCollector, $converter);
         $manager->setBulkParams(['refresh' => true]);
         $manager->setCommitMode('flush');
@@ -282,12 +283,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $manager->clearScroll('foo');
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The commit method must be either refresh, flush or none.
-     */
     public function testSetCommitModeException()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('The commit method must be either refresh, flush or none.');
+
         /** @var Manager $manager */
         $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->disableOriginalConstructor()
@@ -397,11 +397,11 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Tests bulk error when invalid operation is provided
-     *
-     * @expectedException \InvalidArgumentException
      */
     public function testBulkException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $manager = $this->getPreparedConfiguration()[0];
         $manager->bulk('not_an_operation', 'product', []);
     }

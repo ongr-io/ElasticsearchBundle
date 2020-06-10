@@ -12,8 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Annotation;
 
 use ONGR\ElasticsearchBundle\Annotation\Property;
+use PHPUnit\Framework\TestCase;
 
-class PropertyTest extends \PHPUnit_Framework_TestCase
+class PropertyTest extends TestCase
 {
     /**
      * Tests if values are filtered correctly.

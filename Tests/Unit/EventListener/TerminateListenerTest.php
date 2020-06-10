@@ -12,11 +12,12 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\EventListener;
 
 use ONGR\ElasticsearchBundle\EventListener\TerminateListener;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests TerminateListener class
  */
-class TerminateListenerTest extends \PHPUnit_Framework_TestCase
+class TerminateListenerTest extends TestCase
 {
     /**
      * Tests kernel terminate event
@@ -33,6 +34,11 @@ class TerminateListenerTest extends \PHPUnit_Framework_TestCase
         $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\Container')
             ->disableOriginalConstructor()
             ->getMock();
+
+        $container->expects($this->any())
+            ->method('initialized')
+            ->with('es.manager.test_available')
+            ->willReturn(true);
 
         $container->expects($this->any())
             ->method('get')

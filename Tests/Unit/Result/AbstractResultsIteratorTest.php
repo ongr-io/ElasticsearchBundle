@@ -11,7 +11,9 @@
 
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Result;
 
-class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AbstractResultsIteratorTest extends TestCase
 {
     /**
      * Test if scroll is cleared on destructor.
@@ -94,12 +96,12 @@ class AbstractResultsIteratorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test for getDocumentScore() in case called when current iterator value is not valid.
-     *
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Document score is available only while iterating over results
      */
     public function testGetScoreException()
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Document score is available only while iterating over results');
+
         $manager = $this->getMockBuilder('ONGR\ElasticsearchBundle\Service\Manager')
             ->disableOriginalConstructor()
             ->getMock();

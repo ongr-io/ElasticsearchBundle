@@ -129,7 +129,7 @@ class ManagerFactory
         ];
 
         if (class_exists(Versions::class)) {
-            $elasticSearchVersion = explode('@', Versions::getVersion('ongr/elasticsearch-dsl'))[0];
+            $elasticSearchVersion = explode('@', Versions::getVersion('elasticsearch/elasticsearch'))[0];
             if (0 === strpos($elasticSearchVersion, 'v')) {
                 $elasticSearchVersion = substr($elasticSearchVersion, 1);
             }

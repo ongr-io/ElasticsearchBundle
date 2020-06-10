@@ -12,8 +12,9 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\Mapping;
 
 use ONGR\ElasticsearchBundle\Mapping\DocumentFinder;
+use PHPUnit\Framework\TestCase;
 
-class DocumentFinderTest extends \PHPUnit_Framework_TestCase
+class DocumentFinderTest extends TestCase
 {
     /**
      * Data provider for testGetNamespace().

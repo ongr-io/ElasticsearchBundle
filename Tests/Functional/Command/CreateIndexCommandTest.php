@@ -168,7 +168,7 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
             ]
         );
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             json_encode(
                 $manager->getIndexMappings(),
                 JSON_PRETTY_PRINT

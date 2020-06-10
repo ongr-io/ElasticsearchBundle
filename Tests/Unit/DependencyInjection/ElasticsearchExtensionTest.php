@@ -12,12 +12,13 @@
 namespace ONGR\ElasticsearchBundle\Tests\Unit\DependencyInjection;
 
 use ONGR\ElasticsearchBundle\DependencyInjection\ONGRElasticsearchExtension;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Unit tests for ElasticsearchExtension.
  */
-class ElasticsearchExtensionTest extends \PHPUnit_Framework_TestCase
+class ElasticsearchExtensionTest extends TestCase
 {
     /**
      * @return array

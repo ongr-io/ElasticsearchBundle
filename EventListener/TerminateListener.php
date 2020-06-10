@@ -49,7 +49,7 @@ class TerminateListener
                     $managerName = sprintf('es.manager.%s', $key);
 
                     // Ignore managers who have not been initialized.
-                    if(!$this->container->initialized($managerName)) {
+                    if (!$this->container->initialized($managerName)) {
                         continue;
                     }
 

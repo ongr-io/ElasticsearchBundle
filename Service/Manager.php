@@ -283,16 +283,16 @@ class Manager
     {
         $params = [];
         $params['index'] = $this->getIndexName();
-        
+
         $resolvedTypes = [];
         foreach ($types as $type) {
             $resolvedTypes[] = $this->resolveTypeName($type);
         }
-        
+
         if (!empty($resolvedTypes)) {
             $params['type'] = implode(',', $resolvedTypes);
         }
-        
+
         $params['body'] = $query;
 
         if (!empty($queryStringParams)) {
@@ -409,7 +409,7 @@ class Manager
             $bulkResponse = $this->client->bulk($bulkQueries);
             $this->stopwatch('stop', 'bulk');
 
-            if ($bulkResponse['errors']) {
+            if (isset($bulkResponse['errors']) && $bulkResponse['errors']) {
                 throw new BulkWithErrorsException(
                     json_encode($bulkResponse),
                     0,
