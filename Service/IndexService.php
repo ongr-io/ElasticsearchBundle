@@ -522,6 +522,9 @@ class IndexService
         $this->client = null;
     }
 
+    /**
+     * @deprecated use `clearCache()` instead
+     */
     public function clearElasticIndexCache(): array
     {
         return $this->getClient()->indices()->clearCache(['index' => $this->getIndexName()]);
