@@ -54,7 +54,6 @@ class IndexService
         $this->eventDispatcher = $eventDispatcher;
         $this->indexSettings = $indexSettings;
         $this->tracer = $tracer;
-        $this->getClient();
     }
 
     public function getNamespace(): string
@@ -449,7 +448,7 @@ class IndexService
             );
 
 //            $this->stopwatch('start', 'bulk');
-            $bulkResponse = $this->client->bulk(
+            $bulkResponse = $this->getClient()->bulk(
                 array_merge(
                     [
                     'index' => $this->getIndexName(),
@@ -497,12 +496,12 @@ class IndexService
 
     public function flush(array $params = []): array
     {
-        return $this->client->indices()->flush(array_merge(['index' => $this->getIndexName()], $params));
+        return $this->getClient()->indices()->flush(array_merge(['index' => $this->getIndexName()], $params));
     }
 
     public function refresh(array $params = []): array
     {
-        return $this->client->indices()->refresh(array_merge(['index' => $this->getIndexName()], $params));
+        return $this->getClient()->indices()->refresh(array_merge(['index' => $this->getIndexName()], $params));
     }
 
     public function scroll($scrollId, $scrollDuration = '5m'): array
