@@ -26,7 +26,7 @@ class CollectionHandler extends AbstractProcessingHandler
     /**
      * {@inheritdoc}
      */
-    protected function write(array $record)
+    protected function write(array $record) :void
     {
         $this->records[] = $record;
     }
