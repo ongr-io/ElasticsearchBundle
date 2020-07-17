@@ -118,14 +118,6 @@
 {% block panel %}
     <h2>Queries</h2>
     {{ block('queries') }}
-    <h2>Managers</h2>
-    {% if collector.managers %}
-        {% include '@WebProfiler/Profiler/table.html.twig' with {data: collector.managers} only %}
-    {% else %}
-        <p>
-            <em>No managers.</em>
-        </p>
-    {% endif %}
 
     <script type="text/javascript">//<![CDATA[
         function expandQuery(link) {
