@@ -165,7 +165,7 @@ class MappingPass implements CompilerPassInterface
         $lines = preg_grep('/^namespace /', file($filename));
         $namespaceLine = array_shift($lines);
         $match = array();
-        preg_match('/^namespace (.*);$/', $namespaceLine, $match);
+        preg_match('/^namespace (.*);$/', trim($namespaceLine), $match);
         $fullNamespace = array_pop($match);
 
         return $fullNamespace;
