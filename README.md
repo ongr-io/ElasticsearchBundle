@@ -91,9 +91,9 @@ return [
 Add minimal configuration for Elasticsearch bundle.
 
 ```yaml
-
 # config/packages/ongr_elasticsearch.yaml
 ongr_elasticsearch:
+    source_directories: [/src/Document]
     analysis:
         filter:
             edge_ngram_filter: #-> your custom filter name to use in the analyzer below
@@ -110,7 +110,6 @@ ongr_elasticsearch:
     indexes:
         App\Document\Product:
             hosts: [elasticsearch:9200] # optional, the default is 127.0.0.1:9200
-
 ```
 
 > This is the very basic example only, for more information, please take a look at the [configuration][9] chapter.
