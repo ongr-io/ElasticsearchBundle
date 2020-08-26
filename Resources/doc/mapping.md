@@ -103,7 +103,7 @@ You can find more information about analysis at [the elasticsearch docs](https:/
 Lets start with a document class example.
 
 ```php
-// src/Document/Content.php
+// src/Document/MyIndex.php
 
 namespace App\Document;
 
@@ -161,7 +161,7 @@ Here's the list of all available parameters:
 
 
 ```php
-// src/Document/Product.php
+// src/Document/MyIndex.php
 namespace App\Document;
 
 use ONGR\ElasticsearchBundle\Annotation as ES;
@@ -190,7 +190,7 @@ To define a nested or object type you have to use `@ES\Embedded` annotation and 
 class for this annotation. Here's an example, lets assume we have a `Product` type with `CategoryObject` as object field.
 
 ```php
-// src/AppBundle/Document/Product.php
+// src/Document/Product.php
 
 namespace App\Document;
 
