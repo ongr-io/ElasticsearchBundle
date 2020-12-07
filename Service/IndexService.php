@@ -13,6 +13,7 @@ namespace ONGR\ElasticsearchBundle\Service;
 
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use ONGR\ElasticsearchBundle\Event\BulkEvent;
 use ONGR\ElasticsearchBundle\Event\CommitEvent;
 use ONGR\ElasticsearchBundle\Event\Events;
@@ -195,7 +196,11 @@ class IndexService
 
         $requestParams = array_merge($requestParams, $params);
 
-        $result = $this->getClient()->get($requestParams);
+        try {
+            $result = $this->getClient()->get($requestParams);
+        } catch (Missing404Exception $e) {
+            return null;
+        }
 
         if (!$result['found']) {
             return null;
