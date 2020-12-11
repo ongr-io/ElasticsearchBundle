@@ -25,6 +25,8 @@ ongr_elasticsearch:
     logger: false 
     profiler: true
     cache: true
+    hosts:
+        - 'elasticsearch:9200'
     indexes: # overrides any index related config from anotations
         App\Document\Page:
             default: true
