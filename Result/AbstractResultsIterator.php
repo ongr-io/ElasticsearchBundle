@@ -241,7 +241,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
      * Returns score of current hit.
      */
-    public function getDocumentScore(): int
+    public function getDocumentScore(): ?int
     {
         if (!$this->valid()) {
             throw new \LogicException('Document score is available only while iterating over results.');
