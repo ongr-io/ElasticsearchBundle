@@ -385,9 +385,10 @@ class IndexService
     {
         $bulkParams = [
             '_id' => $data['_id'] ?? null,
+            'routing' => $data['_routing'] ?? null,
         ];
 
-        unset($data['_index'], $data['_id']);
+        unset($data['_index'], $data['_id'], $data['_routing']);
 
         $this->eventDispatcher->dispatch(
             new BulkEvent($operation, $bulkParams, $data),
