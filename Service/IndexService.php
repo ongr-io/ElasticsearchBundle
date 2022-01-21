@@ -318,6 +318,21 @@ class IndexService
         return $results['count'];
     }
 
+    public function count(Search $search, array $params = [])
+    {
+        $body = array_merge(
+            [
+                'index' => $this->getIndexName(),
+                'body' => $search->toArray(),
+            ],
+            $params
+        );
+
+        $results = $this->getClient()->count($body);
+
+        return $results['count'];
+    }
+
     public function remove($id, $routing = null)
     {
         $params = [
