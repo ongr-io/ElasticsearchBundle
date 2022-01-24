@@ -21,12 +21,12 @@ class CollectionHandler extends AbstractProcessingHandler
     /**
      * @var array
      */
-    private $records = [];
+    private array $records = [];
 
     /**
      * {@inheritdoc}
      */
-    protected function write(array $record)
+    protected function write(array $record): void
     {
         $this->records[] = $record;
     }
@@ -36,7 +36,7 @@ class CollectionHandler extends AbstractProcessingHandler
      *
      * @return array
      */
-    public function getRecords()
+    public function getRecords(): array
     {
         return $this->records;
     }
@@ -44,7 +44,7 @@ class CollectionHandler extends AbstractProcessingHandler
     /**
      * Clears recorded data.
      */
-    public function clearRecords()
+    public function clearRecords(): void
     {
         $this->records = [];
     }
