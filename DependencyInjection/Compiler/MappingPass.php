@@ -173,7 +173,7 @@ class MappingPass implements CompilerPassInterface
 
     private function getClassname($filename)
     {
-        $directoriesAndFilename = explode('/', $filename);
+        $directoriesAndFilename = explode(DIRECTORY_SEPARATOR, $filename);
         $filename = array_pop($directoriesAndFilename);
         $nameAndExtension = explode('.', $filename);
         $className = array_shift($nameAndExtension);
