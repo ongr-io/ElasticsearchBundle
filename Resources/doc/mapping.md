@@ -209,25 +209,30 @@ class Product
     /**
      * @var ContentMetaObject
      *
-     * @ES\Embedded(class="App\Document\CategoryObject")
+     * @ES\Embedded(class="App\Document\CategoryObject", singular=true)
      */
     private $category;
 
     //...
     
-    public function __construct()
+    public funtion setCategory($category)
     {
-        $this->category = new ArrayCollection();
+        $this->category = $category;
     }
     
-    public funtion addCategory($category)
+    public function getCategory($category)
     {
-        $this->category->add($category)
+        return $this->category;
     }
 
     //...
 }
 ```
+
+Please note that if you want the category to be embedded as a singular 
+object (not an array of objects), you need to use the `singular=true` in the
+annotation, otherwise it will be interpreted as a collection. Read more on
+embedding collections bellow.
 
 And the `Category` object will look like (it's a separate class):
 

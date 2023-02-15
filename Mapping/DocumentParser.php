@@ -130,6 +130,7 @@ class DocumentParser
                     $fieldMapping['type'] = $this->getObjectMappingType($embeddedClass);
                     $fieldMapping['properties'] = $this->getClassMetadata($embeddedClass);
                     $embeddedFields[$name] = $annotation->class;
+                    $embeddedFields['singular'] = $annotation->singular;
                 }
 
                 $mapping[$annotation->getName() ?? Caser::snake($name)] = array_filter($fieldMapping);
@@ -207,6 +208,7 @@ class DocumentParser
                 if ($annotation instanceof Embedded) {
                     $propertyMetadata['embeded'] = true;
                     $propertyMetadata['class'] = $annotation->class;
+                    $propertyMetadata['singular'] = $annotation->singular;
                     $propertyMetadata['sub_properties'] = $this->getPropertyMetadata(
                         new \ReflectionClass($annotation->class),
                         true
