@@ -87,13 +87,18 @@ class Converter
             $setter = $fieldMeta['setter'];
 
             if ($fieldMeta['embeded']) {
-                $this->addClassMetadata($fieldMeta['class'], $fieldMeta['sub_properties']);
-                $iterator = new ObjectIterator($fieldMeta['class'], $value, $this);
+		$this->addClassMetadata($fieldMeta['class'], $fieldMeta['sub_properties']);
 
-                if ($fieldMeta['public']) {
-                    $object->{$fieldMeta['name']} = $iterator;
+                if ($fieldMeta['singular']) {
+                    $object->$setter($this->denormalize($value, $fieldMeta['class']));
                 } else {
-                    $object->$setter($iterator);
+                    $iterator = new ObjectIterator($fieldMeta['class'], $value, $this);
+
+                    if ($fieldMeta['public']) {
+                        $object->{$fieldMeta['name']} = $iterator;
+                    } else {
+                        $object->$setter($iterator);
+                    }
                 }
             } else {
                 if ($fieldMeta['type'] == 'date') {

@@ -27,4 +27,6 @@ final class Embedded extends AbstractAnnotation implements PropertiesAwareInterf
      * @Doctrine\Common\Annotations\Annotation\Required
      */
     public $class;
+
+    public $singular = false;
 }
