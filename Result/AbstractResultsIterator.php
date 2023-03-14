@@ -101,6 +101,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->count;
@@ -109,6 +110,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
      * Return the current element.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->getDocument($this->key());
@@ -117,6 +119,7 @@ abstract class AbstractResultsIterator implements \Countable, \Iterator
     /**
      * Move forward to the next element.
      */
+    #[\ReturnTypeWillChange]
     public function next(): self
     {
         return $this->advanceKey();

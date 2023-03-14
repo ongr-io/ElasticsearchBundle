@@ -164,7 +164,7 @@ class ElasticsearchProfilerTest extends AbstractElasticsearchTestCase
 
     private function getCollector(): ElasticsearchProfiler
     {
-        $collector = $this->getContainer()->get(ElasticsearchProfiler::class);
+        $collector = self::getContainer()->get(ElasticsearchProfiler::class);
         $collector->collect(new Request(), new Response());
 
         return $collector;

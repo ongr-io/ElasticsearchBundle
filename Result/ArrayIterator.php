@@ -13,21 +13,25 @@ namespace ONGR\ElasticsearchBundle\Result;
 
 class ArrayIterator extends AbstractResultsIterator implements \ArrayAccess
 {
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->documentExists($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->getDocument($offset);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->documents[$offset] = $value;
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->documents[$offset]);

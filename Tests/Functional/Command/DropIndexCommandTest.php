@@ -24,7 +24,7 @@ class DropIndexCommandTest extends AbstractElasticsearchTestCase
         $index = $this->getIndex(DummyDocument::class);
         $index->dropAndCreateIndex();
 
-        $command = new IndexDropCommand($this->getContainer());
+        $command = new IndexDropCommand(self::getContainer());
 
         $app = new Application();
         $app->add($command);

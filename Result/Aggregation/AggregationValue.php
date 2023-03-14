@@ -93,11 +93,13 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
         return $aggregation->find($name[1]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->rawData);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (!isset($this->rawData[$offset])) {
@@ -107,11 +109,13 @@ class AggregationValue implements \ArrayAccess, \IteratorAggregate
         return $this->rawData[$offset];
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new \LogicException('Aggregation result can not be changed on runtime.');
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new \LogicException('Aggregation result can not be changed on runtime.');
