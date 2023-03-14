@@ -170,7 +170,7 @@ class CreateIndexCommandTest extends AbstractElasticsearchTestCase
      */
     private function getCommandTester()
     {
-        $indexCreateCommand = new IndexCreateCommand($this->getContainer());
+        $indexCreateCommand = new IndexCreateCommand(self::getContainer());
 
         $app = new Application();
         $app->add($indexCreateCommand);

@@ -29,7 +29,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     private $indexes = [];
 
     //You may use setUp() for your personal needs.
-    protected function setUp()
+    protected function setUp(): void
     {
     }
 
@@ -82,7 +82,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
         }
     }
 
-    protected function getContainer($reinitialize = false, $kernelOptions = []): ContainerInterface
+    protected static function getContainer($reinitialize = false, $kernelOptions = []): ContainerInterface
     {
         if (!self::$cachedContainer && !$reinitialize) {
 //            static::bootKernel($kernelOptions);
@@ -97,7 +97,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     {
         try {
             if (!array_key_exists($namespace, $this->indexes)) {
-                $this->indexes[$namespace] = $this->getContainer()->get($namespace);
+                $this->indexes[$namespace] = self::getContainer()->get($namespace);
             }
 
             if (!$this->indexes[$namespace]->indexExists() && $createIndex) {

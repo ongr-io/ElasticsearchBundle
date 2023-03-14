@@ -132,6 +132,7 @@ class JsonReader implements \Countable, \Iterator
             ->addAllowedTypes('fields', 'array');
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->currentLine === null) {
@@ -141,6 +142,7 @@ class JsonReader implements \Countable, \Iterator
         return $this->currentLine;
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->readLine();
@@ -148,16 +150,19 @@ class JsonReader implements \Countable, \Iterator
         $this->key++;
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->key;
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return !feof($this->getFileHandler()) && $this->currentLine;
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         rewind($this->getFileHandler());
@@ -166,6 +171,7 @@ class JsonReader implements \Countable, \Iterator
         $this->readLine();
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         $metadata = $this->getMetadata();
