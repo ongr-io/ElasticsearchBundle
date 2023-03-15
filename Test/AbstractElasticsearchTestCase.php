@@ -72,7 +72,7 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
     protected function tearDown(): void
     {
         parent::tearDown();
-
+        self::$cachedContainer = null;
         foreach ($this->indexes as $name => $index) {
             try {
                 $index->dropIndex();
@@ -84,9 +84,12 @@ abstract class AbstractElasticsearchTestCase extends WebTestCase
 
     protected static function getContainer($reinitialize = false, $kernelOptions = []): ContainerInterface
     {
-        if (!self::$cachedContainer && !$reinitialize) {
-//            static::bootKernel($kernelOptions);
+        if ($reinitialize && self::$booted) {
+            self::ensureKernelShutdown();
+            self::$cachedContainer = null;
+        }
 
+        if (!self::$cachedContainer) {
             self::$cachedContainer = static::createClient(['environment' => 'test'])->getContainer();
         }
 
