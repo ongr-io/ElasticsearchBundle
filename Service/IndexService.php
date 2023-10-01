@@ -308,14 +308,35 @@ class IndexService
 
     public function getIndexDocumentCount(): int
     {
-        $body = [
-            'index' => $this->getIndexName(),
-            'body' => [],
-        ];
+        return $this->count();
+    }
+
+    /**
+     * Counts documents by given search.
+     *
+     * @param Search|null $search
+     * @param array  $params
+     * @param bool   $returnRaw If set true returns raw response gotten from client.
+     *
+     * @return int|array
+     */
+    public function count(Search $search = null, array $params = [], $returnRaw = false)
+    {
+        $body = array_merge(
+            [
+                'index' => $this->getIndexName(),
+                'body' => $search !== null ? $search->toArray() : [],
+            ],
+            $params
+        );
 
         $results = $this->getClient()->count($body);
 
-        return $results['count'];
+        if ($returnRaw) {
+            return $results;
+        } else {
+            return $results['count'];
+        }
     }
 
     public function count(Search $search, array $params = [])
