@@ -70,6 +70,13 @@ Elasticsearch bundle is installed using [Composer][13].
 php composer.phar require ongr/elasticsearch-bundle "~6.0"
 ```
 
+If you get an error with monolog 2, downgrade to monolog 1:
+
+```bash
+php composer.phar require "monolog/monolog:^1.22"
+```
+
+
 > Instructions for installing and deploying Elasticsearch can be found in
  [Elasticsearch installation page][14].
 
